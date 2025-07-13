@@ -1,9 +1,7 @@
-import { Card } from "flowbite-react";
+import { LoginCard } from "@/features/Login/LoginCard";
 
 export default function Home() {
   return (
-    <Card>
-      <h1 className="text-3xl text-center font-bold">Testing this</h1>
-    </Card>
+    <LoginCard />
   );
 }
