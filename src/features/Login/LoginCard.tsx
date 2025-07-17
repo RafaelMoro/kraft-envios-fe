@@ -1,6 +1,9 @@
 "use client"
+import Link from "next/link"
+import { Button, Card, Label, TextInput } from "flowbite-react"
 
-import { Card, Label, TextInput } from "flowbite-react"
+import { FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
+import { LinkButton } from "@/shared/ui/atoms/LinkButton"
 
 export const LoginCard = () => {
   return (
@@ -29,6 +32,19 @@ export const LoginCard = () => {
               </div>
               <TextInput id="password" type="password" />
             </div>
+            <Link className="underline" href={FORGOT_PASSWORD_ROUTE}>¿Olvidaste tu contraseña?</Link>
+            <LinkButton type="secondary" href={REGISTER_ROUTE} >
+              Registrarse
+            </LinkButton>
+            <Button
+              className="hover:cursor-pointer"
+              // disabled={isPending || isSuccess}
+              type="submit">
+                Iniciar sesión
+              {/* { (isIdle || isError) && 'Iniciar sesión'}
+              { isPending && (<Spinner aria-label="loading login budget master" />) }
+              { isSuccess && (<CheckIcon />)} */}
+            </Button>
           </form>
         </Card>
       </main>
