@@ -10,10 +10,13 @@
     "postinstall": "flowbite-react patch"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
     "flowbite-react": "^0.11.9",
     "next": "14.2.30",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-hook-form": "^7.60.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.11",
