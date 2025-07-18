@@ -1,7 +1,11 @@
-import { LoginCard } from "@/features/Login/LoginCard";
+import { Suspense } from "react";
+
+import { Login } from "@/features/Login/Login";
 
 export default function Home() {
   return (
-    <LoginCard />
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Login />
+    </Suspense>
   );
 }
