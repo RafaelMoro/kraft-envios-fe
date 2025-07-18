@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import {QueryProviderWrapper} from "./QueryProviderWrapper";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -28,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 text-gray-950 dark:text-gray-100 dark:bg-gray-950 transition-colors`}
       >
-        {children}
+        <QueryProviderWrapper>
+          {children}
+        </QueryProviderWrapper>
       </body>
     </html>
   );
