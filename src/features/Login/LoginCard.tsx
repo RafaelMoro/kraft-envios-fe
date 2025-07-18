@@ -1,15 +1,21 @@
 "use client"
 import Link from "next/link"
-import { Button, Card, Label, TextInput } from "flowbite-react"
+import { useRouter } from "next/router"
+import { Button, Card, CheckIcon, Label, Spinner, TextInput } from "flowbite-react"
 
-import { FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
+import { DASHBOARD_ROUTE, FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
 import { LinkButton } from "@/shared/ui/atoms/LinkButton"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { LoginPayload, LoginSchema } from "@/shared/types/login.types"
+import { LoginData, LoginError, LoginPayload, LoginSchema } from "@/shared/types/login.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { useMutation } from "@tanstack/react-query"
+import { LoginMutationCb } from "@/shared/utils/login.utils"
+import { useEffect } from "react"
+import { ERROR_CREATE_USER_TITLE, ERROR_UNAUTHORIZED_LOGIN, ERROR_UNAUTHORIZED_LOGIN_MESSAGE } from "@/shared/constants/login.constants"
 
 export const LoginCard = () => {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -18,14 +24,35 @@ export const LoginCard = () => {
     resolver: yupResolver(LoginSchema)
   })
 
+  const { mutate: loginMutation, isError, isPending, isSuccess, isIdle, error } = useMutation<LoginData, LoginError, LoginPayload>({
+    mutationFn: LoginMutationCb,
+    onSuccess: () => {
+      setTimeout(() => {
+        router.push(DASHBOARD_ROUTE)
+      }, 1000)
+    }
+  })
+  const messageError = error?.response?.data?.message
+
   const onSubmit: SubmitHandler<LoginPayload> = (data) => {
     const dataForm = {
       email: data.email,
       password: data.password
     }
-    console.log('dataForm', dataForm)
-    // loginMutation(dataForm)
+    loginMutation(dataForm)
   }
+
+  useEffect(() => {
+    if (isError && messageError) {
+      if (messageError === ERROR_UNAUTHORIZED_LOGIN) {
+        console.error(ERROR_UNAUTHORIZED_LOGIN_MESSAGE)
+        // toast.error(ERROR_UNAUTHORIZED_LOGIN_MESSAGE);
+        return
+      }
+      console.error(ERROR_CREATE_USER_TITLE)
+      // toast.error(ERROR_CREATE_USER_TITLE);
+    }
+  }, [isError, messageError])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -70,12 +97,12 @@ export const LoginCard = () => {
             </LinkButton>
             <Button
               className="hover:cursor-pointer"
-              // disabled={isPending || isSuccess}
+              disabled={isPending || isSuccess}
               type="submit">
                 Iniciar sesión
-              {/* { (isIdle || isError) && 'Iniciar sesión'}
-              { isPending && (<Spinner aria-label="loading login budget master" />) }
-              { isSuccess && (<CheckIcon />)} */}
+              { (isIdle || isError) && 'Iniciar sesión'}
+              { isPending && (<Spinner aria-label="loading login kraft envios" />) }
+              { isSuccess && (<CheckIcon />)}
             </Button>
           </form>
         </Card>
