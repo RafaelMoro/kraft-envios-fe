@@ -8,7 +8,7 @@ import { GeneralError } from "@/shared/types/global.types";
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json()
-    const uri = `${process.env.NEXT_PUBLIC_BACKEND_URI}/auth/`
+    const uri = `${process.env.BACKEND_URI}/auth/`
     const res = await axios.post(uri, payload)
     const cookiesReceived = res.headers['set-cookie']
 
