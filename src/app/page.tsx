@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 
 import { Login } from "@/features/Login/Login";
+import { LoadingLoginPage } from "@/features/Login/LoadingLoginPage";
 
 export default function Home() {
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
+    <Suspense fallback={<LoadingLoginPage />}>
       <Login />
     </Suspense>
   );
