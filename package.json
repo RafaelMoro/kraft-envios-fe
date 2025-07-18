@@ -14,6 +14,7 @@
     "@tanstack/react-query": "^5.83.0",
     "axios": "^1.10.0",
     "flowbite-react": "^0.11.9",
+    "jose": "^6.0.12",
     "next": "14.2.30",
     "react": "^18",
     "react-dom": "^18",
