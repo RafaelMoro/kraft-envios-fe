@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { useRouter } from "next/router"
+import { useRouter } from 'next/navigation'
 import { Button, Card, CheckIcon, Label, Spinner, TextInput } from "flowbite-react"
 
 import { DASHBOARD_ROUTE, FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
@@ -99,7 +99,6 @@ export const LoginCard = () => {
               className="hover:cursor-pointer"
               disabled={isPending || isSuccess}
               type="submit">
-                Iniciar sesión
               { (isIdle || isError) && 'Iniciar sesión'}
               { isPending && (<Spinner aria-label="loading login kraft envios" />) }
               { isSuccess && (<CheckIcon />)}
