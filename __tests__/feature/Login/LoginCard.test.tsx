@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react"
+import userEvent from '@testing-library/user-event'
 
 import { QueryProviderWrapper } from "@/app/QueryProviderWrapper"
 import { LoginCard } from "@/features/Login/LoginCard"
@@ -36,5 +37,32 @@ describe('LoginCard', () => {
     />)
 
     expect(screen.getByRole('heading', { name: /ingrese sus credenciales para entrar a su cuenta\./i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/contraseña/i)).toBeInTheDocument()
+    expect(screen.getByText(/¿Olvidaste tu contraseña\?/i)).toBeInTheDocument()
+    expect(screen.getByText(/registrarse/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument()
+  })
+
+  describe('Form submission', () => {
+    beforeEach(() => {
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+      const push = jest.fn()
+
+      render(
+      <LoginCardWrapper
+        push={push}
+        toggleNotification={toggleNotification}
+        updateNotificationMessage={updateNotificationMessage}
+      />)
+    })
+    it('Given the email being empty, show an error to the user', async () => {
+      const user = userEvent.setup()
+
+      const signInButton = screen.getByRole('button', { name: /iniciar sesión/i })
+      await user.click(signInButton)
+      expect(await screen.findByText(/Por favor, ingrese su correo electrónico/i)).toBeInTheDocument()
+    })
   })
 })
