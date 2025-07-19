@@ -164,5 +164,41 @@ describe('LoginCard', () => {
       expect(toggleNotification).toHaveBeenCalled()
       expect(updateNotificationMessage).toHaveBeenCalledWith('Correo electronico o contraseña incorrecta.')
     })
+
+    it('Given a user entering email or password, then something went wrong, show error', async () => {
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+      const push = jest.fn()
+      const user = userEvent.setup()
+      mockedAxios.post.mockRejectedValue({
+        code: 'ERR_BAD_REQUEST',
+        config: null,
+        message: 'Request failed with status code 401',
+        name: 'AxiosError',
+        request: null,
+        response: {
+          data: {
+            message: 'something went wrong.'
+          }
+        }
+      })
+
+      render(
+        <LoginCardWrapper
+          push={push}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      const pwdInput = screen.getByLabelText(/contraseña/i)
+      await user.type(pwdInput, '123')
+      const emailInput = screen.getByLabelText(/correo electrónico/i)
+      await user.type(emailInput, 'correo-electronico@a.com')
+      const signInButton = screen.getByRole('button', { name: /iniciar sesión/i })
+      await user.click(signInButton)
+      expect(toggleNotification).toHaveBeenCalled()
+      expect(updateNotificationMessage).toHaveBeenCalledWith('Oops! Algo no salió como esperabamos.')
+    })
   })
 })
