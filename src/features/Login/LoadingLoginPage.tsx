@@ -7,15 +7,15 @@ export const LoadingLoginPage = () => {
   return (
     <div className="min-h-screen flex flex-col relative">
       <main className="flex-1 flex flex-col justify-center items-center gap-20 min-h-full">
-        <h1 className="text-black dark:text-white text-4xl text-center font-bold">Cargando</h1>
+        <h1 className="text-black dark:text-white text-4xl text-center font-bold">Bienvenido de vuelta</h1>
         <Card className="max-w-sm">
           <h2 className="text-2xl text-gray-900 dark:text-white">
-            Cargando
+            Ingrese sus credenciales para entrar a su cuenta.
           </h2>
           <form className="flex max-w-md flex-col gap-4">
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="email">Cargando</Label>
+                <Label htmlFor="email">Correo Electrónico</Label>
               </div>
               <TextInput
                 id="email"
