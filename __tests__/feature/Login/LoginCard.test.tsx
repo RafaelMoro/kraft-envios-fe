@@ -74,5 +74,13 @@ describe('LoginCard', () => {
       await user.click(signInButton)
       expect(await screen.findByText(/Correo electrónico inválido/i))
     })
+
+    it('Given a user leaving the password empty, show password required error', async () => {
+      const user = userEvent.setup()
+    
+      const signInButton = screen.getByRole('button', { name: /iniciar sesión/i })
+      await user.click(signInButton)
+      expect(await screen.findByText(/Por favor, ingrese su contraseña/i))
+    })
   })
 })
