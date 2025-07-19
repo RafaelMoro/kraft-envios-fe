@@ -19,5 +19,9 @@ describe('Login page', () => {
     render(<Home push={push} />)
 
     expect(screen.getByRole('heading', { name: /bienvenido de vuelta/i })).toBeInTheDocument()
+    expect(screen.getByText(/ingrese sus credenciales para entrar a su cuenta\./i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/contraseña/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument()
   })
 })
