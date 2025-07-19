@@ -1,7 +1,12 @@
-import { LoginCard } from "@/features/Login/LoginCard";
+import { Suspense } from "react";
+
+import { Login } from "@/features/Login/Login";
+import { LoadingLoginPage } from "@/features/Login/LoadingLoginPage";
 
 export default function Home() {
   return (
-    <LoginCard />
+    <Suspense fallback={<LoadingLoginPage />}>
+      <Login />
+    </Suspense>
   );
 }
