@@ -1,3 +1,9 @@
+## v0.5.0 (2025-07-20)
+
+### Pull Requests
+[#4](https://github.com/RafaelMoro/kraft-envios-fe/pull/4) | Add forgot password
+
+
 ## v0.4.0 (2025-07-19)
 
 ### Pull Requests
