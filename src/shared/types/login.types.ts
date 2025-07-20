@@ -58,6 +58,26 @@ export type ResetPasswordFormData = {
   confirmPassword: string
 }
 
+export type ResetPasswordPayload = {
+  password: string
+}
+
+export interface ResetPasswordData {
+  data: null
+  error: null;
+  message: 'Reset password successfully';
+  success: boolean;
+  version: string;
+}
+
+export interface ResetPasswordError extends Omit<AxiosError, 'response'> {
+  response: AxiosResponse<{
+    error: {
+      message: string;
+    }
+  }>;
+}
+
 //#region Validation schemas
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
 

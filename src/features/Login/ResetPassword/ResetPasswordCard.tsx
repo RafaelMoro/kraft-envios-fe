@@ -1,12 +1,14 @@
 "use client"
-import { Button, Card, Label, TextInput } from "flowbite-react"
+import { Button, Card, CheckIcon, Label, Spinner, TextInput } from "flowbite-react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { SubmitHandler, useForm } from "react-hook-form"
+import { useMutation } from "@tanstack/react-query"
 
 import { LOGIN_ROUTE } from "@/shared/constants/global.constants"
-import { ResetPasswordFormData, ResetPasswordSchema } from "@/shared/types/login.types"
+import { ResetPasswordData, ResetPasswordError, ResetPasswordFormData, ResetPasswordPayload, ResetPasswordSchema } from "@/shared/types/login.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { LinkButton } from "@/shared/ui/atoms/LinkButton"
+import { resetPasswordCb } from "@/shared/utils/login.utils"
 
 interface ResetPasswordCardProps{
   slug: string
@@ -22,8 +24,21 @@ export const ResetPasswordCard = ({ slug }: ResetPasswordCardProps) => {
     resolver: yupResolver(ResetPasswordSchema)
   })
 
+  const { mutate: resetPwdMutation, isError, isPending, isSuccess, isIdle } = useMutation<ResetPasswordData, ResetPasswordError, ResetPasswordPayload>({
+    mutationFn: (data) => resetPasswordCb(data, slug),
+    onError: () => {
+      // toggleMessageCardState("error")
+    },
+    onSuccess: () => {
+      // toggleMessageCardState("success")
+    }
+  })
+
   const onSubmit: SubmitHandler<ResetPasswordFormData> = (data) => {
-    console.log('data', data)
+    const payload: ResetPasswordPayload = {
+      password: data.password
+    }
+    resetPwdMutation(payload)
   }
 
 
@@ -67,13 +82,12 @@ export const ResetPasswordCard = ({ slug }: ResetPasswordCardProps) => {
         <LinkButton className="mt-4" type="secondary" href={LOGIN_ROUTE} >Volver al inicio</LinkButton>
         <Button
           className="hover:cursor-pointer"
-          // disabled={isPending || isSuccess}
+          disabled={isPending || isSuccess}
           type="submit"
         >
-          Reestablecer contraseña
-          {/* { (isIdle || isError) && 'Reestablecer contraseña'}
+          { (isIdle || isError) && 'Reestablecer contraseña'}
           { isPending && (<Spinner aria-label="loading reset password budget master" />) }
-          { isSuccess && (<CheckIcon />)} */}
+          { isSuccess && (<CheckIcon />)}
         </Button>
       </form>
     </Card>
