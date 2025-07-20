@@ -80,7 +80,7 @@ export const PersonalInformation = ({ personalInformation, goNext, updatePersona
             <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
           )}
         </div>
-        <LinkButton href={LOGIN_ROUTE} >Volver</LinkButton>
+        <LinkButton type="secondary" href={LOGIN_ROUTE} >Volver</LinkButton>
         <Button type="submit" className="hover:cursor-pointer">
           Siguiente
         </Button>
