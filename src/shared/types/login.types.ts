@@ -2,6 +2,7 @@ import { object, string } from "yup";
 import { ERROR_EMAIL_REQUIRED, ERROR_INVALID_EMAIL, ERROR_PASSWORD_REQUIRED } from "../constants/login.constants";
 import { AxiosError, AxiosResponse } from "axios";
 
+//#region Payload / Responses
 export interface LoginData {
   data: {
     user: {
@@ -30,6 +31,10 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface ForgotPasswordPayload {
+  email: string
+}
+
 //#region Validation schemas
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
 
@@ -38,4 +43,8 @@ const emailValidation = string().email(ERROR_INVALID_EMAIL).required(ERROR_EMAIL
 export const LoginSchema = object({
   email: emailValidation,
   password: string().required(ERROR_PASSWORD_REQUIRED)
+})
+
+export const ForgotPasswordSchema = object({
+  email: emailValidation
 })
