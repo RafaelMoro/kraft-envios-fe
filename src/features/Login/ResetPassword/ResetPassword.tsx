@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { ResetPasswordCard } from "./ResetPasswordCard"
 import { MessageCardState, ResetPasswordStatus } from "@/shared/types/login.types"
+import { ResetPasswordStatusCard } from "./ResetPasswordStatusCard"
 
 export interface ResetPasswordProps {
   slug: string
@@ -30,7 +31,8 @@ export const ResetPassword = ({ slug }: ResetPasswordProps) => {
             { messageCardState.status === "success" ? "¡Contraseña cambiada con éxito!" : "No pudimos restablecer tu contraseña"}
           </h1>
         )}
-        <ResetPasswordCard slug={slug} toggleMessageCardState={toggleMessageCardState} />
+        { !messageCardState.show && (<ResetPasswordCard slug={slug} toggleMessageCardState={toggleMessageCardState} />) }
+        { messageCardState.show && (<ResetPasswordStatusCard status={messageCardState.status} />) }
       </main>
     </div>
   )
