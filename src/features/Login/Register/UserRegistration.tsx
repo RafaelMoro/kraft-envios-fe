@@ -1,16 +1,17 @@
 import { UserAndPasswordSchema, UserPasswordForm } from "@/shared/types/login.types";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Card, Label, TextInput } from "flowbite-react"
+import { Button, Card, Label, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UserRegistrationProps {
+  isLoading: boolean;
   goPrev: () => void;
   submitForm: () => void;
   updateUserPasswordInfo: (data: UserPasswordForm) => void;
 }
 
-export const UserRegistration = ({ goPrev, submitForm, updateUserPasswordInfo }: UserRegistrationProps) => {
+export const UserRegistration = ({ goPrev, submitForm, updateUserPasswordInfo, isLoading }: UserRegistrationProps) => {
   const {
     register,
     handleSubmit,
@@ -77,19 +78,18 @@ export const UserRegistration = ({ goPrev, submitForm, updateUserPasswordInfo }:
         </div>
         <Button className="hover:cursor-pointer" outline onClick={goPrev}>Regresar</Button>
         <Button
-          // disabled={isLoading}
-          // aria-disabled={isLoading}
+          disabled={isLoading}
+          aria-disabled={isLoading}
           type="submit"
           className="hover:cursor-pointer disabled:opacity-50 inline-flex gap-3"
         >
-          Crear cuenta
-          {/* { isLoading && (
+          { isLoading && (
             <>
               <Spinner aria-label="loading creating user" light />
               Creando usuario...
             </>
           )}
-          { !isLoading && 'Crear cuenta' } */}
+          { !isLoading && 'Crear cuenta' }
         </Button>
       </form>
     </Card>

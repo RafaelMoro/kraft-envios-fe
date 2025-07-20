@@ -8,22 +8,23 @@ import { CompanyDetailsForm, CreateUserData, CreateUserError, CreateUserPayload,
 import { CompanyDetails } from "./CompanyDetails"
 import { UserRegistration } from "./UserRegistration"
 import { ResultCard } from "./ResultCard"
-import { SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
+import { ERROR_CREATE_USER_MESSAGE, ERROR_CREATE_USER_TITLE, ERROR_EMAIL_IN_USE, SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
 import { useMutation } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import { createUserCb } from "@/shared/utils/login.utils"
+import { GeneralError } from "@/shared/types/global.types"
 
 export const Register = () => {
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Información Personal", "Datos de su compañia", "Usuario y contraseña", "Resultado"])
 
   const {
-      mutate: createUserMutation,
-      isError,
-      isPending,
-      isSuccess,
-      error
-    } = useMutation<CreateUserData, AxiosResponse<CreateUserError>, CreateUserPayload>({
+    mutate: createUserMutation,
+    isError,
+    isPending,
+    isSuccess,
+    error
+  } = useMutation<CreateUserData, AxiosResponse<CreateUserError>, CreateUserPayload>({
     mutationFn: createUserCb,
     onError: () => {
       goNext()
@@ -32,6 +33,8 @@ export const Register = () => {
       goNext()
     }
   })
+  const currentMessageError = (error as unknown as GeneralError)?.response?.data?.error?.message
+  const messageError = currentMessageError === ERROR_EMAIL_IN_USE ? 'Intente con otro correo electrónico' : ERROR_CREATE_USER_MESSAGE
 
   const formData = useRef<FormDataRegister>({
     personalInformation: {
@@ -99,14 +102,23 @@ export const Register = () => {
         )}
         { step === 3 && (
           <UserRegistration
+            isLoading={isPending}
             goPrev={goPrev}
             submitForm={handleSubmit}
             updateUserPasswordInfo={updateUserPassword}
           />
         )}
-        { step === 4 && (
+        { step === 4 && isError && (
           <ResultCard
-            isError={false}
+            isError={isError}
+            title={ERROR_CREATE_USER_TITLE}
+            message={messageError}
+            resetStep={resetSteps}
+          />
+        )}
+        { step === 4 && isSuccess && (
+          <ResultCard
+            isError={isError}
             title={SUCCESS_CREATE_USER_TITLE}
             message={SUCCESS_CREATE_USER_MESSAGE}
             resetStep={resetSteps}
