@@ -1,0 +1,51 @@
+import { LOGIN_ROUTE } from "@/shared/constants/global.constants"
+import { LinkButton } from "@/shared/ui/atoms/LinkButton"
+import { Button, Card, Label, TextInput } from "flowbite-react"
+
+export const PersonalInformation = () => {
+  return (
+    <Card className="max-w-sm">
+      <h5 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
+        Crear cuenta.
+      </h5>
+      <p className="text-xl text-black dark:text-white">Llene la siguiente información para crear su cuenta.</p>
+      <form
+        // onSubmit={handleSubmit(onSubmit)}
+        className="flex max-w-md flex-col gap-4"
+      >
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="firstName">Nombre</Label>
+          </div>
+          <TextInput
+            data-testid="firstName"
+            // defaultValue={personalInformation.firstName}
+            id="firstName" type="text"
+            // {...register("firstName")}
+          />
+          {/* { errors?.firstName?.message && (
+            <ErrorMessage isAnimated>{errors.firstName?.message}</ErrorMessage>
+          )} */}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="lastName">Apellido</Label>
+          </div>
+          <TextInput
+            id="lastName"
+            // defaultValue={personalInformation.lastName}
+            type="text"
+            // {...register("lastName")}
+          />
+          {/* { errors?.lastName?.message && (
+            <ErrorMessage isAnimated>{errors?.lastName?.message}</ErrorMessage>
+          )} */}
+        </div>
+        <LinkButton href={LOGIN_ROUTE} >Volver</LinkButton>
+        <Button type="submit" className="hover:cursor-pointer">
+          Siguiente
+        </Button>
+      </form>
+    </Card>
+  )
+}
