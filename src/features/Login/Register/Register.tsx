@@ -3,14 +3,13 @@ import { useRef } from "react"
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { PersonalInformation } from "./PersonalInformation"
 import { useSteps } from "@/shared/hooks/useSteps"
-import { CompanyDetailsForm, FormDataRegister, PersonalInformationForm } from "@/shared/types/login.types"
+import { CompanyDetailsForm, FormDataRegister, PersonalInformationForm, UserPasswordForm } from "@/shared/types/login.types"
 import { CompanyDetails } from "./CompanyDetails"
 import { UserRegistration } from "./UserRegistration"
 
 export const Register = () => {
   const { step, goNext, goPrev } = useSteps({ firstStep: 1 })
-  console.log('step', step)
-  const steps = new Set(["Información Personal", "Usuario y contraseña", "Resultado"])
+  const steps = new Set(["Información Personal", "Datos de su compañia", "Usuario y contraseña", "Resultado"])
 
   const formData = useRef<FormDataRegister>({
     personalInformation: {
@@ -21,6 +20,11 @@ export const Register = () => {
       companyName: "",
       address: "",
       postalCode: ""
+    },
+    userPassword: {
+      email: "",
+      password: "",
+      confirmPassword: ""
     }
   })
   const updatePersonalInformation = (data: PersonalInformationForm) => {
@@ -28,6 +32,24 @@ export const Register = () => {
   }
   const updateCompanyDetails = (data: CompanyDetailsForm) => {
     formData.current.companyDetails = data
+  }
+  const updateUserPassword = (data: UserPasswordForm) => {
+    formData.current.userPassword = data
+  }
+
+  const handleSubmit = async () => {
+    // try {
+    //   const payload: CreateUserPayload = {
+    //     firstName: formData.current.personalInformation.firstName,
+    //     middleName: formData.current.personalInformation.middleName ?? '',
+    //     lastName: formData.current.personalInformation.lastName,
+    //     email: formData.current.userPasswordInfo.email,
+    //     password: formData.current.userPasswordInfo.password,
+    //   }
+    //   createUserMutation(payload)
+    // } catch (error) {
+    //   console.log('error when registering user', error)
+    // }
   }
 
   return (
@@ -54,6 +76,8 @@ export const Register = () => {
         { step === 3 && (
           <UserRegistration
             goPrev={goPrev}
+            submitForm={handleSubmit}
+            updateUserPasswordInfo={updateUserPassword}
           />
         )}
       </div>

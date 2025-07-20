@@ -6,9 +6,11 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UserRegistrationProps {
   goPrev: () => void;
+  submitForm: () => void;
+  updateUserPasswordInfo: (data: UserPasswordForm) => void;
 }
 
-export const UserRegistration = ({ goPrev }: UserRegistrationProps) => {
+export const UserRegistration = ({ goPrev, submitForm, updateUserPasswordInfo }: UserRegistrationProps) => {
   const {
     register,
     handleSubmit,
@@ -18,9 +20,8 @@ export const UserRegistration = ({ goPrev }: UserRegistrationProps) => {
   })
 
   const onSubmit: SubmitHandler<UserPasswordForm> = (data) => {
-    console.log('data', data)
-    // updateUserPasswordInfo(data)
-    // submitForm()
+    updateUserPasswordInfo(data)
+    submitForm()
   }
 
   return (

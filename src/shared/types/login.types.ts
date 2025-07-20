@@ -29,6 +29,7 @@ export type UserPasswordForm = {
 export type FormDataRegister = {
   personalInformation: PersonalInformationForm
   companyDetails: CompanyDetailsForm
+  userPassword: UserPasswordForm
 }
 
 //#region Payload / Responses
