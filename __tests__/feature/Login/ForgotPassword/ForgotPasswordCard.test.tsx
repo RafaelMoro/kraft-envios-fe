@@ -110,5 +110,48 @@ describe('ForgotPasswordCard', () => {
         expect(push).toHaveBeenCalledWith(LOGIN_ROUTE)
       }, { timeout: 2000 })
     })
+
+    it('Given a user entering email or password, then something went wrong, show error', async () => {
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+      const push = jest.fn()
+      const user = userEvent.setup()
+      mockedAxios.post.mockRejectedValue({
+        code: 'ERR_BAD_REQUEST',
+        config: null,
+        message: 'Request failed with status code 401',
+        name: 'AxiosError',
+        request: null,
+        response: {
+          config: null,
+          data: {
+            data: null,
+            error: {
+              error: 'Bad Request',
+              message: 'Something went wrong.',
+              statusCode: 403
+            },
+            message: null,
+            success: false,
+            version: '1.2.0'
+          }
+        }
+      })
+
+      render(
+        <ForgotPasswordCardWrapper
+          push={push}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      const emailInput = screen.getByLabelText(/correo electrónico/i)
+      await user.type(emailInput, 'correo-electronico@a.com')
+      const signInButton = screen.getByRole('button', { name: /enviar/i })
+      await user.click(signInButton)
+      expect(toggleNotification).toHaveBeenCalled()
+      expect(updateNotificationMessage).toHaveBeenCalledWith('Oops! Algo no salió como esperabamos.')
+    })
   })
 })
