@@ -64,16 +64,21 @@ export const Register = () => {
   }
 
   const handleSubmit = async () => {
+    const { personalInformation, userPassword, companyDetails } = formData.current
+    const { name, lastName, phone } = personalInformation
+    const { postalCode, address, companyName, secondPhoneNumber } = companyDetails
+    const { email, password } = userPassword
+  
     const payload: CreateUserPayload = {
-      name: formData.current.personalInformation.name,
-      lastName: formData.current.personalInformation.lastName,
-      email: formData.current.userPassword.email,
-      password: formData.current.userPassword.password,
-      phone: formData.current.personalInformation.phone,
-      postalCode: formData.current.companyDetails.postalCode,
-      companyName: formData.current.companyDetails.companyName ?? '',
-      secondPhone: formData.current.companyDetails.secondPhoneNumber ?? '',
-      address: formData.current.companyDetails.address ?? '',
+      name,
+      lastName,
+      email,
+      password,
+      phone,
+      postalCode,
+      companyName: companyName ?? '',
+      secondPhone: secondPhoneNumber || phone,
+      address: address ?? '',
       role: []
     }
       createUserMutation(payload)
