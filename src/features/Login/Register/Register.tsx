@@ -4,6 +4,7 @@ import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { PersonalInformation } from "./PersonalInformation"
 import { useSteps } from "@/shared/hooks/useSteps"
 import { FormDataRegister, PersonalInformationForm } from "@/shared/types/login.types"
+import { CompanyDetails } from "./CompanyDetails"
 
 export const Register = () => {
   const { step, goNext, goPrev } = useSteps({ firstStep: 1 })
@@ -26,6 +27,7 @@ export const Register = () => {
       </div>
       <div className="flex-1 flex justify-center items-center">
         { step === 1 && (<PersonalInformation goNext={goNext} updatePersonalInformation={updatePersonalInformation} />) }
+        { step === 2 && (<CompanyDetails goPrev={goPrev} />) }
       </div>
     </div>
   )
