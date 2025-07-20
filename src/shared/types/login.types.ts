@@ -31,8 +31,25 @@ export interface LoginPayload {
   password: string;
 }
 
+// Forgot Password
 export interface ForgotPasswordPayload {
   email: string
+}
+
+export interface ForgotPasswordData {
+  data: null
+  error: null;
+  message: 'Email Sent';
+  success: boolean;
+  version: string;
+}
+
+export interface ForgotPasswordError extends Omit<AxiosError, 'response'> {
+  response: AxiosResponse<{
+    error: {
+      message: string;
+    }
+  }>;
 }
 
 //#region Validation schemas

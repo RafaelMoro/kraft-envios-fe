@@ -1,14 +1,19 @@
 "use client"
-import { Button, Card, Label, TextInput } from "flowbite-react"
+import { useRouter } from 'next/navigation'
+import { Button, Card, CheckIcon, Label, Spinner, TextInput } from "flowbite-react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 import { LOGIN_ROUTE } from "@/shared/constants/global.constants"
-import { ForgotPasswordPayload, ForgotPasswordSchema } from "@/shared/types/login.types"
+import { ForgotPasswordData, ForgotPasswordError, ForgotPasswordPayload, ForgotPasswordSchema } from "@/shared/types/login.types"
 import { LinkButton } from "@/shared/ui/atoms/LinkButton"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { useMutation } from "@tanstack/react-query"
+import { forgotPasswordCb } from "@/shared/utils/login.utils"
+import { GeneralError } from '@/shared/types/global.types'
 
 export const ForgotPasswordCard = () => {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -17,8 +22,18 @@ export const ForgotPasswordCard = () => {
     resolver: yupResolver(ForgotPasswordSchema)
   })
 
+  const { mutate: forgotPwdMutation, isError, isPending, isSuccess, isIdle, error } = useMutation<ForgotPasswordData, ForgotPasswordError, ForgotPasswordPayload>({
+    mutationFn: forgotPasswordCb,
+    onSuccess: () => {
+      setTimeout(() => {
+        router.push(LOGIN_ROUTE)
+      }, 1000)
+    }
+  })
+  const messageError = (error as unknown as GeneralError)?.response?.data?.error?.message
+
   const onSubmit: SubmitHandler<ForgotPasswordPayload> = async (data) => {
-    console.log('data', data)
+    forgotPwdMutation(data)
   }
 
   return (
@@ -47,10 +62,12 @@ export const ForgotPasswordCard = () => {
         </LinkButton>
         <Button
           className="hover:cursor-pointer"
-          // disabled={isPending || isSuccess}
+          disabled={isPending || isSuccess}
           type="submit"
         >
-          Enviar
+          { (isIdle || isError) && 'Enviar'}
+          { isPending && (<Spinner aria-label="loading forgot password" />) }
+          { isSuccess && (<CheckIcon />)}
         </Button>
       </form>
     </Card>
