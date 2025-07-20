@@ -6,8 +6,8 @@ import { GeneralError } from "@/shared/types/global.types";
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json()
-    const uri = `${process.env.BACKEND_URI}/users/forgot-password`
-    const res = await axios.post(uri, payload)
+    const uri = `${process.env.BACKEND_URI}/users/reset-password/${payload.slug}`
+    const res = await axios.post(uri, payload.data)
     
     return new Response(JSON.stringify(res.data), {
       status: 200,
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('Error forgot password:', error);
+    console.error('Error reset password:', error);
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
     return new Response(JSON.stringify({ error: { message } }), {
       status: 400,
