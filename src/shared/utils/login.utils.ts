@@ -6,9 +6,9 @@ export const LoginMutationCb = (data: LoginPayload): Promise<LoginData> => {
 }
 
 export const forgotPasswordCb = (data: ForgotPasswordPayload): Promise<ForgotPasswordData> => {
-  return axios.post('api/auth/forgot-password', data)
+  return axios.post('/api/auth/forgot-password', data)
 }
 
 export const resetPasswordCb = (data: ResetPasswordPayload, slug: string): Promise<ResetPasswordData> => {
-  return axios.post('api/auth/reset-password/${slug}', { data, slug })
+  return axios.post('/api/auth/reset-password', { data, slug })
 }
