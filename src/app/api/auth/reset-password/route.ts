@@ -5,7 +5,6 @@ import { GeneralError } from "@/shared/types/global.types";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('here')
     const payload = await request.json()
     const uri = `${process.env.BACKEND_URI}/users/reset-password/${payload.slug}`
     const res = await axios.post(uri, payload.data)
