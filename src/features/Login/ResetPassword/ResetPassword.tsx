@@ -13,7 +13,6 @@ export const ResetPassword = ({ slug }: ResetPasswordProps) => {
     show: false,
     status: "idle"
   })
-  console.log('messageCardState', messageCardState)
   const toggleMessageCardState = (state: ResetPasswordStatus) => {
     setmessageCardState({ show: true, status: state })
   }
