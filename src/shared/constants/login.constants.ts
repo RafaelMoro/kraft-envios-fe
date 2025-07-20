@@ -17,3 +17,6 @@ export const SUCESS_CREATE_USER_SECONDARY_MESSAGE = 'Inicia sesión ahora.'
 export const ERROR_UNAUTHORIZED_LOGIN_MESSAGE = 'Correo electronico o contraseña incorrecta.';
 export const ERROR_CREATE_USER_TITLE = 'Oops! Algo no salió como esperabamos.';
 export const ERROR_CREATE_USER_MESSAGE = 'Por favor intente nuevamente más tarde.';
+
+export const ERROR_TITLE_EMAIL_IN_USE = 'No puede usar este correo electrónico';
+export const ERROR_MESSAGE_EMAIL_IN_USE = 'Intente nuevamente con otro correo electrónico'

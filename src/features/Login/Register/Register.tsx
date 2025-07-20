@@ -8,7 +8,7 @@ import { CompanyDetailsForm, CreateUserData, CreateUserError, CreateUserPayload,
 import { CompanyDetails } from "./CompanyDetails"
 import { UserRegistration } from "./UserRegistration"
 import { ResultCard } from "./ResultCard"
-import { ERROR_CREATE_USER_MESSAGE, ERROR_CREATE_USER_TITLE, ERROR_EMAIL_IN_USE, SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
+import { ERROR_CREATE_USER_MESSAGE, ERROR_CREATE_USER_TITLE, ERROR_EMAIL_IN_USE, ERROR_MESSAGE_EMAIL_IN_USE, ERROR_TITLE_EMAIL_IN_USE, SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
 import { useMutation } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import { createUserCb } from "@/shared/utils/login.utils"
@@ -34,7 +34,8 @@ export const Register = () => {
     }
   })
   const currentMessageError = (error as unknown as GeneralError)?.response?.data?.error?.message
-  const messageError = currentMessageError === ERROR_EMAIL_IN_USE ? 'Intente con otro correo electrónico' : ERROR_CREATE_USER_MESSAGE
+  const title = currentMessageError === ERROR_EMAIL_IN_USE ? ERROR_TITLE_EMAIL_IN_USE : ERROR_CREATE_USER_TITLE
+  const messageError = currentMessageError === ERROR_EMAIL_IN_USE ? ERROR_MESSAGE_EMAIL_IN_USE : ERROR_CREATE_USER_MESSAGE
 
   const formData = useRef<FormDataRegister>({
     personalInformation: {
@@ -116,7 +117,7 @@ export const Register = () => {
         { step === 4 && isError && (
           <ResultCard
             isError={isError}
-            title={ERROR_CREATE_USER_TITLE}
+            title={title}
             message={messageError}
             resetStep={resetSteps}
           />
