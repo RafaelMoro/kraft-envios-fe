@@ -1,8 +1,30 @@
 import { LOGIN_ROUTE } from "@/shared/constants/global.constants"
+import { PersonalInformationForm, PersonalInformationSchema } from "@/shared/types/login.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { LinkButton } from "@/shared/ui/atoms/LinkButton"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Card, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form"
 
-export const PersonalInformation = () => {
+interface PersonalInformationProps {
+  goNext: () => void
+}
+
+export const PersonalInformation = ({ goNext }: PersonalInformationProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PersonalInformationForm>({
+    resolver: yupResolver(PersonalInformationSchema)
+  })
+
+  const onSubmit: SubmitHandler<PersonalInformationForm> = (data) => {
+    console.log('data', data)
+    // updatePersonalInformation(data)
+    goNext()
+  }
+
   return (
     <Card className="max-w-sm">
       <h5 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
@@ -10,7 +32,7 @@ export const PersonalInformation = () => {
       </h5>
       <p className="text-xl text-black dark:text-white">Llene la siguiente información para crear su cuenta.</p>
       <form
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         className="flex max-w-md flex-col gap-4"
       >
         <div>
@@ -21,11 +43,11 @@ export const PersonalInformation = () => {
             data-testid="firstName"
             // defaultValue={personalInformation.firstName}
             id="firstName" type="text"
-            // {...register("firstName")}
+            {...register("firstName")}
           />
-          {/* { errors?.firstName?.message && (
-            <ErrorMessage isAnimated>{errors.firstName?.message}</ErrorMessage>
-          )} */}
+          { errors?.firstName?.message && (
+            <ErrorMessage>{errors.firstName?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -35,11 +57,11 @@ export const PersonalInformation = () => {
             id="lastName"
             // defaultValue={personalInformation.lastName}
             type="text"
-            // {...register("lastName")}
+            {...register("lastName")}
           />
-          {/* { errors?.lastName?.message && (
-            <ErrorMessage isAnimated>{errors?.lastName?.message}</ErrorMessage>
-          )} */}
+          { errors?.lastName?.message && (
+            <ErrorMessage>{errors?.lastName?.message}</ErrorMessage>
+          )}
         </div>
         <LinkButton href={LOGIN_ROUTE} >Volver</LinkButton>
         <Button type="submit" className="hover:cursor-pointer">

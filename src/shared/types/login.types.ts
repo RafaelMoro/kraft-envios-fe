@@ -1,4 +1,4 @@
-import { object, ref, string } from "yup";
+import { object, ObjectSchema, ref, string } from "yup";
 import { ERROR_EMAIL_REQUIRED, ERROR_INVALID_EMAIL, ERROR_PASSWORD_REQUIRED } from "../constants/login.constants";
 import { AxiosError, AxiosResponse } from "axios";
 
@@ -6,6 +6,11 @@ export type ResetPasswordStatus = "idle" | "success" | "error"
 export type MessageCardState = {
   show: boolean;
   status: ResetPasswordStatus;
+}
+
+export type PersonalInformationForm = {
+  firstName: string
+  lastName: string
 }
 
 //#region Payload / Responses
@@ -121,4 +126,9 @@ export const ForgotPasswordSchema = object({
 export const ResetPasswordSchema = object({
   password: passwordValidation('Por favor, ingrese una contraseña'),
   confirmPassword: confirmPasswordValidation,
+})
+
+export const PersonalInformationSchema: ObjectSchema<PersonalInformationForm> = object({
+  firstName: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres')
 })
