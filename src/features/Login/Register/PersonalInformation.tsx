@@ -64,6 +64,22 @@ export const PersonalInformation = ({ personalInformation, goNext, updatePersona
             <ErrorMessage>{errors?.lastName?.message}</ErrorMessage>
           )}
         </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="phone">Teléfono</Label>
+          </div>
+          <TextInput
+            data-testid="phone"
+            id="phone"
+            type="text"
+            inputMode="numeric"
+            defaultValue={personalInformation.phone ?? ''}
+            {...register("phone")}
+          />
+          { errors?.phone?.message && (
+            <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
+          )}
+        </div>
         <LinkButton href={LOGIN_ROUTE} >Volver</LinkButton>
         <Button type="submit" className="hover:cursor-pointer">
           Siguiente

@@ -186,8 +186,13 @@ export const ResetPasswordSchema = object({
 })
 
 export const PersonalInformationSchema: ObjectSchema<PersonalInformationForm> = object({
-  firstName: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
-  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres')
+  name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
+  phone: string()
+    .required('El teléfono es requerido')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+    .min(10, 'El teléfono debe tener 10 dígitos')
+    .max(10, 'El teléfono debe tener 10 dígitos')
 })
 
 export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object().shape({
