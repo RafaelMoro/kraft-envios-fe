@@ -1,14 +1,17 @@
 "use client"
 import { useRef } from "react"
+
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { PersonalInformation } from "./PersonalInformation"
 import { useSteps } from "@/shared/hooks/useSteps"
 import { CompanyDetailsForm, FormDataRegister, PersonalInformationForm, UserPasswordForm } from "@/shared/types/login.types"
 import { CompanyDetails } from "./CompanyDetails"
 import { UserRegistration } from "./UserRegistration"
+import { ResultCard } from "./ResultCard"
+import { SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
 
 export const Register = () => {
-  const { step, goNext, goPrev } = useSteps({ firstStep: 1 })
+  const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Información Personal", "Datos de su compañia", "Usuario y contraseña", "Resultado"])
 
   const formData = useRef<FormDataRegister>({
@@ -78,6 +81,14 @@ export const Register = () => {
             goPrev={goPrev}
             submitForm={handleSubmit}
             updateUserPasswordInfo={updateUserPassword}
+          />
+        )}
+        { step === 4 && (
+          <ResultCard
+            isError={false}
+            title={SUCCESS_CREATE_USER_TITLE}
+            message={SUCCESS_CREATE_USER_MESSAGE}
+            resetStep={resetSteps}
           />
         )}
       </div>

@@ -14,10 +14,12 @@ export const useSteps = ({ firstStep }: UseStepsProps) => {
   const goPrev = () => {
     setStep((prev) => (prev > firstStep ? prev - 1 : prev));
   }
+  const resetSteps = () => setStep(firstStep);
 
   return {
     step,
     goNext,
     goPrev,
+    resetSteps
   }
 }
