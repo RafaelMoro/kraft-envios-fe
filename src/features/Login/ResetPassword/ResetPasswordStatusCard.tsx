@@ -13,14 +13,14 @@ export const ResetPasswordStatusCard = ({ status }: ResetPasswordStatusCardProps
   return (
     <Card className="max-w-[400px]">
       <div className="flex flex-col gap-12">
-        <p className="text-xl text-black dark:text-white text-pretty">
+        <p className="text-2xl text-black dark:text-white text-pretty">
           { status === 'success' ?
             "Tu nueva contraseña ya está activa."
             : "Parece que hubo un problema." }
         </p>
-        <p className="text-xl text-black dark:text-white text-pretty">
+        <p className="text-base text-black dark:text-white text-pretty">
           { status === 'success' ?
-            "Inicia sesión y sigue conquistando tus finanzas."
+            "El cambio de contraseña fue exitoso. Tu cuenta está nuevamente disponible."
             : "Vuelve a iniciar el proceso desde “Olvidé mi contraseña” y lo resolvemos en segundos." }
         </p>
         <div>
