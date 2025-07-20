@@ -34,8 +34,21 @@ export const Register = () => {
         <Stepper steps={steps} currentStep={step} />
       </div>
       <div className="flex-1 flex justify-center items-center">
-        { step === 1 && (<PersonalInformation goNext={goNext} updatePersonalInformation={updatePersonalInformation} />) }
-        { step === 2 && (<CompanyDetails goPrev={goPrev} updateCompanyDetails={updateCompanyDetails} goNext={goNext} />) }
+        { step === 1 && (
+          <PersonalInformation
+            personalInformation={formData.current.personalInformation}
+            goNext={goNext}
+            updatePersonalInformation={updatePersonalInformation}
+          />
+        )}
+        { step === 2 && (
+          <CompanyDetails
+            companyDetails={formData.current.companyDetails}
+            goPrev={goPrev}
+            updateCompanyDetails={updateCompanyDetails}
+            goNext={goNext}
+          />
+        )}
       </div>
     </div>
   )

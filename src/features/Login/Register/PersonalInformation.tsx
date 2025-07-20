@@ -7,11 +7,12 @@ import { Button, Card, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 interface PersonalInformationProps {
+  personalInformation: PersonalInformationForm;
   goNext: () => void
   updatePersonalInformation: (data: PersonalInformationForm) => void
 }
 
-export const PersonalInformation = ({ goNext, updatePersonalInformation }: PersonalInformationProps) => {
+export const PersonalInformation = ({ personalInformation, goNext, updatePersonalInformation }: PersonalInformationProps) => {
   const {
     register,
     handleSubmit,
@@ -41,7 +42,7 @@ export const PersonalInformation = ({ goNext, updatePersonalInformation }: Perso
           </div>
           <TextInput
             data-testid="firstName"
-            // defaultValue={personalInformation.firstName}
+            defaultValue={personalInformation.firstName}
             id="firstName" type="text"
             {...register("firstName")}
           />
@@ -55,7 +56,7 @@ export const PersonalInformation = ({ goNext, updatePersonalInformation }: Perso
           </div>
           <TextInput
             id="lastName"
-            // defaultValue={personalInformation.lastName}
+            defaultValue={personalInformation.lastName}
             type="text"
             {...register("lastName")}
           />

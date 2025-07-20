@@ -5,12 +5,13 @@ import { Button, Card, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface CompanyDetailsProps {
+  companyDetails: CompanyDetailsForm
   goPrev: () => void;
   goNext: () => void
   updateCompanyDetails: (data: CompanyDetailsForm) => void
 }
 
-export const CompanyDetails = ({ goPrev, goNext, updateCompanyDetails }: CompanyDetailsProps) => {
+export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDetails }: CompanyDetailsProps) => {
   const {
     register,
     handleSubmit,
@@ -40,7 +41,7 @@ export const CompanyDetails = ({ goPrev, goNext, updateCompanyDetails }: Company
           </div>
           <TextInput
             data-testid="companyName"
-            // defaultValue={personalInformation.firstName}
+            defaultValue={companyDetails.companyName}
             id="companyName"
             type="text"
             {...register("companyName")}
@@ -55,7 +56,7 @@ export const CompanyDetails = ({ goPrev, goNext, updateCompanyDetails }: Company
           </div>
           <TextInput
             id="address"
-            // defaultValue={personalInformation.lastName}
+            defaultValue={companyDetails.address}
             type="text"
             {...register("address")}
           />
@@ -72,6 +73,7 @@ export const CompanyDetails = ({ goPrev, goNext, updateCompanyDetails }: Company
             id="postalCode"
             type="text"
             inputMode="numeric"
+            defaultValue={companyDetails.postalCode}
             {...register("postalCode")}
           />
           { errors?.postalCode?.message && (
