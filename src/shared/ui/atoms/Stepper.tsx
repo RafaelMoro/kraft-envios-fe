@@ -7,7 +7,7 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
   const stepsArray = Array.from(steps)
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 md:px-0">
+    <div className="w-full max-w-3xl mx-auto px-4 md:px-0">
       <ul aria-label="Steps" className="items-center text-gray-600 dark:text-gray-400 font-medium md:flex">
         {stepsArray.map((item, index) => (
           <li key={item} aria-current={currentStep === index + 1 ? "step" : false} className="flex-1 last:flex-none flex md:items-center">
