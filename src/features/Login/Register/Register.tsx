@@ -5,9 +5,11 @@ import { PersonalInformation } from "./PersonalInformation"
 import { useSteps } from "@/shared/hooks/useSteps"
 import { CompanyDetailsForm, FormDataRegister, PersonalInformationForm } from "@/shared/types/login.types"
 import { CompanyDetails } from "./CompanyDetails"
+import { UserRegistration } from "./UserRegistration"
 
 export const Register = () => {
   const { step, goNext, goPrev } = useSteps({ firstStep: 1 })
+  console.log('step', step)
   const steps = new Set(["Información Personal", "Usuario y contraseña", "Resultado"])
 
   const formData = useRef<FormDataRegister>({
@@ -47,6 +49,11 @@ export const Register = () => {
             goPrev={goPrev}
             updateCompanyDetails={updateCompanyDetails}
             goNext={goNext}
+          />
+        )}
+        { step === 3 && (
+          <UserRegistration
+            goPrev={goPrev}
           />
         )}
       </div>
