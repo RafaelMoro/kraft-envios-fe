@@ -29,20 +29,53 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('ForgotPasswordCard', () => {
   it('Show Login Card', () => {
+    const toggleNotification = jest.fn()
+    const updateNotificationMessage = jest.fn()
+    const push = jest.fn()
+
+    render(
+    <ForgotPasswordCardWrapper
+      push={push}
+      toggleNotification={toggleNotification}
+      updateNotificationMessage={updateNotificationMessage}
+    />)
+
+    expect(screen.getByText(/escribe tu correo electrónico y te enviaremos los pasos para restablecer tu contraseña al instante\./i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /volver/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /enviar/i })).toBeInTheDocument()
+  })
+
+  describe('Form validation', () => {
+    beforeEach(() => {
       const toggleNotification = jest.fn()
       const updateNotificationMessage = jest.fn()
       const push = jest.fn()
-  
+
       render(
       <ForgotPasswordCardWrapper
         push={push}
         toggleNotification={toggleNotification}
         updateNotificationMessage={updateNotificationMessage}
       />)
-  
-      expect(screen.getByText(/escribe tu correo electrónico y te enviaremos los pasos para restablecer tu contraseña al instante\./i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /volver/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /enviar/i })).toBeInTheDocument()
     })
+
+    it('Given the email being empty, show an error to the user', async () => {
+      const user = userEvent.setup()
+
+      const signInButton = screen.getByRole('button', { name: /enviar/i })
+      await user.click(signInButton)
+      expect(await screen.findByText(/Por favor, ingrese su correo electrónico/i)).toBeInTheDocument()
+    })
+
+    it('Given a user filling the email wrong, show invalid email error ', async () => {
+      const user = userEvent.setup()
+
+      const emailInput = screen.getByLabelText(/correo electrónico/i)
+      await user.type(emailInput, 'correo-electronico@a')
+      const signInButton = screen.getByRole('button', { name: /enviar/i })
+      await user.click(signInButton)
+      expect(await screen.findByText(/Correo electrónico inválido/i))
+    })
+  })
 })
