@@ -37,7 +37,7 @@ export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDe
       >
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="companyName">Nombre de la compañia</Label>
+            <Label htmlFor="companyName">Nombre de la compañia (Opcional)</Label>
           </div>
           <TextInput
             data-testid="companyName"
@@ -52,7 +52,7 @@ export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDe
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="address">Dirección</Label>
+            <Label htmlFor="address">Dirección (Opcional)</Label>
           </div>
           <TextInput
             id="address"
@@ -75,6 +75,22 @@ export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDe
             inputMode="numeric"
             defaultValue={companyDetails.postalCode}
             {...register("postalCode")}
+          />
+          { errors?.postalCode?.message && (
+            <ErrorMessage>{errors?.postalCode?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="secondPhoneNumber">Segundo número telefónico (Opcional)</Label>
+          </div>
+          <TextInput
+            data-testid="secondPhoneNumber"
+            id="secondPhoneNumber"
+            type="text"
+            inputMode="numeric"
+            defaultValue={companyDetails.secondPhoneNumber}
+            {...register("secondPhoneNumber")}
           />
           { errors?.postalCode?.message && (
             <ErrorMessage>{errors?.postalCode?.message}</ErrorMessage>
