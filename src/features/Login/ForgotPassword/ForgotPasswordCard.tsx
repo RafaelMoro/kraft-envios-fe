@@ -11,8 +11,15 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { useMutation } from "@tanstack/react-query"
 import { forgotPasswordCb } from "@/shared/utils/login.utils"
 import { GeneralError } from '@/shared/types/global.types'
+import { useEffect } from 'react'
+import { ERROR_CREATE_USER_TITLE } from '@/shared/constants/login.constants'
 
-export const ForgotPasswordCard = () => {
+interface ForgotPasswordCardProps {
+  toggleNotification: () => void
+  updateNotificationMessage: (message: string) => void
+}
+
+export const ForgotPasswordCard = ({ toggleNotification, updateNotificationMessage }: ForgotPasswordCardProps) => {
   const router = useRouter()
   const {
     register,
@@ -35,6 +42,15 @@ export const ForgotPasswordCard = () => {
   const onSubmit: SubmitHandler<ForgotPasswordPayload> = async (data) => {
     forgotPwdMutation(data)
   }
+
+  useEffect(() => {
+      if (isError && messageError) {
+        toggleNotification()
+        updateNotificationMessage(ERROR_CREATE_USER_TITLE)
+        console.error(ERROR_CREATE_USER_TITLE)
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isError, messageError])
 
   return (
     <Card className="max-w-[400px]">
