@@ -1,10 +1,26 @@
+import { CompanyDetailsForm, CompanyDetailsSchema } from "@/shared/types/login.types";
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface CompanyDetailsProps {
   goPrev: () => void;
 }
 
 export const CompanyDetails = ({ goPrev }: CompanyDetailsProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CompanyDetailsForm>({
+    resolver: yupResolver(CompanyDetailsSchema)
+  })
+
+  const onSubmit: SubmitHandler<CompanyDetailsForm> = (data) => {
+    console.log('data', data)
+  }
+
   return (
     <Card className="max-w-sm">
       <h5 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
@@ -12,7 +28,7 @@ export const CompanyDetails = ({ goPrev }: CompanyDetailsProps) => {
       </h5>
       <p className="text-xl text-black dark:text-white">Cuéntanos el nombre de tu compañía, su dirección y el código postal para empezar a trabajar juntos.</p>
       <form
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         className="flex max-w-md flex-col gap-4"
       >
         <div>
@@ -24,11 +40,11 @@ export const CompanyDetails = ({ goPrev }: CompanyDetailsProps) => {
             // defaultValue={personalInformation.firstName}
             id="companyName"
             type="text"
-            // {...register("firstName")}
+            {...register("companyName")}
           />
-          {/* { errors?.firstName?.message && (
-            <ErrorMessage>{errors.firstName?.message}</ErrorMessage>
-          )} */}
+          { errors?.companyName?.message && (
+            <ErrorMessage>{errors.companyName?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -38,11 +54,11 @@ export const CompanyDetails = ({ goPrev }: CompanyDetailsProps) => {
             id="address"
             // defaultValue={personalInformation.lastName}
             type="text"
-            // {...register("lastName")}
+            {...register("address")}
           />
-          {/* { errors?.lastName?.message && (
-            <ErrorMessage>{errors?.lastName?.message}</ErrorMessage>
-          )} */}
+          { errors?.address?.message && (
+            <ErrorMessage>{errors?.address?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -53,7 +69,11 @@ export const CompanyDetails = ({ goPrev }: CompanyDetailsProps) => {
             id="postalCode"
             type="text"
             inputMode="numeric"
+            {...register("postalCode")}
           />
+          { errors?.postalCode?.message && (
+            <ErrorMessage>{errors?.postalCode?.message}</ErrorMessage>
+          )}
         </div>
         <Button className="hover:cursor-pointer" outline onClick={goPrev}>Regresar</Button>
         <Button type="submit" className="hover:cursor-pointer">

@@ -13,6 +13,12 @@ export type PersonalInformationForm = {
   lastName: string
 }
 
+export type CompanyDetailsForm = {
+  companyName: string
+  address: string
+  postalCode: string
+}
+
 export type FormDataRegister = {
   personalInformation: PersonalInformationForm
 }
@@ -135,4 +141,10 @@ export const ResetPasswordSchema = object({
 export const PersonalInformationSchema: ObjectSchema<PersonalInformationForm> = object({
   firstName: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
   lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres')
+})
+
+export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object({
+  companyName: string().required('El Nombre de la compañia es requerido').min(2, 'El nombre de la compañia debe tener al menos 2 caracteres'),
+  address: string().required('La dirección es requerida').min(2, 'La dirección debe tener al menos 2 caracteres'),
+  postalCode: string().required('La dirección postal es requerida').min(4, 'La dirección postal debe tener 4 caracteres').max(4, 'La dirección postal debe tener 4 caracteres')
 })
