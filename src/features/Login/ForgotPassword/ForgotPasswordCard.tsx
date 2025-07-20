@@ -1,4 +1,6 @@
-import { Card, Label, TextInput } from "flowbite-react"
+import { LOGIN_ROUTE } from "@/shared/constants/global.constants"
+import { LinkButton } from "@/shared/ui/atoms/LinkButton"
+import { Button, Card, Label, TextInput } from "flowbite-react"
 
 export const ForgotPasswordCard = () => {
   return (
@@ -22,6 +24,16 @@ export const ForgotPasswordCard = () => {
             <ErrorMessage isAnimated>{errors.email?.message}</ErrorMessage>
           )} */}
         </div>
+        <LinkButton className="mt-4" type="secondary" href={LOGIN_ROUTE}>
+          Volver
+        </LinkButton>
+        <Button
+          className="hover:cursor-pointer"
+          // disabled={isPending || isSuccess}
+          type="submit"
+        >
+          Enviar
+        </Button>
       </form>
     </Card>
   )
