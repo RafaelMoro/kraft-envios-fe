@@ -6,9 +6,11 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 interface CompanyDetailsProps {
   goPrev: () => void;
+  goNext: () => void
+  updateCompanyDetails: (data: CompanyDetailsForm) => void
 }
 
-export const CompanyDetails = ({ goPrev }: CompanyDetailsProps) => {
+export const CompanyDetails = ({ goPrev, goNext, updateCompanyDetails }: CompanyDetailsProps) => {
   const {
     register,
     handleSubmit,
@@ -18,7 +20,8 @@ export const CompanyDetails = ({ goPrev }: CompanyDetailsProps) => {
   })
 
   const onSubmit: SubmitHandler<CompanyDetailsForm> = (data) => {
-    console.log('data', data)
+    updateCompanyDetails(data)
+    goNext()
   }
 
   return (

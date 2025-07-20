@@ -21,6 +21,7 @@ export type CompanyDetailsForm = {
 
 export type FormDataRegister = {
   personalInformation: PersonalInformationForm
+  companyDetails: CompanyDetailsForm
 }
 
 //#region Payload / Responses

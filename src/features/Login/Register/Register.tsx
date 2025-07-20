@@ -3,7 +3,7 @@ import { useRef } from "react"
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { PersonalInformation } from "./PersonalInformation"
 import { useSteps } from "@/shared/hooks/useSteps"
-import { FormDataRegister, PersonalInformationForm } from "@/shared/types/login.types"
+import { CompanyDetailsForm, FormDataRegister, PersonalInformationForm } from "@/shared/types/login.types"
 import { CompanyDetails } from "./CompanyDetails"
 
 export const Register = () => {
@@ -15,9 +15,17 @@ export const Register = () => {
       firstName: "",
       lastName: ""
     },
+    companyDetails: {
+      companyName: "",
+      address: "",
+      postalCode: ""
+    }
   })
   const updatePersonalInformation = (data: PersonalInformationForm) => {
     formData.current.personalInformation = data
+  }
+  const updateCompanyDetails = (data: CompanyDetailsForm) => {
+    formData.current.companyDetails = data
   }
 
   return (
@@ -27,7 +35,7 @@ export const Register = () => {
       </div>
       <div className="flex-1 flex justify-center items-center">
         { step === 1 && (<PersonalInformation goNext={goNext} updatePersonalInformation={updatePersonalInformation} />) }
-        { step === 2 && (<CompanyDetails goPrev={goPrev} />) }
+        { step === 2 && (<CompanyDetails goPrev={goPrev} updateCompanyDetails={updateCompanyDetails} goNext={goNext} />) }
       </div>
     </div>
   )
