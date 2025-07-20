@@ -1,5 +1,5 @@
 import { LOGIN_ROUTE } from "@/shared/constants/global.constants";
-import { SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_SPAN, SUCCESS_CREATE_USER_TITLE, SUCESS_CREATE_USER_SECONDARY_MESSAGE } from "@/shared/constants/login.constants";
+import { SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_SPAN, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants";
 import { LinkButton } from "@/shared/ui/atoms/LinkButton";
 import { Button, Card } from "flowbite-react";
 
