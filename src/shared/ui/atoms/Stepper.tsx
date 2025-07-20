@@ -13,7 +13,7 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
           <li key={item} aria-current={currentStep === index + 1 ? "step" : false} className="flex-1 last:flex-none flex md:items-center">
               <div className="flex gap-x-3">
                   <div className="flex items-center flex-col gap-x-2">
-                      <div className={`w-8 h-8 rounded-full border-2 flex-none flex items-center justify-center ${currentStep > index + 1 && "bg-indigo-600 dark:bg-indigo-500 border-indigo-600 dark:border-indigo-500" || currentStep === index + 1 && "border-indigo-600"}`}>
+                      <div className={`w-8 h-8 rounded-full border-2 flex-none flex items-center justify-center ${currentStep > index + 1 && "bg-indigo-600 dark:bg-indigo-400 border-indigo-600 dark:border-indigo-500" || currentStep === index + 1 && "border-indigo-600"}`}>
                           <span className={` ${currentStep > index + 1 && "hidden" || currentStep === index + 1 && "text-indigo-600 dark:text-indigo-400"}`}>
                               {index + 1}
                           </span>
@@ -32,7 +32,7 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
                       </div>
                   </div>
                   <div className="h-8 flex items-center md:h-auto">
-                      <h3 className={`text-sm ${currentStep == index + 1 && "text-indigo-600 dark:text-indigo-500"}`}>
+                      <h3 className={`text-sm ${currentStep == index + 1 && "text-indigo-600 dark:text-indigo-400"}`}>
                           {item}
                       </h3>
                   </div>
