@@ -41,7 +41,7 @@ export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDe
           </div>
           <TextInput
             data-testid="companyName"
-            defaultValue={companyDetails.companyName}
+            defaultValue={companyDetails.companyName ?? ''}
             id="companyName"
             type="text"
             {...register("companyName")}
@@ -56,7 +56,7 @@ export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDe
           </div>
           <TextInput
             id="address"
-            defaultValue={companyDetails.address}
+            defaultValue={companyDetails.address ?? ''}
             type="text"
             {...register("address")}
           />
@@ -89,11 +89,11 @@ export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDe
             id="secondPhoneNumber"
             type="text"
             inputMode="numeric"
-            defaultValue={companyDetails.secondPhoneNumber}
+            defaultValue={companyDetails.secondPhoneNumber ?? ''}
             {...register("secondPhoneNumber")}
           />
-          { errors?.postalCode?.message && (
-            <ErrorMessage>{errors?.postalCode?.message}</ErrorMessage>
+          { errors?.secondPhoneNumber?.message && (
+            <ErrorMessage>{errors?.secondPhoneNumber?.message}</ErrorMessage>
           )}
         </div>
         <Button className="hover:cursor-pointer" outline onClick={goPrev}>Regresar</Button>

@@ -14,10 +14,10 @@ export type PersonalInformationForm = {
 }
 
 export type CompanyDetailsForm = {
-  companyName: string
-  address: string
+  companyName?: string | null | undefined
+  address?: string | null | undefined
   postalCode: string
-  secondPhoneNumber?: string
+  secondPhoneNumber?: string | null | undefined
 }
 
 export type FormDataRegister = {
@@ -145,9 +145,33 @@ export const PersonalInformationSchema: ObjectSchema<PersonalInformationForm> = 
   lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres')
 })
 
-export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object({
-  companyName: string().required('El Nombre de la compañia es requerido').min(2, 'El nombre de la compañia debe tener al menos 2 caracteres'),
-  address: string().required('La dirección es requerida').min(2, 'La dirección debe tener al menos 2 caracteres'),
+export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object().shape({
+  companyName: string()
+    .nullable()
+    .notRequired()
+    .when('companyName', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'El nombre de la compañia debe tener al menos 2 caracteres'),
+    }),
+  address: string()
+    .nullable()
+    .notRequired()
+    .when('address', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'La dirección debe tener al menos 2 caracteres'),
+    }),
   postalCode: string().required('La dirección postal es requerida').min(4, 'La dirección postal debe tener 4 caracteres').max(4, 'La dirección postal debe tener 4 caracteres'),
-  secondPhoneNumber: string().optional(),
-})
+  secondPhoneNumber: string()
+    .nullable()
+    .notRequired()
+    .when('secondPhoneNumber', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+        .min(10, 'El teléfono debe tener 10 dígitos')
+        .max(10, 'El teléfono debe tener 10 dígitos'),
+    }),
+}, [
+  ["companyName", "companyName"],
+  ["address", "address"],
+  ["secondPhoneNumber", "secondPhoneNumber"]
+])
