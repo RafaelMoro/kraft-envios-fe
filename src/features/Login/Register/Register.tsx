@@ -4,20 +4,40 @@ import { useRef } from "react"
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { PersonalInformation } from "./PersonalInformation"
 import { useSteps } from "@/shared/hooks/useSteps"
-import { CompanyDetailsForm, FormDataRegister, PersonalInformationForm, UserPasswordForm } from "@/shared/types/login.types"
+import { CompanyDetailsForm, CreateUserData, CreateUserError, CreateUserPayload, FormDataRegister, PersonalInformationForm, UserPasswordForm } from "@/shared/types/login.types"
 import { CompanyDetails } from "./CompanyDetails"
 import { UserRegistration } from "./UserRegistration"
 import { ResultCard } from "./ResultCard"
 import { SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
+import { useMutation } from "@tanstack/react-query"
+import { AxiosResponse } from "axios"
+import { createUserCb } from "@/shared/utils/login.utils"
 
 export const Register = () => {
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Información Personal", "Datos de su compañia", "Usuario y contraseña", "Resultado"])
 
+  const {
+      mutate: createUserMutation,
+      isError,
+      isPending,
+      isSuccess,
+      error
+    } = useMutation<CreateUserData, AxiosResponse<CreateUserError>, CreateUserPayload>({
+    mutationFn: createUserCb,
+    onError: () => {
+      goNext()
+    },
+    onSuccess: () => {
+      goNext()
+    }
+  })
+
   const formData = useRef<FormDataRegister>({
     personalInformation: {
-      firstName: "",
-      lastName: ""
+      name: "",
+      lastName: "",
+      phone: ""
     },
     companyDetails: {
       companyName: "",
@@ -41,18 +61,19 @@ export const Register = () => {
   }
 
   const handleSubmit = async () => {
-    // try {
-    //   const payload: CreateUserPayload = {
-    //     firstName: formData.current.personalInformation.firstName,
-    //     middleName: formData.current.personalInformation.middleName ?? '',
-    //     lastName: formData.current.personalInformation.lastName,
-    //     email: formData.current.userPasswordInfo.email,
-    //     password: formData.current.userPasswordInfo.password,
-    //   }
-    //   createUserMutation(payload)
-    // } catch (error) {
-    //   console.log('error when registering user', error)
-    // }
+    const payload: CreateUserPayload = {
+      name: formData.current.personalInformation.name,
+      lastName: formData.current.personalInformation.lastName,
+      email: formData.current.userPassword.email,
+      password: formData.current.userPassword.password,
+      phone: formData.current.personalInformation.phone,
+      postalCode: formData.current.companyDetails.postalCode,
+      companyName: formData.current.companyDetails.companyName ?? '',
+      secondPhone: formData.current.companyDetails.secondPhoneNumber ?? '',
+      address: formData.current.companyDetails.address ?? '',
+      role: []
+    }
+      createUserMutation(payload)
   }
 
   return (

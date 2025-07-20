@@ -42,12 +42,12 @@ export const PersonalInformation = ({ personalInformation, goNext, updatePersona
           </div>
           <TextInput
             data-testid="firstName"
-            defaultValue={personalInformation.firstName}
+            defaultValue={personalInformation.name}
             id="firstName" type="text"
-            {...register("firstName")}
+            {...register("name")}
           />
-          { errors?.firstName?.message && (
-            <ErrorMessage>{errors.firstName?.message}</ErrorMessage>
+          { errors?.name?.message && (
+            <ErrorMessage>{errors.name?.message}</ErrorMessage>
           )}
         </div>
         <div>

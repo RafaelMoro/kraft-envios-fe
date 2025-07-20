@@ -9,8 +9,9 @@ export type MessageCardState = {
 }
 
 export type PersonalInformationForm = {
-  firstName: string
+  name: string
   lastName: string
+  phone: string
 }
 
 export type CompanyDetailsForm = {
@@ -104,6 +105,43 @@ export interface ResetPasswordError extends Omit<AxiosError, 'response'> {
   response: AxiosResponse<{
     error: {
       message: string;
+    }
+  }>;
+}
+
+// Create User
+export type CreateUserPayload = {
+  name: string
+  lastName: string
+  email: string
+  password: string
+  phone: string
+  postalCode: string
+  companyName: string
+  secondPhone: string
+  address: string
+  role: []
+}
+
+export interface CreateUserData {
+  data: {
+    user: {
+			email: string;
+			name: string;
+      lastName: string;
+      role: ["user"]
+		}
+  }
+  error: null;
+  message: null;
+  success: boolean;
+  version: string;
+}
+
+export interface CreateUserError extends Omit<AxiosError, 'response'> {
+  response: AxiosResponse<{
+    error: {
+      error: string
     }
   }>;
 }
