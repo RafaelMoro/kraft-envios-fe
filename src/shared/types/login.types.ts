@@ -13,6 +13,10 @@ export type PersonalInformationForm = {
   lastName: string
 }
 
+export type FormDataRegister = {
+  personalInformation: PersonalInformationForm
+}
+
 //#region Payload / Responses
 export interface LoginData {
   data: {

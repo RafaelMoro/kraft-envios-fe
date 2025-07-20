@@ -1,11 +1,23 @@
 "use client"
+import { useRef } from "react"
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { PersonalInformation } from "./PersonalInformation"
 import { useSteps } from "@/shared/hooks/useSteps"
+import { FormDataRegister, PersonalInformationForm } from "@/shared/types/login.types"
 
 export const Register = () => {
   const { step, goNext, goPrev } = useSteps({ firstStep: 1 })
   const steps = new Set(["Información Personal", "Usuario y contraseña", "Resultado"])
+
+  const formData = useRef<FormDataRegister>({
+    personalInformation: {
+      firstName: "",
+      lastName: ""
+    },
+  })
+  const updatePersonalInformation = (data: PersonalInformationForm) => {
+    formData.current.personalInformation = data
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col">
@@ -13,7 +25,7 @@ export const Register = () => {
         <Stepper steps={steps} currentStep={step} />
       </div>
       <div className="flex-1 flex justify-center items-center">
-        { step === 1 && (<PersonalInformation />) }
+        { step === 1 && (<PersonalInformation goNext={goNext} updatePersonalInformation={updatePersonalInformation} />) }
       </div>
     </div>
   )

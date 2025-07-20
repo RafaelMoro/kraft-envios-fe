@@ -8,9 +8,10 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 interface PersonalInformationProps {
   goNext: () => void
+  updatePersonalInformation: (data: PersonalInformationForm) => void
 }
 
-export const PersonalInformation = ({ goNext }: PersonalInformationProps) => {
+export const PersonalInformation = ({ goNext, updatePersonalInformation }: PersonalInformationProps) => {
   const {
     register,
     handleSubmit,
@@ -20,8 +21,7 @@ export const PersonalInformation = ({ goNext }: PersonalInformationProps) => {
   })
 
   const onSubmit: SubmitHandler<PersonalInformationForm> = (data) => {
-    console.log('data', data)
-    // updatePersonalInformation(data)
+    updatePersonalInformation(data)
     goNext()
   }
 
