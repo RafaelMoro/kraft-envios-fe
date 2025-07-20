@@ -20,6 +20,12 @@ export type CompanyDetailsForm = {
   secondPhoneNumber?: string | null | undefined
 }
 
+export type UserPasswordForm = {
+  email: string
+  password: string
+  confirmPassword: string
+}
+
 export type FormDataRegister = {
   personalInformation: PersonalInformationForm
   companyDetails: CompanyDetailsForm
@@ -175,3 +181,9 @@ export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object().s
   ["address", "address"],
   ["secondPhoneNumber", "secondPhoneNumber"]
 ])
+
+export const UserAndPasswordSchema = object().shape({
+  email: emailValidation,
+  password: passwordValidation('Por favor, ingrese una contraseña'),
+  confirmPassword: confirmPasswordValidation,
+})
