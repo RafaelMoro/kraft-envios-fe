@@ -5,6 +5,7 @@ import axios from 'axios';
 import { QueryProviderWrapper } from "@/app/QueryProviderWrapper"
 import { ForgotPasswordCard } from "@/features/Login/ForgotPassword/ForgotPasswordCard"
 import { AppRouterContextProviderMock } from "@/shared/ui/organisms/AppRouterContextProviderMock"
+import { LOGIN_ROUTE } from "@/shared/constants/global.constants";
 
 const ForgotPasswordCardWrapper = ({
   push,
@@ -76,6 +77,38 @@ describe('ForgotPasswordCard', () => {
       const signInButton = screen.getByRole('button', { name: /enviar/i })
       await user.click(signInButton)
       expect(await screen.findByText(/Correo electrónico inválido/i))
+    })
+  })
+
+  describe('Form submission', () => {
+    it('Given a user entering his email correctly, redirect to dashboard', async () => {
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+      const push = jest.fn()
+      const user = userEvent.setup()
+      mockedAxios.post.mockResolvedValue({
+        error: null,
+        message: 'Email sent',
+        success: true,
+        version: "v1.2.0",
+        data: null,
+      })
+
+      render(
+        <ForgotPasswordCardWrapper
+          push={push}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      const emailInput = screen.getByLabelText(/correo electrónico/i)
+      await user.type(emailInput, 'correo-electronico@a.com')
+      const signInButton = screen.getByRole('button', { name: /enviar/i })
+      await user.click(signInButton)
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(LOGIN_ROUTE)
+      }, { timeout: 2000 })
     })
   })
 })

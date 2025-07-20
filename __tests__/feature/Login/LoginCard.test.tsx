@@ -49,7 +49,7 @@ describe('LoginCard', () => {
     expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument()
   })
 
-  describe('Form submission', () => {
+  describe('Form validation', () => {
     beforeEach(() => {
       const toggleNotification = jest.fn()
       const updateNotificationMessage = jest.fn()
