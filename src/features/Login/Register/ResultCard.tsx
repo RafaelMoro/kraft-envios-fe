@@ -41,7 +41,6 @@ export const ResultCard = ({
       <p className="text-xl text-black dark:text-white">
         {SUCCESS_CREATE_USER_MESSAGE}
       </p>
-      <p className="text-xl text-black dark:text-white mb-8">{SUCESS_CREATE_USER_SECONDARY_MESSAGE}</p>
         <div className="w-full flex justify-center">
           <LinkButton href={LOGIN_ROUTE} >
             Regresar al inicio

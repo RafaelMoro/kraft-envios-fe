@@ -11,7 +11,6 @@ export const ERROR_PASSWORD_REQUIRED = 'Por favor, ingrese su contraseña'
 export const SUCCESS_CREATE_USER_TITLE = '¡Bienvenido!';
 export const SUCCESS_CREATE_USER_SPAN = 'Tu cuenta ya está lista'
 export const SUCCESS_CREATE_USER_MESSAGE = '¡Listo! Tu cuenta está activa. Ya puedes cotizar y enviar paquetes a cualquier destino dentro de México.';
-export const SUCESS_CREATE_USER_SECONDARY_MESSAGE = 'Inicia sesión ahora.'
 
 // Error messages after submission
 export const ERROR_UNAUTHORIZED_LOGIN_MESSAGE = 'Correo electronico o contraseña incorrecta.';
