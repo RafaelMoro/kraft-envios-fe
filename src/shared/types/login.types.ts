@@ -2,6 +2,12 @@ import { object, ref, string } from "yup";
 import { ERROR_EMAIL_REQUIRED, ERROR_INVALID_EMAIL, ERROR_PASSWORD_REQUIRED } from "../constants/login.constants";
 import { AxiosError, AxiosResponse } from "axios";
 
+export type ResetPasswordStatus = "idle" | "success" | "error"
+export type MessageCardState = {
+  show: boolean;
+  status: ResetPasswordStatus;
+}
+
 //#region Payload / Responses
 export interface LoginData {
   data: {

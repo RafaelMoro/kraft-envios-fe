@@ -5,17 +5,17 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 
 import { LOGIN_ROUTE } from "@/shared/constants/global.constants"
-import { ResetPasswordData, ResetPasswordError, ResetPasswordFormData, ResetPasswordPayload, ResetPasswordSchema } from "@/shared/types/login.types"
+import { ResetPasswordData, ResetPasswordError, ResetPasswordFormData, ResetPasswordPayload, ResetPasswordSchema, ResetPasswordStatus } from "@/shared/types/login.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { LinkButton } from "@/shared/ui/atoms/LinkButton"
 import { resetPasswordCb } from "@/shared/utils/login.utils"
 
 interface ResetPasswordCardProps{
   slug: string
+  toggleMessageCardState: (state: ResetPasswordStatus) => void
 }
 
-export const ResetPasswordCard = ({ slug }: ResetPasswordCardProps) => {
-  console.log('slug', slug)
+export const ResetPasswordCard = ({ slug, toggleMessageCardState }: ResetPasswordCardProps) => {
   const {
     register,
     handleSubmit,
@@ -27,10 +27,10 @@ export const ResetPasswordCard = ({ slug }: ResetPasswordCardProps) => {
   const { mutate: resetPwdMutation, isError, isPending, isSuccess, isIdle } = useMutation<ResetPasswordData, ResetPasswordError, ResetPasswordPayload>({
     mutationFn: (data) => resetPasswordCb(data, slug),
     onError: () => {
-      // toggleMessageCardState("error")
+      toggleMessageCardState("error")
     },
     onSuccess: () => {
-      // toggleMessageCardState("success")
+      toggleMessageCardState("success")
     }
   })
 
