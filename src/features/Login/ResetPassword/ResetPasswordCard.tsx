@@ -87,7 +87,7 @@ export const ResetPasswordCard = ({ slug, toggleMessageCardState }: ResetPasswor
         >
           { (isIdle || isError) && 'Reestablecer contraseña'}
           { isPending && (<Spinner aria-label="loading reset password budget master" />) }
-          { isSuccess && (<CheckIcon />)}
+          { isSuccess && (<CheckIcon data-testid="check-icon" />)}
         </Button>
       </form>
     </Card>
