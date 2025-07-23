@@ -81,7 +81,7 @@ export const PersonalInformation = ({ personalInformation, goNext, updatePersona
           )}
         </div>
         <LinkButton type="secondary" href={LOGIN_ROUTE} >Volver</LinkButton>
-        <Button type="submit" className="hover:cursor-pointer">
+        <Button data-testid="personal-information-next-button" type="submit" className="hover:cursor-pointer">
           Siguiente
         </Button>
       </form>

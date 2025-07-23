@@ -97,7 +97,7 @@ export const CompanyDetails = ({ companyDetails, goPrev, goNext, updateCompanyDe
           )}
         </div>
         <Button className="hover:cursor-pointer" outline onClick={goPrev}>Regresar</Button>
-        <Button type="submit" className="hover:cursor-pointer">
+        <Button data-testid="company-details-next-button" type="submit" className="hover:cursor-pointer">
           Siguiente
         </Button>
       </form>
