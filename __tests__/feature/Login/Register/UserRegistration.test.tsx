@@ -198,15 +198,13 @@ describe('UserRegistration', () => {
     const submitButton = screen.getByRole('button', { name: /crear cuenta/i })
 
     const validPassword = 'ValidPassword123!@#'
-    await user.type(emailInput, 'notanemail')
+    await user.type(emailInput, 'notanemail@a')
     await user.type(passwordInput, validPassword)
     await user.type(confirmPasswordInput, validPassword)
     await user.click(submitButton)
 
     await waitFor(() => {
-      // Try to find any validation error message
-      const errorMessages = screen.queryAllByText(/inválido|invalid/i)
-      expect(errorMessages.length).toBeGreaterThan(0)
+      expect(screen.getByText('Correo electrónico inválido')).toBeInTheDocument()
     })
 
     expect(mockUpdateUserPasswordInfo).not.toHaveBeenCalled()
