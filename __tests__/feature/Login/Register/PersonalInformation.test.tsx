@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react"
 
 import { PersonalInformation } from "@/features/Login/Register/PersonalInformation"
 import { PersonalInformationForm } from "@/shared/types/login.types"
+import { AppRouterContextProviderMock } from "@/shared/ui/organisms/AppRouterContextProviderMock"
 
 const PersonalInformationWrapper = ({
   goNext,
@@ -17,12 +18,15 @@ const PersonalInformationWrapper = ({
     lastName: "",
     phone: ""
   }
+  const push = jest.fn()
   return (
-    <PersonalInformation
-      goNext={goNext}
-      updatePersonalInformation={updatePersonalInformation}
-      personalInformation={currentPersonalInformation}
-    />
+    <AppRouterContextProviderMock router={{ push }}>
+      <PersonalInformation
+        goNext={goNext}
+        updatePersonalInformation={updatePersonalInformation}
+        personalInformation={currentPersonalInformation}
+      />
+    </AppRouterContextProviderMock>
   )
 }
 
@@ -33,7 +37,7 @@ describe('PersonalInformation', () => {
     render(<PersonalInformationWrapper goNext={mockGoNext} updatePersonalInformation={mockUpdatePersonalInformation} />)
 
     expect(screen.getByTestId('firstName')).toBeInTheDocument()
-    expect(screen.getByTestId('lastName')).toBeInTheDocument()
+    expect(screen.getByLabelText(/apellido/i)).toBeInTheDocument()
     expect(screen.getByTestId('phone')).toBeInTheDocument()
   })
 })
