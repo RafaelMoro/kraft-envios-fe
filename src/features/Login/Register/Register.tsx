@@ -1,5 +1,7 @@
 "use client"
 import { useRef } from "react"
+import { useMutation } from "@tanstack/react-query"
+import { AxiosResponse } from "axios"
 
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { PersonalInformation } from "./PersonalInformation"
@@ -8,9 +10,8 @@ import { CompanyDetailsForm, CreateUserData, CreateUserError, CreateUserPayload,
 import { CompanyDetails } from "./CompanyDetails"
 import { UserRegistration } from "./UserRegistration"
 import { ResultCard } from "./ResultCard"
-import { ERROR_CREATE_USER_MESSAGE, ERROR_CREATE_USER_TITLE, ERROR_EMAIL_IN_USE, ERROR_MESSAGE_EMAIL_IN_USE, ERROR_TITLE_EMAIL_IN_USE, SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
-import { useMutation } from "@tanstack/react-query"
-import { AxiosResponse } from "axios"
+import { ERROR_CREATE_USER_MESSAGE, ERROR_CREATE_USER_TITLE, ERROR_EMAIL_IN_USE, ERROR_MESSAGE_EMAIL_IN_USE,
+  ERROR_TITLE_EMAIL_IN_USE, SUCCESS_CREATE_USER_MESSAGE, SUCCESS_CREATE_USER_TITLE } from "@/shared/constants/login.constants"
 import { createUserCb } from "@/shared/utils/login.utils"
 import { GeneralError } from "@/shared/types/global.types"
 
