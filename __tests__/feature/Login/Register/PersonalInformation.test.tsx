@@ -32,8 +32,8 @@ describe('PersonalInformation', () => {
     const mockUpdatePersonalInformation = jest.fn()
     render(<PersonalInformationWrapper goNext={mockGoNext} updatePersonalInformation={mockUpdatePersonalInformation} />)
 
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/last name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/phone/i)).toBeInTheDocument()
+    expect(screen.getByTestId('firstName')).toBeInTheDocument()
+    expect(screen.getByTestId('lastName')).toBeInTheDocument()
+    expect(screen.getByTestId('phone')).toBeInTheDocument()
   })
 })
