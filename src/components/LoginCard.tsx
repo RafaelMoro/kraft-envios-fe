@@ -7,12 +7,12 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
 
-import { DASHBOARD_ROUTE, FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/constants/global.constants"
+import { DASHBOARD_ROUTE, FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
 import { LinkButton } from "./LinkButton"
 import { LoginData, LoginError, LoginPayload, LoginSchema } from "../shared/types/login.types"
 import { ErrorMessage } from "./ErrorMessage"
 import { LoginMutationCb } from "@/shared/utils/login.utils"
-import { ERROR_CREATE_USER_TITLE, ERROR_UNAUTHORIZED_LOGIN, ERROR_UNAUTHORIZED_LOGIN_MESSAGE } from "@/constants/login.constants"
+import { ERROR_CREATE_USER_TITLE, ERROR_UNAUTHORIZED_LOGIN, ERROR_UNAUTHORIZED_LOGIN_MESSAGE } from "@/shared/constants/login.constants"
 
 interface LoginCardProps {
   toggleNotification: () => void
