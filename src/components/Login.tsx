@@ -1,5 +1,5 @@
 "use client"
-import { useNotification } from "@/hooks/useNotification"
+import { useNotification } from "@/shared/hooks/useNotification"
 import { Notification } from "./Notification"
 import { LoginCard } from "./LoginCard"
 
