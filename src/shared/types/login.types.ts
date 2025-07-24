@@ -1,4 +1,4 @@
-import { object, ref, string } from "yup";
+import { object, ObjectSchema, ref, string } from "yup";
 import { ERROR_EMAIL_REQUIRED, ERROR_INVALID_EMAIL, ERROR_PASSWORD_REQUIRED } from "../constants/login.constants";
 import { AxiosError, AxiosResponse } from "axios";
 
@@ -6,6 +6,31 @@ export type ResetPasswordStatus = "idle" | "success" | "error"
 export type MessageCardState = {
   show: boolean;
   status: ResetPasswordStatus;
+}
+
+export type PersonalInformationForm = {
+  name: string
+  lastName: string
+  phone: string
+}
+
+export type CompanyDetailsForm = {
+  companyName?: string | null | undefined
+  address?: string | null | undefined
+  postalCode: string
+  secondPhoneNumber?: string | null | undefined
+}
+
+export type UserPasswordForm = {
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+export type FormDataRegister = {
+  personalInformation: PersonalInformationForm
+  companyDetails: CompanyDetailsForm
+  userPassword: UserPasswordForm
 }
 
 //#region Payload / Responses
@@ -84,6 +109,43 @@ export interface ResetPasswordError extends Omit<AxiosError, 'response'> {
   }>;
 }
 
+// Create User
+export type CreateUserPayload = {
+  name: string
+  lastName: string
+  email: string
+  password: string
+  phone: string
+  postalCode: string
+  companyName: string
+  secondPhone: string
+  address: string
+  role: []
+}
+
+export interface CreateUserData {
+  data: {
+    user: {
+			email: string;
+			name: string;
+      lastName: string;
+      role: ["user"]
+		}
+  }
+  error: null;
+  message: null;
+  success: boolean;
+  version: string;
+}
+
+export interface CreateUserError extends Omit<AxiosError, 'response'> {
+  response: AxiosResponse<{
+    error: {
+      error: string
+    }
+  }>;
+}
+
 //#region Validation schemas
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
 
@@ -119,6 +181,53 @@ export const ForgotPasswordSchema = object({
 })
 
 export const ResetPasswordSchema = object({
+  password: passwordValidation('Por favor, ingrese una contraseña'),
+  confirmPassword: confirmPasswordValidation,
+})
+
+export const PersonalInformationSchema: ObjectSchema<PersonalInformationForm> = object({
+  name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
+  phone: string()
+    .required('El teléfono es requerido')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+    .min(10, 'El teléfono debe tener 10 dígitos')
+    .max(10, 'El teléfono debe tener 10 dígitos')
+})
+
+export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object().shape({
+  companyName: string()
+    .nullable()
+    .notRequired()
+    .when('companyName', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'El nombre de la compañia debe tener al menos 2 caracteres'),
+    }),
+  address: string()
+    .nullable()
+    .notRequired()
+    .when('address', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'La dirección debe tener al menos 2 caracteres'),
+    }),
+  postalCode: string().required('La dirección postal es requerida').min(4, 'La dirección postal debe tener 4 caracteres').max(4, 'La dirección postal debe tener 4 caracteres'),
+  secondPhoneNumber: string()
+    .nullable()
+    .notRequired()
+    .when('secondPhoneNumber', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+        .min(10, 'El teléfono debe tener 10 dígitos')
+        .max(10, 'El teléfono debe tener 10 dígitos'),
+    }),
+}, [
+  ["companyName", "companyName"],
+  ["address", "address"],
+  ["secondPhoneNumber", "secondPhoneNumber"]
+])
+
+export const UserAndPasswordSchema = object().shape({
+  email: emailValidation,
   password: passwordValidation('Por favor, ingrese una contraseña'),
   confirmPassword: confirmPasswordValidation,
 })
