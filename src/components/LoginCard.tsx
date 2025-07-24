@@ -11,7 +11,7 @@ import { DASHBOARD_ROUTE, FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/consta
 import { LinkButton } from "./LinkButton"
 import { LoginData, LoginError, LoginPayload, LoginSchema } from "../shared/types/login.types"
 import { ErrorMessage } from "./ErrorMessage"
-import { LoginMutationCb } from "@/utils/login.utils"
+import { LoginMutationCb } from "@/shared/utils/login.utils"
 import { ERROR_CREATE_USER_TITLE, ERROR_UNAUTHORIZED_LOGIN, ERROR_UNAUTHORIZED_LOGIN_MESSAGE } from "@/constants/login.constants"
 
 interface LoginCardProps {

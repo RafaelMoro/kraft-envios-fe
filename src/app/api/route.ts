@@ -1,7 +1,7 @@
 import axios from "axios";
 import { type NextRequest } from 'next/server'
 
-import { getCookieProps } from "@/utils/global.utils";
+import { getCookieProps } from "@/shared/utils/global.utils";
 import { encodeAccessToken, saveSessionCookie } from "@/shared/lib/auth.lib";
 import { GeneralError } from "@/shared/types/global.types";
 
