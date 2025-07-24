@@ -8,9 +8,9 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
 
 import { DASHBOARD_ROUTE, FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
-import { LinkButton } from "./LinkButton"
+import { LinkButton } from "../shared/ui/atoms/LinkButton"
 import { LoginData, LoginError, LoginPayload, LoginSchema } from "../shared/types/login.types"
-import { ErrorMessage } from "./ErrorMessage"
+import { ErrorMessage } from "../shared/ui/atoms/ErrorMessage"
 import { LoginMutationCb } from "@/shared/utils/login.utils"
 import { ERROR_CREATE_USER_TITLE, ERROR_UNAUTHORIZED_LOGIN, ERROR_UNAUTHORIZED_LOGIN_MESSAGE } from "@/shared/constants/login.constants"
 
