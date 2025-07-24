@@ -30,10 +30,35 @@ export interface LoginPayload {
   password: string;
 }
 
+// Forgot Password
+export interface ForgotPasswordPayload {
+  email: string
+}
+
+export interface ForgotPasswordData {
+  data: null
+  error: null;
+  message: 'Email Sent';
+  success: boolean;
+  version: string;
+}
+
+export interface ForgotPasswordError extends Omit<AxiosError, 'response'> {
+  response: AxiosResponse<{
+    error: {
+      message: string;
+    }
+  }>;
+}
+
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
 const emailValidation = string().email(ERROR_INVALID_EMAIL).required(ERROR_EMAIL_REQUIRED).matches(emailRegex, ERROR_INVALID_EMAIL);
 
 export const LoginSchema = object({
   email: emailValidation,
   password: string().required(ERROR_PASSWORD_REQUIRED)
+})
+
+export const ForgotPasswordSchema = object({
+  email: emailValidation
 })
