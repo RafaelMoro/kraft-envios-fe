@@ -1,3 +1,9 @@
+## v0.4.0 (2025-07-24)
+
+### Pull Requests
+[#9](https://github.com/RafaelMoro/kraft-envios-fe/pull/9) | Add all tests login page
+
+
 ## v0.3.0 (2025-07-24)
 
 ### Pull Requests
