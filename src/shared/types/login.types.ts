@@ -1,5 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { object, ref, string } from "yup";
+import { object, ObjectSchema, ref, string } from "yup";
 import { ERROR_EMAIL_REQUIRED, ERROR_INVALID_EMAIL, ERROR_PASSWORD_REQUIRED } from "../constants/login.constants";
 
 export type ResetPasswordStatus = "idle" | "success" | "error"
@@ -84,6 +84,26 @@ export interface ResetPasswordError extends Omit<AxiosError, 'response'> {
   }>;
 }
 
+// Register
+export type PersonalInformationForm = {
+  name: string
+  lastName: string
+  phone: string
+}
+
+export type CompanyDetailsForm = {
+  companyName?: string | null | undefined
+  address?: string | null | undefined
+  postalCode: string
+  secondPhoneNumber?: string | null | undefined
+}
+
+export type UserPasswordForm = {
+  email: string
+  password: string
+  confirmPassword: string
+}
+
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
 const emailValidation = string().email(ERROR_INVALID_EMAIL).required(ERROR_EMAIL_REQUIRED).matches(emailRegex, ERROR_INVALID_EMAIL);
 
@@ -117,6 +137,53 @@ export const ForgotPasswordSchema = object({
 })
 
 export const ResetPasswordSchema = object({
+  password: passwordValidation('Por favor, ingrese una contraseña'),
+  confirmPassword: confirmPasswordValidation,
+})
+
+export const PersonalInformationSchema: ObjectSchema<PersonalInformationForm> = object({
+  name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
+  phone: string()
+    .required('El teléfono es requerido')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+    .min(10, 'El teléfono debe tener 10 dígitos')
+    .max(10, 'El teléfono debe tener 10 dígitos')
+})
+
+export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object().shape({
+  companyName: string()
+    .nullable()
+    .notRequired()
+    .when('companyName', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'El nombre de la compañia debe tener al menos 2 caracteres'),
+    }),
+  address: string()
+    .nullable()
+    .notRequired()
+    .when('address', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'La dirección debe tener al menos 2 caracteres'),
+    }),
+  postalCode: string().required('La dirección postal es requerida').min(4, 'La dirección postal debe tener 4 caracteres').max(4, 'La dirección postal debe tener 4 caracteres'),
+  secondPhoneNumber: string()
+    .nullable()
+    .notRequired()
+    .when('secondPhoneNumber', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+        .min(10, 'El teléfono debe tener 10 dígitos')
+        .max(10, 'El teléfono debe tener 10 dígitos'),
+    }),
+}, [
+  ["companyName", "companyName"],
+  ["address", "address"],
+  ["secondPhoneNumber", "secondPhoneNumber"]
+])
+
+export const UserAndPasswordSchema = object().shape({
+  email: emailValidation,
   password: passwordValidation('Por favor, ingrese una contraseña'),
   confirmPassword: confirmPasswordValidation,
 })
