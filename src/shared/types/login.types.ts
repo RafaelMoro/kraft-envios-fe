@@ -1,5 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { object, string } from "yup";
+import { ERROR_EMAIL_REQUIRED, ERROR_INVALID_EMAIL, ERROR_PASSWORD_REQUIRED } from "../constants/login.constants";
 
 export interface LoginData {
   data: {
@@ -30,9 +31,9 @@ export interface LoginPayload {
 }
 
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
-const emailValidation = string().email('invalid email').required('email required').matches(emailRegex, 'invalid email');
+const emailValidation = string().email(ERROR_INVALID_EMAIL).required(ERROR_EMAIL_REQUIRED).matches(emailRegex, ERROR_INVALID_EMAIL);
 
 export const LoginSchema = object({
   email: emailValidation,
-  password: string().required('password required')
+  password: string().required(ERROR_PASSWORD_REQUIRED)
 })
