@@ -1,3 +1,9 @@
+## v0.7.0 (2025-07-24)
+
+### Pull Requests
+[#12](https://github.com/RafaelMoro/kraft-envios-fe/pull/12) | Add register
+
+
 ## v0.6.0 (2025-07-24)
 
 ### Pull Requests
