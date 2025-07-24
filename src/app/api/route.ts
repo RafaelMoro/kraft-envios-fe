@@ -2,8 +2,8 @@ import axios from "axios";
 import { type NextRequest } from 'next/server'
 
 import { getCookieProps } from "@/utils/global.utils";
-import { encodeAccessToken, saveSessionCookie } from "@/lib/auth.lib";
-import { GeneralError } from "@/types/global.types";
+import { encodeAccessToken, saveSessionCookie } from "@/shared/lib/auth.lib";
+import { GeneralError } from "@/shared/types/global.types";
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,4 +1,4 @@
-import { CookieObject } from "@/types/global.types";
+import { CookieObject } from "@/shared/types/global.types";
 
 export function getCookieProps(setCookieStr: string): CookieObject {
   const parts = setCookieStr.split(";").map(s => s.trim());
