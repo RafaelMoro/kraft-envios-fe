@@ -1,6 +1,6 @@
 "use client"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { Notification } from "../shared/ui/atoms/Notification"
+import { Notification } from "../../shared/ui/atoms/Notification"
 import { LoginCard } from "./LoginCard"
 
 export const Login = () => {
