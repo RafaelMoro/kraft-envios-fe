@@ -1,5 +1,6 @@
 // Be errors validations
 export const ERROR_UNAUTHORIZED_LOGIN = 'Email or Password incorrect.'
+export const ERROR_EMAIL_IN_USE = 'Try with other email.'
 
 // Input validations
 export const ERROR_INVALID_EMAIL = 'Correo electrónico inválido';
@@ -14,3 +15,6 @@ export const SUCCESS_CREATE_USER_MESSAGE = '¡Listo! Tu cuenta está activa. Ya 
 // Error messages after submission
 export const ERROR_UNAUTHORIZED_LOGIN_MESSAGE = 'Correo electronico o contraseña incorrecta.';
 export const ERROR_CREATE_USER_TITLE = 'Oops! Algo no salió como esperabamos.';
+export const ERROR_CREATE_USER_MESSAGE = 'Por favor intente nuevamente más tarde.';
+export const ERROR_TITLE_EMAIL_IN_USE = 'No puede usar este correo electrónico';
+export const ERROR_MESSAGE_EMAIL_IN_USE = 'Intente nuevamente con otro correo electrónico'

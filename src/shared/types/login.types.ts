@@ -104,6 +104,50 @@ export type UserPasswordForm = {
   confirmPassword: string
 }
 
+export type FormDataRegister = {
+  personalInformation: PersonalInformationForm
+  companyDetails: CompanyDetailsForm
+  userPassword: UserPasswordForm
+}
+
+export interface CreateUserData {
+  data: {
+    user: {
+			email: string;
+			name: string;
+      lastName: string;
+      role: ["user"]
+		}
+  }
+  error: null;
+  message: null;
+  success: boolean;
+  version: string;
+}
+
+export interface CreateUserError extends Omit<AxiosError, 'response'> {
+  response: AxiosResponse<{
+    error: {
+      error: string
+    }
+  }>;
+}
+
+export type CreateUserPayload = {
+  name: string
+  lastName: string
+  email: string
+  password: string
+  phone: string
+  postalCode: string
+  companyName: string
+  secondPhone: string
+  address: string
+  role: []
+}
+
+//#region Validation schemas
+
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
 const emailValidation = string().email(ERROR_INVALID_EMAIL).required(ERROR_EMAIL_REQUIRED).matches(emailRegex, ERROR_INVALID_EMAIL);
 
