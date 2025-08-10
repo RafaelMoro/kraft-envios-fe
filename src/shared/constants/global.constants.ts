@@ -4,7 +4,11 @@ export const COOKIE_USER_INFO_KEY = 'user-info'
 export const DASHBOARD_SCREEN_KEY = 'dashboard-screen'
 
 // API routes
-export const SIGN_OUT_ENDPOINT = '/api/auth/sign-out'
+export const LOGIN_API_ENDPOINT = '/api'
+export const FORGOT_PASSWORD_API_ENDPOINT = '/api/auth/forgot-password'
+export const RESET_PASSWORD_API_ENDPOINT ='/api/auth/reset-password'
+export const CREATE_USER_API_ENDPOINT = '/api/auth/create-user'
+export const SIGN_OUT_API_ENDPOINT = '/api/auth/sign-out'
 
 // Routes
 export const REGISTER_ROUTE = '/register';

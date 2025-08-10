@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "flowbite-react"
 
-import { LOGIN_ROUTE, SIGN_OUT_ENDPOINT } from '@/shared/constants/global.constants'
+import { LOGIN_ROUTE, SIGN_OUT_API_ENDPOINT } from '@/shared/constants/global.constants'
 import { LoginData } from '@/shared/types/login.types'
 import { DashboardScreens } from '@/shared/types/dashboard.types'
 import { saveDashboardScreen } from '@/shared/lib/preferences.lib'
@@ -26,7 +26,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
   }
 
   const handleSignOut = async () => {
-    await fetch(SIGN_OUT_ENDPOINT)
+    await fetch(SIGN_OUT_API_ENDPOINT)
     router.push(LOGIN_ROUTE)
   }
 
