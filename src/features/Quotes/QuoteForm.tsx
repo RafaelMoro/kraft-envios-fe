@@ -1,15 +1,20 @@
 "use client"
-
-import { GeneralApiError } from "@/shared/types/global.types"
-import { GetQuoteData, GetQuoteForm, QuoteFormSchema } from "@/shared/types/quotes.types"
-import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
 import { Button, Label, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
-export const QuoteForm = () => {
+import { GeneralApiError } from "@/shared/types/global.types"
+import { GetQuoteData, GetQuoteForm, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
+import { useEffect } from "react"
+
+interface QuoteFormProps {
+  updateQuotes: (quotesGotten: Quote[]) => void
+}
+
+export const QuoteForm = ({ updateQuotes }: QuoteFormProps) => {
   const {
     register,
     handleSubmit,
@@ -21,11 +26,19 @@ export const QuoteForm = () => {
   const { mutate: getQuotes, isPending, data } = useMutation<GetQuoteData, GeneralApiError, GetQuoteForm>({
     mutationFn: getQuoteMutationCb,
   })
-  console.log('data', data)
+  // TODO: Change this
+  const quotesFetched = (data as any)?.data?.data?.data?.quotes
 
   const onSubmit: SubmitHandler<GetQuoteForm> = (data) => {
     getQuotes(data)
   }
+
+  useEffect(() => {
+    if (quotesFetched) {
+      updateQuotes(quotesFetched)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quotesFetched])
 
   return (
     <form
