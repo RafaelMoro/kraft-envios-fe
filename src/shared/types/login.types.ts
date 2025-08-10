@@ -14,7 +14,7 @@ export interface LoginData {
   data: {
     user: {
       email: string;
-      firstName: string;
+      name: string;
       lastName: string;
       role: UserRoles[]
     }

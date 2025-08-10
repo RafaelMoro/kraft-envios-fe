@@ -3,8 +3,13 @@
 import { useRouter } from 'next/navigation'
 import { Button } from "flowbite-react"
 import { LOGIN_ROUTE } from '@/shared/constants/global.constants'
+import { LoginData } from '@/shared/types/login.types'
 
-export const Dashboard = () => {
+export interface DashboardProps {
+  userInfo: LoginData | null
+}
+
+export const Dashboard = ({ userInfo }: DashboardProps) => {
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -18,7 +23,7 @@ export const Dashboard = () => {
         <Button color="red" outline onClick={handleSignOut}>Cerrar sesión</Button>
       </aside>
       <main>
-        <h1 className="text-3xl font-bold text-center">Bienvenido</h1>
+        <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       </main>
     </div>
   )

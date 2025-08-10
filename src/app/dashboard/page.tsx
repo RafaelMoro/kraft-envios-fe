@@ -1,7 +1,12 @@
 import { Dashboard } from "@/features/Dashboard/Dashboard";
+import { getUserInfo } from "@/shared/lib/auth.lib";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const [ userInfo ] = await Promise.all([
+    getUserInfo(),
+  ])
+
   return (
-    <Dashboard />
+    <Dashboard userInfo={userInfo} />
   )
 }
