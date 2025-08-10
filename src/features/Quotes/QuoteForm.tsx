@@ -1,11 +1,27 @@
 "use client"
 
+import { GetQuoteForm, QuoteFormSchema } from "@/shared/types/quotes.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form"
 
 export const QuoteForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<GetQuoteForm>({
+    resolver: yupResolver(QuoteFormSchema)
+  })
+
+  const onSubmit: SubmitHandler<GetQuoteForm> = (data) => {
+    console.log('data', data)
+  }
+
   return (
     <form
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
       className="grid grid-cols-3 grid-rows-2 gap-4"
     >
       <div>
@@ -15,11 +31,12 @@ export const QuoteForm = () => {
         <TextInput
           id="originPostalCode"
           type="text"
-          // {...register("email")}
+          inputMode="numeric"
+          {...register("originPostalCode")}
         />
-        {/* { errors.email?.message && (
-          <ErrorMessage>{errors.email?.message}</ErrorMessage>
-        )} */}
+        { errors.originPostalCode?.message && (
+          <ErrorMessage>{errors.originPostalCode?.message}</ErrorMessage>
+        )}
       </div>
       <div>
         <div className="mb-2 block">
@@ -28,11 +45,12 @@ export const QuoteForm = () => {
         <TextInput
           id="destinationPostalCode"
           type="text"
-          // {...register("email")}
+          inputMode="numeric"
+          {...register("destinationPostalCode")}
         />
-        {/* { errors.email?.message && (
-          <ErrorMessage>{errors.email?.message}</ErrorMessage>
-        )} */}
+        { errors.destinationPostalCode?.message && (
+          <ErrorMessage>{errors.destinationPostalCode?.message}</ErrorMessage>
+        )}
       </div>
       <div>
         <div className="mb-2 block">
@@ -41,11 +59,12 @@ export const QuoteForm = () => {
         <TextInput
           id="weight"
           type="number"
-          // {...register("email")}
+          required
+          {...register("weight")}
         />
-        {/* { errors.email?.message && (
-          <ErrorMessage>{errors.email?.message}</ErrorMessage>
-        )} */}
+        { errors.weight?.message && (
+          <ErrorMessage>{errors.weight?.message}</ErrorMessage>
+        )}
       </div>
       <div>
         <div className="mb-2 block">
@@ -54,11 +73,12 @@ export const QuoteForm = () => {
         <TextInput
           id="length"
           type="number"
-          // {...register("email")}
+          required
+          {...register("length")}
         />
-        {/* { errors.email?.message && (
-          <ErrorMessage>{errors.email?.message}</ErrorMessage>
-        )} */}
+        { errors.length?.message && (
+          <ErrorMessage>{errors.length?.message}</ErrorMessage>
+        )}
       </div>
       <div>
         <div className="mb-2 block">
@@ -67,11 +87,12 @@ export const QuoteForm = () => {
         <TextInput
           id="height"
           type="number"
-          // {...register("email")}
+          required
+          {...register("height")}
         />
-        {/* { errors.email?.message && (
-          <ErrorMessage>{errors.email?.message}</ErrorMessage>
-        )} */}
+        { errors.height?.message && (
+          <ErrorMessage>{errors.height?.message}</ErrorMessage>
+        )}
       </div>
       <div>
         <div className="mb-2 block">
@@ -80,11 +101,12 @@ export const QuoteForm = () => {
         <TextInput
           id="width"
           type="number"
-          // {...register("email")}
+          required
+          {...register("width")}
         />
-        {/* { errors.email?.message && (
-          <ErrorMessage>{errors.email?.message}</ErrorMessage>
-        )} */}
+        { errors.width?.message && (
+          <ErrorMessage>{errors.width?.message}</ErrorMessage>
+        )}
       </div>
       <Button
         className="hover:cursor-pointer"
