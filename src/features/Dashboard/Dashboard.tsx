@@ -9,6 +9,8 @@ import { DashboardScreens } from '@/shared/types/dashboard.types'
 import { saveDashboardScreen } from '@/shared/lib/preferences.lib'
 import { RiArticleLine, RiMoneyDollarBoxLine } from '@remixicon/react'
 import { DashboardAsideLink } from './DashboardAsideLink'
+import { Quotes } from './subscreens/Quotes'
+import { Order } from './subscreens/Order'
 
 export interface DashboardProps {
   userInfo: LoginData | null
@@ -43,9 +45,8 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
           </DashboardAsideLink>
         </nav>
       </aside>
-      <main className='p-4'>
-        <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
-      </main>
+      { screen === 'quotes' && (<Quotes userInfo={userInfo} />) }
+      { screen === 'overview' && (<Order userInfo={userInfo} />) }
     </div>
   )
 }
