@@ -33,8 +33,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
   return (
     <div className="w-full min-h-screen max-w-screen-2xl flex mx-auto my-0">
       <aside className="w-72 border-r border-r-gray-600 p-4">
-        <Button color="red" outline onClick={handleSignOut}>Cerrar sesión</Button>
-        <nav className="mt-10 flex flex-col">
+        <nav className="mt-10 flex flex-col mb-10">
           <DashboardAsideLink isSelected={screen === 'quotes'} onClickCb={() => updateScreen('quotes')}>
             <RiMoneyDollarBoxLine />
             Cotizaciones
@@ -44,6 +43,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
             Ver guias
           </DashboardAsideLink>
         </nav>
+        <Button color="red" outline onClick={handleSignOut}>Cerrar sesión</Button>
       </aside>
       { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
       { screen === 'overview' && (<Order userInfo={userInfo} />) }
