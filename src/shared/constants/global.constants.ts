@@ -1,5 +1,6 @@
 // Cookie keys
 export const COOKIE_SESSION_KEY = 'session'
+export const COOKIE_USER_INFO_KEY = 'user-info'
 
 // Routes
 export const REGISTER_ROUTE = '/register';
