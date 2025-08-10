@@ -43,7 +43,7 @@ describe('Register', () => {
 
     const postalCodeInput = screen.getByLabelText(/código postal/i)
     const nextButton2 = screen.getByTestId('company-details-next-button')
-    await user.type(postalCodeInput, '1234')
+    await user.type(postalCodeInput, '12345')
     await user.click(nextButton2)
 
     const emailInput = screen.getByLabelText(/correo electrónico/i)
@@ -104,7 +104,7 @@ describe('Register', () => {
 
     const postalCodeInput = screen.getByLabelText(/código postal/i)
     const nextButton2 = screen.getByTestId('company-details-next-button')
-    await user.type(postalCodeInput, '1234')
+    await user.type(postalCodeInput, '12345')
     await user.click(nextButton2)
 
     const emailInput = screen.getByLabelText(/correo electrónico/i)
@@ -123,7 +123,7 @@ describe('Register', () => {
     expect(goBackLogin).toBeInTheDocument()
   })
 
-  it('Given a user registering his user and something goes wrong, show error', async () => {
+  it('Given a user registering his user and the email is in use, show error', async () => {
     const user = userEvent.setup()
     mockedAxios.post.mockRejectedValue({
       code: 'ERR_BAD_REQUEST',
@@ -165,7 +165,7 @@ describe('Register', () => {
 
     const postalCodeInput = screen.getByLabelText(/código postal/i)
     const nextButton2 = screen.getByTestId('company-details-next-button')
-    await user.type(postalCodeInput, '1234')
+    await user.type(postalCodeInput, '12345')
     await user.click(nextButton2)
 
     const emailInput = screen.getByLabelText(/correo electrónico/i)
