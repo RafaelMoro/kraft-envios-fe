@@ -210,7 +210,7 @@ export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object().s
       is: (value: string) => value?.length,
       then: (rule) => rule.min(2, 'La dirección debe tener al menos 2 caracteres'),
     }),
-  postalCode: string().required('La dirección postal es requerida').min(4, 'La dirección postal debe tener 4 caracteres').max(4, 'La dirección postal debe tener 4 caracteres'),
+  postalCode: string().required('La dirección postal es requerida').min(5, 'La dirección postal debe tener 5 caracteres').max(5, 'La dirección postal debe tener 5 caracteres'),
   secondPhoneNumber: string()
     .nullable()
     .notRequired()
