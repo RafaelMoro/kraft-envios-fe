@@ -1,3 +1,5 @@
+import { AxiosError, AxiosResponse } from "axios";
+
 export type GeneralError = {
   response: {
     data: {
@@ -6,6 +8,12 @@ export type GeneralError = {
       }
     }
   }
+}
+
+export interface GeneralApiError extends Omit<AxiosError, 'response'> {
+  response: AxiosResponse<{
+    message: string;
+  }>;
 }
 
 export type CookieObject = {

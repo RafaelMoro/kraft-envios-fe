@@ -1,9 +1,12 @@
 "use client"
 
-import { GetQuoteForm, QuoteFormSchema } from "@/shared/types/quotes.types"
+import { GeneralApiError } from "@/shared/types/global.types"
+import { GetQuoteData, GetQuoteForm, QuoteFormSchema } from "@/shared/types/quotes.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { Button, Label, TextInput } from "flowbite-react"
+import { useMutation } from "@tanstack/react-query"
+import { Button, Label, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 export const QuoteForm = () => {
@@ -15,8 +18,13 @@ export const QuoteForm = () => {
     resolver: yupResolver(QuoteFormSchema)
   })
 
+  const { mutate: getQuotes, isPending, data } = useMutation<GetQuoteData, GeneralApiError, GetQuoteForm>({
+    mutationFn: getQuoteMutationCb,
+  })
+  console.log('data', data)
+
   const onSubmit: SubmitHandler<GetQuoteForm> = (data) => {
-    console.log('data', data)
+    getQuotes(data)
   }
 
   return (
@@ -110,12 +118,9 @@ export const QuoteForm = () => {
       </div>
       <Button
         className="hover:cursor-pointer"
-        // disabled={isPending || isSuccess}
+        disabled={isPending}
         type="submit">
-          Cotizar
-        {/* { (isIdle || isError) && 'Iniciar sesión'}
-        { isPending && (<Spinner aria-label="loading login kraft envios" />) }
-        { isSuccess && (<CheckIcon />)} */}
+        { isPending ? (<Spinner aria-label="loading get quotes kraft envios" />) : 'Cotizar' }
       </Button>
     </form>
   )

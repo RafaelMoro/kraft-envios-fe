@@ -1,5 +1,23 @@
 import { number, object, ObjectSchema, string } from "yup"
 
+export interface Quote {
+  id: string
+  service: string
+  total: number
+  source: string
+}
+
+export interface GetQuoteData {
+  data: {
+    quotes: Quote[]
+  }
+  error: null;
+  message: null;
+  messages: string[]
+  success: boolean;
+  version: string;
+}
+
 export type GetQuoteForm = {
   originPostalCode: string
   destinationPostalCode: string
