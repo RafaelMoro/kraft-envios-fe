@@ -5,7 +5,7 @@ interface QuotesProps {
   userInfo: LoginData | null
 }
 
-export const Quotes = ({ userInfo }: QuotesProps) => {
+export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   return (
     <main className='w-full p-4 flex flex-col gap-5 align-center'>
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>

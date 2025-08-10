@@ -9,7 +9,7 @@ import { DashboardScreens } from '@/shared/types/dashboard.types'
 import { saveDashboardScreen } from '@/shared/lib/preferences.lib'
 import { RiArticleLine, RiMoneyDollarBoxLine } from '@remixicon/react'
 import { DashboardAsideLink } from './DashboardAsideLink'
-import { Quotes } from './subscreens/Quotes'
+import { QuotesSubscreen } from './subscreens/QuotesSubscreen'
 import { Order } from './subscreens/Order'
 
 export interface DashboardProps {
@@ -45,7 +45,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
           </DashboardAsideLink>
         </nav>
       </aside>
-      { screen === 'quotes' && (<Quotes userInfo={userInfo} />) }
+      { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
       { screen === 'overview' && (<Order userInfo={userInfo} />) }
     </div>
   )
