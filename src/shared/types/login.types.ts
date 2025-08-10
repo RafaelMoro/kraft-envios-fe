@@ -155,7 +155,7 @@ const passwordValidation = (requiredMessage: string, onlyRequired = false) => {
   if (onlyRequired) return string().required(requiredMessage);
   return string()
     .required(requiredMessage)
-    .min(16, 'La contraseña debe tener al menos 16 caracteres. Ingrese más caracteres')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres. Ingrese más caracteres')
     .max(40, 'La contraseña puede tener un máximo de 40 caracteres. Ha excedido los 40 caracteres')
     .matches(/[A-Z]+/, 'La contraseña debe contener al menos 1 mayúscula')
     .matches(/[a-z]+/, 'La contraseña debe contener al menos 1 minúscula')

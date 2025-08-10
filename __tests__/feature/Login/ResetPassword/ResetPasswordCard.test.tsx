@@ -56,7 +56,7 @@ describe('ResetPasswordCard', () => {
       const resetButton = screen.getByRole('button', { name: /reestablecer contraseña/i })
       await user.type(pwdInput, '1234')
       await user.click(resetButton)
-      expect(await screen.findByText(/La contraseña debe tener al menos 16 caracteres. Ingrese más caracteres/i)).toBeInTheDocument()
+      expect(await screen.findByText(/La contraseña debe tener al menos 8 caracteres. Ingrese más caracteres/i)).toBeInTheDocument()
     })
 
     it('Given a user entering a password only lower case characters, show error validation to enter 1 upper case character', async () => {
