@@ -1,5 +1,6 @@
 import { SignJWT } from "jose"
 import { cookies } from "next/headers"
+import { COOKIE_SESSION_KEY } from "../constants/global.constants"
 
 export const encodeAccessToken = async (cookieValue: string): Promise<string> => {
   const secretKey = process.env.SESSION_SECRET_KEY!
@@ -14,9 +15,17 @@ export const encodeAccessToken = async (cookieValue: string): Promise<string> =>
 }
 
 export const saveSessionCookie = async (session: string): Promise<void> => {
-  await cookies().set('session', session, {
+  await cookies().set(COOKIE_SESSION_KEY, session, {
     httpOnly: true,
     secure: true,
     sameSite: 'strict',
   })
+}
+
+export const deleteSession = async () => {
+  await cookies().delete(COOKIE_SESSION_KEY)
+}
+
+export const signOut = async () => {
+  await deleteSession()
 }

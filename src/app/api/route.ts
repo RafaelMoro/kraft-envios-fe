@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const payload = await request.json()
     const uri = `${process.env.BACKEND_URI}/auth/`
     const res = await axios.post(uri, payload)
+    console.log('data', res?.data)
     const cookiesReceived = res.headers['set-cookie']
 
     if (cookiesReceived) {
