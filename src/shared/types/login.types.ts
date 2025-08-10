@@ -155,7 +155,7 @@ const passwordValidation = (requiredMessage: string, onlyRequired = false) => {
   if (onlyRequired) return string().required(requiredMessage);
   return string()
     .required(requiredMessage)
-    .min(16, 'La contraseña debe tener al menos 16 caracteres. Ingrese más caracteres')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres. Ingrese más caracteres')
     .max(40, 'La contraseña puede tener un máximo de 40 caracteres. Ha excedido los 40 caracteres')
     .matches(/[A-Z]+/, 'La contraseña debe contener al menos 1 mayúscula')
     .matches(/[a-z]+/, 'La contraseña debe contener al menos 1 minúscula')
@@ -210,7 +210,7 @@ export const CompanyDetailsSchema: ObjectSchema<CompanyDetailsForm> = object().s
       is: (value: string) => value?.length,
       then: (rule) => rule.min(2, 'La dirección debe tener al menos 2 caracteres'),
     }),
-  postalCode: string().required('La dirección postal es requerida').min(4, 'La dirección postal debe tener 4 caracteres').max(4, 'La dirección postal debe tener 4 caracteres'),
+  postalCode: string().required('La dirección postal es requerida').min(5, 'La dirección postal debe tener 5 caracteres').max(5, 'La dirección postal debe tener 5 caracteres'),
   secondPhoneNumber: string()
     .nullable()
     .notRequired()
