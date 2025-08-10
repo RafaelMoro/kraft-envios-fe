@@ -1,17 +1,17 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { type NextRequest, NextResponse } from 'next/server'
 
 import { getCookieProps } from "@/shared/utils/global.utils";
 import { encodeAccessToken, saveSessionCookie } from "@/shared/lib/auth.lib";
 import { GeneralError } from "@/shared/types/global.types";
 import { COOKIE_SESSION_KEY } from "@/shared/constants/global.constants";
+import { LoginData } from "@/shared/types/login.types";
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json()
     const uri = `${process.env.BACKEND_URI}/auth/`
-    const res = await axios.post(uri, payload)
-    console.log('data', res?.data)
+    const res: AxiosResponse<LoginData> = await axios.post(uri, payload)
     const cookiesReceived = res.headers['set-cookie']
 
     if (cookiesReceived) {

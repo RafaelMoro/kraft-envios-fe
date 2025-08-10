@@ -12,3 +12,5 @@ export type CookieObject = {
   name: string;
   value: string;
 };
+
+export type UserRoles = 'user' | 'admin'
