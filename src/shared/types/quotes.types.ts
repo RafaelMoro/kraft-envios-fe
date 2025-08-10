@@ -7,6 +7,10 @@ export interface Quote {
   source: string
 }
 
+export interface QuoteUI extends Quote {
+  amountFormatted: string
+}
+
 export interface GetQuoteData {
   data: {
     quotes: Quote[]

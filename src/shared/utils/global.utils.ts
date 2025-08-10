@@ -9,3 +9,12 @@ export function getCookieProps(setCookieStr: string): CookieObject {
 
   return { name, value };
 }
+
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+});
+
+export const formatNumberToCurrency = (amount: number): string =>
+  formatter.format(amount);
