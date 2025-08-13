@@ -14,22 +14,20 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
       <article
       className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
       >
-        <div className="h-full p-4 flex justify-center gap-6">
-          <div className="flex flex-col gap-2">
-            <div className="inline-flex gap-2 justify-self-end">
-              <RiTruckLine size={28} />
-              <h5 className="text-xl text-gray-900 dark:text-white">
-                {quote.service}
-              </h5>
-            </div>
-            <div className="inline-flex gap-2">
-              <RiBuilding3Line size={16} />
-              <p className="text-xs text-gray-700 dark:text-gray-400">
-                {quote.source}
-              </p>
-            </div>
+        <div className="h-full p-4 grid grid-card-quote grid-cols-3 gap-y-2">
+          <div className="col-start-2 col-end-3 row-start-1 row-end-2 inline-flex gap-2">
+            <RiTruckLine size={28} />
+            <h5 className="text-xl text-gray-900 dark:text-white">
+              {quote.service}
+            </h5>
           </div>
-          <p className="font-semibold text-2xl">
+          <div className="col-start-2 col-end-3 row-start-2 row-end-3 inline-flex gap-2">
+            <RiBuilding3Line size={16} />
+            <p className="text-xs text-gray-700 dark:text-gray-400">
+              {quote.source}
+            </p>
+          </div>
+          <p className="row-span-2 col-start-3 col-end-4 font-semibold text-2xl place-self-center">
             {quote.amountFormatted}
           </p>
         </div>
