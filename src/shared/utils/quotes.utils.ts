@@ -12,7 +12,7 @@ export const getQuoteImg = (service: string): QuoteImage => {
   const isDhl = serviceLowerCase.includes('dhl')
   const isEstafeta = serviceLowerCase.includes('estafeta')
   const isUps = serviceLowerCase.includes('ups')
-  const isPaqueteExpress = serviceLowerCase.includes('paquetexpres') || serviceLowerCase.includes('express')
+  const isPaqueteExpress = serviceLowerCase.includes('paquetexpres')
   const isFedex = serviceLowerCase.includes('fedex')
 
   const quoteImgDict: Record<string, QuoteImage> = {
