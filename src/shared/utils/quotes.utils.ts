@@ -56,3 +56,11 @@ export const getQuoteImg = (service: string): QuoteImage => {
 
   return quoteImgDict["none"]
 }
+
+// Replace underscores with spaces in a service name and trim extra whitespace
+export const formatQuoteServiceName = (service: string): string => {
+  return service
+    .replace(/_/g, ' ') // underscores to spaces
+    .replace(/\s+/g, ' ') // collapse multiple spaces
+    .trim()
+}
