@@ -42,9 +42,9 @@ export const getQuoteImg = (service: string): QuoteImage => {
       height: 30
     },
     "none": {
-      source: "none",
-      width: 30,
-      height: 30
+      source: "/kraft-logo-2.webp",
+      width: 100,
+      height: 50
     }
   }
 
