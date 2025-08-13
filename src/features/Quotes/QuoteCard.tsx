@@ -1,17 +1,22 @@
 import { QuoteUI } from "@/shared/types/quotes.types"
 import { RiBuilding3Line, RiTruckLine } from "@remixicon/react"
 import { Card } from "flowbite-react"
+import Image from "next/image"
+import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon"
 
 interface QuoteProps {
   quote: QuoteUI
 }
 
 export const QuoteCard = ({ quote }: QuoteProps) => {
-
   return (
     <Card href="#" className="max-w-sm">
       <div className="inline-flex gap-2">
-        <RiTruckLine size={30} />
+        { quote.logoSrc === 'paquetexpres' && (<PaqueteExpressIcon />) }
+        { quote.logoSrc === 'none' && (<RiTruckLine size={30} />) }
+        { quote.logoSrc !== 'paquetexpres' && quote.logoSrc !== 'none' && (
+          <Image src={quote.logoSrc} alt="Quote provider" width={30} height={30} />
+        )}
         <h5 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
           {quote.service}
         </h5>

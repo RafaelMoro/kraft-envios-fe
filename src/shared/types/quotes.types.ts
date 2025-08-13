@@ -9,6 +9,7 @@ export interface Quote {
 
 export interface QuoteUI extends Quote {
   amountFormatted: string
+  logoSrc: string;
 }
 
 export interface GetQuoteData {
