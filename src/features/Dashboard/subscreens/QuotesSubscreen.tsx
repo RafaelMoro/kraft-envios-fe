@@ -22,57 +22,6 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     setQuotes(quotesFormatted)
   }
 
-  const mockQuotes: QuoteUI[] = [
-    {
-      id: '8812f041-a4dd-4a96-8195-10941e2779ce',
-      service: 'Estafeta sin recoleccion mejor precio 2025',
-      total: 169,
-      amountFormatted: '$169',
-      source: 'GE',
-      logoSrc: getQuoteImg('Estafeta sin recoleccion mejor precio 2025')
-    },
-    {
-      id: '6e40eaa0-102b-4ec5-9d6e-e8991b30cf75',
-      service: 'DHL Express Select RECOMENDAMOS KILOS CHICOS',
-      total: 198.62,
-      amountFormatted: '$198.62',
-      source: 'GE',
-      logoSrc: getQuoteImg('DHL Express Select RECOMENDAMOS KILOS CHICOS')
-    },
-    {
-      id: '0807501a-ebf6-4156-8b22-2acd096d5731',
-      service: 'UPS premium UPS',
-      total: 166.08,
-      amountFormatted: '$166.08',
-      source: 'GE',
-      logoSrc: getQuoteImg('UPS premium UPS')
-    },
-    {
-      id: '3a9ef7f2-0f4c-4ca9-9ee2-bace896afaaf',
-      service: 'PAQUETEXPRES NACIONAL ZONA1',
-      total: 244.09,
-      amountFormatted: '$244.09',
-      source: 'GE',
-      logoSrc: getQuoteImg('PAQUETEXPRES NACIONAL ZONA1')
-    },
-    {
-      id: '9',
-      service: 'NextDay',
-      total: 166.75,
-      amountFormatted: '$166.75',
-      source: 'TONE',
-      logoSrc: getQuoteImg('NextDay')
-    },
-    {
-      id: 'FDX-FedEx-FEDEX_STANDARD_OVERNIGHT',
-      service: 'FedEx Standard Overnight',
-      total: 214.7,
-      amountFormatted: '$214.70',
-      source: 'Pkk',
-      logoSrc: getQuoteImg('FedEx Standard Overnight')
-    }
-  ]
-
   return (
     <main className='w-full p-4 flex flex-col gap-5 align-center'>
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
@@ -81,9 +30,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <section className="flex flex-col gap-4 align-center justify-center mt-7">
         <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
         <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
-        { mockQuotes.length > 0 && (
-          <div className="grid grid-cols-3 gap-4">
-            { mockQuotes.map((qt) => (
+        { quotes.length > 0 && (
+          <div className="grid grid-cols-2 gap-4">
+            { quotes.map((qt) => (
               <QuoteCard key={`${qt.id}-${qt.service}`} quote={qt} />
             )) }
           </div>
