@@ -5,7 +5,7 @@ import { LoginData } from "@/shared/types/login.types"
 import { Quote, QuoteUI } from "@/shared/types/quotes.types"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { QuoteCard } from "@/features/Quotes/QuoteCard"
-import { getQuoteImg } from "@/shared/utils/quotes.utils"
+import { formatQuoteServiceName, getQuoteImg } from "@/shared/utils/quotes.utils"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -16,6 +16,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const updateQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
       ...item,
+      service: formatQuoteServiceName(item.service),
       logoSrc: getQuoteImg(item.service),
       amountFormatted: formatNumberToCurrency(item.total)
     }))

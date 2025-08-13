@@ -12,16 +12,17 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
   if (quote.logoSrc.source === 'none') {
     return (
       <article
-      className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+        data-testid="quote-no-img"
+        className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
       >
         <div className="h-full p-4 grid grid-card-quote grid-cols-3 gap-y-2">
-          <div className="col-start-2 col-end-3 row-start-1 row-end-2 inline-flex gap-2">
-            <RiTruckLine size={28} />
-            <h5 className="text-xl text-gray-900 dark:text-white">
+          <div className="col-start-1 col-end-3 row-start-1 row-end-2 inline-flex gap-2">
+            <RiTruckLine size={24} />
+            <h5 className="text-lg text-gray-900 dark:text-white">
               {quote.service}
             </h5>
           </div>
-          <div className="col-start-2 col-end-3 row-start-2 row-end-3 inline-flex gap-2">
+          <div className="col-start-1 col-end-3 row-start-2 row-end-3 inline-flex gap-2">
             <RiBuilding3Line size={16} />
             <p className="text-xs text-gray-700 dark:text-gray-400">
               {quote.source}
@@ -37,7 +38,8 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
 
   return (
     <article
-      className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+        data-testid="quote-img"
+        className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
       >
         <div className="h-full p-4 grid grid-card-quote grid-cols-3 gap-y-2">
           <div className="row-span-2 justify-self-center place-self-center">
