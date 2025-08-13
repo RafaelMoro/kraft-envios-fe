@@ -12,10 +12,10 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
   return (
     <Card href="#" className="max-w-sm">
       <div className="inline-flex gap-2">
-        { quote.logoSrc === 'paquetexpres' && (<PaqueteExpressIcon />) }
-        { quote.logoSrc === 'none' && (<RiTruckLine size={30} />) }
-        { quote.logoSrc !== 'paquetexpres' && quote.logoSrc !== 'none' && (
-          <Image src={quote.logoSrc} alt="Quote provider" width={30} height={30} />
+        { quote.logoSrc.source === 'paquetexpres' && (<PaqueteExpressIcon />) }
+        { quote.logoSrc.source === 'none' && (<RiTruckLine size={30} />) }
+        { quote.logoSrc.source !== 'paquetexpres' && quote.logoSrc.source !== 'none' && (
+          <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
         )}
         <h5 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
           {quote.service}

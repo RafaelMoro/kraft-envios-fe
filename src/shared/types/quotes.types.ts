@@ -1,5 +1,6 @@
 import { number, object, ObjectSchema, string } from "yup"
 
+//#region Interfaces and types
 export interface Quote {
   id: string
   service: string
@@ -9,9 +10,16 @@ export interface Quote {
 
 export interface QuoteUI extends Quote {
   amountFormatted: string
-  logoSrc: string;
+  logoSrc: QuoteImage;
 }
 
+export type QuoteImage = {
+  source: string;
+  width: number;
+  height: number;
+}
+
+//#region Responses
 export interface GetQuoteData {
   data: {
     quotes: Quote[]
@@ -32,6 +40,7 @@ export type GetQuoteForm = {
   width: number
 }
 
+//#region Schemas
 export const QuoteFormSchema: ObjectSchema<GetQuoteForm> = object().shape({
   originPostalCode: string().required('La dirección postal de origen es requerida').min(5, 'La dirección postal de origen debe tener 5 caracteres').max(5, 'La dirección postal de origen debe tener 5 caracteres'),
   destinationPostalCode: string().required('La dirección postal de destino es requerida').min(5, 'La dirección postal de destino debe tener 5 caracteres').max(5, 'La dirección postal de destino debe tener 5 caracteres'),
