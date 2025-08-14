@@ -1,4 +1,5 @@
-import { Dashboard } from "@/features/Dashboard/Dashboard";
+import dynamic from 'next/dynamic'
+const Dashboard = dynamic(() => import('@/features/Dashboard/Dashboard').then(m => m.Dashboard), { ssr: false })
 import { getUserInfo } from "@/shared/lib/auth.lib";
 
 export default async function DashboardPage() {

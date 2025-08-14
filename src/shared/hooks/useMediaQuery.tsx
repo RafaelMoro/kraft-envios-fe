@@ -1,15 +1,23 @@
 "use client"
+
+// Synchronous, no state/effect version (no flicker). Values won't auto-update on resize.
+// If you need live updates, reintroduce a listener or trigger a re-render elsewhere.
 export const useMediaQuery = () => {
-  // Value obtained based on tailwind where md is equivalent to 768px
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  const isMobileTablet = window.matchMedia('(max-width: 1024px)').matches;
-  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-  const isDesktopX2 = window.matchMedia('(min-width: 1280px)').matches;
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return {
+      isMobile: false,
+      isMobileTablet: false,
+      isDesktop: false,
+      isDesktopX2: false
+    }
+  }
+
+  const mq = (q: string) => window.matchMedia(q).matches
 
   return {
-    isMobile,
-    isMobileTablet,
-    isDesktop,
-    isDesktopX2
+    isMobile: mq('(max-width: 768px)'),
+    isMobileTablet: mq('(max-width: 1024px)'),
+    isDesktop: mq('(min-width: 1024px)'),
+    isDesktopX2: mq('(min-width: 1280px)')
   }
 }
