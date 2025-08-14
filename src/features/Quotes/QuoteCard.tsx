@@ -9,6 +9,8 @@ interface QuoteProps {
 }
 
 export const QuoteCard = ({ quote }: QuoteProps) => {
+  const isOtherProvider = quote.logoSrc.source.includes('kraft')
+
   return (
     <article
         data-testid="quote-img"
@@ -17,7 +19,12 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
         <div className="h-full p-4 grid grid-card-quote grid-cols-3 gap-y-2">
           <div className="row-span-2 justify-self-center place-self-center">
             { quote.logoSrc.source === 'paquetexpres' && (<PaqueteExpressIcon />) }
-            { quote.logoSrc.source !== 'paquetexpres' && (
+            { isOtherProvider && quote.logoSrc.source !== 'paquetexpres' && (
+              <picture className="flex h-28 w-28 bg-gray-100 rounded-full justify-center items-center">
+                <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
+              </picture>
+            ) }
+            { quote.logoSrc.source !== 'paquetexpres' && !isOtherProvider && (
               <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
             )}
           </div>
