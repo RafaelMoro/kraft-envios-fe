@@ -10,11 +10,13 @@ interface QuoteProps {
 }
 
 export const QuoteCard = ({ quote }: QuoteProps) => {
-  const isOtherProvider = quote.logoSrc.source.includes('kraft')
-  const isPaquetExpProvider = quote.logoSrc.source === 'paquetexpres'
+  const isOtherProvider = quote.logoSrc.provider === 'other'
+  const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
+  const isFedexProvider = quote.logoSrc.provider === 'fedex'
+
   const titleStyles = clsx(
     "text-base text-gray-900 dark:text-white",
-    { "place-self-end justify-self-start": isOtherProvider && !isPaquetExpProvider }
+    { "place-self-end justify-self-start": isOtherProvider || isFedexProvider }
   )
 
   return (
@@ -25,12 +27,17 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
         <div className="h-full p-4 grid grid-card-quote grid-cols-3 gap-y-2">
           <div className="row-span-2 justify-self-center place-self-center">
             { isPaquetExpProvider && (<PaqueteExpressIcon />) }
-            { isOtherProvider && !isPaquetExpProvider && (
-              <picture className="flex h-28 w-28 bg-gray-100 rounded-full justify-center items-center">
-                <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
+            { isFedexProvider && (
+              <picture className="flex h-28 w-28 bg-gray-800 rounded-full justify-center items-center">
+                <Image src={quote.logoSrc.source} alt="Fedex provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
               </picture>
             ) }
-            { !isPaquetExpProvider && !isOtherProvider && (
+            { isOtherProvider && (
+              <picture className="flex h-28 w-28 dark:bg-gray-100 rounded-full justify-center items-center">
+                <Image src={quote.logoSrc.source} alt="Other provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
+              </picture>
+            ) }
+            { (!isPaquetExpProvider && !isOtherProvider && !isFedexProvider) && (
               <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
             )}
           </div>

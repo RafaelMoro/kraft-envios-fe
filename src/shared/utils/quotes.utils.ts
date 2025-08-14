@@ -1,12 +1,12 @@
 import axios from 'axios'
-import { GetQuoteData, GetQuoteForm, QuoteImage } from "../types/quotes.types"
+import { GetQuoteData, GetQuoteForm, ProviderImg, QuoteImage, QuoteImgDict } from "../types/quotes.types"
 import { GET_QUOTE_API_ENDPOINT } from '../constants/global.constants'
 
 export const getQuoteMutationCb = (data: GetQuoteForm): Promise<GetQuoteData> => {
   return axios.post(GET_QUOTE_API_ENDPOINT, data)
 }
 
-export const getQuoteImg = (service: string): QuoteImage => {
+export const categorizeImg = (service: string): ProviderImg => {
   const serviceLowerCase = service.toLowerCase()
 
   const isDhl = serviceLowerCase.includes('dhl')
@@ -15,46 +15,65 @@ export const getQuoteImg = (service: string): QuoteImage => {
   const isPaqueteExpress = serviceLowerCase.includes('paquetexpres')
   const isFedex = serviceLowerCase.includes('fedex')
 
-  const quoteImgDict: Record<string, QuoteImage> = {
+  if (isDhl) return 'dhl'
+  if (isEstafeta) return 'estafeta'
+  if (isUps) return 'ups'
+  if (isPaqueteExpress) return 'paquetexpres'
+  if (isFedex) return 'fedex'
+
+  return 'other'
+}
+
+export const getQuoteImg = (service: string): QuoteImage => {
+  const serviceLowerCase = service.toLowerCase()
+  const provider = categorizeImg(serviceLowerCase)
+
+  const quoteImgDict: QuoteImgDict = {
     "dhl": {
       source: "/img/dhl-logo.svg",
+      provider: "dhl",
       width: 90,
       height: 30
     },
     "estafeta": {
       source: "/img/estafeta-logo.svg",
+      provider: "estafeta",
       width: 90,
       height: 30
     },
     "fedex": {
       source: "/img/fedex-logo.webp",
+      provider: "fedex",
       width: 88,
       height: 25
     },
     "ups": {
       source: "/img/ups-logo.svg",
+      provider: "ups",
       width: 30,
       height: 30
     },
     "paquetexpres": {
       source: "paquetexpres",
+      provider: "paquetexpres",
       width: 30,
       height: 30
     },
-    "none": {
+    "other": {
       source: "/kraft-logo.svg",
+      provider: "other",
       width: 100,
       height: 50
     }
   }
 
-  if (isDhl) return quoteImgDict["dhl"]
-  if (isEstafeta) return quoteImgDict["estafeta"]
-  if (isUps) return quoteImgDict["ups"]
-  if (isPaqueteExpress) return quoteImgDict["paquetexpres"]
-  if (isFedex) return quoteImgDict["fedex"]
+  if (provider === 'dhl') return quoteImgDict["dhl"]
+  if (provider === 'estafeta') return quoteImgDict["estafeta"]
+  if (provider === 'ups') return quoteImgDict["ups"]
+  if (provider === 'paquetexpres') return quoteImgDict["paquetexpres"]
+  if (provider === 'fedex') return quoteImgDict["fedex"]
 
-  return quoteImgDict["none"]
+  return quoteImgDict["other"]
 }
 
 // Replace underscores with spaces in a service name and trim extra whitespace
