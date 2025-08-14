@@ -1,5 +1,6 @@
 // Cookie keys
 export const COOKIE_SESSION_KEY = 'session'
+export const THEME_COOKIE_KEY = 'theme'
 export const COOKIE_USER_INFO_KEY = 'user-info'
 export const DASHBOARD_SCREEN_KEY = 'dashboard-screen'
 

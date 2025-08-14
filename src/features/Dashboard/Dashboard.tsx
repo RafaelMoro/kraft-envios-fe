@@ -12,6 +12,7 @@ import { DashboardAsideLink } from './DashboardAsideLink'
 import { QuotesSubscreen } from './subscreens/QuotesSubscreen'
 import { Order } from './subscreens/Order'
 import { Logo } from '@/shared/ui/atoms/Logo'
+import { ToggleDarkMode } from '@/shared/ui/atoms/ToggleDarkMode'
 
 export interface DashboardProps {
   userInfo: LoginData | null
@@ -34,8 +35,9 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
   return (
     <div className="w-full min-h-screen max-w-screen-2xl flex mx-auto my-0">
       <aside className="w-72 border-r border-r-gray-600 p-4">
-        <div className='flex w-full justify-center'>
+        <div className='flex w-full justify-between'>
           <Logo />
+          <ToggleDarkMode />
         </div>
         <nav className="mt-10 flex flex-col mb-10">
           <DashboardAsideLink isSelected={screen === 'quotes'} onClickCb={() => updateScreen('quotes')}>

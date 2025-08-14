@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { QueryProviderWrapper } from "@/features/QueryProviderWrapper";
+import { getThemePreference } from "@/shared/lib/preferences.lib";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,13 +20,15 @@ export const metadata: Metadata = {
   description: "Kraft envios es tu mejor solución para envio de paquetes en toda la República mexicana",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = await getThemePreference()
+
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme={theme}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 text-gray-950 dark:text-gray-100 dark:bg-gray-950 transition-colors`}
       >
