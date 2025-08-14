@@ -47,7 +47,7 @@ export const QuoteForm = ({ updateQuotes }: QuoteFormProps) => {
     >
       <section className="flex flex-col gap-5">
         <h4 className="text-xl font-semibold mb-4">Domicilio</h4>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <div className="mb-2 block">
               <Label htmlFor="originPostalCode">Código Postal de Origen</Label>
@@ -81,7 +81,7 @@ export const QuoteForm = ({ updateQuotes }: QuoteFormProps) => {
 
       <section className="flex flex-col gap-5">
         <h4 className="text-xl font-semibold">Paquete:</h4>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <div className="mb-2 block">
               <Label htmlFor="weight">Peso</Label>
