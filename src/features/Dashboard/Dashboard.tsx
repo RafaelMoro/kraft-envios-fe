@@ -10,6 +10,7 @@ import { QuotesSubscreen } from './subscreens/QuotesSubscreen'
 import { Order } from './subscreens/Order'
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { Aside } from '@/shared/ui/organisms/Aside'
+import { Logo } from '@/shared/ui/atoms/Logo'
 
 export interface DashboardProps {
   userInfo: LoginData | null
@@ -29,6 +30,17 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
   const handleSignOut = async () => {
     await fetch(SIGN_OUT_API_ENDPOINT)
     router.push(LOGIN_ROUTE)
+  }
+
+  if (isMobile) {
+    return (
+      <div className='mt-3 flex flex-col gap-4"'>
+        <header className="p-4 flex flex-row justify-between items-center">
+          <Logo isMobile={isMobile} />
+        </header>
+        { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
+      </div>
+    )
   }
 
   return (
