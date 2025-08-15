@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios"
 import { number, object, ObjectSchema, string } from "yup"
 
 //#region Interfaces and types
@@ -41,6 +42,22 @@ export interface GetQuoteData {
   success: boolean;
   version: string;
 }
+
+// Axios response shape currently accessed as response.data.data.data.quotes
+// (three nested `data` objects before reaching `quotes`).
+// Adjust if backend envelope changes to reduce nesting.
+export type GetQuoteDataAxios = AxiosResponse<{
+  data: {
+    data: {
+      quotes: Quote[]
+      error: null
+      message: null
+      messages: string[]
+      success: boolean
+      version: string
+    }
+  }
+}>
 
 export type GetQuoteForm = {
   originPostalCode: string

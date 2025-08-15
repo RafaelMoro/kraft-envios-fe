@@ -5,7 +5,7 @@ import { Button, Label, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 import { GeneralApiError } from "@/shared/types/global.types"
-import { GetQuoteData, GetQuoteForm, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
+import { GetQuoteDataAxios, GetQuoteForm, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
 import { useEffect } from "react"
@@ -23,11 +23,10 @@ export const QuoteForm = ({ updateQuotes }: QuoteFormProps) => {
     resolver: yupResolver(QuoteFormSchema)
   })
 
-  const { mutate: getQuotes, isPending, data } = useMutation<GetQuoteData, GeneralApiError, GetQuoteForm>({
+  const { mutate: getQuotes, isPending, data } = useMutation<GetQuoteDataAxios, GeneralApiError, GetQuoteForm>({
     mutationFn: getQuoteMutationCb,
   })
-  // TODO: Change this
-  const quotesFetched = (data as any)?.data?.data?.data?.quotes
+  const quotesFetched = data?.data?.data?.data?.quotes
 
   const onSubmit: SubmitHandler<GetQuoteForm> = (data) => {
     getQuotes(data)

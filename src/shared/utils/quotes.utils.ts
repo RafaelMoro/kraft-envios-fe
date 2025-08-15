@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { GetQuoteData, GetQuoteForm, ProviderImg, QuoteImage, QuoteImgDict } from "../types/quotes.types"
+import { GetQuoteForm, ProviderImg, QuoteImage, QuoteImgDict } from "../types/quotes.types"
 import { GET_QUOTE_API_ENDPOINT } from '../constants/global.constants'
 
-export const getQuoteMutationCb = (data: GetQuoteForm): Promise<GetQuoteData> => {
+export const getQuoteMutationCb = (data: GetQuoteForm) => {
   return axios.post(GET_QUOTE_API_ENDPOINT, data)
 }
 
