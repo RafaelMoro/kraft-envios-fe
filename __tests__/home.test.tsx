@@ -3,20 +3,21 @@ import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
 import { AppRouterContextProviderMock } from '@/features/AppRouterContextProviderMock'
 import HomePage from '../src/app/page'
 
-const Home = ({ push }: { push: () => void }) => {
+const Home = async ({ push }: { push: () => void }) => {
+  const Page = await HomePage()
   return (
     <QueryProviderWrapper>
       <AppRouterContextProviderMock router={{ push }}>
-        <HomePage />
+        {Page}
       </AppRouterContextProviderMock>
     </QueryProviderWrapper>
   )
 }
 
 describe('Login page', () => {
-  it('Show the login page', () => {
+  it('Show the login page', async () => {
     const push = jest.fn()
-    render(<Home push={push} />)
+    render(await Home({ push }))
 
     expect(screen.getByRole('heading', { name: /bienvenido de vuelta/i })).toBeInTheDocument()
     expect(screen.getByText(/ingrese sus credenciales para entrar a su cuenta\./i)).toBeInTheDocument()
