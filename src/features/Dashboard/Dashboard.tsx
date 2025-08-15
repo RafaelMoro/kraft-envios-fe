@@ -11,7 +11,7 @@ import { Order } from './subscreens/Order'
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { Aside } from '@/shared/ui/organisms/Aside'
 import { Logo } from '@/shared/ui/atoms/Logo'
-import { ToggleDarkMode } from '@/shared/ui/atoms/ToggleDarkMode'
+import { HeaderMenuMobile } from '@/shared/ui/organisms/HeaderMenuDrawer'
 
 export interface DashboardProps {
   userInfo: LoginData | null
@@ -38,9 +38,10 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
       <div className='mt-3 flex flex-col gap-4"'>
         <header className="p-4 flex flex-row justify-between items-center">
           <Logo isMobile={isMobile} />
-          <ToggleDarkMode />
+          <HeaderMenuMobile screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} />
         </header>
         { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
+        { screen === 'overview' && (<Order userInfo={userInfo} />) }
       </div>
     )
   }
