@@ -1,5 +1,13 @@
-export default function DashboardPage() {
+import dynamic from 'next/dynamic'
+const Dashboard = dynamic(() => import('@/features/Dashboard/Dashboard').then(m => m.Dashboard), { ssr: false })
+import { getUserInfo } from "@/shared/lib/auth.lib";
+
+export default async function DashboardPage() {
+  const [ userInfo ] = await Promise.all([
+    getUserInfo(),
+  ])
+
   return (
-    <h1 className="text-3xl font-bold text-center">Dashboard</h1>
+    <Dashboard userInfo={userInfo} />
   )
 }

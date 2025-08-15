@@ -1,6 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { object, ObjectSchema, ref, string } from "yup";
 import { ERROR_EMAIL_REQUIRED, ERROR_INVALID_EMAIL, ERROR_PASSWORD_REQUIRED } from "../constants/login.constants";
+import { UserRoles } from "./global.types";
 
 export type ResetPasswordStatus = "idle" | "success" | "error"
 export type MessageCardState = {
@@ -13,11 +14,9 @@ export interface LoginData {
   data: {
     user: {
       email: string;
-      firstName: string;
+      name: string;
       lastName: string;
-      middleName: string;
-      _id: string
-      __v: number
+      role: UserRoles[]
     }
   }
   error: null;
