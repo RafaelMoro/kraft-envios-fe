@@ -1,3 +1,9 @@
+## v0.8.0 (2025-08-15)
+
+### Pull Requests
+[#15](https://github.com/RafaelMoro/kraft-envios-fe/pull/15) | Get quotes
+
+
 ## v0.7.1 (2025-08-10)
 
 ### Pull Requests
