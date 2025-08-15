@@ -170,14 +170,14 @@ describe('CompanyDetails', () => {
     const postalCodeInput = screen.getByLabelText(/código postal/i)
     const submitButton = screen.getByRole('button', { name: /siguiente/i })
 
-    await user.type(postalCodeInput, '1234')
+    await user.type(postalCodeInput, '12345')
     await user.click(submitButton)
 
     await waitFor(() => {
       expect(updateCompanyDetails).toHaveBeenCalledWith({
         companyName: '',
         address: '',
-        postalCode: '1234',
+        postalCode: '12345',
         secondPhoneNumber: ''
       })
       expect(goNext).toHaveBeenCalledTimes(1)
@@ -204,7 +204,7 @@ describe('CompanyDetails', () => {
 
     await user.type(companyNameInput, 'My Company')
     await user.type(addressInput, '456 Main St')
-    await user.type(postalCodeInput, '5678')
+    await user.type(postalCodeInput, '56789')
     await user.type(secondPhoneInput, '5559876543')
     await user.click(submitButton)
 
@@ -212,7 +212,7 @@ describe('CompanyDetails', () => {
       expect(updateCompanyDetails).toHaveBeenCalledWith({
         companyName: 'My Company',
         address: '456 Main St',
-        postalCode: '5678',
+        postalCode: '56789',
         secondPhoneNumber: '5559876543'
       })
       expect(goNext).toHaveBeenCalledTimes(1)
@@ -275,11 +275,11 @@ describe('CompanyDetails', () => {
     const postalCodeInput = screen.getByLabelText(/código postal/i)
     const submitButton = screen.getByRole('button', { name: /siguiente/i })
 
-    await user.type(postalCodeInput, '123')
+    await user.type(postalCodeInput, '1234')
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/la dirección postal debe tener 4 caracteres/i)).toBeInTheDocument()
+      expect(screen.getByText(/la dirección postal debe tener 5 caracteres/i)).toBeInTheDocument()
     })
 
     expect(updateCompanyDetails).not.toHaveBeenCalled()
@@ -301,11 +301,11 @@ describe('CompanyDetails', () => {
     const postalCodeInput = screen.getByLabelText(/código postal/i)
     const submitButton = screen.getByRole('button', { name: /siguiente/i })
 
-    await user.type(postalCodeInput, '12345')
+    await user.type(postalCodeInput, '123456')
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/la dirección postal debe tener 4 caracteres/i)).toBeInTheDocument()
+      expect(screen.getByText(/la dirección postal debe tener 5 caracteres/i)).toBeInTheDocument()
     })
 
     expect(updateCompanyDetails).not.toHaveBeenCalled()

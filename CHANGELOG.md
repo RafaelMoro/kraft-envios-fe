@@ -1,3 +1,21 @@
+## v0.8.1 (2025-08-15)
+
+### Pull Requests
+[#16](https://github.com/RafaelMoro/kraft-envios-fe/pull/16) | Add login required modal
+
+
+## v0.8.0 (2025-08-15)
+
+### Pull Requests
+[#15](https://github.com/RafaelMoro/kraft-envios-fe/pull/15) | Get quotes
+
+
+## v0.7.1 (2025-08-10)
+
+### Pull Requests
+[#14](https://github.com/RafaelMoro/kraft-envios-fe/pull/14) | Fix password length
+
+
 ## v0.7.0 (2025-07-24)
 
 ### Pull Requests

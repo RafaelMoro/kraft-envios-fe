@@ -263,7 +263,7 @@ describe('UserRegistration', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/la contraseña debe tener al menos 16 caracteres/i)).toBeInTheDocument()
+      expect(screen.getByText(/la contraseña debe tener al menos 8 caracteres/i)).toBeInTheDocument()
     })
 
     expect(mockUpdateUserPasswordInfo).not.toHaveBeenCalled()
