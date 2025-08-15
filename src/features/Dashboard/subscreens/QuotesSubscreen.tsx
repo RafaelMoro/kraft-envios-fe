@@ -6,18 +6,20 @@ import { Quote, QuoteUI } from "@/shared/types/quotes.types"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { QuoteCard } from "@/features/Quotes/QuoteCard"
 import { formatQuoteServiceName, getQuoteImg } from "@/shared/utils/quotes.utils"
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 
 interface QuotesProps {
   userInfo: LoginData | null
 }
 
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
+  const { isMobile } = useMediaQuery()
   const [quotes, setQuotes] = useState<QuoteUI[]>([])
   const updateQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
       ...item,
       service: formatQuoteServiceName(item.service),
-      logoSrc: getQuoteImg(item.service),
+      logoSrc: getQuoteImg(item.service, isMobile),
       amountFormatted: formatNumberToCurrency(item.total)
     }))
     setQuotes(quotesFormatted)

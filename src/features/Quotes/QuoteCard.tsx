@@ -15,7 +15,7 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
   const isFedexProvider = quote.logoSrc.provider === 'fedex'
 
   const titleStyles = clsx(
-    "text-base text-gray-900 dark:text-white",
+    "col-span-2 text-base text-gray-900 dark:text-white",
     { "place-self-end justify-self-start": isOtherProvider || isFedexProvider }
   )
 
@@ -28,12 +28,12 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
           <div className="row-span-2 justify-self-center place-self-center">
             { isPaquetExpProvider && (<PaqueteExpressIcon />) }
             { isFedexProvider && (
-              <picture className="flex h-28 w-28 bg-gray-800 rounded-full justify-center items-center">
+              <picture className="flex h-20 md:h-28 w-20 md:w-28 bg-gray-800 rounded-full justify-center items-center">
                 <Image src={quote.logoSrc.source} alt="Fedex provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
               </picture>
             ) }
             { isOtherProvider && (
-              <picture className="flex h-28 w-28 dark:bg-gray-100 rounded-full justify-center items-center">
+              <picture className="flex h-16 md:h-28 w-16 md:w-28 dark:bg-gray-100 rounded-full justify-center items-center">
                 <Image src={quote.logoSrc.source} alt="Other provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
               </picture>
             ) }
@@ -44,10 +44,10 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
           <h5 className={titleStyles}>
             {quote.service}
           </h5>
-          <p className="row-span-2 font-semibold text-2xl justify-self-center place-self-center">
+          <p className="md:row-span-2 font-semibold text-2xl justify-self-start md:justify-self-center place-self-center">
             {quote.amountFormatted}
           </p>
-          <div className="inline-flex gap-2 text-gray-700 dark:text-gray-400">
+          <div className="inline-flex gap-2 text-gray-700 dark:text-gray-400 justify-self-end md:justify-self-start">
             <RiBuilding3Line size={20} />
             <p className="text-xs">
               {quote.source}

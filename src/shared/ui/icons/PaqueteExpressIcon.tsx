@@ -1,8 +1,19 @@
-export const PaqueteExpressIcon = () => {
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
+
+interface PaqueteExpressIconProps {
+  width?: number
+  height?: number
+}
+
+export const PaqueteExpressIcon = ({ width = 155, height = 30 }: PaqueteExpressIconProps) => {
+  const { isMobile } = useMediaQuery()
+  const w = isMobile ? 105 : width
+  const h = isMobile ? 20 : height
+
   return (
     <svg
-      width="155"
-      height="30"
+      width={w}
+      height={h}
       viewBox="17 27 155 34"
       fill="currentColor"
       >

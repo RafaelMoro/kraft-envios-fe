@@ -24,7 +24,7 @@ export const categorizeImg = (service: string): ProviderImg => {
   return 'other'
 }
 
-export const getQuoteImg = (service: string): QuoteImage => {
+export const getQuoteImg = (service: string, isMobile: boolean): QuoteImage => {
   const serviceLowerCase = service.toLowerCase()
   const provider = categorizeImg(serviceLowerCase)
 
@@ -44,8 +44,8 @@ export const getQuoteImg = (service: string): QuoteImage => {
     "fedex": {
       source: "/img/fedex-logo.webp",
       provider: "fedex",
-      width: 88,
-      height: 25
+      width: isMobile ? 64 : 88,
+      height: isMobile ? 18 : 25
     },
     "ups": {
       source: "/img/ups-logo.svg",
@@ -56,8 +56,8 @@ export const getQuoteImg = (service: string): QuoteImage => {
     "paquetexpres": {
       source: "paquetexpres",
       provider: "paquetexpres",
-      width: 30,
-      height: 30
+      width: isMobile ? 15 : 30,
+      height: isMobile ? 15 : 30
     },
     "other": {
       source: "/kraft-logo.svg",
