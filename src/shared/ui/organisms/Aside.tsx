@@ -34,7 +34,7 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
           Ver guias
         </DashboardAsideLink>
         { isAdmin && (
-          <DashboardAsideLink isSelected={screen === 'overview'} onClickCb={() => updateScreen('overview')}>
+          <DashboardAsideLink isSelected={screen === 'marginProfit'} onClickCb={() => updateScreen('marginProfit')}>
             <RiLineChartLine />
             Margen de ganancia
           </DashboardAsideLink>

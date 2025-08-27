@@ -1,1 +1,1 @@
-export type DashboardScreens = 'quotes' | 'overview'
+export type DashboardScreens = 'quotes' | 'overview' | 'marginProfit'
