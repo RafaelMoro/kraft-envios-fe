@@ -29,13 +29,15 @@ export interface QuoteUI extends Quote {
   logoSrc: QuoteImage;
 }
 
-export type ProviderImg = 'dhl' | 'estafeta' | 'fedex' | 'ups' | 'paquetexpres' | 'other'
+export type ProviderImg = 'dhl' | 'estafeta' | 'fedex' | 'ups' | 'paquetexpres' | 'ninetyNineMin' | 'ampm' | 'other'
 export type QuoteImgDict = {
   dhl: QuoteImage;
   estafeta: QuoteImage;
   fedex: QuoteImage;
   ups: QuoteImage;
   paquetexpres: QuoteImage;
+  ninetyNineMin: QuoteImage;
+  ampm: QuoteImage;
   other: QuoteImage;
 }
 
