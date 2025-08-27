@@ -2,6 +2,11 @@ import { number, object, ObjectSchema } from "yup";
 
 export type ProfitMarginType = 'percentage' | 'absolute'
 
+export type ProfitMarginTypeOption = {
+  label: string;
+  value: ProfitMarginType;
+}
+
 export interface ProfitMargin {
   value: number;
   type: ProfitMarginType

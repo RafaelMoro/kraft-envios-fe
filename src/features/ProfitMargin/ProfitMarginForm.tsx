@@ -2,14 +2,28 @@
 import { useState } from "react"
 import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
-import { MarginProfitForm, MarginProfitSchema } from "@/shared/types/margin-profit.types"
+import { MarginProfitForm, MarginProfitSchema, ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 export const ProfitMarginForm = () => {
-  const [profitMarginType, setProfitMarginType] = useState<'percentage' | 'absolute'>('percentage')
+  const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
+    label: 'Porcentaje',
+    value: 'percentage'
+  })
   const updateProfitMarginType = (value: 'percentage' | 'absolute') => {
-    setProfitMarginType(value)
+    if (value === 'percentage') {
+      setProfitMarginType({
+        label: 'Porcentaje',
+        value: 'percentage'
+      })
+      return
+    }
+
+    setProfitMarginType({
+      label: 'Absoluto',
+      value: 'absolute'
+    })
   }
 
   const {
@@ -46,7 +60,7 @@ export const ProfitMarginForm = () => {
               <ErrorMessage>{errors.value?.message}</ErrorMessage>
             )}
           </div>
-          <Dropdown label={`Tipo: ${profitMarginType}`} inline dismissOnClick={false}>
+          <Dropdown label={`Tipo: ${profitMarginType.label}`} inline>
             <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
             <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
           </Dropdown>
