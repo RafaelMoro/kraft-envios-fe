@@ -1,6 +1,13 @@
+"use client"
+import { useState } from "react"
 import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
 
 export const ProfitMarginForm = () => {
+  const [profitMarginType, setProfitMarginType] = useState<'percentage' | 'absolute'>('percentage')
+  const updateProfitMarginType = (value: 'percentage' | 'absolute') => {
+    setProfitMarginType(value)
+  }
+
   return (
      <form
       // onSubmit={handleSubmit(onSubmit)}
@@ -23,8 +30,8 @@ export const ProfitMarginForm = () => {
             )} */}
           </div>
           <Dropdown label="Profit margin type dropdown" inline dismissOnClick={false}>
-            <DropdownItem>Porcentaje</DropdownItem>
-            <DropdownItem>Absoluto</DropdownItem>
+            <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
+            <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
           </Dropdown>
       </section>
 
