@@ -8,7 +8,8 @@ interface ShowProfitMarginProps {
 
 export const ShowProfitMargin = ({ data }: ShowProfitMarginProps) => {
   const isPercentage = data?.type === 'percentage'
-  const currentMargin = isPercentage ? `${data?.value}%` : `$${data?.value}`
+  const value = data?.value ?? '0'
+  const currentMargin = isPercentage ? `${value}%` : `$${value}`
 
   return (
     <>
