@@ -1,16 +1,14 @@
 "use client"
 
-import { getMarginProfitCb } from "@/shared/utils/margin-profit.utils"
-import { useQuery } from "@tanstack/react-query"
+import { ProfitMargin } from "@/shared/types/margin-profit.types"
 
-export const ShowProfitMargin = () => {
-  const { data } = useQuery({
-    queryKey: ['profitMargin'],
-    queryFn: getMarginProfitCb
-  })
+interface ShowProfitMarginProps {
+  data: ProfitMargin | null | undefined
+}
 
+export const ShowProfitMargin = ({ data }: ShowProfitMarginProps) => {
   const isPercentage = data?.type === 'percentage'
-  const currentMargin = isPercentage ? `${data?.value}%` : data?.value
+  const currentMargin = isPercentage ? `${data?.value}%` : `$${data?.value}`
 
   return (
     <>

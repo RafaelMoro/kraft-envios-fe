@@ -10,7 +10,11 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 
-export const ProfitMarginForm = () => {
+interface ProfitMarginFormProps {
+  refetchMarginProfit: () => Promise<void>
+}
+
+export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps) => {
   const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
     label: 'Porcentaje',
     value: 'percentage'
@@ -40,6 +44,9 @@ export const ProfitMarginForm = () => {
 
   const { mutate, isPending } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
     mutationFn: updateMarginProfitCb,
+    onSuccess: async () => {
+      await refetchMarginProfit()
+    }
   })
 
   const onSubmit: SubmitHandler<MarginProfitForm> = (data) => {
