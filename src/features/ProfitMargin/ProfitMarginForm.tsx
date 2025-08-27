@@ -1,10 +1,14 @@
 "use client"
 import { useState } from "react"
-import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
+import { Button, Dropdown, DropdownItem, Label, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
-import { MarginProfitForm, MarginProfitSchema, ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useMutation } from "@tanstack/react-query"
+
+import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProfitMarginTypeOption, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
+import { GeneralApiError } from "@/shared/types/global.types"
 
 export const ProfitMarginForm = () => {
   const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
@@ -34,8 +38,18 @@ export const ProfitMarginForm = () => {
     resolver: yupResolver(MarginProfitSchema)
   })
 
+  const { mutate, isPending } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
+    mutationFn: updateMarginProfitCb,
+  })
+
   const onSubmit: SubmitHandler<MarginProfitForm> = (data) => {
-    console.log(data)
+    const payload: UpdateMarginProfitPayload = {
+      profitMargin: {
+        value: data.value,
+        type: profitMarginType.value
+      }
+    }
+    mutate(payload)
   }
 
   return (
@@ -69,10 +83,9 @@ export const ProfitMarginForm = () => {
       <div className="flex justify-center">
         <Button
           className="hover:cursor-pointer"
-          // disabled={isPending}
+          disabled={isPending}
           type="submit">
-          {/* { isPending ? (<Spinner aria-label="loading get quotes kraft envios" />) : 'Cotizar' } */}
-          Actualizar margen
+          { isPending ? (<Spinner aria-label="loading updating margin profit" />) : 'Actualizar margen' }
         </Button>
       </div>
     </form>

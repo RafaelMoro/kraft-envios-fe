@@ -13,15 +13,22 @@ export interface ProfitMargin {
 }
 
 
-export interface GetMarginProfitData {
+export interface MarginProfitResponse {
   data: {
-    profitMargin: ProfitMargin[]
+    profitMargin: ProfitMargin
   }
   error: null;
   message: null;
   messages: string[]
   success: boolean;
   version: string;
+}
+
+export type UpdateMarginProfitPayload = {
+  profitMargin: {
+    value: number
+    type: ProfitMarginType
+  }
 }
 
 export type MarginProfitForm = {

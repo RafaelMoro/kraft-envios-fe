@@ -12,7 +12,7 @@ export const CREATE_USER_API_ENDPOINT = '/api/auth/create-user'
 export const SIGN_OUT_API_ENDPOINT = '/api/auth/sign-out'
 
 export const GET_QUOTE_API_ENDPOINT = '/api/quotes'
-export const GET_MARGIN_PROFIT = '/api/margin-profit'
+export const MARGIN_PROFIT_API_ENDPOINT = '/api/margin-profit'
 
 // Routes
 export const REGISTER_ROUTE = '/register';
