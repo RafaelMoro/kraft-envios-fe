@@ -48,7 +48,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
 
   return (
     <div className="w-full min-h-screen max-w-screen-2xl flex mx-auto my-0">
-      <Aside screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} />
+      <Aside screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} userInfo={userInfo} />
       { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
       { screen === 'overview' && (<Order userInfo={userInfo} />) }
     </div>
