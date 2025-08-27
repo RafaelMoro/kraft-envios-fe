@@ -60,8 +60,8 @@ export const getQuoteImg = (courier: QuoteCourier | null, isMobile: boolean): Qu
     "ninetyNineMin": {
       source: "/img/99min-logo.svg",
   provider: "ninetyNineMin",
-      width: isMobile ? 15 : 30,
-      height: isMobile ? 15 : 30
+      width: isMobile ? 90 : 150,
+      height: isMobile ? 90 : 150
     },
     "ampm": {
       source: "/img/ampm-logo.svg",
