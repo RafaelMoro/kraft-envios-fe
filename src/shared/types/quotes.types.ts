@@ -1,11 +1,26 @@
 import { AxiosResponse } from "axios"
 import { number, object, ObjectSchema, string } from "yup"
 
+export type QuoteTypeSevice = 'standard' | 'nextDay';
+
+export type QuoteCourier =
+  | 'Estafeta'
+  | 'DHL'
+  | 'UPS'
+  | 'Fedex'
+  | 'Paquetexpress'
+  | 'AMPM'
+  // Corresponding to 99 or 99MIN
+  | 'NextDay'
+  | 'Tres guerras';
+
 //#region Interfaces and types
 export interface Quote {
   id: string
   service: string
   total: number
+  typeService: QuoteTypeSevice | null;
+  courier: QuoteCourier | null;
   source: string
 }
 
