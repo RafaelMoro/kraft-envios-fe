@@ -1,6 +1,10 @@
 "use client"
 import { useState } from "react"
 import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { MarginProfitForm, MarginProfitSchema } from "@/shared/types/margin-profit.types"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 export const ProfitMarginForm = () => {
   const [profitMarginType, setProfitMarginType] = useState<'percentage' | 'absolute'>('percentage')
@@ -8,9 +12,21 @@ export const ProfitMarginForm = () => {
     setProfitMarginType(value)
   }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<MarginProfitForm>({
+    resolver: yupResolver(MarginProfitSchema)
+  })
+
+  const onSubmit: SubmitHandler<MarginProfitForm> = (data) => {
+    console.log(data)
+  }
+
   return (
      <form
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col justify-center gap-16"
     >
       <section className="flex flex-col gap-5">
@@ -23,13 +39,14 @@ export const ProfitMarginForm = () => {
               id="value"
               type="number"
               inputMode="numeric"
-              // {...register("originPostalCode")}
+              defaultValue={0}
+              {...register("value")}
             />
-            {/* { errors.originPostalCode?.message && (
-              <ErrorMessage>{errors.originPostalCode?.message}</ErrorMessage>
-            )} */}
+            { errors.value?.message && (
+              <ErrorMessage>{errors.value?.message}</ErrorMessage>
+            )}
           </div>
-          <Dropdown label="Profit margin type dropdown" inline dismissOnClick={false}>
+          <Dropdown label={`Tipo: ${profitMarginType}`} inline dismissOnClick={false}>
             <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
             <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
           </Dropdown>

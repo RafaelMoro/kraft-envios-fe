@@ -1,3 +1,5 @@
+import { number, object, ObjectSchema } from "yup";
+
 export type ProfitMarginType = 'percentage' | 'absolute'
 
 export interface ProfitMargin {
@@ -16,3 +18,11 @@ export interface GetMarginProfitData {
   success: boolean;
   version: string;
 }
+
+export type MarginProfitForm = {
+  value: number
+}
+
+export const MarginProfitSchema: ObjectSchema<MarginProfitForm> = object().shape({
+  value: number().required('Por favor, ingrese el valor del margen de ganancia').min(1, 'El valor debe ser mayor que 0'),
+})
