@@ -2,13 +2,14 @@ import { useState } from "react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
 import { LoginData } from "@/shared/types/login.types"
-import { Quote, QuoteCourier, QuoteSource, QuoteUI } from "@/shared/types/quotes.types"
+import { Quote, QuoteCourier, QuoteSource, QuoteTypeService, QuoteUI } from "@/shared/types/quotes.types"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { QuoteCard } from "@/features/Quotes/QuoteCard"
-import { filterQuotesByCourierUtil, filterQuotesBySourceUtil, formatQuoteServiceName, getQuoteImg } from "@/shared/utils/quotes.utils"
+import { filterQuotesByCourierUtil, filterQuotesBySourceUtil, filterQuotesByTimeTypeUtil, formatQuoteServiceName, getQuoteImg } from "@/shared/utils/quotes.utils"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { CourierFilter } from "@/features/Quotes/CourierFilter"
 import { SourceFilterDropdown } from "@/features/Quotes/SourceFilterDropdown"
+import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -63,7 +64,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       id: "3a9ef7f2-0f4c-4ca9-9ee2-bace896afaaf",
       service: "PAQUETEXPRES NACIONAL ZONA1",
       courier: "Paquetexpress",
-      typeService: "nextDay",
+      typeService: "standard",
       total: 244.09,
       amountFormatted: "$244.09",
       source: "GE",
@@ -73,7 +74,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       id: "9",
       service: "99Min",
       courier: "NextDay",
-      typeService: "nextDay",
+      typeService: "standard",
       total: 166.75,
       amountFormatted: "$166.75",
       source: "TONE",
@@ -121,6 +122,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     const filteredSources = filterQuotesBySourceUtil(allQuotes, newSource)
     setAllFilteredQuotes(filteredSources)
   }
+  const filterQuotesByTimeType = (newTimeType: QuoteTypeService) => {
+    const filteredTimeTypes = filterQuotesByTimeTypeUtil(allQuotes, newTimeType)
+    setAllFilteredQuotes(filteredTimeTypes)
+  }
 
   return (
     <main className='w-full p-4 flex flex-col gap-5 align-center'>
@@ -135,6 +140,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             <p>Filtrar por:</p>
             <CourierFilter filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
             <SourceFilterDropdown filterQuotesBySource={filterQuotesBySource} resetFiltersQuotes={resetFiltersQuotes} />
+            <TimeFilterDropdown filterQuotesByType={filterQuotesByTimeType} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
             { filteredQuotes.length === 0 && (
               <p className="text-center text-lg font-semibold">No hay cotizaciones disponibles de acuerdo a tu criterio de búsqueda.</p>
