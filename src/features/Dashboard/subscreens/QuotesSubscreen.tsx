@@ -84,6 +84,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>(mockQuotes)
   // TODO: Change this for empty array at the end
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>(mockQuotes)
+  console.log('Filtered Quotes:', filteredQuotes)
 
   const updateAllQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
@@ -103,7 +104,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }
 
   const filterQuotesByCourier = (newCourier: QuoteCourier) => {
-    const filteredCouriers = filterQuotesByCourierUtil(filteredQuotes, newCourier)
+    const filteredCouriers = filterQuotesByCourierUtil(allQuotes, newCourier)
     setAllFilteredQuotes(filteredCouriers)
   }
 
