@@ -176,7 +176,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         <section className="flex flex-col gap-4 align-center justify-center mt-7">
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center gap-3">
             <p>Filtrar por:</p>
             <Button color="light" onClick={resetFiltersQuotes}>Limpiar filtros</Button>
             <CourierFilter selectedCourier={selectedCourier} setSelectedCourier={setSelectedCourier} filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
