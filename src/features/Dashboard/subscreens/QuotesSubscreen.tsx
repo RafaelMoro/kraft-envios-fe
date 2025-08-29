@@ -178,7 +178,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <div className="flex gap-3">
             <p>Filtrar por:</p>
             <CourierFilter selectedCourier={selectedCourier} setSelectedCourier={setSelectedCourier} filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
-            <SourceFilterDropdown filterQuotesBySource={filterQuotesBySource} resetFiltersQuotes={resetFiltersQuotes} />
+            <SourceFilterDropdown selectedSource={selectedSource} setSelectedSource={setSelectedSource} filterQuotesBySource={filterQuotesBySource} resetFiltersQuotes={resetFiltersQuotes} />
             <TimeFilterDropdown filterQuotesByType={filterQuotesByTimeType} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
             { filteredQuotes.length === 0 && (
