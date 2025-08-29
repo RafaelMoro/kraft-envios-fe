@@ -3,16 +3,21 @@ import { number, object, ObjectSchema, string } from "yup"
 
 export type QuoteTypeSevice = 'standard' | 'nextDay';
 
-export type QuoteCourier =
-  | 'Estafeta'
-  | 'DHL'
-  | 'UPS'
-  | 'Fedex'
-  | 'Paquetexpress'
-  | 'AMPM'
+// Runtime array of supported couriers. Keep this in sync if you add/remove providers.
+export const QUOTE_COURIERS = [
+  'Estafeta',
+  'DHL',
+  'UPS',
+  'Fedex',
+  'Paquetexpress',
+  'AMPM',
   // Corresponding to 99 or 99MIN
-  | 'NextDay'
-  | 'Tres guerras';
+  'NextDay',
+  'Tres guerras'
+] as const
+
+// Derive the type from the runtime constant so changing one source keeps both in sync.
+export type QuoteCourier = typeof QUOTE_COURIERS[number]
 
 //#region Interfaces and types
 export interface Quote {
