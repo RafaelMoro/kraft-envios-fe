@@ -80,7 +80,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     },
   ];
 
-  const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
+  // TODO: Change this for empty array at the end
+  const [allQuotes, setAllQuotes] = useState<QuoteUI[]>(mockQuotes)
   // TODO: Change this for empty array at the end
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>(mockQuotes)
 
@@ -111,7 +112,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-center text-xl mb-5">Ingrese los siguientes datos para obtener una cotización</p>
       <QuoteForm updateQuotes={updateAllQuotes} />
-      { filteredQuotes.length > 0 && (
+      { allQuotes.length > 0 && (
         <section className="flex flex-col gap-4 align-center justify-center mt-7">
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
@@ -119,11 +120,16 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             <p>Filtrar por:</p>
             <CourierFilter filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              { filteredQuotes.map((qt) => (
-                <QuoteCard key={`${qt.id}-${qt.service}`} quote={qt} />
-              )) }
-            </div>
+            { filteredQuotes.length === 0 && (
+              <p className="text-center text-lg font-semibold">No hay cotizaciones disponibles de acuerdo a tu criterio de búsqueda.</p>
+            )}
+            { filteredQuotes.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                { filteredQuotes.map((qt) => (
+                  <QuoteCard key={`${qt.id}-${qt.service}`} quote={qt} />
+                )) }
+              </div>
+            )}
         </section>
       )}
     </main>
