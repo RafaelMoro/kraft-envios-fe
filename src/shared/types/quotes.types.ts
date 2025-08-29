@@ -16,8 +16,16 @@ export const QUOTE_COURIERS = [
   'Tres guerras'
 ] as const
 
+export const QUOTE_SOURCES = [
+  'GE',
+  'TONE',
+  'Pkk',
+  'Mn'
+] as const
+
 // Derive the type from the runtime constant so changing one source keeps both in sync.
 export type QuoteCourier = typeof QUOTE_COURIERS[number]
+export type QuoteSource = typeof QUOTE_SOURCES[number]
 
 //#region Interfaces and types
 export interface Quote {
@@ -26,7 +34,7 @@ export interface Quote {
   total: number
   typeService: QuoteTypeSevice | null;
   courier: QuoteCourier | null;
-  source: string
+  source: QuoteSource
 }
 
 export interface QuoteUI extends Quote {

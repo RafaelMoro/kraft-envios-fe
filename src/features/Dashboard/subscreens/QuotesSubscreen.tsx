@@ -2,12 +2,13 @@ import { useState } from "react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
 import { LoginData } from "@/shared/types/login.types"
-import { Quote, QuoteCourier, QuoteUI } from "@/shared/types/quotes.types"
+import { Quote, QuoteCourier, QuoteSource, QuoteUI } from "@/shared/types/quotes.types"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { QuoteCard } from "@/features/Quotes/QuoteCard"
-import { filterQuotesByCourierUtil, formatQuoteServiceName, getQuoteImg } from "@/shared/utils/quotes.utils"
+import { filterQuotesByCourierUtil, filterQuotesBySourceUtil, formatQuoteServiceName, getQuoteImg } from "@/shared/utils/quotes.utils"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { CourierFilter } from "@/features/Quotes/CourierFilter"
+import { SourceFilterDropdown } from "@/features/Quotes/SourceFilterDropdown"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -26,6 +27,16 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       total: 169,
       amountFormatted: "$169",
       source: "GE",
+      logoSrc: getQuoteImg("Estafeta", isMobile),
+    },
+    {
+      id: "8812f041-a4dd-4a96-8195-10941e2779c4",
+      service: "Estafeta Pakke",
+      courier: "Estafeta",
+      typeService: "nextDay",
+      total: 201,
+      amountFormatted: "$201",
+      source: "Pkk",
       logoSrc: getQuoteImg("Estafeta", isMobile),
     },
     {
@@ -84,7 +95,6 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>(mockQuotes)
   // TODO: Change this for empty array at the end
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>(mockQuotes)
-  console.log('Filtered Quotes:', filteredQuotes)
 
   const updateAllQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
@@ -107,6 +117,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     const filteredCouriers = filterQuotesByCourierUtil(allQuotes, newCourier)
     setAllFilteredQuotes(filteredCouriers)
   }
+  const filterQuotesBySource = (newSource: QuoteSource) => {
+    const filteredSources = filterQuotesBySourceUtil(allQuotes, newSource)
+    setAllFilteredQuotes(filteredSources)
+  }
 
   return (
     <main className='w-full p-4 flex flex-col gap-5 align-center'>
@@ -120,6 +134,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <div className="flex gap-3">
             <p>Filtrar por:</p>
             <CourierFilter filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
+            <SourceFilterDropdown filterQuotesBySource={filterQuotesBySource} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
             { filteredQuotes.length === 0 && (
               <p className="text-center text-lg font-semibold">No hay cotizaciones disponibles de acuerdo a tu criterio de búsqueda.</p>

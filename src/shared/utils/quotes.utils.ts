@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { GetQuoteForm, ProviderImg, QuoteCourier, QuoteImage, QuoteImgDict, QuoteUI } from "../types/quotes.types"
+import { GetQuoteForm, ProviderImg, QuoteCourier, QuoteImage, QuoteImgDict, QuoteSource, QuoteUI } from "../types/quotes.types"
 import { GET_QUOTE_API_ENDPOINT } from '../constants/global.constants'
 
 export const getQuoteMutationCb = (data: GetQuoteForm) => {
@@ -101,6 +101,6 @@ export const filterQuotesByCourierUtil = (quotes: QuoteUI[], courier: QuoteCouri
   return quotes.filter((qt) => qt.courier === courier)
 }
 
-
-
-
+export const filterQuotesBySourceUtil = (quotes: QuoteUI[], source: QuoteSource) => {
+  return quotes.filter((qt) => qt.source === source)
+}
