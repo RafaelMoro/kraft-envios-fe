@@ -179,7 +179,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             <p>Filtrar por:</p>
             <CourierFilter selectedCourier={selectedCourier} setSelectedCourier={setSelectedCourier} filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
             <SourceFilterDropdown selectedSource={selectedSource} setSelectedSource={setSelectedSource} filterQuotesBySource={filterQuotesBySource} resetFiltersQuotes={resetFiltersQuotes} />
-            <TimeFilterDropdown filterQuotesByType={filterQuotesByTimeType} resetFiltersQuotes={resetFiltersQuotes} />
+            <TimeFilterDropdown selectedType={selectedTimeType} setSelectedType={setSelectedTimeType} filterQuotesByType={filterQuotesByTimeType} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
             { filteredQuotes.length === 0 && (
               <p className="text-center text-lg font-semibold">No hay cotizaciones disponibles de acuerdo a tu criterio de búsqueda.</p>
