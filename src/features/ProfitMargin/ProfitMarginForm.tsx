@@ -62,7 +62,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
   return (
      <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-center gap-16 max-w-sm"
+      className="flex flex-col justify-center gap-12 max-w-sm mx-auto"
     >
       <section className="flex flex-col gap-3">
         <h4 className="text-xl font-semibold mb-4 text-center">Actualizar margen de ganancia</h4>

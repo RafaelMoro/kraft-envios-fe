@@ -15,7 +15,7 @@ export const ShowProfitMargin = ({ data }: ShowProfitMarginProps) => {
 
   return (
     <>
-      <Card href="#" className="max-w-sm">
+      <Card href="#" className="max-w-sm mx-auto">
         <h2 className="text-2xl font-bold text-center tracking-tight">Margen de ganancia actual</h2>
         <div className="text-green-700 dark:text-green-400 flex justify-center gap-2">
           { isPercentage && <RiLineChartLine /> }
