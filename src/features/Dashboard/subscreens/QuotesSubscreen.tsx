@@ -96,6 +96,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>(mockQuotes)
   // TODO: Change this for empty array at the end
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>(mockQuotes)
+  // Track currently selected filters so they can be applied cumulatively
+  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(null)
+  const [selectedSource, setSelectedSource] = useState<QuoteSource | null>(null)
+  const [selectedTimeType, setSelectedTimeType] = useState<QuoteTypeService | null>(null)
 
   const updateAllQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
@@ -109,22 +113,57 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }
 
   const resetFiltersQuotes = () => {
+    // Clear selected filters and reset the filtered list
+    setSelectedCourier(null)
+    setSelectedSource(null)
+    setSelectedTimeType(null)
     // TODO: Change this for the commented line
-    setAllFilteredQuotes(mockQuotes)
-    // setAllFilteredQuotes(allQuotes)
+    // use `allQuotes` when quotes are coming from the API
+    setAllFilteredQuotes(allQuotes)
+    // setAllFilteredQuotes(mockQuotes)
+  }
+
+  // Apply all currently selected filters to `allQuotes` in sequence.
+  const applyActiveFilters = (opts?: {
+    courier?: QuoteCourier | null
+    source?: QuoteSource | null
+    timeType?: QuoteTypeService | null
+  }): QuoteUI[] => {
+    const courier = opts?.courier !== undefined ? opts.courier : selectedCourier
+    const source = opts?.source !== undefined ? opts.source : selectedSource
+    const timeType = opts?.timeType !== undefined ? opts.timeType : selectedTimeType
+
+    let result = [...allQuotes]
+
+    if (courier) {
+      result = filterQuotesByCourierUtil(result, courier)
+    }
+    if (source) {
+      result = filterQuotesBySourceUtil(result, source)
+    }
+    if (timeType) {
+      result = filterQuotesByTimeTypeUtil(result, timeType)
+    }
+
+    return result
   }
 
   const filterQuotesByCourier = (newCourier: QuoteCourier) => {
-    const filteredCouriers = filterQuotesByCourierUtil(allQuotes, newCourier)
-    setAllFilteredQuotes(filteredCouriers)
+    setSelectedCourier(newCourier)
+    const filtered = applyActiveFilters({ courier: newCourier })
+    setAllFilteredQuotes(filtered)
   }
+
   const filterQuotesBySource = (newSource: QuoteSource) => {
-    const filteredSources = filterQuotesBySourceUtil(allQuotes, newSource)
-    setAllFilteredQuotes(filteredSources)
+    setSelectedSource(newSource)
+    const filtered = applyActiveFilters({ source: newSource })
+    setAllFilteredQuotes(filtered)
   }
+
   const filterQuotesByTimeType = (newTimeType: QuoteTypeService) => {
-    const filteredTimeTypes = filterQuotesByTimeTypeUtil(allQuotes, newTimeType)
-    setAllFilteredQuotes(filteredTimeTypes)
+    setSelectedTimeType(newTimeType)
+    const filtered = applyActiveFilters({ timeType: newTimeType })
+    setAllFilteredQuotes(filtered)
   }
 
   return (
