@@ -62,29 +62,30 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
   return (
      <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-center gap-16"
+      className="flex flex-col justify-center gap-16 max-w-sm"
     >
-      <section className="flex flex-col gap-5">
-        <h4 className="text-xl font-semibold mb-4">Actualizar margen de ganancia</h4>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="value">Valor</Label>
-            </div>
-            <TextInput
-              id="value"
-              type="number"
-              inputMode="numeric"
-              defaultValue={0}
-              {...register("value")}
-            />
-            { errors.value?.message && (
-              <ErrorMessage>{errors.value?.message}</ErrorMessage>
-            )}
+      <section className="flex flex-col gap-3">
+        <h4 className="text-xl font-semibold mb-4 text-center">Actualizar margen de ganancia</h4>
+        <p className="text-center text-gray-600 dark:text-gray-400">Ingrese los siguientes datos para actualizar el margen de ganancia</p>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="value">Valor</Label>
           </div>
-          <Dropdown label={`Tipo: ${profitMarginType.label}`} inline>
-            <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
-            <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
-          </Dropdown>
+          <TextInput
+            id="value"
+            type="number"
+            inputMode="numeric"
+            defaultValue={0}
+            {...register("value")}
+          />
+          { errors.value?.message && (
+            <ErrorMessage>{errors.value?.message}</ErrorMessage>
+          )}
+        </div>
+        <Dropdown label={`Tipo: ${profitMarginType.label}`} inline>
+          <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
+          <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
+        </Dropdown>
       </section>
 
       <div className="flex justify-center">
