@@ -184,13 +184,17 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             <TimeFilterDropdown selectedType={selectedTimeType} setSelectedType={setSelectedTimeType} filterQuotesByType={filterQuotesByTimeType} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
             { filteredQuotes.length === 0 && (
-              <p className="text-center text-lg font-semibold">No hay cotizaciones disponibles de acuerdo a tu criterio de búsqueda.</p>
+              <div className="min-h-[500px]">
+                <p className="text-center text-lg font-semibold">No hay cotizaciones disponibles de acuerdo a tu criterio de búsqueda.</p>
+              </div>
             )}
             { filteredQuotes.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                { filteredQuotes.map((qt) => (
-                  <QuoteCard key={`${qt.id}-${qt.service}`} quote={qt} />
-                )) }
+              <div className="min-h-[500px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  { filteredQuotes.map((qt) => (
+                    <QuoteCard key={`${qt.id}-${qt.service}`} quote={qt} />
+                  )) }
+                </div>
               </div>
             )}
         </section>
