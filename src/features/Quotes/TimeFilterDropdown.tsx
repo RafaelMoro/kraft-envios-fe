@@ -11,6 +11,11 @@ export const TimeFilterDropdown = ({ filterQuotesByType, resetFiltersQuotes }: T
   const allServiceTypes: QuoteTypeService[] = [...QUOTE_SERVICE_TYPES]
   const [selectedType, setSelectedType] = useState<QuoteTypeService | null>(null)
 
+  const serviceTypeLabels: Record<QuoteTypeService, string> = {
+    standard: 'Standard',
+    nextDay: 'Siguiente día'
+  }
+
   const handleClick = (type: QuoteTypeService) => {
     setSelectedType(type)
     filterQuotesByType(type)
@@ -22,10 +27,10 @@ export const TimeFilterDropdown = ({ filterQuotesByType, resetFiltersQuotes }: T
   }
 
   return (
-    <Dropdown label={`Tiempo de entrega: ${selectedType || "Todos"}`} inline>
+    <Dropdown label={`Tiempo de entrega: ${selectedType ? serviceTypeLabels[selectedType] : "Todos"}`} inline>
       { allServiceTypes.map((type) => (
         <DropdownItem key={type} onClick={() => handleClick(type)}>
-          {type}
+          {serviceTypeLabels[type]}
         </DropdownItem>
       )) }
       <DropdownItem onClick={selectAllSources}>
