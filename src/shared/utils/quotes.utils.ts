@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { GetQuoteForm, ProviderImg, QuoteCourier, QuoteImage, QuoteImgDict } from "../types/quotes.types"
+import { GetQuoteForm, ProviderImg, QuoteCourier, QuoteImage, QuoteImgDict, QuoteUI } from "../types/quotes.types"
 import { GET_QUOTE_API_ENDPOINT } from '../constants/global.constants'
 
 export const getQuoteMutationCb = (data: GetQuoteForm) => {
@@ -96,3 +96,11 @@ export const formatQuoteServiceName = (service: string): string => {
     .replace(/\s+/g, ' ') // collapse multiple spaces
     .trim()
 }
+
+export const filterQuotesByCourierUtil = (quotes: QuoteUI[], courier: QuoteCourier): QuoteUI[] => {
+  return quotes.filter((qt) => qt.courier === courier)
+}
+
+
+
+
