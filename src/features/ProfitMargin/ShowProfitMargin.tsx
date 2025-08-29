@@ -1,8 +1,8 @@
 "use client"
-
-import { ProfitMargin } from "@/shared/types/margin-profit.types"
 import { RiLineChartLine } from "@remixicon/react"
 import { Card } from "flowbite-react"
+
+import { ProfitMargin } from "@/shared/types/margin-profit.types"
 
 interface ShowProfitMarginProps {
   data: ProfitMargin | null | undefined
@@ -10,8 +10,17 @@ interface ShowProfitMarginProps {
 
 export const ShowProfitMargin = ({ data }: ShowProfitMarginProps) => {
   const isPercentage = data?.type === 'percentage'
-  const value = data?.value ?? '0'
+  const value = data?.value ?? null
   const currentMargin = isPercentage ? `${value}%` : `$${value}`
+
+  if (!value) {
+    return (
+      <section className="flex flex-col gap-4">
+        <h2 className="text-2xl font-bold text-center tracking-tight">Margen de ganancia no establecido</h2>
+        <p className="text-center text-gray-600 dark:text-gray-400">No se ha establecido un margen de ganancia aún.</p>
+      </section>
+    )
+  }
 
   return (
     <>
