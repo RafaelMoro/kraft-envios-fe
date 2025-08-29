@@ -1,11 +1,26 @@
 import { AxiosResponse } from "axios"
 import { number, object, ObjectSchema, string } from "yup"
 
+export type QuoteTypeSevice = 'standard' | 'nextDay';
+
+export type QuoteCourier =
+  | 'Estafeta'
+  | 'DHL'
+  | 'UPS'
+  | 'Fedex'
+  | 'Paquetexpress'
+  | 'AMPM'
+  // Corresponding to 99 or 99MIN
+  | 'NextDay'
+  | 'Tres guerras';
+
 //#region Interfaces and types
 export interface Quote {
   id: string
   service: string
   total: number
+  typeService: QuoteTypeSevice | null;
+  courier: QuoteCourier | null;
   source: string
 }
 
@@ -14,13 +29,15 @@ export interface QuoteUI extends Quote {
   logoSrc: QuoteImage;
 }
 
-export type ProviderImg = 'dhl' | 'estafeta' | 'fedex' | 'ups' | 'paquetexpres' | 'other'
+export type ProviderImg = 'dhl' | 'estafeta' | 'fedex' | 'ups' | 'paquetexpres' | 'ninetyNineMin' | 'ampm' | 'other'
 export type QuoteImgDict = {
   dhl: QuoteImage;
   estafeta: QuoteImage;
   fedex: QuoteImage;
   ups: QuoteImage;
   paquetexpres: QuoteImage;
+  ninetyNineMin: QuoteImage;
+  ampm: QuoteImage;
   other: QuoteImage;
 }
 

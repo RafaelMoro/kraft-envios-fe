@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
   
     const payload: GetQuoteForm = await request.json()
-    const uri = `${process.env.BACKEND_URI}/quote`
+    const uri = `${process.env.BACKEND_URI}/quotes`
     const res: AxiosResponse<GetQuoteData> = await axios.post(uri, payload, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
