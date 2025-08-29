@@ -12,6 +12,7 @@ import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { Aside } from '@/shared/ui/organisms/Aside'
 import { Logo } from '@/shared/ui/atoms/Logo'
 import { HeaderMenuMobile } from '@/shared/ui/organisms/HeaderMenuDrawer'
+import { MarginProfitSubscreen } from './subscreens/MarginProfitSubscreen'
 
 export interface DashboardProps {
   userInfo: LoginData | null
@@ -42,15 +43,17 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
         </header>
         { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
         { screen === 'overview' && (<Order userInfo={userInfo} />) }
+        { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
       </div>
     )
   }
 
   return (
     <div className="w-full min-h-screen max-w-screen-2xl flex mx-auto my-0">
-      <Aside screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} />
+      <Aside screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} userInfo={userInfo} />
       { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
       { screen === 'overview' && (<Order userInfo={userInfo} />) }
+      { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
     </div>
   )
 }

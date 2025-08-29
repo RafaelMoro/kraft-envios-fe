@@ -1,32 +1,30 @@
 import axios from 'axios'
-import { GetQuoteForm, ProviderImg, QuoteImage, QuoteImgDict } from "../types/quotes.types"
+import { GetQuoteForm, ProviderImg, QuoteCourier, QuoteImage, QuoteImgDict } from "../types/quotes.types"
 import { GET_QUOTE_API_ENDPOINT } from '../constants/global.constants'
 
 export const getQuoteMutationCb = (data: GetQuoteForm) => {
   return axios.post(GET_QUOTE_API_ENDPOINT, data)
 }
 
-export const categorizeImg = (service: string): ProviderImg => {
-  const serviceLowerCase = service.toLowerCase()
+export const categorizeImg = (courier: QuoteCourier | null): ProviderImg => {
+  if (!courier) return 'other'
 
-  const isDhl = serviceLowerCase.includes('dhl')
-  const isEstafeta = serviceLowerCase.includes('estafeta')
-  const isUps = serviceLowerCase.includes('ups')
-  const isPaqueteExpress = serviceLowerCase.includes('paquetexpres')
-  const isFedex = serviceLowerCase.includes('fedex')
+  const normalized = courier.toString().toLowerCase()
 
-  if (isDhl) return 'dhl'
-  if (isEstafeta) return 'estafeta'
-  if (isUps) return 'ups'
-  if (isPaqueteExpress) return 'paquetexpres'
-  if (isFedex) return 'fedex'
+  if (normalized.includes('dhl')) return 'dhl'
+  if (normalized.includes('estafeta')) return 'estafeta'
+  if (normalized.includes('ups')) return 'ups'
+  if (normalized.includes('paquet')) return 'paquetexpres'
+  if (normalized.includes('fedex')) return 'fedex'
+  if (normalized.includes('next') || normalized.includes('99') || normalized.includes('99min')) return 'ninetyNineMin'
+  if (normalized.includes('ampm') || normalized.includes('ampm')) return 'ampm'
 
+  // Fallback to 'other' as the last option
   return 'other'
 }
 
-export const getQuoteImg = (service: string, isMobile: boolean): QuoteImage => {
-  const serviceLowerCase = service.toLowerCase()
-  const provider = categorizeImg(serviceLowerCase)
+export const getQuoteImg = (courier: QuoteCourier | null, isMobile: boolean): QuoteImage => {
+  const provider = categorizeImg(courier)
 
   const quoteImgDict: QuoteImgDict = {
     "dhl": {
@@ -59,6 +57,18 @@ export const getQuoteImg = (service: string, isMobile: boolean): QuoteImage => {
       width: isMobile ? 15 : 30,
       height: isMobile ? 15 : 30
     },
+    "ninetyNineMin": {
+      source: "/img/99min-logo.svg",
+  provider: "ninetyNineMin",
+      width: isMobile ? 90 : 150,
+      height: isMobile ? 90 : 150
+    },
+    "ampm": {
+      source: "/img/ampm-logo.svg",
+      provider: "ampm",
+      width: isMobile ? 90 : 120,
+      height: isMobile ? 90 : 120
+    },
     "other": {
       source: "/kraft-logo.svg",
       provider: "other",
@@ -72,6 +82,9 @@ export const getQuoteImg = (service: string, isMobile: boolean): QuoteImage => {
   if (provider === 'ups') return quoteImgDict["ups"]
   if (provider === 'paquetexpres') return quoteImgDict["paquetexpres"]
   if (provider === 'fedex') return quoteImgDict["fedex"]
+
+  if (provider === 'ninetyNineMin') return quoteImgDict["ninetyNineMin"]
+  if (provider === 'ampm') return quoteImgDict["ampm"]
 
   return quoteImgDict["other"]
 }
