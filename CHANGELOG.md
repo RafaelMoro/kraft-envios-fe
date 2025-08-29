@@ -1,3 +1,9 @@
+## v0.9.0 (2025-08-29)
+
+### Pull Requests
+[#19](https://github.com/RafaelMoro/kraft-envios-fe/pull/19) | Add margin profit feature
+
+
 ## v0.8.2 (2025-08-27)
 
 ### Pull Requests
