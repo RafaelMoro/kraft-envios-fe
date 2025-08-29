@@ -83,7 +83,6 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
   // TODO: Change this for empty array at the end
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>(mockQuotes)
-  console.log('filteredQuotes', filteredQuotes)
 
   const updateAllQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
@@ -94,6 +93,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     }))
     setAllQuotes(quotesFormatted)
     setAllFilteredQuotes(quotesFormatted)
+  }
+
+  const resetFiltersQuotes = () => {
+    // TODO: Change this for the commented line
+    setAllFilteredQuotes(mockQuotes)
+    // setAllFilteredQuotes(allQuotes)
   }
 
   const filterQuotesByCourier = (newCourier: QuoteCourier) => {
@@ -112,7 +117,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
           <div className="flex gap-3">
             <p>Filtrar por:</p>
-            <CourierFilter filterQuotesByCourier={filterQuotesByCourier} />
+            <CourierFilter filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               { filteredQuotes.map((qt) => (

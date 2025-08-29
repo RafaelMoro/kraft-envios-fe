@@ -7,15 +7,20 @@ import { QUOTE_COURIERS } from "../../shared/types/quotes.types"
 
 interface CourierFilterProps {
   filterQuotesByCourier: (courier: QuoteCourier) => void
+  resetFiltersQuotes: () => void
 }
 
-export const CourierFilter = ({ filterQuotesByCourier }: CourierFilterProps) => {
+export const CourierFilter = ({ filterQuotesByCourier, resetFiltersQuotes }: CourierFilterProps) => {
   const allCouriers: QuoteCourier[] = [...QUOTE_COURIERS]
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(null)
 
   const handleClick = (courier: QuoteCourier) => {
     setSelectedCourier(courier)
     filterQuotesByCourier(courier)
+  }
+  const selectAllCouriers = () => {
+    setSelectedCourier(null)
+    resetFiltersQuotes()
   }
 
   return (
@@ -25,6 +30,9 @@ export const CourierFilter = ({ filterQuotesByCourier }: CourierFilterProps) => 
           {courier}
         </DropdownItem>
       )) }
+      <DropdownItem onClick={selectAllCouriers}>
+        Todos
+      </DropdownItem>
     </Dropdown>
   )
 }
