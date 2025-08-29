@@ -177,7 +177,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
           <div className="flex gap-3">
             <p>Filtrar por:</p>
-            <CourierFilter filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
+            <CourierFilter selectedCourier={selectedCourier} setSelectedCourier={setSelectedCourier} filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
             <SourceFilterDropdown filterQuotesBySource={filterQuotesBySource} resetFiltersQuotes={resetFiltersQuotes} />
             <TimeFilterDropdown filterQuotesByType={filterQuotesByTimeType} resetFiltersQuotes={resetFiltersQuotes} />
           </div>
