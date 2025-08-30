@@ -171,6 +171,7 @@ const config: Config = {
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: [
     "<rootDir>/__tests__/mocks/",
+    "<rootDir>/__tests__/utils-test/"
   ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
