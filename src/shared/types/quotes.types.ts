@@ -1,27 +1,45 @@
 import { AxiosResponse } from "axios"
 import { number, object, ObjectSchema, string } from "yup"
 
-export type QuoteTypeSevice = 'standard' | 'nextDay';
 
-export type QuoteCourier =
-  | 'Estafeta'
-  | 'DHL'
-  | 'UPS'
-  | 'Fedex'
-  | 'Paquetexpress'
-  | 'AMPM'
+// Runtime array of supported couriers. Keep this in sync if you add/remove providers.
+export const QUOTE_COURIERS = [
+  'Estafeta',
+  'DHL',
+  'UPS',
+  'Fedex',
+  'Paquetexpress',
+  'AMPM',
   // Corresponding to 99 or 99MIN
-  | 'NextDay'
-  | 'Tres guerras';
+  'NextDay',
+  'Tres guerras'
+] as const
+
+export const QUOTE_SOURCES = [
+  'GE',
+  'TONE',
+  'Pkk',
+  'Mn'
+] as const
+
+export const QUOTE_SERVICE_TYPES = [
+  'standard',
+  'nextDay'
+] as const
+
+// Derive the type from the runtime constant so changing one source keeps both in sync.
+export type QuoteCourier = typeof QUOTE_COURIERS[number]
+export type QuoteSource = typeof QUOTE_SOURCES[number]
+export type QuoteTypeService = typeof QUOTE_SERVICE_TYPES[number]
 
 //#region Interfaces and types
 export interface Quote {
   id: string
   service: string
   total: number
-  typeService: QuoteTypeSevice | null;
+  typeService: QuoteTypeService | null;
   courier: QuoteCourier | null;
-  source: string
+  source: QuoteSource
 }
 
 export interface QuoteUI extends Quote {
