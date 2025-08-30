@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Button } from "flowbite-react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
@@ -24,6 +24,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(null)
   const [selectedSource, setSelectedSource] = useState<QuoteSource | null>(null)
   const [selectedTimeType, setSelectedTimeType] = useState<QuoteTypeService | null>(null)
+  const quotesSectionRef = useRef(null)
 
   const updateAllQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
@@ -34,6 +35,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     }))
     setAllQuotes(quotesFormatted)
     setAllFilteredQuotes(quotesFormatted)
+    setTimeout(() => {
+      scrollToQuotesSection()
+    }, 500)
   }
 
   const resetFiltersQuotes = () => {
@@ -86,13 +90,24 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     setAllFilteredQuotes(filtered)
   }
 
+  /**
+   * Scroll the quotes section into view when the ref exists.
+   * Safe-guards against missing ref or missing scrollIntoView API.
+   */
+  const scrollToQuotesSection = () => {
+    const el = quotesSectionRef?.current as HTMLElement | null
+    if (el && typeof el.scrollIntoView === 'function') {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   return (
     <main className='w-full p-4 flex flex-col gap-5 align-center'>
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-center text-xl mb-5">Ingrese los siguientes datos para obtener una cotización</p>
       <QuoteForm updateQuotes={updateAllQuotes} />
       { allQuotes.length > 0 && (
-        <section className="flex flex-col gap-4 align-center justify-center mt-7">
+        <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
           <div className="flex flex-col md:flex-row items-center gap-3">
