@@ -1,3 +1,9 @@
+## v0.10.1 (2025-08-30)
+
+### Pull Requests
+[#23](https://github.com/RafaelMoro/kraft-envios-fe/pull/23) | Improve sign out and login process
+
+
 ## v0.10.0 (2025-08-30)
 
 ### Pull Requests
