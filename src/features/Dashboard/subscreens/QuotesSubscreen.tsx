@@ -18,85 +18,8 @@ interface QuotesProps {
 
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
-
-  // TODO: Delete the mocks
-  const mockQuotes: QuoteUI[] = [
-    {
-      id: "8812f041-a4dd-4a96-8195-10941e2779ce",
-      service: "Estafeta sin recoleccion mejor precio 2025",
-      courier: "Estafeta",
-      typeService: "nextDay",
-      total: 169,
-      amountFormatted: "$169",
-      source: "GE",
-      logoSrc: getQuoteImg("Estafeta", isMobile),
-    },
-    {
-      id: "8812f041-a4dd-4a96-8195-10941e2779c4",
-      service: "Estafeta Pakke",
-      courier: "Estafeta",
-      typeService: "nextDay",
-      total: 201,
-      amountFormatted: "$201",
-      source: "Pkk",
-      logoSrc: getQuoteImg("Estafeta", isMobile),
-    },
-    {
-      id: "6e40eaa0-102b-4ec5-9d6e-e8991b30cf75",
-      service: "DHL Express Select RECOMENDAMOS KILOS CHICOS",
-      total: 198.62,
-      courier: "DHL",
-      typeService: "nextDay",
-      amountFormatted: "$198.62",
-      source: "GE",
-      logoSrc: getQuoteImg("DHL", isMobile),
-    },
-    {
-      id: "0807501a-ebf6-4156-8b22-2acd096d5731",
-      service: "UPS premium UPS",
-      total: 166.08,
-      courier: "UPS",
-      typeService: "nextDay",
-      amountFormatted: "$166.08",
-      source: "GE",
-      logoSrc: getQuoteImg("UPS", isMobile),
-    },
-    {
-      id: "3a9ef7f2-0f4c-4ca9-9ee2-bace896afaaf",
-      service: "PAQUETEXPRES NACIONAL ZONA1",
-      courier: "Paquetexpress",
-      typeService: "standard",
-      total: 244.09,
-      amountFormatted: "$244.09",
-      source: "GE",
-      logoSrc: getQuoteImg("Paquetexpress", isMobile),
-    },
-    {
-      id: "9",
-      service: "99Min",
-      courier: "NextDay",
-      typeService: "standard",
-      total: 166.75,
-      amountFormatted: "$166.75",
-      source: "TONE",
-      logoSrc: getQuoteImg("NextDay", isMobile),
-    },
-    {
-      id: "FDX-FedEx-FEDEX_STANDARD_OVERNIGHT",
-      service: "FedEx Standard Overnight",
-      courier: "Fedex",
-      typeService: "nextDay",
-      total: 214.7,
-      amountFormatted: "$214.70",
-      source: "Pkk",
-      logoSrc: getQuoteImg("Fedex", isMobile),
-    },
-  ];
-
-  // TODO: Change this for empty array at the end
-  const [allQuotes, setAllQuotes] = useState<QuoteUI[]>(mockQuotes)
-  // TODO: Change this for empty array at the end
-  const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>(mockQuotes)
+  const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
+  const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>([])
   // Track currently selected filters so they can be applied cumulatively
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(null)
   const [selectedSource, setSelectedSource] = useState<QuoteSource | null>(null)
@@ -114,14 +37,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }
 
   const resetFiltersQuotes = () => {
-    // Clear selected filters and reset the filtered list
     setSelectedCourier(null)
     setSelectedSource(null)
     setSelectedTimeType(null)
-    // TODO: Change this for the commented line
-    // use `allQuotes` when quotes are coming from the API
     setAllFilteredQuotes(allQuotes)
-    // setAllFilteredQuotes(mockQuotes)
   }
 
   // Apply all currently selected filters to `allQuotes` in sequence.
