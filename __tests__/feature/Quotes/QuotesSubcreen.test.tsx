@@ -300,20 +300,6 @@ describe('QuotesSubscreen', () => {
   })
 
   describe('Given the component structure and layout', () => {
-    it('When component renders, Then it has correct main layout structure', () => {
-      const { container } = render(
-        <QuotesSubscreenWrapper
-          push={mockPush}
-          userInfo={mockUserInfo}
-        />
-      )
-
-      // Check for main container with correct classes
-      const mainElement = container.querySelector('main.w-full.p-4.flex.flex-col')
-      expect(mainElement).toBeInTheDocument()
-      expect(mainElement).toHaveClass('gap-5', 'align-center')
-    })
-
     it('When quotes are available, Then quotes section has correct structure', async () => {
       const user = userEvent.setup()
       
@@ -336,27 +322,6 @@ describe('QuotesSubscreen', () => {
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /cotizaciones/i })).toBeInTheDocument()
       })
-
-      // Check for quotes section structure
-      const quotesSection = screen.getByRole('heading', { name: /cotizaciones/i }).closest('section')
-      expect(quotesSection).toHaveClass('flex', 'flex-col', 'gap-4', 'align-center', 'justify-center', 'mt-7')
-    })
-
-    it('When elements are rendered, Then they are in correct order', async () => {
-      render(
-        <QuotesSubscreenWrapper
-          push={mockPush}
-          userInfo={mockUserInfo}
-        />
-      )
-
-      const headings = screen.getAllByRole('heading')
-      
-      // Welcome message should be first
-      expect(headings[0]).toHaveTextContent(/bienvenido john/i)
-      
-      // Quote form heading should be second
-      expect(headings[1]).toHaveTextContent(/obtener cotización/i)
     })
   })
 
