@@ -19,7 +19,7 @@ export const ShowProfitMargin = ({ data }: ShowProfitMarginProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="w-full items-center grid grid-cols-1 md:grid-cols-2 gap-4">
       { (data && data.length > 0) && data.map((provider) => (
         <ProfitMarginCard key={provider.name} providerInfo={provider} />
       ))

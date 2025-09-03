@@ -9,10 +9,10 @@ interface ProfitMarginCardProps {
 export const ProfitMarginCard = ({ providerInfo }: ProfitMarginCardProps) => {
 
   return (
-    <Card href="#" className="max-w-sm mx-auto">
+    <Card className="mx-auto w-full lg:min-w-[387px] md:min-h-[340px] hover:bg-gray-100 dark:hover:bg-gray-700">
       <span className="text-sm text-center tracking-tight text-gray-600 dark:text-gray-400">Origen: {providerInfo.name}</span>
       <h4 className="text-2xl font-bold text-center tracking-tight">Proveedores:</h4>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-col gap-2">
         { providerInfo.couriers.map((courier) => {
           const isPercentage = courier?.profitMargin?.type === 'percentage'
           const value = courier?.profitMargin?.value ?? null
