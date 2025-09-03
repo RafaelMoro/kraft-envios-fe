@@ -33,7 +33,7 @@ export const MarginProfitSubscreen = ({ userInfo }: MarginProgitSubscreenProps) 
         <SubscreenManagerGroupButton subscreen={subscreen} updateSubscreen={updateSubscreen} />
       </div>
       { subscreen === 'view' && (<ShowProfitMargin data={data} />) }
-      { subscreen === 'edit' && (<ProfitMarginForm refetchMarginProfit={refetchMarginProfit} />)}
+      { subscreen === 'edit' && (<ProfitMarginForm data={data} refetchMarginProfit={refetchMarginProfit} />)}
     </main>
   )
 }

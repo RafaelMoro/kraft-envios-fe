@@ -5,16 +5,22 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
 
-import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProfitMarginTypeOption, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
+import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
+import { QUOTE_SOURCES, QuoteSource } from "@/shared/types/quotes.types"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
+  data: ProviderGlobalConfig[] | null | undefined
 }
 
-export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps) => {
+export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
+  const allProviders = [...QUOTE_SOURCES]
+  const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
+  const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
+
   const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
     label: 'Porcentaje',
     value: 'percentage'
@@ -67,6 +73,13 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
       <section className="flex flex-col gap-3">
         <h4 className="text-xl font-semibold mb-4 text-center">Actualizar margen de ganancia</h4>
         <p className="text-center text-gray-600 dark:text-gray-400">Ingrese los siguientes datos para actualizar el margen de ganancia</p>
+        <Dropdown label={`Origen: ${selectedProvider}`} inline>
+          {allProviders.map((provider) => (
+            <DropdownItem key={provider} onClick={() => updateProvider(provider)}>
+              {provider}
+            </DropdownItem>
+          ))}
+        </Dropdown>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="value">Valor</Label>
