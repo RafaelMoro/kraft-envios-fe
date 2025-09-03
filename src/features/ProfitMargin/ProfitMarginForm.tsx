@@ -10,6 +10,7 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { QUOTE_COURIERS, QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
+import { RiAddLine } from "@remixicon/react"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
@@ -18,31 +19,8 @@ interface ProfitMarginFormProps {
 
 export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
-  const allCouriers = [...QUOTE_COURIERS]
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
-
-  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
-  const updateCourier = (newCourier: QuoteCourier) => setSelectedCourier(newCourier)
-
-  const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
-    label: 'Porcentaje',
-    value: 'percentage'
-  })
-  const updateProfitMarginType = (value: 'percentage' | 'absolute') => {
-    if (value === 'percentage') {
-      setProfitMarginType({
-        label: 'Porcentaje',
-        value: 'percentage'
-      })
-      return
-    }
-
-    setProfitMarginType({
-      label: 'Absoluto',
-      value: 'absolute'
-    })
-  }
 
   const {
     register,
@@ -60,58 +38,45 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
   })
 
   const onSubmit: SubmitHandler<MarginProfitForm> = (data) => {
-    const payload: UpdateMarginProfitPayload = {
-      profitMargin: {
-        value: data.value,
-        type: profitMarginType.value
-      }
-    }
-    mutate(payload)
+    // const payload: UpdateMarginProfitPayload = {
+    //   profitMargin: {
+    //     value: data.value,
+    //     type: profitMarginType.value
+    //   }
+    // }
+    // mutate(payload)
   }
 
   return (
-     <form
+    <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-center gap-12 max-w-sm mx-auto"
+      className="flex flex-col justify-center gap-12 mx-auto"
     >
       <section className="flex flex-col gap-3">
-        <h4 className="text-xl font-semibold mb-4 text-center">Actualizar margen de ganancia</h4>
-        <p className="text-center text-gray-600 dark:text-gray-400">Ingrese los siguientes datos para actualizar el margen de ganancia</p>
-        <Dropdown label={`Origen: ${selectedProvider}`} inline>
-          {allProviders.map((provider) => (
-            <DropdownItem key={provider} onClick={() => updateProvider(provider)}>
-              {provider}
-            </DropdownItem>
-          ))}
-        </Dropdown>
-        <article>
-          <Dropdown label={`Paquetería: ${selectedCourier}`} inline>
-            {allCouriers.map((courier) => (
-              <DropdownItem key={courier} onClick={() => updateCourier(courier)}>
-                {courier}
+        <h4 className="text-xl font-semibold mb-4 text-center">Configuración por proveedor</h4>
+        <p className="text-center text-gray-600 dark:text-gray-400">Configure los margenes de ganancia por paquetería</p>
+        <div className="flex gap-3 items-center">
+          <div className="mb-2 block">
+            <Label htmlFor="provider-value" className="text-lg">Proveedor:</Label>
+          </div>
+          <Dropdown label={selectedProvider} inline>
+            {allProviders.map((provider) => (
+              <DropdownItem key={provider} onClick={() => updateProvider(provider)}>
+                {provider}
               </DropdownItem>
             ))}
           </Dropdown>
-        </article>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="value">Valor</Label>
-          </div>
-          <TextInput
-            id="value"
-            type="number"
-            inputMode="numeric"
-            defaultValue={0}
-            {...register("value")}
-          />
-          { errors.value?.message && (
-            <ErrorMessage>{errors.value?.message}</ErrorMessage>
-          )}
         </div>
-        <Dropdown label={`Tipo: ${profitMarginType.label}`} inline>
-          <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
-          <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
-        </Dropdown>
+        <article className="flex justify-between">
+          <h5 className="text-xl font-semibold mb-4 text-center">Configuración por paquetería</h5>
+          <Button
+            className="hover:cursor-pointer inline-flex gap-1"
+            color="light"
+          >
+            <RiAddLine />
+            Agregar paquetería
+          </Button>
+        </article>
       </section>
 
       <div className="flex justify-center">
@@ -119,7 +84,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
           className="hover:cursor-pointer"
           disabled={isPending}
           type="submit">
-          { isPending ? (<Spinner aria-label="loading updating margin profit" />) : 'Actualizar margen' }
+          { isPending ? (<Spinner aria-label="loading updating margin profit" />) : 'Guardar configuración' }
         </Button>
       </div>
     </form>
