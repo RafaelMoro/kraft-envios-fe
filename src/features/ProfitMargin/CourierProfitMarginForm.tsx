@@ -33,35 +33,33 @@ export const CourierProfitMarginForm = () => {
   return (
     <form
       // onSubmit={handleSubmit(onSubmit)}
-      className="w-full mx-auto border border-gray-300 dark:border-gray-600 rounded-lg p-4 grid grid-cols-2 grid-rows-2 gap-y-5"
+      className="w-full mx-auto border border-gray-300 dark:border-gray-600 rounded-lg p-4 grid grid-cols-2 gap-x-2 gap-y-5"
     >
-      <div className="col-span-2 w-full">
-        <div className="flex justify-between">
-          <div className="flex items-center gap-2 mb-3">
-            <RiArchiveLine />
-            <h5 className="text-lg">Paquetería</h5>
-          </div>
-          <span className="text-red-600">
-            <RiDeleteBinLine />
-          </span>
+      <div className="col-span-2 w-full flex justify-between">
+        <div className="flex items-center gap-2 mb-3">
+          <RiArchiveLine />
+          <h5 className="text-lg">Paquetería</h5>
         </div>
-        <Dropdown label="" renderTrigger={() => (
-          <Button
-            className="w-full hover:cursor-pointer flex justify-between"
-            color="light"
-          >
-            {selectedCourier}
-            <RiArrowDownSLine />
-          </Button>
-        )}>
-          {allCouriers.map((courier) => (
-            <DropdownItem key={courier} onClick={() => updateCourier(courier)}>
-              {courier}
-            </DropdownItem>
-          ))}
-        </Dropdown>
+        <span className="text-red-600">
+          <RiDeleteBinLine />
+        </span>
       </div>
-      <div>
+      <Dropdown label="" renderTrigger={() => (
+        <Button
+          className="w-full col-span-2 hover:cursor-pointer flex justify-between"
+          color="light"
+        >
+          {selectedCourier}
+          <RiArrowDownSLine />
+        </Button>
+      )}>
+        {allCouriers.map((courier) => (
+          <DropdownItem key={courier} onClick={() => updateCourier(courier)}>
+            {courier}
+          </DropdownItem>
+        ))}
+      </Dropdown>
+      <div className="col-span-2 md:col-span-1">
         <div className="mb-2 block">
           <Label htmlFor="value">Valor</Label>
         </div>
@@ -76,7 +74,15 @@ export const CourierProfitMarginForm = () => {
           <ErrorMessage>{errors.value?.message}</ErrorMessage>
         )} */}
       </div>
-      <Dropdown label={`Tipo: ${profitMarginType.label}`} inline>
+      <Dropdown label="" renderTrigger={() => (
+        <Button
+          className="w-full col-span-2 md:col-span-1 place-self-end hover:cursor-pointer flex justify-between"
+          color="light"
+        >
+          {profitMarginType.label}
+          <RiArrowDownSLine />
+        </Button>
+      )}>
         <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
         <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
       </Dropdown>
