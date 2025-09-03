@@ -23,7 +23,7 @@ export const MarginProfitSubscreen = ({ userInfo }: MarginProgitSubscreenProps) 
   return (
     <main className='w-full p-4 flex flex-col gap-16 lg:gap-20 align-center'>
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
-      <ShowProfitMargin data={null} />
+      <ShowProfitMargin data={data} />
       <ProfitMarginForm refetchMarginProfit={refetchMarginProfit} />
     </main>
   )
