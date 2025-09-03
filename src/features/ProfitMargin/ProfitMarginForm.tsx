@@ -9,7 +9,7 @@ import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProfitMarginTypeOpt
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { QUOTE_SOURCES, QuoteSource } from "@/shared/types/quotes.types"
+import { QUOTE_COURIERS, QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
@@ -18,8 +18,12 @@ interface ProfitMarginFormProps {
 
 export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
+  const allCouriers = [...QUOTE_COURIERS]
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
+
+  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
+  const updateCourier = (newCourier: QuoteCourier) => setSelectedCourier(newCourier)
 
   const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
     label: 'Porcentaje',
@@ -80,6 +84,15 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
             </DropdownItem>
           ))}
         </Dropdown>
+        <article>
+          <Dropdown label={`Paquetería: ${selectedCourier}`} inline>
+            {allCouriers.map((courier) => (
+              <DropdownItem key={courier} onClick={() => updateCourier(courier)}>
+                {courier}
+              </DropdownItem>
+            ))}
+          </Dropdown>
+        </article>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="value">Valor</Label>
