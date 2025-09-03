@@ -11,6 +11,7 @@ import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { QUOTE_SOURCES, QuoteSource } from "@/shared/types/quotes.types"
 import { CourierProfitMarginForm } from "./CourierProfitMarginForm"
+import { createUniqueId } from "@/shared/utils/global.utils"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
@@ -19,9 +20,18 @@ interface ProfitMarginFormProps {
 
 export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
-  const [countCourierConfig, setCountCourierConfig] = useState<number>(0)
+  const [courierForms, setCourierForms] = useState<string []>([])
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
+
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
+  const addCourierForm = () => {
+    const newId = createUniqueId()
+    setCourierForms((prev) => [...prev, newId])
+  }
+  const removeCourierForm = (id: string) => {
+    const filteredCouriersForms = courierForms.filter((courierId) => courierId !== id)
+    setCourierForms(filteredCouriersForms)
+  }
 
   const {
     register,
@@ -81,14 +91,14 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
           <Button
             className="hover:cursor-pointer inline-flex gap-1"
             color="light"
-            onClick={() => setCountCourierConfig((prev) => prev + 1)}
+            onClick={addCourierForm}
           >
             <RiAddLine />
             Agregar paquetería
           </Button>
         </div>
 
-        { countCourierConfig === 0 && (
+        { courierForms.length === 0 && (
           <div className="flex flex-col gap-3 justify-center items-center mt-10">
             <span className="text-gray-600 dark:text-gray-400">
               <RiArchiveLine size={40} />
@@ -97,10 +107,10 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
             <p className="text-sm text-gray-600 dark:text-gray-400">De click en &quot;Agregar paquetería&quot; para añadir una nueva configuración.</p>
           </div>
         )}
-        { countCourierConfig > 0 && (
+        { courierForms.length > 0 && (
           <div className="flex flex-col gap-3 justify-center items-center mt-10">
-            { Array.from({ length: countCourierConfig}).map((_, key) => (
-              <CourierProfitMarginForm key={key} />
+            { courierForms.map((id, key) => (
+              <CourierProfitMarginForm key={key} id={id} onRemove={removeCourierForm} />
             )) }
           </div>
         ) }

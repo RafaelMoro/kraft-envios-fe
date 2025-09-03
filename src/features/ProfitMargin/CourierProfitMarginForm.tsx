@@ -6,7 +6,12 @@ import { RiArchiveLine, RiArrowDownSLine, RiDeleteBinLine } from "@remixicon/rea
 import { QUOTE_COURIERS, QuoteCourier } from "@/shared/types/quotes.types"
 import { ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
 
-export const CourierProfitMarginForm = () => {
+interface CourierProfitMarginFormProps {
+  id: string
+  onRemove: (id: string) => void
+}
+
+export const CourierProfitMarginForm = ({ id, onRemove }: CourierProfitMarginFormProps) => {
   const allCouriers = [...QUOTE_COURIERS]
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
   const updateCourier = (newCourier: QuoteCourier) => setSelectedCourier(newCourier)
@@ -40,9 +45,9 @@ export const CourierProfitMarginForm = () => {
           <RiArchiveLine />
           <h5 className="text-lg">Paquetería</h5>
         </div>
-        <span className="text-red-600">
+        <button className="text-red-600" onClick={() => onRemove(id)}>
           <RiDeleteBinLine />
-        </span>
+        </button>
       </div>
       <Dropdown label="" renderTrigger={() => (
         <Button
