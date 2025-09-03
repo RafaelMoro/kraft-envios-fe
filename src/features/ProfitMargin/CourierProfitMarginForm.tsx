@@ -5,7 +5,7 @@ import { QUOTE_COURIERS, QuoteCourier } from "@/shared/types/quotes.types"
 import { Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
 import { ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
 
-export const ProfitMarginForm = () => {
+export const CourierProfitMarginForm = () => {
   const allCouriers = [...QUOTE_COURIERS]
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
   const updateCourier = (newCourier: QuoteCourier) => setSelectedCourier(newCourier)

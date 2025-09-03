@@ -1,16 +1,16 @@
 "use client"
 import { useState } from "react"
-import { Button, Card, Dropdown, DropdownItem, Label, Spinner, TextInput } from "flowbite-react"
+import { Button, Card, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
+import { RiAddLine, RiArchiveLine } from "@remixicon/react"
 
-import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
-import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { QUOTE_COURIERS, QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
-import { RiAddLine, RiArchiveLine } from "@remixicon/react"
+import { QUOTE_SOURCES, QuoteSource } from "@/shared/types/quotes.types"
+import { CourierProfitMarginForm } from "./CourierProfitMarginForm"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
@@ -19,6 +19,7 @@ interface ProfitMarginFormProps {
 
 export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
+  const [countCourierConfig, setCountCourierConfig] = useState<number>(0)
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
 
@@ -72,18 +73,29 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
           <Button
             className="hover:cursor-pointer inline-flex gap-1"
             color="light"
+            onClick={() => setCountCourierConfig((prev) => prev + 1)}
           >
             <RiAddLine />
             Agregar paquetería
           </Button>
         </div>
-        <div className="flex flex-col gap-3 justify-center items-center mt-10">
-          <span className="text-gray-600 dark:text-gray-400">
-            <RiArchiveLine size={40} />
-          </span>
-          <p className="text-lg text-center">No ha agregado ninguna paquetería</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">De click en &quot;Agregar paquetería&quot; para añadir una nueva configuración.</p>
-        </div>
+
+        { countCourierConfig === 0 && (
+          <div className="flex flex-col gap-3 justify-center items-center mt-10">
+            <span className="text-gray-600 dark:text-gray-400">
+              <RiArchiveLine size={40} />
+            </span>
+            <p className="text-lg text-center">No ha agregado ninguna paquetería</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">De click en &quot;Agregar paquetería&quot; para añadir una nueva configuración.</p>
+          </div>
+        )}
+        { countCourierConfig > 0 && (
+          <div className="flex flex-col gap-3 justify-center items-center mt-10">
+            { Array.from({ length: countCourierConfig}).map((_, key) => (
+              <CourierProfitMarginForm key={key} />
+            )) }
+          </div>
+        ) }
       </Card>
 
       <div className="flex justify-center">
