@@ -1,7 +1,11 @@
 import { number, object, ObjectSchema } from "yup";
+import { QuoteCourier, QuoteSource } from "./quotes.types";
 
 export type ProfitMarginType = 'percentage' | 'absolute'
 
+/**
+ * Type used for the profit margin form selection input
+ */
 export type ProfitMarginTypeOption = {
   label: string;
   value: ProfitMarginType;
@@ -12,10 +16,20 @@ export interface ProfitMargin {
   type: ProfitMarginType
 }
 
+export interface CourierGlobalConfig {
+  name: QuoteCourier;
+  profitMargin: ProfitMargin;
+}
+
+export interface ProviderGlobalConfig {
+  name: QuoteSource;
+  couriers: CourierGlobalConfig[];
+}
+
 
 export interface MarginProfitResponse {
   data: {
-    profitMargin: ProfitMargin
+    providers: ProviderGlobalConfig[]
   }
   error: null;
   message: null;
