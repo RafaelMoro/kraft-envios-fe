@@ -4,7 +4,7 @@ import { Button, Card, Dropdown, DropdownItem, Label, Spinner } from "flowbite-r
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
-import { RiAddLine, RiArchiveLine } from "@remixicon/react"
+import { RiAddLine, RiArchiveLine, RiArrowDownSLine } from "@remixicon/react"
 
 import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
@@ -57,9 +57,17 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
         <h4 className="text-2xl font-semibold mb-4 text-center">Configuración por proveedor</h4>
         <p className="text-center text-gray-600 dark:text-gray-400">Configure los margenes de ganancia por paquetería y por proveedor</p>
       </div>
-      <Card className="mx-auto w-full">
+      <Card className="max-w-lg mx-auto w-full">
           <Label htmlFor="provider-value" className="text-xl">Seleccione el proveedor:</Label>
-        <Dropdown label={selectedProvider}>
+        <Dropdown label={selectedProvider} renderTrigger={() => (
+          <Button
+            className="w-full hover:cursor-pointer flex justify-between"
+            color="light"
+          >
+            {selectedProvider}
+            <RiArrowDownSLine />
+          </Button>
+        )}>
           {allProviders.map((provider) => (
             <DropdownItem key={provider} onClick={() => updateProvider(provider)}>
               {provider}
@@ -67,9 +75,9 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
           ))}
         </Dropdown>
       </Card>
-      <Card className="mx-auto w-full">
-        <div className="flex flex-col md:flex-row justify-between">
-          <h5 className="text-xl font-semibold mb-4 text-center">Configuración de la paquetería</h5>
+      <Card className="max-w-lg mx-auto w-full">
+        <div className="flex flex-col gap-2">
+          <h5 className="text-xl mb-4">Configuración de la paquetería</h5>
           <Button
             className="hover:cursor-pointer inline-flex gap-1"
             color="light"
