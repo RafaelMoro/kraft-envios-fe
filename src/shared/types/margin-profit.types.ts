@@ -3,6 +3,8 @@ import { QuoteCourier, QuoteSource } from "./quotes.types";
 
 export type ProfitMarginType = 'percentage' | 'absolute'
 
+export type MarginProfitSubscreens = 'view' | 'edit'
+
 /**
  * Type used for the profit margin form selection input
  */
