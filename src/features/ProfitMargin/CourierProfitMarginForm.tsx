@@ -43,27 +43,30 @@ export const CourierProfitMarginForm = ({ id, onRemove }: CourierProfitMarginFor
       <div className="col-span-2 w-full flex justify-between">
         <div className="flex items-center gap-2 mb-3">
           <RiArchiveLine />
-          <h5 className="text-lg">Paquetería</h5>
+          <h5 className="text-lg">{selectedCourier}</h5>
         </div>
         <button className="text-red-600" onClick={() => onRemove(id)}>
           <RiDeleteBinLine />
         </button>
       </div>
-      <Dropdown label="" renderTrigger={() => (
-        <Button
-          className="w-full col-span-2 hover:cursor-pointer flex justify-between"
-          color="light"
-        >
-          {selectedCourier}
-          <RiArrowDownSLine />
-        </Button>
-      )}>
-        {allCouriers.map((courier) => (
-          <DropdownItem key={courier} onClick={() => updateCourier(courier)}>
-            {courier}
-          </DropdownItem>
-        ))}
-      </Dropdown>
+      <div className="w-full col-span-2 flex flex-col gap-2">
+        <Label>Paquetería:</Label>
+        <Dropdown label="" renderTrigger={() => (
+          <Button
+            className="hover:cursor-pointer flex justify-between"
+            color="light"
+          >
+            {selectedCourier}
+            <RiArrowDownSLine />
+          </Button>
+        )}>
+          {allCouriers.map((courier) => (
+            <DropdownItem key={courier} onClick={() => updateCourier(courier)}>
+              {courier}
+            </DropdownItem>
+          ))}
+        </Dropdown>
+      </div>
       <div className="col-span-2 md:col-span-1">
         <div className="mb-2 block">
           <Label htmlFor="value">Valor</Label>

@@ -68,7 +68,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
         <p className="text-center text-gray-600 dark:text-gray-400">Configure los margenes de ganancia por paquetería y por proveedor</p>
       </div>
       <Card className="max-w-lg mx-auto w-full">
-          <Label htmlFor="provider-value" className="text-xl">Seleccione el proveedor:</Label>
+        <Label htmlFor="provider-value" className="text-xl">Seleccione el proveedor:</Label>
         <Dropdown label={selectedProvider} renderTrigger={() => (
           <Button
             className="w-full hover:cursor-pointer flex justify-between"
