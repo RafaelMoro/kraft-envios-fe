@@ -50,12 +50,12 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-center gap-12 mx-auto"
+      className="flex flex-col w-full justify-center gap-12 mx-auto"
     >
       <section className="flex flex-col gap-3">
         <h4 className="text-xl font-semibold mb-4 text-center">Configuración por proveedor</h4>
         <p className="text-center text-gray-600 dark:text-gray-400">Configure los margenes de ganancia por paquetería</p>
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center justify-center">
           <div className="mb-2 block">
             <Label htmlFor="provider-value" className="text-lg">Proveedor:</Label>
           </div>
@@ -67,8 +67,8 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
             ))}
           </Dropdown>
         </div>
-        <article className="flex justify-between">
-          <h5 className="text-xl font-semibold mb-4 text-center">Configuración por paquetería</h5>
+        <article className="flex flex-col md:flex-row justify-between mt-10">
+          <h5 className="text-xl font-semibold mb-4 text-center">Configuración de la paquetería</h5>
           <Button
             className="hover:cursor-pointer inline-flex gap-1"
             color="light"
