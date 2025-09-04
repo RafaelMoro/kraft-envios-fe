@@ -10,6 +10,7 @@ import { GeneralApiError } from "@/shared/types/global.types"
 import { QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
 import { CourierProfitMarginForm } from "./CourierProfitMarginForm"
 import { createUniqueId } from "@/shared/utils/global.utils"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
@@ -19,6 +20,7 @@ interface ProfitMarginFormProps {
 export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
   const [courierForms, setCourierForms] = useState<string []>([])
+  const [emptyCouriersError, setEmptyCouriersError] = useState<string | null>(null)
   const courierFormsData = useRef<CourierForm[]>([])
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
 
@@ -86,6 +88,14 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
   })
 
   const handleSubmit = () => {
+    if (courierFormsData.current.length === 0) {
+      setEmptyCouriersError('Debe agregar al menos una paquetería')
+      return
+    }
+
+    // Reset errors
+    if (emptyCouriersError) setEmptyCouriersError(null)
+
     console.log('courierFormsData', courierFormsData.current)
     // const payload: UpdateMarginProfitPayload = {
     //   profitMargin: {
@@ -159,6 +169,10 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
           </div>
         ) }
       </Card>
+
+      { emptyCouriersError && (
+        <ErrorMessage className="text-center">{emptyCouriersError}</ErrorMessage>
+      )}
 
       <div className="flex justify-center">
         <Button
