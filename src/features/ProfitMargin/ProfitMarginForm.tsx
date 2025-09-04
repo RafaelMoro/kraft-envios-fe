@@ -4,7 +4,7 @@ import { Button, Card, Dropdown, DropdownItem, Label, Spinner } from "flowbite-r
 import { useMutation } from "@tanstack/react-query"
 import { RiAddLine, RiArchiveLine, RiArrowDownSLine, RiErrorWarningLine } from "@remixicon/react"
 
-import { CourierForm, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
+import { CourierForm, MarginProfitSubscreens, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { hasDuplicateCouriersFn, updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
@@ -13,10 +13,11 @@ import { createUniqueId } from "@/shared/utils/global.utils"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
+  updateSubscreen: (newSubscreen: MarginProfitSubscreens) => void
   data: ProviderGlobalConfig[] | null | undefined
 }
 
-export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
+export const ProfitMarginForm = ({ refetchMarginProfit, updateSubscreen, data }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
   const [emptyCouriersError, setEmptyCouriersError] = useState<string | null>(null)
   const courierFormsData = useRef<CourierForm[]>([])
@@ -102,10 +103,11 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
     }
   }, [data, selectedProvider])
 
-  const { isPending } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
+  const { isPending, mutate } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
     mutationFn: updateMarginProfitCb,
     onSuccess: async () => {
       await refetchMarginProfit()
+      updateSubscreen('view')
     }
   })
 
@@ -123,7 +125,6 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
     }
 
     for (const courier of courierFormsData.current) {
-
       if (!courier.value) {
         if (emptyCouriersError) return
         const msg = `El valor del margen de ganancia es obligatorio para la paquetería ${courier.courier}`
@@ -142,14 +143,21 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
     // Reset errors
     if (emptyCouriersError) setEmptyCouriersError(null)
 
-    console.log('courierFormsData', courierFormsData.current)
-    // const payload: UpdateMarginProfitPayload = {
-    //   profitMargin: {
-    //     value: data.value,
-    //     type: profitMarginType.value
-    //   }
-    // }
-    // mutate(payload)
+    const formattedProvider: ProviderGlobalConfig = {
+      name: selectedProvider as QuoteSource,
+      couriers: courierFormsData.current.map((courier) => ({
+        name: courier.courier,
+        profitMargin: {
+          value: courier.value as number,
+          type: courier.profitMarginType.value
+        }
+      }))
+    }
+    const filteredData: ProviderGlobalConfig[] = data?.filter((prov) => prov.name !== selectedProvider) ?? []
+    const payload: UpdateMarginProfitPayload = {
+      providers: [...filteredData, formattedProvider]
+    }
+    mutate(payload)
   }
 
   return (

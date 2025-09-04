@@ -40,10 +40,7 @@ export interface MarginProfitResponse {
 }
 
 export type UpdateMarginProfitPayload = {
-  profitMargin: {
-    value: number
-    type: ProfitMarginType
-  }
+  providers: ProviderGlobalConfig[]
 }
 
 export type CourierForm = {

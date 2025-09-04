@@ -12,8 +12,8 @@ export const getMarginProfitCb = async (): Promise<ProviderGlobalConfig[] | null
 
 export const updateMarginProfitCb = async (data: UpdateMarginProfitPayload) => {
   const res =  await axios.post(MARGIN_PROFIT_API_ENDPOINT, data)
-  const profit: ProfitMargin = res.data?.data?.data?.profitMargin
-  return profit ?? null
+  const providers: ProfitMargin = res.data?.data?.data?.providers
+  return providers ?? null
 }
 
 export const hasDuplicateCouriersFn = (courierForms: CourierForm[]): string[] => {
