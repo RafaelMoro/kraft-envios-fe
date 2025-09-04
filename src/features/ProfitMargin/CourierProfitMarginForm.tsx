@@ -17,7 +17,7 @@ interface CourierProfitMarginFormProps {
 export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateValue, updateProfitMarginType }: CourierProfitMarginFormProps) => {
   const allCouriers = [...QUOTE_COURIERS]
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
-  const [value, setValue] = useState<number>(0)
+  const [value, setValue] = useState<string>("")
   
   const updateCourier = (newCourier: QuoteCourier) => {
     setSelectedCourier(newCourier)
@@ -25,9 +25,12 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateVal
   }
 
   // Debounced update value function
-  const debouncedUpdateValue = useCallback((newValue: number) => {
+  const debouncedUpdateValue = useCallback((newValue: string) => {
+    // If the new value is an empty string, do nothing
+    if (!newValue) return
+
     const timeoutId = setTimeout(() => {
-      updateValue(newValue, id)
+      updateValue(Number(newValue), id)
     }, 1000)
 
     return () => clearTimeout(timeoutId)
@@ -61,7 +64,7 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateVal
   }
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(event.target.value)
+    const newValue = event.target.value
     setValue(newValue)
     // The debounced update will be handled by the useEffect
   }
