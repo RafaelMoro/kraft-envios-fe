@@ -4,29 +4,34 @@ import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react
 import { RiArchiveLine, RiArrowDownSLine, RiDeleteBinLine } from "@remixicon/react"
 
 import { QUOTE_COURIERS, QuoteCourier } from "@/shared/types/quotes.types"
-import { CourierForm, ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
+import { ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
 
 interface CourierProfitMarginFormProps {
-  courierForm: CourierForm
   id: string
   onRemove: (id: string) => void
+  changeCourier: (newCourier: QuoteCourier, id: string) => void
+  updateProfitMarginType: (value: "percentage" | "absolute", id: string) => void
 }
 
-export const CourierProfitMarginForm = ({ id, courierForm, onRemove }: CourierProfitMarginFormProps) => {
+export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateProfitMarginType }: CourierProfitMarginFormProps) => {
   const allCouriers = [...QUOTE_COURIERS]
-  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(courierForm.courier)
-  const updateCourier = (newCourier: QuoteCourier) => setSelectedCourier(newCourier)
+  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
+  const updateCourier = (newCourier: QuoteCourier) => {
+    setSelectedCourier(newCourier)
+    changeCourier(newCourier, id)
+  }
 
   const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
       label: 'Porcentaje',
       value: 'percentage'
     })
-  const updateProfitMarginType = (value: 'percentage' | 'absolute') => {
+  const handleProfitMarginType = (value: 'percentage' | 'absolute') => {
     if (value === 'percentage') {
       setProfitMarginType({
         label: 'Porcentaje',
         value: 'percentage'
       })
+      updateProfitMarginType('percentage', id)
       return
     }
 
@@ -34,11 +39,11 @@ export const CourierProfitMarginForm = ({ id, courierForm, onRemove }: CourierPr
       label: 'Absoluto',
       value: 'absolute'
     })
+    updateProfitMarginType('absolute', id)
   }
 
   return (
-    <form
-      // onSubmit={handleSubmit(onSubmit)}
+    <article
       className="w-full mx-auto border border-gray-300 dark:border-gray-600 rounded-lg p-4 grid grid-cols-2 gap-x-2 gap-y-5"
     >
       <div className="col-span-2 w-full flex justify-between">
@@ -90,9 +95,9 @@ export const CourierProfitMarginForm = ({ id, courierForm, onRemove }: CourierPr
           <RiArrowDownSLine />
         </Button>
       )}>
-        <DropdownItem onClick={() => updateProfitMarginType('percentage')}>Porcentaje</DropdownItem>
-        <DropdownItem onClick={() => updateProfitMarginType('absolute')}>Absoluto</DropdownItem>
+        <DropdownItem onClick={() => handleProfitMarginType('percentage')}>Porcentaje</DropdownItem>
+        <DropdownItem onClick={() => handleProfitMarginType('absolute')}>Absoluto</DropdownItem>
       </Dropdown>
-    </form>
+    </article>
   )
 }

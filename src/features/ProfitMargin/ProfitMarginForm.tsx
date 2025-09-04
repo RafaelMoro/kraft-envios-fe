@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Button, Card, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
 import { useMutation } from "@tanstack/react-query"
 import { RiAddLine, RiArchiveLine, RiArrowDownSLine } from "@remixicon/react"
@@ -18,7 +18,8 @@ interface ProfitMarginFormProps {
 
 export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
-  const [courierForms, setCourierForms] = useState<CourierForm []>([])
+  const [courierForms, setCourierForms] = useState<string []>([])
+  const courierFormsData = useRef<CourierForm[]>([])
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
 
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
@@ -33,20 +34,21 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
         value: 'percentage'
       }
     }
-    setCourierForms((prev) => [...prev, initialState])
+    courierFormsData.current.push(initialState)
+    setCourierForms((prev) => [...prev, newId])
   }
   const changeSelectedCourier = (newCourier: QuoteCourier, id: string) => {
-    const form = courierForms.find((form) => form.id === id)
+    const form = courierFormsData.current.find((form) => form.id === id)
     if (!form) {
       console.warn('Form not found to change selected courier')
       return
     }
     const updatedForm = { ...form, courier: newCourier }
-    const filteredForms = courierForms.filter((form) => form.id !== id)
-    setCourierForms([...filteredForms, updatedForm])
+    const filteredForms = courierFormsData.current.filter((form) => form.id !== id)
+    courierFormsData.current = [...filteredForms, updatedForm]
   }
   const updateProfitMarginTypeFromCourierForm = (value: 'percentage' | 'absolute', id: string) => {
-    const form = courierForms.find((form) => form.id === id)
+    const form = courierFormsData.current.find((form) => form.id === id)
     if (!form) {
       console.warn('Form not found to change profit margin type')
       return
@@ -56,12 +58,14 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
       value: value === 'percentage' ? 'percentage' : 'absolute'
     }
     const updatedForm = { ...form, profitMarginType: newValue }
-    const filteredForms = courierForms.filter((form) => form.id !== id)
-    setCourierForms([...filteredForms, updatedForm])
+    const filteredForms = courierFormsData.current.filter((form) => form.id !== id)
+    courierFormsData.current = [...filteredForms, updatedForm]
   }
   const removeCourierForm = (id: string) => {
-    const filteredCouriersForms = courierForms.filter((courier) => courier.id !== id)
-    setCourierForms(filteredCouriersForms)
+    const filteredData = courierFormsData.current.filter((courier) => courier.id !== id)
+    courierFormsData.current = filteredData
+    const filteredForms = courierForms.filter((form) => form !== id)
+    setCourierForms(filteredForms)
   }
 
   const { isPending } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
@@ -72,6 +76,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
   })
 
   const handleSubmit = () => {
+    console.log('courierFormsData', courierFormsData.current)
     // const payload: UpdateMarginProfitPayload = {
     //   profitMargin: {
     //     value: data.value,
@@ -131,8 +136,14 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
         )}
         { courierForms.length > 0 && (
           <div className="flex flex-col gap-3 justify-center items-center mt-10">
-            { courierForms.map((form) => (
-              <CourierProfitMarginForm courierForm={form} key={form.id} id={form.id} onRemove={removeCourierForm} />
+            { courierForms.map((id) => (
+              <CourierProfitMarginForm
+                key={id}
+                id={id}
+                onRemove={removeCourierForm}
+                changeCourier={changeSelectedCourier}
+                updateProfitMarginType={updateProfitMarginTypeFromCourierForm}
+              />
             ))}
           </div>
         ) }
