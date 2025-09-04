@@ -47,6 +47,16 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
     const filteredForms = courierFormsData.current.filter((form) => form.id !== id)
     courierFormsData.current = [...filteredForms, updatedForm]
   }
+  const updateValue = (newValue: number, id: string) => {
+    const form = courierFormsData.current.find((form) => form.id === id)
+    if (!form) {
+      console.warn('Form not found to change profit margin type')
+      return
+    }
+    const updatedForm = { ...form, value: newValue }
+    const filteredForms = courierFormsData.current.filter((form) => form.id !== id)
+    courierFormsData.current = [...filteredForms, updatedForm]
+  }
   const updateProfitMarginTypeFromCourierForm = (value: 'percentage' | 'absolute', id: string) => {
     const form = courierFormsData.current.find((form) => form.id === id)
     if (!form) {
@@ -143,6 +153,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
                 onRemove={removeCourierForm}
                 changeCourier={changeSelectedCourier}
                 updateProfitMarginType={updateProfitMarginTypeFromCourierForm}
+                updateValue={updateValue}
               />
             ))}
           </div>

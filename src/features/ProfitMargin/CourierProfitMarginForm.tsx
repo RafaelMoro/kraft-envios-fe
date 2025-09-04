@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { ChangeEvent, useState, useEffect, useCallback } from "react"
 import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
 import { RiArchiveLine, RiArrowDownSLine, RiDeleteBinLine } from "@remixicon/react"
 
@@ -10,16 +10,34 @@ interface CourierProfitMarginFormProps {
   id: string
   onRemove: (id: string) => void
   changeCourier: (newCourier: QuoteCourier, id: string) => void
+  updateValue: (newValue: number, id: string) => void
   updateProfitMarginType: (value: "percentage" | "absolute", id: string) => void
 }
 
-export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateProfitMarginType }: CourierProfitMarginFormProps) => {
+export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateValue, updateProfitMarginType }: CourierProfitMarginFormProps) => {
   const allCouriers = [...QUOTE_COURIERS]
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
+  const [value, setValue] = useState<number>(0)
+  
   const updateCourier = (newCourier: QuoteCourier) => {
     setSelectedCourier(newCourier)
     changeCourier(newCourier, id)
   }
+
+  // Debounced update value function
+  const debouncedUpdateValue = useCallback((newValue: number) => {
+    const timeoutId = setTimeout(() => {
+      updateValue(newValue, id)
+    }, 1000)
+
+    return () => clearTimeout(timeoutId)
+  }, [updateValue, id])
+
+  // Effect to handle debounced value updates
+  useEffect(() => {
+    const cleanup = debouncedUpdateValue(value)
+    return cleanup
+  }, [value, debouncedUpdateValue])
 
   const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
       label: 'Porcentaje',
@@ -40,6 +58,12 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updatePro
       value: 'absolute'
     })
     updateProfitMarginType('absolute', id)
+  }
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newValue = Number(event.target.value)
+    setValue(newValue)
+    // The debounced update will be handled by the useEffect
   }
 
   return (
@@ -81,6 +105,8 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updatePro
           id="value"
           type="number"
           inputMode="numeric"
+          value={value}
+          onChange={(e) => handleChange(e)}
         />
         {/* { errors.value?.message && (
           <ErrorMessage>{errors.value?.message}</ErrorMessage>
