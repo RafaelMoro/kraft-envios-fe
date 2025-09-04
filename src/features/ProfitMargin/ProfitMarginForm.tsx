@@ -19,14 +19,14 @@ interface ProfitMarginFormProps {
 
 export const ProfitMarginForm = ({ refetchMarginProfit, updateSubscreen, data }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
-  const [emptyCouriersError, setEmptyCouriersError] = useState<string | null>(null)
+  const [courierError, setCourierError] = useState<string | null>(null)
   const courierFormsData = useRef<CourierForm[]>([])
   const [courierFormsDataLoaded, setCourierFormsDataLoaded] = useState<CourierForm[]>([])
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
 
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
   const addCourierForm = () => {
-    if (emptyCouriersError) setEmptyCouriersError(null)
+    if (courierError) setCourierError(null)
     const newId = createUniqueId()
     const initialState: CourierForm = {
       id: newId,
@@ -114,34 +114,37 @@ export const ProfitMarginForm = ({ refetchMarginProfit, updateSubscreen, data }:
   const handleSubmit = () => {
     // Validation errors
     if (courierFormsData.current.length === 0) {
-      setEmptyCouriersError('Debe agregar al menos una paquetería')
+      setCourierError('Debe agregar al menos una paquetería')
       return
     }
     const duplicatedCouriers = hasDuplicateCouriersFn(courierFormsData.current)
     if (duplicatedCouriers.length > 0) {
       const duplicatesStr = duplicatedCouriers.join(', ')
-      setEmptyCouriersError(`No se permiten paqueterías duplicadas: ${duplicatesStr}`)
+      const msg = `No se permiten paqueterías duplicadas: ${duplicatesStr}`
+      if (courierError === msg) return
+      setCourierError(`No se permiten paqueterías duplicadas: ${duplicatesStr}`)
       return
     }
 
     for (const courier of courierFormsData.current) {
       if (!courier.value) {
-        if (emptyCouriersError) return
         const msg = `El valor del margen de ganancia es obligatorio para la paquetería ${courier.courier}`
-        setEmptyCouriersError(msg)
+        if (courierError === msg) return
+        setCourierError(msg)
         return
       }
 
       if (courier.value <= 0) {
-        if (emptyCouriersError) return
+        if (courierError) return
         const msg = `El valor del margen de ganancia debe ser mayor a 0 para la paquetería ${courier.courier}`
-        setEmptyCouriersError(msg)
+        if (courierError === msg) return
+        setCourierError(msg)
         return
       }
     }
 
     // Reset errors
-    if (emptyCouriersError) setEmptyCouriersError(null)
+    if (courierError) setCourierError(null)
 
     const formattedProvider: ProviderGlobalConfig = {
       name: selectedProvider as QuoteSource,
@@ -225,11 +228,11 @@ export const ProfitMarginForm = ({ refetchMarginProfit, updateSubscreen, data }:
         ) }
       </Card>
 
-      { emptyCouriersError && (
+      { courierError && (
         <Card className="max-w-lg mx-auto">
           <div className="flex gap-2 justify-center text-red-500">
             <RiErrorWarningLine />
-            <p className="text-center font-semibold text-base">{emptyCouriersError}</p>
+            <p className="text-center font-semibold text-base">{courierError}</p>
           </div>
         </Card>
       )}
