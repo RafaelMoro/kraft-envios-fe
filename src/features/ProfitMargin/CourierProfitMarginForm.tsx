@@ -10,7 +10,7 @@ interface CourierProfitMarginFormProps {
   id: string
   onRemove: (id: string) => void
   changeCourier: (newCourier: QuoteCourier, id: string) => void
-  updateValue: (newValue: number, id: string) => void
+  updateValue: (newValue: number | null, id: string) => void
   updateProfitMarginType: (value: "percentage" | "absolute", id: string) => void
 }
 
@@ -26,10 +26,12 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateVal
 
   // Debounced update value function
   const debouncedUpdateValue = useCallback((newValue: string) => {
-    // If the new value is an empty string, do nothing
-    if (!newValue) return
 
     const timeoutId = setTimeout(() => {
+      if (!newValue) {
+        updateValue(null, id)
+        return
+      }
       updateValue(Number(newValue), id)
     }, 500)
 

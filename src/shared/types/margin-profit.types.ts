@@ -48,7 +48,7 @@ export type UpdateMarginProfitPayload = {
 
 export type CourierForm = {
   id: string
-  value: number;
+  value: number | null;
   courier: QuoteCourier;
   profitMarginType: ProfitMarginTypeOption;
 }

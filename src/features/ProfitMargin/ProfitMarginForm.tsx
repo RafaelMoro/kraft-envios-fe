@@ -49,7 +49,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
     const filteredForms = courierFormsData.current.filter((form) => form.id !== id)
     courierFormsData.current = [...filteredForms, updatedForm]
   }
-  const updateValue = (newValue: number, id: string) => {
+  const updateValue = (newValue: number | null, id: string) => {
     const form = courierFormsData.current.find((form) => form.id === id)
     if (!form) {
       console.warn('Form not found to change profit margin type')
