@@ -78,7 +78,7 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateVal
           <RiArchiveLine />
           <h5 className="text-lg">{selectedCourier}</h5>
         </div>
-        <button className="text-red-600" onClick={() => onRemove(id)}>
+        <button className="text-red-600 cursor-pointer" onClick={() => onRemove(id)}>
           <RiDeleteBinLine />
         </button>
       </div>

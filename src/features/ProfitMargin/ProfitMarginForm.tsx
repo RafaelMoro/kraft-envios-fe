@@ -2,7 +2,7 @@
 import { useRef, useState } from "react"
 import { Button, Card, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
 import { useMutation } from "@tanstack/react-query"
-import { RiAddLine, RiArchiveLine, RiArrowDownSLine } from "@remixicon/react"
+import { RiAddLine, RiArchiveLine, RiArrowDownSLine, RiErrorWarningLine } from "@remixicon/react"
 
 import { CourierForm, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
@@ -10,7 +10,6 @@ import { GeneralApiError } from "@/shared/types/global.types"
 import { QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
 import { CourierProfitMarginForm } from "./CourierProfitMarginForm"
 import { createUniqueId } from "@/shared/utils/global.utils"
-import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface ProfitMarginFormProps {
   refetchMarginProfit: () => Promise<void>
@@ -26,6 +25,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
 
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
   const addCourierForm = () => {
+    if (emptyCouriersError) setEmptyCouriersError(null)
     const newId = createUniqueId()
     const initialState: CourierForm = {
       id: newId,
@@ -171,7 +171,12 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
       </Card>
 
       { emptyCouriersError && (
-        <ErrorMessage className="text-center">{emptyCouriersError}</ErrorMessage>
+        <Card className="max-w-lg mx-auto">
+          <div className="flex gap-2 justify-center text-red-500">
+            <RiErrorWarningLine />
+            <p className="text-center font-semibold text-base">{emptyCouriersError}</p>
+          </div>
+        </Card>
       )}
 
       <div className="flex justify-center">
