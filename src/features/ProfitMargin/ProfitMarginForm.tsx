@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query"
 import { RiAddLine, RiArchiveLine, RiArrowDownSLine, RiErrorWarningLine } from "@remixicon/react"
 
 import { CourierForm, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
-import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
+import { hasDuplicateCouriersFn, updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
 import { CourierProfitMarginForm } from "./CourierProfitMarginForm"
@@ -90,6 +90,11 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
   const handleSubmit = () => {
     if (courierFormsData.current.length === 0) {
       setEmptyCouriersError('Debe agregar al menos una paquetería')
+      return
+    }
+    const hasDuplicateCouriers = hasDuplicateCouriersFn(courierFormsData.current)
+    if (hasDuplicateCouriers) {
+      setEmptyCouriersError('No se permiten paqueterías duplicadas')
       return
     }
 
