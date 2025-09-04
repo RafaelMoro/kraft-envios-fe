@@ -31,7 +31,7 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateVal
 
     const timeoutId = setTimeout(() => {
       updateValue(Number(newValue), id)
-    }, 1000)
+    }, 500)
 
     return () => clearTimeout(timeoutId)
   }, [updateValue, id])

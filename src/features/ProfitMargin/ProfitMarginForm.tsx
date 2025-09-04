@@ -100,16 +100,22 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
       return
     }
 
-    courierFormsData.current.forEach((courier) => {
+    for (const courier of courierFormsData.current) {
+
       if (!courier.value) {
-        setEmptyCouriersError(`El valor del margen de ganancia es obligatorio para la paquetería ${courier.courier}`)
+        if (emptyCouriersError) return
+        const msg = `El valor del margen de ganancia es obligatorio para la paquetería ${courier.courier}`
+        setEmptyCouriersError(msg)
         return
       }
+
       if (courier.value <= 0) {
-        setEmptyCouriersError(`El valor del margen de ganancia debe ser mayor a 0 para la paquetería ${courier.courier}`)
+        if (emptyCouriersError) return
+        const msg = `El valor del margen de ganancia debe ser mayor a 0 para la paquetería ${courier.courier}`
+        setEmptyCouriersError(msg)
         return
       }
-    })
+    }
 
     // Reset errors
     if (emptyCouriersError) setEmptyCouriersError(null)
