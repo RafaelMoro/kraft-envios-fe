@@ -1,5 +1,5 @@
 "use client"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button, Card, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
 import { useMutation } from "@tanstack/react-query"
 import { RiAddLine, RiArchiveLine, RiArrowDownSLine, RiErrorWarningLine } from "@remixicon/react"
@@ -16,11 +16,11 @@ interface ProfitMarginFormProps {
   data: ProviderGlobalConfig[] | null | undefined
 }
 
-export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps) => {
+export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
-  const [courierForms, setCourierForms] = useState<string []>([])
   const [emptyCouriersError, setEmptyCouriersError] = useState<string | null>(null)
   const courierFormsData = useRef<CourierForm[]>([])
+  const [courierFormsDataLoaded, setCourierFormsDataLoaded] = useState<CourierForm[]>([])
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
 
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
@@ -37,7 +37,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
       }
     }
     courierFormsData.current.push(initialState)
-    setCourierForms((prev) => [...prev, newId])
+    setCourierFormsDataLoaded((prev) => [...prev, initialState])
   }
   const changeSelectedCourier = (newCourier: QuoteCourier, id: string) => {
     const form = courierFormsData.current.find((form) => form.id === id)
@@ -76,9 +76,31 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
   const removeCourierForm = (id: string) => {
     const filteredData = courierFormsData.current.filter((courier) => courier.id !== id)
     courierFormsData.current = filteredData
-    const filteredForms = courierForms.filter((form) => form !== id)
-    setCourierForms(filteredForms)
+    const filteredForms = courierFormsDataLoaded.filter((form) => form.id !== id)
+    setCourierFormsDataLoaded(filteredForms)
   }
+
+  useEffect(() => {
+    if (!data || data.length === 0) return
+    if (data) {
+      const couriersFromProvider = data.find((prov) => prov.name === selectedProvider)?.couriers ?? []
+      if (couriersFromProvider.length === 0) return
+      const couriersToLoad: CourierForm[] = couriersFromProvider.map((courier) => ({
+        id: createUniqueId(),
+        courier: courier.name,
+        value: courier.profitMargin.value,
+        profitMarginType: courier.profitMargin.type === 'percentage' ? {
+          label: 'Porcentaje',
+          value: 'percentage'
+        } : {
+          label: 'Absoluto',
+          value: 'absolute'
+        }
+      }))
+      setCourierFormsDataLoaded(couriersToLoad)
+      courierFormsData.current = couriersToLoad
+    }
+  }, [data, selectedProvider])
 
   const { isPending } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
     mutationFn: updateMarginProfitCb,
@@ -169,7 +191,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
           </Button>
         </div>
 
-        { courierForms.length === 0 && (
+        { courierFormsDataLoaded.length === 0 && (
           <div className="flex flex-col gap-3 justify-center items-center mt-10">
             <span className="text-gray-600 dark:text-gray-400">
               <RiArchiveLine size={40} />
@@ -178,12 +200,13 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
             <p className="text-sm text-gray-600 dark:text-gray-400">De click en &quot;Agregar paquetería&quot; para añadir una nueva configuración.</p>
           </div>
         )}
-        { courierForms.length > 0 && (
+        { courierFormsDataLoaded.length > 0 && (
           <div className="flex flex-col gap-3 justify-center items-center mt-10">
-            { courierForms.map((id) => (
+            { courierFormsDataLoaded.map((form) => (
               <CourierProfitMarginForm
-                key={id}
-                id={id}
+                key={form.id}
+                id={form.id}
+                courierFormsDataLoaded={form}
                 onRemove={removeCourierForm}
                 changeCourier={changeSelectedCourier}
                 updateProfitMarginType={updateProfitMarginTypeFromCourierForm}

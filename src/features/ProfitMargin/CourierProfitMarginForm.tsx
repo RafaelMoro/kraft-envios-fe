@@ -4,20 +4,21 @@ import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react
 import { RiArchiveLine, RiArrowDownSLine, RiDeleteBinLine } from "@remixicon/react"
 
 import { QUOTE_COURIERS, QuoteCourier } from "@/shared/types/quotes.types"
-import { ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
+import { CourierForm, ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
 
 interface CourierProfitMarginFormProps {
   id: string
+  courierFormsDataLoaded: CourierForm | null
   onRemove: (id: string) => void
   changeCourier: (newCourier: QuoteCourier, id: string) => void
   updateValue: (newValue: number | null, id: string) => void
   updateProfitMarginType: (value: "percentage" | "absolute", id: string) => void
 }
 
-export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateValue, updateProfitMarginType }: CourierProfitMarginFormProps) => {
+export const CourierProfitMarginForm = ({ id, courierFormsDataLoaded, onRemove, changeCourier, updateValue, updateProfitMarginType }: CourierProfitMarginFormProps) => {
   const allCouriers = [...QUOTE_COURIERS]
-  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
-  const [value, setValue] = useState<string>("")
+  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(courierFormsDataLoaded?.courier ??'Fedex')
+  const [value, setValue] = useState<string>(courierFormsDataLoaded?.value?.toString() ?? "")
   
   const updateCourier = (newCourier: QuoteCourier) => {
     setSelectedCourier(newCourier)
@@ -44,10 +45,10 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateVal
     return cleanup
   }, [value, debouncedUpdateValue])
 
-  const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
-      label: 'Porcentaje',
-      value: 'percentage'
-    })
+  const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>(courierFormsDataLoaded?.profitMarginType ??{
+    label: 'Porcentaje',
+    value: 'percentage'
+  })
   const handleProfitMarginType = (value: 'percentage' | 'absolute') => {
     if (value === 'percentage') {
       setProfitMarginType({
@@ -113,9 +114,6 @@ export const CourierProfitMarginForm = ({ id, onRemove, changeCourier, updateVal
           value={value}
           onChange={(e) => handleChange(e)}
         />
-        {/* { errors.value?.message && (
-          <ErrorMessage>{errors.value?.message}</ErrorMessage>
-        )} */}
       </div>
       <Dropdown label="" renderTrigger={() => (
         <Button
