@@ -88,6 +88,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
   })
 
   const handleSubmit = () => {
+    // Validation errors
     if (courierFormsData.current.length === 0) {
       setEmptyCouriersError('Debe agregar al menos una paquetería')
       return
@@ -98,6 +99,17 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
       setEmptyCouriersError(`No se permiten paqueterías duplicadas: ${duplicatesStr}`)
       return
     }
+
+    courierFormsData.current.forEach((courier) => {
+      if (!courier.value) {
+        setEmptyCouriersError(`El valor del margen de ganancia es obligatorio para la paquetería ${courier.courier}`)
+        return
+      }
+      if (courier.value <= 0) {
+        setEmptyCouriersError(`El valor del margen de ganancia debe ser mayor a 0 para la paquetería ${courier.courier}`)
+        return
+      }
+    })
 
     // Reset errors
     if (emptyCouriersError) setEmptyCouriersError(null)
