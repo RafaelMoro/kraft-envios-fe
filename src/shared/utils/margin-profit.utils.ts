@@ -16,16 +16,20 @@ export const updateMarginProfitCb = async (data: UpdateMarginProfitPayload) => {
   return profit ?? null
 }
 
-export const hasDuplicateCouriersFn = (courierForms: CourierForm[]) => {
-  if (!Array.isArray(courierForms) || courierForms.length <= 1) return false
+export const hasDuplicateCouriersFn = (courierForms: CourierForm[]): string[] => {
+  if (!Array.isArray(courierForms) || courierForms.length === 0) return []
 
-  const seen = new Set<string>()
+  const counts = new Map<string, number>()
   for (const form of courierForms) {
-    const key = String(form?.courier)
+    const key = String(form?.courier ?? '')
     if (!key) continue
-    if (seen.has(key)) return true
-    seen.add(key)
+    counts.set(key, (counts.get(key) ?? 0) + 1)
   }
 
-  return false
+  const duplicates: string[] = []
+  counts.forEach((count, key) => {
+    if (count > 1) duplicates.push(key)
+  })
+
+  return duplicates
 }

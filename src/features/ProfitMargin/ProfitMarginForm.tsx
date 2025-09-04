@@ -92,9 +92,10 @@ export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps)
       setEmptyCouriersError('Debe agregar al menos una paquetería')
       return
     }
-    const hasDuplicateCouriers = hasDuplicateCouriersFn(courierFormsData.current)
-    if (hasDuplicateCouriers) {
-      setEmptyCouriersError('No se permiten paqueterías duplicadas')
+    const duplicatedCouriers = hasDuplicateCouriersFn(courierFormsData.current)
+    if (duplicatedCouriers.length > 0) {
+      const duplicatesStr = duplicatedCouriers.join(', ')
+      setEmptyCouriersError(`No se permiten paqueterías duplicadas: ${duplicatesStr}`)
       return
     }
 
