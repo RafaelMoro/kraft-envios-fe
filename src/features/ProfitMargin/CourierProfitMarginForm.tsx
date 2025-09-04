@@ -4,16 +4,17 @@ import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react
 import { RiArchiveLine, RiArrowDownSLine, RiDeleteBinLine } from "@remixicon/react"
 
 import { QUOTE_COURIERS, QuoteCourier } from "@/shared/types/quotes.types"
-import { ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
+import { CourierForm, ProfitMarginTypeOption } from "@/shared/types/margin-profit.types"
 
 interface CourierProfitMarginFormProps {
+  courierForm: CourierForm
   id: string
   onRemove: (id: string) => void
 }
 
-export const CourierProfitMarginForm = ({ id, onRemove }: CourierProfitMarginFormProps) => {
+export const CourierProfitMarginForm = ({ id, courierForm, onRemove }: CourierProfitMarginFormProps) => {
   const allCouriers = [...QUOTE_COURIERS]
-  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>('Fedex')
+  const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(courierForm.courier)
   const updateCourier = (newCourier: QuoteCourier) => setSelectedCourier(newCourier)
 
   const [profitMarginType, setProfitMarginType] = useState<ProfitMarginTypeOption>({
@@ -75,8 +76,6 @@ export const CourierProfitMarginForm = ({ id, onRemove }: CourierProfitMarginFor
           id="value"
           type="number"
           inputMode="numeric"
-          defaultValue={0}
-          // {...register("value")}
         />
         {/* { errors.value?.message && (
           <ErrorMessage>{errors.value?.message}</ErrorMessage>

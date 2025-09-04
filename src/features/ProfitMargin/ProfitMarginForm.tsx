@@ -1,15 +1,13 @@
 "use client"
 import { useState } from "react"
 import { Button, Card, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
 import { RiAddLine, RiArchiveLine, RiArrowDownSLine } from "@remixicon/react"
 
-import { MarginProfitForm, MarginProfitSchema, ProfitMargin, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
+import { CourierForm, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { QUOTE_SOURCES, QuoteSource } from "@/shared/types/quotes.types"
+import { QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
 import { CourierProfitMarginForm } from "./CourierProfitMarginForm"
 import { createUniqueId } from "@/shared/utils/global.utils"
 
@@ -18,37 +16,62 @@ interface ProfitMarginFormProps {
   data: ProviderGlobalConfig[] | null | undefined
 }
 
-export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginFormProps) => {
+export const ProfitMarginForm = ({ refetchMarginProfit }: ProfitMarginFormProps) => {
   const allProviders = [...QUOTE_SOURCES]
-  const [courierForms, setCourierForms] = useState<string []>([])
+  const [courierForms, setCourierForms] = useState<CourierForm []>([])
   const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
 
   const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
   const addCourierForm = () => {
     const newId = createUniqueId()
-    setCourierForms((prev) => [...prev, newId])
+    const initialState: CourierForm = {
+      id: newId,
+      value: 0,
+      courier: 'Fedex',
+      profitMarginType: {
+        label: 'Porcentaje',
+        value: 'percentage'
+      }
+    }
+    setCourierForms((prev) => [...prev, initialState])
+  }
+  const changeSelectedCourier = (newCourier: QuoteCourier, id: string) => {
+    const form = courierForms.find((form) => form.id === id)
+    if (!form) {
+      console.warn('Form not found to change selected courier')
+      return
+    }
+    const updatedForm = { ...form, courier: newCourier }
+    const filteredForms = courierForms.filter((form) => form.id !== id)
+    setCourierForms([...filteredForms, updatedForm])
+  }
+  const updateProfitMarginTypeFromCourierForm = (value: 'percentage' | 'absolute', id: string) => {
+    const form = courierForms.find((form) => form.id === id)
+    if (!form) {
+      console.warn('Form not found to change profit margin type')
+      return
+    }
+    const newValue: ProfitMarginTypeOption = {
+      label: value === 'percentage' ? 'Porcentaje' : 'Absoluto',
+      value: value === 'percentage' ? 'percentage' : 'absolute'
+    }
+    const updatedForm = { ...form, profitMarginType: newValue }
+    const filteredForms = courierForms.filter((form) => form.id !== id)
+    setCourierForms([...filteredForms, updatedForm])
   }
   const removeCourierForm = (id: string) => {
-    const filteredCouriersForms = courierForms.filter((courierId) => courierId !== id)
+    const filteredCouriersForms = courierForms.filter((courier) => courier.id !== id)
     setCourierForms(filteredCouriersForms)
   }
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<MarginProfitForm>({
-    resolver: yupResolver(MarginProfitSchema)
-  })
-
-  const { mutate, isPending } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
+  const { isPending } = useMutation<ProfitMargin, GeneralApiError, UpdateMarginProfitPayload>({
     mutationFn: updateMarginProfitCb,
     onSuccess: async () => {
       await refetchMarginProfit()
     }
   })
 
-  const onSubmit: SubmitHandler<MarginProfitForm> = (data) => {
+  const handleSubmit = () => {
     // const payload: UpdateMarginProfitPayload = {
     //   profitMargin: {
     //     value: data.value,
@@ -60,7 +83,6 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col w-full justify-center gap-12 mx-auto"
     >
       <div className="flex flex-col gap-3">
@@ -109,9 +131,9 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
         )}
         { courierForms.length > 0 && (
           <div className="flex flex-col gap-3 justify-center items-center mt-10">
-            { courierForms.map((id, key) => (
-              <CourierProfitMarginForm key={key} id={id} onRemove={removeCourierForm} />
-            )) }
+            { courierForms.map((form) => (
+              <CourierProfitMarginForm courierForm={form} key={form.id} id={form.id} onRemove={removeCourierForm} />
+            ))}
           </div>
         ) }
       </Card>
@@ -120,7 +142,9 @@ export const ProfitMarginForm = ({ refetchMarginProfit, data }: ProfitMarginForm
         <Button
           className="hover:cursor-pointer"
           disabled={isPending}
-          type="submit">
+          type="button"
+          onClick={handleSubmit}
+        >
           { isPending ? (<Spinner aria-label="loading updating margin profit" />) : 'Guardar configuración' }
         </Button>
       </div>

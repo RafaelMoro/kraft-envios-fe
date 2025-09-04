@@ -1,4 +1,3 @@
-import { number, object, ObjectSchema } from "yup";
 import { QuoteCourier, QuoteSource } from "./quotes.types";
 
 export type ProfitMarginType = 'percentage' | 'absolute'
@@ -47,10 +46,9 @@ export type UpdateMarginProfitPayload = {
   }
 }
 
-export type MarginProfitForm = {
-  value: number
+export type CourierForm = {
+  id: string
+  value: number;
+  courier: QuoteCourier;
+  profitMarginType: ProfitMarginTypeOption;
 }
-
-export const MarginProfitSchema: ObjectSchema<MarginProfitForm> = object().shape({
-  value: number().required('Por favor, ingrese el valor del margen de ganancia').min(1, 'El valor debe ser mayor que 0'),
-})
