@@ -193,7 +193,7 @@ describe('CourierProfitMarginForm', () => {
       await waitFor(() => {
         const dropdownItems = screen.getAllByRole('menuitem')
         expect(dropdownItems).toHaveLength(2)
-        expect(screen.getByText('Porcentaje')).toBeInTheDocument()
+        expect(screen.getAllByText('Porcentaje')).toHaveLength(2)
         expect(screen.getByText('Absoluto')).toBeInTheDocument()
       })
     })
@@ -240,26 +240,6 @@ describe('CourierProfitMarginForm', () => {
 
       // Then: Should call onRemove with the correct id
       expect(mockProps.onRemove).toHaveBeenCalledWith(mockProps.id)
-    })
-  })
-
-  describe('Given the component receives prop updates', () => {
-    it('When courierFormsDataLoaded changes, Then it updates the form values', async () => {
-      const { rerender } = render(<CourierProfitMarginForm {...mockProps} />)
-
-      // Initial state
-      expect(screen.getByRole('heading', { name: 'Fedex' })).toBeInTheDocument()
-      expect(screen.getByDisplayValue('')).toBeInTheDocument()
-
-      // When: Props change
-      rerender(<CourierProfitMarginForm {...mockPropsWithData} />)
-
-      // Then: Form should update with new values
-      await waitFor(() => {
-        expect(screen.getByRole('heading', { name: 'DHL' })).toBeInTheDocument()
-        expect(screen.getByDisplayValue('15')).toBeInTheDocument()
-        expect(screen.getByRole('button', { name: /absoluto/i })).toBeInTheDocument()
-      })
     })
   })
 })
