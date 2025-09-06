@@ -111,6 +111,7 @@ export const CourierProfitMarginForm = ({ id, courierFormsDataLoaded, onRemove, 
           id="value"
           type="number"
           inputMode="numeric"
+          data-testid={`profit-margin-value-${id}`}
           value={value}
           onChange={(e) => handleChange(e)}
         />
