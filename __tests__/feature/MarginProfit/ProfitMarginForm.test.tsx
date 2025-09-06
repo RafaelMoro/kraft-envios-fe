@@ -109,8 +109,8 @@ describe('ProfitMarginForm', () => {
       )
 
       // Since we have mock data with existing couriers, the mocked CourierProfitMarginForm should be rendered
-      expect(screen.getByText(/courier: fedex/i)).toBeInTheDocument()
-      expect(screen.getByText(/value: 10/i)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /fedex/i })).toBeInTheDocument()
+      expect(screen.getByText(/Porcentaje/i)).toBeInTheDocument()
     })
   })
 
