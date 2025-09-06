@@ -1,22 +1,55 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { render, screen, waitFor, act } from "@testing-library/react"
 import userEvent from '@testing-library/user-event'
 import axios from 'axios'
 
 import { QueryProviderWrapper } from "@/features/QueryProviderWrapper"
 import { ProfitMarginForm } from "@/features/ProfitMargin/ProfitMarginForm"
 import { AppRouterContextProviderMock } from "@/features/AppRouterContextProviderMock"
+import { ProviderGlobalConfig } from "@/shared/types/margin-profit.types"
+
+const mockData: ProviderGlobalConfig[] = [
+  {
+    name: 'GE',
+    couriers: [
+      {
+        name: 'Fedex',
+        profitMargin: {
+          value: 10,
+          type: 'percentage'
+        }
+      },
+      {
+        name: 'DHL',
+        profitMargin: {
+          value: 15,
+          type: 'absolute'
+        }
+      }
+    ]
+  }
+]
 
 const ProfitMarginFormWrapper = ({
   push,
   refetchMarginProfit,
+  updateSubscreen,
+  data = mockData,
 }: {
   push: () => void
   refetchMarginProfit: () => Promise<void>
+  updateSubscreen?: (subscreen: string) => void
+  data?: ProviderGlobalConfig[] | null | undefined
 }) => {
+  const mockUpdateSubscreen = updateSubscreen || jest.fn()
+  
   return (
     <QueryProviderWrapper>
       <AppRouterContextProviderMock router={{ push }}>
-        <ProfitMarginForm refetchMarginProfit={refetchMarginProfit} />
+        <ProfitMarginForm 
+          refetchMarginProfit={refetchMarginProfit} 
+          updateSubscreen={mockUpdateSubscreen}
+          data={data}
+        />
       </AppRouterContextProviderMock>
     </QueryProviderWrapper>
   )
@@ -27,6 +60,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>
 
 describe('ProfitMarginForm', () => {
   const mockRefetchMarginProfit = jest.fn()
+  const mockUpdateSubscreen = jest.fn()
   const mockPush = jest.fn()
 
   beforeEach(() => {
@@ -39,299 +73,222 @@ describe('ProfitMarginForm', () => {
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
         />
       )
 
-      expect(screen.getByRole('heading', { name: /actualizar margen de ganancia/i })).toBeInTheDocument()
-      expect(screen.getByText(/ingrese los siguientes datos para actualizar el margen de ganancia/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/valor/i)).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /tipo: porcentaje/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /actualizar margen/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /configuración por proveedor/i })).toBeInTheDocument()
+      expect(screen.getByText(/configure los margenes de ganancia por paquetería y por proveedor/i)).toBeInTheDocument()
+      expect(screen.getByText(/seleccione el proveedor/i)).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /ge/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /agregar paquetería/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /guardar configuración/i })).toBeInTheDocument()
     })
 
-    it('When the value input has default value, Then it shows 0', () => {
+    it('When no courier forms are added, Then it shows empty state message', () => {
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
+          data={[]}
         />
       )
 
-      const valueInput = screen.getByLabelText(/valor/i)
-      expect(valueInput).toHaveValue(0)
+      expect(screen.getByText(/no ha agregado ninguna paquetería/i)).toBeInTheDocument()
+      expect(screen.getByText(/de click en "agregar paquetería" para añadir una nueva configuración/i)).toBeInTheDocument()
     })
 
-    it('When the profit margin type dropdown is clicked, Then it shows both type options', async () => {
-      const user = userEvent.setup()
-      
+    it('When data is provided, Then it loads existing courier forms', () => {
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
         />
       )
 
-      const typeDropdown = screen.getByRole('button', { name: /tipo: porcentaje/i })
-      await user.click(typeDropdown)
-
-      expect(screen.getByText('Porcentaje')).toBeInTheDocument()
-      expect(screen.getByText('Absoluto')).toBeInTheDocument()
+      // Since we have mock data with existing couriers, the mocked CourierProfitMarginForm should be rendered
+      expect(screen.getByRole('heading', { name: /fedex/i })).toBeInTheDocument()
+      expect(screen.getByText(/Porcentaje/i)).toBeInTheDocument()
     })
   })
 
-  describe('Given the user interacts with the form', () => {
-    it('When the user enters a valid value, Then the input updates correctly', async () => {
+  describe('Given the user interacts with the provider selection', () => {
+    it('When the provider dropdown is clicked, Then it shows available providers', async () => {
       const user = userEvent.setup()
       
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
         />
       )
 
-      const valueInput = screen.getByLabelText(/valor/i)
-      await user.clear(valueInput)
-      await user.type(valueInput, '15')
+      const providerDropdown = screen.getByRole('button', { name: /ge/i })
+      await user.click(providerDropdown)
 
-      expect(valueInput).toHaveValue(15)
+      // Should show available providers in the dropdown
+      expect(screen.getAllByText('GE')).toHaveLength(2) // One in button, one in dropdown
     })
+  })
 
-    it('When the user selects "Absoluto" from dropdown, Then the dropdown label changes', async () => {
+  describe('Given the user adds courier forms', () => {
+    it('When the "Agregar paquetería" button is clicked, Then a new courier form is added', async () => {
       const user = userEvent.setup()
       
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
+          data={[]}
         />
       )
 
-      const typeDropdown = screen.getByRole('button', { name: /tipo: porcentaje/i })
-      await user.click(typeDropdown)
-      
-      const absoluteOption = screen.getByText('Absoluto')
-      await user.click(absoluteOption)
+      const addButton = screen.getByRole('button', { name: /agregar paquetería/i })
+      await user.click(addButton)
 
-      expect(screen.getByRole('button', { name: /tipo: absoluto/i })).toBeInTheDocument()
-    })
-
-    it('When the user selects "Porcentaje" after selecting "Absoluto", Then the dropdown label changes back', async () => {
-      const user = userEvent.setup()
-      
-      render(
-        <ProfitMarginFormWrapper
-          push={mockPush}
-          refetchMarginProfit={mockRefetchMarginProfit}
-        />
-      )
-
-      // First select Absoluto
-      const typeDropdown = screen.getByRole('button', { name: /tipo: porcentaje/i })
-      await user.click(typeDropdown)
-      const absoluteOption = screen.getByText('Absoluto')
-      await user.click(absoluteOption)
-
-      // Then select Porcentaje again
-      const updatedDropdown = screen.getByRole('button', { name: /tipo: absoluto/i })
-      await user.click(updatedDropdown)
-      const percentageOption = screen.getByText('Porcentaje')
-      await user.click(percentageOption)
-
-      expect(screen.getByRole('button', { name: /tipo: porcentaje/i })).toBeInTheDocument()
+      // The empty state message should disappear when a form is added
+      expect(screen.queryByText(/no ha agregado ninguna paquetería/i)).not.toBeInTheDocument()
+      // A new courier form should be added (mocked)
+      expect(screen.getByRole('heading', { name: /fedex/i })).toBeInTheDocument()
     })
   })
 
   describe('Given the user submits the form', () => {
-    it('When the form is submitted with valid data and percentage type, Then it calls the API with correct payload', async () => {
+    it('When the form is submitted without any courier forms, Then it shows validation error', async () => {
       const user = userEvent.setup()
-      const mockProfitMargin = { value: 15, type: 'percentage' }
+      
+      render(
+        <ProfitMarginFormWrapper
+          push={mockPush}
+          refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
+          data={[]}
+        />
+      )
+
+      const submitButton = screen.getByRole('button', { name: /guardar configuración/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/debe agregar al menos una paquetería/i)).toBeInTheDocument()
+      })
+    })
+
+    it('When the form is submitted with a courier form, Then validation passes and API is called', async () => {
+      const user = userEvent.setup()
       mockedAxios.post.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: mockProfitMargin } } }
+        data: { data: { providers: mockData } }
       })
       
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
+          data={[]}
         />
       )
 
-      const valueInput = screen.getByLabelText(/valor/i)
+      // Add a courier form first
+      const addButton = screen.getByRole('button', { name: /agregar paquetería/i })
+      await user.click(addButton)
+      
+      const valueInput = screen.getByTestId(/profit-margin-value-/i)
       await user.clear(valueInput)
-      await user.type(valueInput, '15')
+      await user.type(valueInput, '20')
 
-      const submitButton = screen.getByRole('button', { name: /actualizar margen/i })
+      // Wait for debounce using act and Promise
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 600)) // 500ms + buffer
+      })
+      
+      const submitButton = screen.getByRole('button', { name: /guardar configuración/i })
       await user.click(submitButton)
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
           expect.any(String),
-          {
-            profitMargin: {
-              value: 15,
-              type: 'percentage'
-            }
-          }
+          expect.objectContaining({
+            providers: expect.any(Array)
+          })
         )
       })
     })
 
-    it('When the form is submitted with valid data and absolute type, Then it calls the API with correct payload', async () => {
+    it('When the form is submitted successfully with existing data, Then it calls refetchMarginProfit and updateSubscreen', async () => {
       const user = userEvent.setup()
-      const mockProfitMargin = { value: 50, type: 'absolute' }
       mockedAxios.post.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: mockProfitMargin } } }
+        data: { data: { providers: mockData } }
       })
       
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
         />
       )
 
-      // Change type to absolute
-      const typeDropdown = screen.getByRole('button', { name: /tipo: porcentaje/i })
-      await user.click(typeDropdown)
-      const absoluteOption = screen.getByText('Absoluto')
-      await user.click(absoluteOption)
-
-      // Enter value
-      const valueInput = screen.getByLabelText(/valor/i)
-      await user.clear(valueInput)
-      await user.type(valueInput, '50')
-
-      const submitButton = screen.getByRole('button', { name: /actualizar margen/i })
-      await user.click(submitButton)
-
-      await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-          expect.any(String),
-          {
-            profitMargin: {
-              value: 50,
-              type: 'absolute'
-            }
-          }
-        )
-      })
-    })
-
-    it('When the form is submitted successfully, Then it calls refetchMarginProfit', async () => {
-      const user = userEvent.setup()
-      const mockProfitMargin = { value: 15, type: 'percentage' }
-      mockedAxios.post.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: mockProfitMargin } } }
-      })
-      
-      render(
-        <ProfitMarginFormWrapper
-          push={mockPush}
-          refetchMarginProfit={mockRefetchMarginProfit}
-        />
-      )
-
-      const valueInput = screen.getByLabelText(/valor/i)
-      await user.clear(valueInput)
-      await user.type(valueInput, '15')
-
-      const submitButton = screen.getByRole('button', { name: /actualizar margen/i })
+      const submitButton = screen.getByRole('button', { name: /guardar configuración/i })
       await user.click(submitButton)
 
       await waitFor(() => {
         expect(mockRefetchMarginProfit).toHaveBeenCalled()
+        expect(mockUpdateSubscreen).toHaveBeenCalledWith('view')
       })
-    })
-
-    it('When the form is submitting, Then it shows loading spinner and disables submit button', async () => {
-      const user = userEvent.setup()
-      // Mock a slow response
-      mockedAxios.post.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)))
-      
-      render(
-        <ProfitMarginFormWrapper
-          push={mockPush}
-          refetchMarginProfit={mockRefetchMarginProfit}
-        />
-      )
-
-      const valueInput = screen.getByLabelText(/valor/i)
-      await user.clear(valueInput)
-      await user.type(valueInput, '15')
-
-      const submitButton = screen.getByRole('button', { name: /actualizar margen/i })
-      await user.click(submitButton)
-
-      expect(screen.getByLabelText(/loading updating margin profit/i)).toBeInTheDocument()
-      expect(submitButton).toBeDisabled()
     })
   })
 
   describe('Given the form has validation errors', () => {
-    it('When the form is submitted without a value, Then it shows validation error', async () => {
+    it('When courier error is present, Then it displays the error message', async () => {
       const user = userEvent.setup()
       
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
+          data={[]}
         />
       )
 
-      const valueInput = screen.getByLabelText(/valor/i)
-      await user.clear(valueInput)
-
-      const submitButton = screen.getByRole('button', { name: /actualizar margen/i })
+      const submitButton = screen.getByRole('button', { name: /guardar configuración/i })
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByText(/value must be a `number` type/i)).toBeInTheDocument()
+        expect(screen.getByText(/debe agregar al menos una paquetería/i)).toBeInTheDocument()
       })
+
+      // Check that the error is displayed in a red card
+      const errorCard = screen.getByText(/debe agregar al menos una paquetería/i).closest('div')
+      expect(errorCard).toHaveClass('text-red-500')
     })
 
-    it('When the form is submitted with value 0, Then it shows validation error', async () => {
+    it('When courier forms are removed, Then the empty state is shown', async () => {
       const user = userEvent.setup()
       
       render(
         <ProfitMarginFormWrapper
           push={mockPush}
           refetchMarginProfit={mockRefetchMarginProfit}
+          updateSubscreen={mockUpdateSubscreen}
         />
       )
 
-      const valueInput = screen.getByLabelText(/valor/i)
-      await user.clear(valueInput)
-      await user.type(valueInput, '0')
-
-      const submitButton = screen.getByRole('button', { name: /actualizar margen/i })
-      await user.click(submitButton)
-
-      await waitFor(() => {
-        expect(screen.getByText(/el valor debe ser mayor que 0/i)).toBeInTheDocument()
-      })
-    })
-
-    it('When the form is submitted with negative value, Then it shows validation error', async () => {
-      const user = userEvent.setup()
+      // Initially should have courier forms from mock data - check for actual Fedex heading
+      expect(screen.getByRole('heading', { name: /fedex/i })).toBeInTheDocument()
       
-      render(
-        <ProfitMarginFormWrapper
-          push={mockPush}
-          refetchMarginProfit={mockRefetchMarginProfit}
-        />
-      )
+      // Remove the courier form - find the remove button by data-testid
+      const removeButtons = screen.getAllByTestId(/remove-courier/)
+      await user.click(removeButtons[0])
+      await user.click(removeButtons[1])
 
-      const valueInput = screen.getByLabelText(/valor/i)
-      await user.clear(valueInput)
-      await user.type(valueInput, '-5')
-
-      const submitButton = screen.getByRole('button', { name: /actualizar margen/i })
-      await user.click(submitButton)
-
-      await waitFor(() => {
-        expect(screen.getByText(/el valor debe ser mayor que 0/i)).toBeInTheDocument()
-      })
+      // Should show empty state
+      expect(screen.getByText(/no ha agregado ninguna paquetería/i)).toBeInTheDocument()
     })
   })
 })

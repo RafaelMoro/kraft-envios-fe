@@ -1,19 +1,37 @@
 "use client"
-import { RiLineChartLine } from "@remixicon/react"
-import { Card } from "flowbite-react"
 
-import { ProfitMargin } from "@/shared/types/margin-profit.types"
+import { ProviderGlobalConfig } from "@/shared/types/margin-profit.types"
+import { ProfitMarginCard } from "./ProfitMarginCard"
+import { ProfitMarginCardSkeleton } from "./ProfitMarginCardSkeleton"
 
 interface ShowProfitMarginProps {
-  data: ProfitMargin | null | undefined
+  data: ProviderGlobalConfig[] | null | undefined
+  isPending: boolean;
+  isError: boolean;
 }
 
-export const ShowProfitMargin = ({ data }: ShowProfitMarginProps) => {
-  const isPercentage = data?.type === 'percentage'
-  const value = data?.value ?? null
-  const currentMargin = isPercentage ? `${value}%` : `$${value}`
+export const ShowProfitMargin = ({ data, isPending, isError }: ShowProfitMarginProps) => {
 
-  if (!value) {
+  if (!isPending && isError) {
+    return (
+      <section className="flex flex-col gap-4">
+        <h2 className="text-2xl font-bold text-center tracking-tight">Oops!</h2>
+        <p className="text-center text-gray-600 dark:text-gray-400">Ha sucedido un error. Intentelo nuevamente</p>
+      </section>
+    )
+  }
+
+  if (isPending && !data) {
+    return (
+      <div className="w-full items-center grid grid-cols-1 md:grid-cols-2 gap-4">
+        { Array.from({ length: 4}).map((_, index) => (
+          <ProfitMarginCardSkeleton key={index} />
+        ))}
+      </div>
+    )
+  }
+
+  if ( data && data.length === 0 && !isPending) {
     return (
       <section className="flex flex-col gap-4">
         <h2 className="text-2xl font-bold text-center tracking-tight">Margen de ganancia no establecido</h2>
@@ -23,17 +41,11 @@ export const ShowProfitMargin = ({ data }: ShowProfitMarginProps) => {
   }
 
   return (
-    <>
-      <Card href="#" className="max-w-sm mx-auto">
-        <h2 className="text-2xl font-bold text-center tracking-tight">Margen de ganancia actual</h2>
-        <div className="text-green-700 dark:text-green-400 flex justify-center gap-2">
-          { isPercentage && <RiLineChartLine /> }
-          <p className="text-lg">
-            +
-            {currentMargin}
-          </p>
-        </div>
-      </Card>
-    </>
+    <div className="w-full items-center grid grid-cols-1 md:grid-cols-2 gap-4">
+      { (data && data.length > 0) && data.map((provider) => (
+        <ProfitMarginCard key={provider.name} providerInfo={provider} />
+      ))
+      }
+    </div>
   )
 }
