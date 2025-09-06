@@ -20,5 +20,8 @@ For the unit tests, consider the following instructions:
 
 - Use Gherkin cucumber syntax for describing tests. Here is the reference: https://cucumber.io/docs/gherkin/reference
 
+- Do not use jest.mock() to mock internal components from the same project (components from @/features, @/shared, etc.). This approach can cause module resolution errors and makes tests brittle. Instead, test the actual component behavior or use integration testing approaches that test the full component tree.
+
 ## Mocks
+
 - Do not export them as default, use name exports
