@@ -1,3 +1,9 @@
+## v0.11.0 (2025-09-06)
+
+### Pull Requests
+[#24](https://github.com/RafaelMoro/kraft-envios-fe/pull/24) | Update quotes profit changes
+
+
 ## v0.10.1 (2025-08-30)
 
 ### Pull Requests
