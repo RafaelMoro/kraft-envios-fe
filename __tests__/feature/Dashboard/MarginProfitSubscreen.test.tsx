@@ -112,7 +112,7 @@ describe('MarginProfitSubscreen', () => {
 
     it('When component loads, Then it renders all main sections', async () => {
       mockedAxios.get.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: null } } }
+        data: { data: { data: { providers: [] } } }
       })
 
       render(
@@ -122,18 +122,25 @@ describe('MarginProfitSubscreen', () => {
         />
       )
 
+      // Wait for loading to complete
+      await waitFor(() => {
+        expect(screen.queryByTestId('profit-margin-card-skeleton')).not.toBeInTheDocument()
+      }, { timeout: 3000 })
+
       // Wait for query to resolve
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /bienvenido john/i })).toBeInTheDocument()
       })
 
-      // Check for ShowProfitMargin component (no profit margin established)
+      // Check for ShowProfitMargin component (no profit margin established) - in view mode by default
       expect(screen.getByRole('heading', { name: /margen de ganancia no establecido/i })).toBeInTheDocument()
       
-      // Check for ProfitMarginForm component
-      expect(screen.getByRole('heading', { name: /actualizar margen de ganancia/i })).toBeInTheDocument()
-      expect(screen.getByLabelText(/valor/i)).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /actualizar margen/i })).toBeInTheDocument()
+      // Check for subscreen navigation buttons
+      expect(screen.getByRole('button', { name: /ver proveedores/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /editar margen de ganancia/i })).toBeInTheDocument()
+      
+      // Should NOT show form elements in view mode
+      expect(screen.queryByRole('heading', { name: /configuración por proveedor/i })).not.toBeInTheDocument()
     })
   })
 
