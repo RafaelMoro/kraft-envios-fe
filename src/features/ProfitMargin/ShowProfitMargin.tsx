@@ -6,15 +6,25 @@ import { ProfitMarginCardSkeleton } from "./ProfitMarginCardSkeleton"
 
 interface ShowProfitMarginProps {
   data: ProviderGlobalConfig[] | null | undefined
-  isPending: boolean
+  isPending: boolean;
+  isError: boolean;
 }
 
-export const ShowProfitMargin = ({ data, isPending }: ShowProfitMarginProps) => {
+export const ShowProfitMargin = ({ data, isPending, isError }: ShowProfitMarginProps) => {
+
+  if (!isPending && isError) {
+    return (
+      <section className="flex flex-col gap-4">
+        <h2 className="text-2xl font-bold text-center tracking-tight">Oops!</h2>
+        <p className="text-center text-gray-600 dark:text-gray-400">Ha sucedido un error. Intentelo nuevamente</p>
+      </section>
+    )
+  }
 
   if (isPending && !data) {
     return (
       <div className="w-full items-center grid grid-cols-1 md:grid-cols-2 gap-4">
-        { Array.from({ length: 4}).map((el, index) => (
+        { Array.from({ length: 4}).map((_, index) => (
           <ProfitMarginCardSkeleton key={index} />
         ))}
       </div>
