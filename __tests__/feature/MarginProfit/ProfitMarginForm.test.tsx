@@ -153,7 +153,7 @@ describe('ProfitMarginForm', () => {
       // The empty state message should disappear when a form is added
       expect(screen.queryByText(/no ha agregado ninguna paquetería/i)).not.toBeInTheDocument()
       // A new courier form should be added (mocked)
-      expect(screen.getByText(/courier: fedex/i)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /fedex/i })).toBeInTheDocument()
     })
   })
 
@@ -178,7 +178,7 @@ describe('ProfitMarginForm', () => {
       })
     })
 
-    it.only('When the form is submitted with a courier form, Then validation passes and API is called', async () => {
+    it('When the form is submitted with a courier form, Then validation passes and API is called', async () => {
       const user = userEvent.setup()
       mockedAxios.post.mockResolvedValueOnce({
         data: { data: { providers: mockData } }
