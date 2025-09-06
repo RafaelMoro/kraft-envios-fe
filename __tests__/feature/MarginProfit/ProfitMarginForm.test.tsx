@@ -290,12 +290,13 @@ describe('ProfitMarginForm', () => {
         />
       )
 
-      // Initially should have courier forms from mock data
-      expect(screen.getByText(/courier: fedex/i)).toBeInTheDocument()
+      // Initially should have courier forms from mock data - check for actual Fedex heading
+      expect(screen.getByRole('heading', { name: /fedex/i })).toBeInTheDocument()
       
-      // Remove the courier form
-      const removeButton = screen.getByRole('button', { name: /remove courier/i })
-      await user.click(removeButton)
+      // Remove the courier form - find the remove button by data-testid
+      const removeButtons = screen.getAllByTestId(/remove-courier/)
+      await user.click(removeButtons[0])
+      await user.click(removeButtons[1])
 
       // Should show empty state
       expect(screen.getByText(/no ha agregado ninguna paquetería/i)).toBeInTheDocument()
