@@ -17,7 +17,7 @@ export const MarginProfitSubscreen = ({ userInfo }: MarginProgitSubscreenProps) 
   const [subscreen, setSubscreen] = useState<MarginProfitSubscreens>('view')
   const updateSubscreen = (newSubscreen: MarginProfitSubscreens) => setSubscreen(newSubscreen)
 
-  const { data, refetch } = useQuery({
+  const { data, refetch, isPending } = useQuery({
     queryKey: ['profitMargin'],
     queryFn: getMarginProfitCb
   })
@@ -32,7 +32,7 @@ export const MarginProfitSubscreen = ({ userInfo }: MarginProgitSubscreenProps) 
         <p className="text-gray-600 dark:text-gray-400 text-center">Aquí puedes gestionar los márgenes de ganancia de tus proveedores.</p>
         <SubscreenManagerGroupButton subscreen={subscreen} updateSubscreen={updateSubscreen} />
       </div>
-      { subscreen === 'view' && (<ShowProfitMargin data={data} />) }
+      { subscreen === 'view' && (<ShowProfitMargin data={data} isPending={isPending} />) }
       { subscreen === 'edit' && (<ProfitMarginForm data={data} refetchMarginProfit={refetchMarginProfit} updateSubscreen={updateSubscreen} />)}
     </main>
   )
