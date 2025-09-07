@@ -23,6 +23,17 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>([])
 
+  // State used for the action bar
+  const [selectedQuotes, setSelectedQuotes] = useState<QuoteUI[]>([])
+  const addSelectedQuote = (quote: QuoteUI) => {
+    const newSelectedQuote = [...selectedQuotes, quote]
+    setSelectedQuotes(newSelectedQuote)
+  }
+  const removeSelectedQuote = (quoteId: string) => {
+    const filtered = selectedQuotes.filter((q) => q.id !== quoteId)
+    setSelectedQuotes(filtered)
+  }
+
   const {
     selectedCourier,
     selectedSource,
@@ -105,7 +116,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
               <div className="min-h-[500px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   { filteredQuotes.map((qt) => (
-                    <QuoteCard key={`${qt.id}-${qt.service}`} quote={qt} />
+                    <QuoteCard
+                      key={`${qt.id}-${qt.service}`}
+                      quote={qt}
+                      addSelectedQuote={addSelectedQuote}
+                      removeSelectedQuote={removeSelectedQuote}
+                    />
                   )) }
                 </div>
               </div>

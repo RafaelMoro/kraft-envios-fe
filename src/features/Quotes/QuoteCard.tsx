@@ -8,9 +8,11 @@ import { Checkbox } from "flowbite-react"
 
 interface QuoteProps {
   quote: QuoteUI
+  addSelectedQuote: (quote: QuoteUI) => void
+  removeSelectedQuote: (quoteId: string) => void
 }
 
-export const QuoteCard = ({ quote }: QuoteProps) => {
+export const QuoteCard = ({ quote, addSelectedQuote, removeSelectedQuote }: QuoteProps) => {
   const isOtherProvider = quote.logoSrc.provider === 'other'
   const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
   const is99Provider = quote.courier === 'NextDay'
@@ -21,6 +23,15 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
     { "place-self-end justify-self-start": isOtherProvider || isFedexProvider }
   )
 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checkboxChecked = e.target.checked
+    if (!checkboxChecked) {
+      removeSelectedQuote(quote.id)
+      return
+    }
+    addSelectedQuote(quote)
+  }
+
   return (
     <article
         data-testid="quote-img"
@@ -28,7 +39,7 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
       >
         <div className="h-full p-4 grid grid-cols-4  md:grid-cols-8 lg:grid-cols-12 gap-y-2 gap-x-3 lg:gap-x-2">
           <div className="row-span-2 flex justify-center items-center cursor-pointer">
-            <Checkbox className="cursor-pointer" />
+            <Checkbox className="cursor-pointer" onChange={(event) => handleCheckboxChange(event)} />
           </div>
           <div className="md:col-span-2 lg:col-span-3 row-span-2 place-self-center">
             { isPaquetExpProvider && (<PaqueteExpressIcon />) }
