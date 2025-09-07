@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, TextInput } from "flowbite-react"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 
 interface CopyInfoQuotesModalProps {
   open: boolean;
@@ -49,7 +50,7 @@ export const CopyInfoQuotesModal = ({ open, toggleModal }: CopyInfoQuotesModalPr
                 onChange={handlePhoneNumberChange}
               />
               {phoneError && (
-                <p className="mt-1 text-sm text-red-600">{phoneError}</p>
+                <ErrorMessage>{phoneError}</ErrorMessage>
               )}
             </div>
           </div>
