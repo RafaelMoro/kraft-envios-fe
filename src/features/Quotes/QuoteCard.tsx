@@ -4,6 +4,7 @@ import clsx from "clsx"
 
 import { QuoteUI } from "@/shared/types/quotes.types"
 import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon"
+import { Checkbox } from "flowbite-react"
 
 interface QuoteProps {
   quote: QuoteUI
@@ -16,20 +17,23 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
   const isFedexProvider = quote.logoSrc.provider === 'fedex'
 
   const titleStyles = clsx(
-    "col-span-3 md:col-span-5 lg:col-span-8 text-base text-gray-900 dark:text-white",
+    "col-span-2 md:col-span-5 lg:col-span-8 text-base text-gray-900 dark:text-white",
     { "place-self-end justify-self-start": isOtherProvider || isFedexProvider }
   )
 
   return (
     <article
         data-testid="quote-img"
-        className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+        className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700"
       >
         <div className="h-full p-4 grid grid-cols-4  md:grid-cols-8 lg:grid-cols-12 gap-y-2 gap-x-3 lg:gap-x-2">
-          <div className="md:col-span-3 row-span-2 place-self-center">
+          <div className="row-span-2 flex justify-center items-center cursor-pointer">
+            <Checkbox className="cursor-pointer" />
+          </div>
+          <div className="md:col-span-2 lg:col-span-3 row-span-2 place-self-center">
             { isPaquetExpProvider && (<PaqueteExpressIcon />) }
             { isFedexProvider && (
-              <picture className="flex h-20 md:h-28 w-20 md:w-28 bg-gray-800 rounded-full justify-center items-center">
+              <picture className="flex h-18 lg:h-24 w-18 lg:w-24 bg-gray-800 rounded-full justify-center items-center">
                 <Image src={quote.logoSrc.source} alt="Fedex provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
               </picture>
             ) }
@@ -45,7 +49,7 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
           <h5 className={titleStyles}>
             {quote.service}
           </h5>
-          <p className="md:col-span-2 lg:col-span-4 md:row-span-2 font-semibold text-2xl">
+          <p className="md:col-span-2 lg:col-span-3 md:row-span-2 font-semibold text-2xl">
             {quote.amountFormatted}
           </p>
           <div className="md:col-span-2 inline-flex gap-2 text-gray-700 dark:text-gray-400 justify-self-end">
