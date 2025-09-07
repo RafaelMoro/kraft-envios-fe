@@ -1,4 +1,4 @@
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react"
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, TextInput } from "flowbite-react"
 
 interface CopyInfoQuotesModalProps {
   open: boolean;
@@ -14,11 +14,12 @@ export const CopyInfoQuotesModal = ({ open, toggleModal }: CopyInfoQuotesModalPr
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               Ingrese el whatsapp para enviar la información de las cotizaciones seleccionadas.
             </p>
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant
-              to ensure a common set of data rights in the European Union. It requires organizations to notify users as
-              soon as possible of high-risk data breaches that could personally affect them.
-            </p>
+            <TextInput
+              id="phoneNumber"
+              placeholder="5512345678"
+              type="number"
+              inputMode="numeric"
+            />
           </div>
         </ModalBody>
         <ModalFooter>
