@@ -25,7 +25,7 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
         data-testid="quote-img"
         className="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
       >
-        <div className="h-full p-4 grid grid-cols-4  md:grid-cols-8 lg:grid-cols-12 gap-y-2 gap-x-3 md:gap-x-0">
+        <div className="h-full p-4 grid grid-cols-4  md:grid-cols-8 lg:grid-cols-12 gap-y-2 gap-x-3 lg:gap-x-2">
           <div className="md:col-span-3 row-span-2 place-self-center">
             { isPaquetExpProvider && (<PaqueteExpressIcon />) }
             { isFedexProvider && (

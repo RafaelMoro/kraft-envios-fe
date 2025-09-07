@@ -21,7 +21,13 @@ export const categorizeImg = (courier: QuoteCourier | null): ProviderImg => {
   return 'other'
 }
 
-export const getQuoteImg = (courier: QuoteCourier | null, isMobile: boolean): QuoteImage => {
+export const getQuoteImg = ({
+  courier,
+  isMobile,
+}: {
+  courier: QuoteCourier | null;
+  isMobile: boolean;
+}): QuoteImage => {
   const provider = categorizeImg(courier)
 
   const quoteImgDict: QuoteImgDict = {

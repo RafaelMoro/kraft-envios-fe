@@ -31,7 +31,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
       ...item,
       service: formatQuoteServiceName(item.service),
-      logoSrc: getQuoteImg(item.courier, isMobile),
+      logoSrc: getQuoteImg({ courier: item.courier, isMobile }),
       amountFormatted: formatNumberToCurrency(item.total)
     }))
     setAllQuotes(quotesFormatted)
