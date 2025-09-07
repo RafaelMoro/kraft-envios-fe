@@ -24,13 +24,14 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(null)
   const [selectedSource, setSelectedSource] = useState<QuoteSource | null>(null)
   const [selectedTimeType, setSelectedTimeType] = useState<QuoteTypeService | null>(null)
+  // Reference to the quotes section for scrolling into view
   const quotesSectionRef = useRef(null)
 
   const updateAllQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
       ...item,
       service: formatQuoteServiceName(item.service),
-      logoSrc: getQuoteImg(item.courier, isMobile),
+      logoSrc: getQuoteImg({ courier: item.courier, isMobile }),
       amountFormatted: formatNumberToCurrency(item.total)
     }))
     setAllQuotes(quotesFormatted)
