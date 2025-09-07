@@ -14,6 +14,7 @@ import { SourceFilterDropdown } from "@/features/Quotes/SourceFilterDropdown"
 import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
 import { useQuoteFilters } from "@/shared/hooks/useQuotesFilters"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -23,10 +24,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>([])
-  const [errorActionBar, setErrorActionBar] = useState<string | null>(null)
 
   // State used for the action bar
   const [selectedQuotes, setSelectedQuotes] = useState<QuoteUI[]>([])
+  const [errorActionBar, setErrorActionBar] = useState<string | null>(null)
+  const [openCopyModal, setOpenCopyModal] = useState<boolean>(false)
+  const toggleCopyModal = () => setOpenCopyModal((prev) => !prev)
   const addSelectedQuote = (quote: QuoteUI) => {
     if (errorActionBar) setErrorActionBar(null)
 
@@ -43,8 +46,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const handleClickCopyInfo = () => {
     if (selectedQuotes.length === 0) {
       setErrorActionBar('Debes seleccionar al menos una cotización para copiar su información.')
-      // TODO: Add return
+      return
     }
+    toggleCopyModal()
   }
 
   const handleClickCreateGuide = () => {
@@ -153,6 +157,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             )}
         </section>
       )}
+      <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} />
     </main>
   )
 }
