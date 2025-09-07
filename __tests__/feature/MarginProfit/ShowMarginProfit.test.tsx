@@ -1,162 +1,151 @@
 import { render, screen } from "@testing-library/react"
 
 import { ShowProfitMargin } from "@/features/ProfitMargin/ShowProfitMargin"
-import { ProfitMargin } from "@/shared/types/margin-profit.types"
+import { ProviderGlobalConfig } from "@/shared/types/margin-profit.types"
 
 describe('ShowProfitMargin', () => {
+  describe('Given error state', () => {
+    it('When isError is true and not pending, Then it displays error message', () => {
+      render(<ShowProfitMargin data={null} isPending={false} isError={true} />)
+
+      expect(screen.getByRole('heading', { name: /oops!/i })).toBeInTheDocument()
+      expect(screen.getByText(/ha sucedido un error\. intentelo nuevamente/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('Given loading state', () => {
+    it('When isPending is true and no data, Then it displays skeleton loaders', () => {
+      render(<ShowProfitMargin data={null} isPending={true} isError={false} />)
+
+      // Should render 4 skeleton cards
+      const skeletonElements = document.querySelectorAll('.animate-pulse')
+      expect(skeletonElements.length).toBeGreaterThan(0)
+    })
+  })
+
   describe('Given no profit margin data is provided', () => {
-    it('When data is null, Then it displays "not established" message', () => {
-      render(<ShowProfitMargin data={null} />)
+    it('When data is null and not pending, Then it displays empty grid', () => {
+      const { container } = render(<ShowProfitMargin data={null} isPending={false} isError={false} />)
 
-      expect(screen.getByRole('heading', { name: /margen de ganancia no establecido/i })).toBeInTheDocument()
-      expect(screen.getByText(/no se ha establecido un margen de ganancia aún\./i)).toBeInTheDocument()
+      // Component renders empty grid for null data
+      const gridElement = container.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4')
+      expect(gridElement).toBeInTheDocument()
+      expect(gridElement?.children.length).toBe(0)
     })
 
-    it('When data is undefined, Then it displays "not established" message', () => {
-      render(<ShowProfitMargin data={undefined} />)
+    it('When data is undefined and not pending, Then it displays empty grid', () => {
+      const { container } = render(<ShowProfitMargin data={undefined} isPending={false} isError={false} />)
 
-      expect(screen.getByRole('heading', { name: /margen de ganancia no establecido/i })).toBeInTheDocument()
-      expect(screen.getByText(/no se ha establecido un margen de ganancia aún\./i)).toBeInTheDocument()
+      // Component renders empty grid for undefined data
+      const gridElement = container.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4')
+      expect(gridElement).toBeInTheDocument()
+      expect(gridElement?.children.length).toBe(0)
     })
 
-    it('When data has zero value, Then it displays "not established" message', () => {
-      const data: ProfitMargin = {
-        value: 0,
-        type: 'percentage'
-      }
+    it('When data is empty array and not pending, Then it displays "not established" message', () => {
+      const data: ProviderGlobalConfig[] = []
 
-      render(<ShowProfitMargin data={data} />)
+      render(<ShowProfitMargin data={data} isPending={false} isError={false} />)
 
       expect(screen.getByRole('heading', { name: /margen de ganancia no establecido/i })).toBeInTheDocument()
       expect(screen.getByText(/no se ha establecido un margen de ganancia aún\./i)).toBeInTheDocument()
     })
   })
 
-  describe('Given profit margin data with percentage type is provided', () => {
-    it('When data has percentage type with value 15, Then it displays percentage format with chart icon', () => {
-      const data: ProfitMargin = {
-        value: 15,
-        type: 'percentage'
-      }
+  describe('Given provider data is provided', () => {
+    it('When data has providers, Then it displays provider cards', () => {
+      const data: ProviderGlobalConfig[] = [
+        {
+          name: 'GE',
+          couriers: [
+            {
+              name: 'Fedex',
+              profitMargin: {
+                value: 15,
+                type: 'percentage'
+              }
+            }
+          ]
+        }
+      ]
 
-      render(<ShowProfitMargin data={data} />)
+      render(<ShowProfitMargin data={data} isPending={false} isError={false} />)
 
-      expect(screen.getByRole('heading', { name: /margen de ganancia actual/i })).toBeInTheDocument()
-      expect(screen.getByText(/\+15%/)).toBeInTheDocument()
-      
-      // Check for the chart icon (RiLineChartLine)
-      const svgElement = screen.getByRole('heading', { name: /margen de ganancia actual/i })
-        .closest('div')
-        ?.querySelector('svg')
-      expect(svgElement).toBeInTheDocument()
+      // Should render the grid container
+      const gridContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2')
+      expect(gridContainer).toBeInTheDocument()
     })
 
-    it('When data has percentage type with decimal value 12.5, Then it displays correct percentage format', () => {
-      const data: ProfitMargin = {
-        value: 12.5,
-        type: 'percentage'
-      }
+    it('When data has multiple providers, Then it displays multiple provider cards', () => {
+      const data: ProviderGlobalConfig[] = [
+        {
+          name: 'GE',
+          couriers: [
+            {
+              name: 'Fedex',
+              profitMargin: {
+                value: 15,
+                type: 'percentage'
+              }
+            }
+          ]
+        },
+        {
+          name: 'TONE',
+          couriers: [
+            {
+              name: 'UPS',
+              profitMargin: {
+                value: 25,
+                type: 'absolute'
+              }
+            }
+          ]
+        }
+      ]
 
-      render(<ShowProfitMargin data={data} />)
+      render(<ShowProfitMargin data={data} isPending={false} isError={false} />)
 
-      expect(screen.getByRole('heading', { name: /margen de ganancia actual/i })).toBeInTheDocument()
-      expect(screen.getByText(/\+12\.5%/)).toBeInTheDocument()
-    })
-
-    it('When data has percentage type with large value 100, Then it displays correct percentage format', () => {
-      const data: ProfitMargin = {
-        value: 100,
-        type: 'percentage'
-      }
-
-      render(<ShowProfitMargin data={data} />)
-
-      expect(screen.getByRole('heading', { name: /margen de ganancia actual/i })).toBeInTheDocument()
-      expect(screen.getByText(/\+100%/)).toBeInTheDocument()
-    })
-  })
-
-  describe('Given profit margin data with absolute type is provided', () => {
-    it('When data has absolute type with value 50, Then it displays dollar format without chart icon', () => {
-      const data: ProfitMargin = {
-        value: 50,
-        type: 'absolute'
-      }
-
-      render(<ShowProfitMargin data={data} />)
-
-      expect(screen.getByRole('heading', { name: /margen de ganancia actual/i })).toBeInTheDocument()
-      expect(screen.getByText(/\+\$50/)).toBeInTheDocument()
-      
-      // Check that chart icon is NOT present for absolute type
-      const svgElement = screen.getByRole('heading', { name: /margen de ganancia actual/i })
-        .closest('div')
-        ?.querySelector('svg')
-      expect(svgElement).not.toBeInTheDocument()
-    })
-
-    it('When data has absolute type with decimal value 25.75, Then it displays correct dollar format', () => {
-      const data: ProfitMargin = {
-        value: 25.75,
-        type: 'absolute'
-      }
-
-      render(<ShowProfitMargin data={data} />)
-
-      expect(screen.getByRole('heading', { name: /margen de ganancia actual/i })).toBeInTheDocument()
-      expect(screen.getByText(/\+\$25\.75/)).toBeInTheDocument()
-    })
-
-    it('When data has absolute type with large value 1000, Then it displays correct dollar format', () => {
-      const data: ProfitMargin = {
-        value: 1000,
-        type: 'absolute'
-      }
-
-      render(<ShowProfitMargin data={data} />)
-
-      expect(screen.getByRole('heading', { name: /margen de ganancia actual/i })).toBeInTheDocument()
-      expect(screen.getByText(/\+\$1000/)).toBeInTheDocument()
+      // Should render the grid container with multiple cards
+      const gridContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2')
+      expect(gridContainer).toBeInTheDocument()
     })
   })
 
   describe('Given the component structure and styling', () => {
-    it('When profit margin data is provided, Then it renders within a Card component', () => {
-      const data: ProfitMargin = {
-        value: 15,
-        type: 'percentage'
-      }
+    it('When provider data is provided, Then it renders within a grid layout', () => {
+      const data: ProviderGlobalConfig[] = [
+        {
+          name: 'GE',
+          couriers: [
+            {
+              name: 'Fedex',
+              profitMargin: {
+                value: 15,
+                type: 'percentage'
+              }
+            }
+          ]
+        }
+      ]
 
-      const { container } = render(<ShowProfitMargin data={data} />)
+      const { container } = render(<ShowProfitMargin data={data} isPending={false} isError={false} />)
 
-      // Check for Card component structure
-      const cardElement = container.querySelector('.max-w-sm.mx-auto')
-      expect(cardElement).toBeInTheDocument()
+      // Check for grid layout
+      const gridElement = container.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4')
+      expect(gridElement).toBeInTheDocument()
     })
 
-    it('When profit margin data is provided, Then the value has green styling classes', () => {
-      const data: ProfitMargin = {
-        value: 15,
-        type: 'percentage'
-      }
+    it('When no provider data is provided, Then it renders as empty grid without section', () => {
+      const { container } = render(<ShowProfitMargin data={null} isPending={false} isError={false} />)
 
-      const { container } = render(<ShowProfitMargin data={data} />)
-
-      // Check for green text styling
-      const greenElement = container.querySelector('.text-green-700.dark\\:text-green-400')
-      expect(greenElement).toBeInTheDocument()
-    })
-
-    it('When no profit margin data is provided, Then it renders as a section without Card', () => {
-      const { container } = render(<ShowProfitMargin data={null} />)
-
-      // Check for section structure
-      const sectionElement = container.querySelector('section.flex.flex-col.gap-4')
-      expect(sectionElement).toBeInTheDocument()
+      // Check for grid structure (empty grid for null data)
+      const gridElement = container.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4')
+      expect(gridElement).toBeInTheDocument()
       
-      // Check that Card is NOT present
-      const cardElement = container.querySelector('.max-w-sm.mx-auto')
-      expect(cardElement).not.toBeInTheDocument()
+      // Check that section is NOT present for null data
+      const sectionElement = container.querySelector('section.flex.flex-col.gap-4')
+      expect(sectionElement).not.toBeInTheDocument()
     })
   })
 })

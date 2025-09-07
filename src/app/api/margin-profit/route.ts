@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
     }
 
     const payload: UpdateMarginProfitPayload = await request.json()
-    const uri = `${process.env.BACKEND_URI}/global-configs/profit-margin`
-    const res: AxiosResponse<MarginProfitResponse> = await axios.post(uri, payload, {
+    const uri = `${process.env.BACKEND_URI}/global-configs/profit-margin-providers`
+    const res: AxiosResponse<MarginProfitResponse> = await axios.put(uri, payload, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }

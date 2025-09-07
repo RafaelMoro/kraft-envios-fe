@@ -6,7 +6,7 @@ import { QueryProviderWrapper } from "@/features/QueryProviderWrapper"
 import { MarginProfitSubscreen } from "@/features/Dashboard/subscreens/MarginProfitSubscreen"
 import { AppRouterContextProviderMock } from "@/features/AppRouterContextProviderMock"
 import { LoginData } from "@/shared/types/login.types"
-import { ProfitMargin } from "@/shared/types/margin-profit.types"
+import { ProviderGlobalConfig } from "@/shared/types/margin-profit.types"
 
 // Custom wrapper that creates a fresh QueryClient for each test
 const MarginProfitSubscreenWrapper = ({
@@ -53,6 +53,28 @@ describe('MarginProfitSubscreen', () => {
     version: '1.0.0'
   }
 
+  const mockProviders: ProviderGlobalConfig[] = [
+    {
+      name: 'GE',
+      couriers: [
+        {
+          name: 'Fedex',
+          profitMargin: {
+            value: 10,
+            type: 'percentage'
+          }
+        },
+        {
+          name: 'DHL',
+          profitMargin: {
+            value: 15,
+            type: 'absolute'
+          }
+        }
+      ]
+    }
+  ]
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -60,7 +82,7 @@ describe('MarginProfitSubscreen', () => {
   describe('Given the MarginProfitSubscreen component is rendered', () => {
     it('When userInfo is provided, Then it displays welcome message with user name', () => {
       mockedAxios.get.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: null } } }
+        data: { data: { data: { providers: [] } } }
       })
 
       render(
@@ -90,7 +112,7 @@ describe('MarginProfitSubscreen', () => {
 
     it('When component loads, Then it renders all main sections', async () => {
       mockedAxios.get.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: null } } }
+        data: { data: { data: { providers: [] } } }
       })
 
       render(
@@ -99,31 +121,33 @@ describe('MarginProfitSubscreen', () => {
           userInfo={mockUserInfo}
         />
       )
+
+      // Wait for loading to complete
+      await waitFor(() => {
+        expect(screen.queryByTestId('profit-margin-card-skeleton')).not.toBeInTheDocument()
+      }, { timeout: 3000 })
 
       // Wait for query to resolve
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /bienvenido john/i })).toBeInTheDocument()
       })
 
-      // Check for ShowProfitMargin component (no profit margin established)
+      // Check for ShowProfitMargin component (no profit margin established) - in view mode by default
       expect(screen.getByRole('heading', { name: /margen de ganancia no establecido/i })).toBeInTheDocument()
       
-      // Check for ProfitMarginForm component
-      expect(screen.getByRole('heading', { name: /actualizar margen de ganancia/i })).toBeInTheDocument()
-      expect(screen.getByLabelText(/valor/i)).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /actualizar margen/i })).toBeInTheDocument()
+      // Check for subscreen navigation buttons
+      expect(screen.getByRole('button', { name: /ver proveedores/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /editar margen de ganancia/i })).toBeInTheDocument()
+      
+      // Should NOT show form elements in view mode
+      expect(screen.queryByRole('heading', { name: /configuración por proveedor/i })).not.toBeInTheDocument()
     })
   })
 
   describe('Given the component fetches profit margin data', () => {
     it('When API returns profit margin data, Then it displays the current margin', async () => {
-      const mockProfitMargin: ProfitMargin = {
-        value: 15,
-        type: 'percentage'
-      }
-      
       mockedAxios.get.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: mockProfitMargin } } }
+        data: { data: { data: { providers: mockProviders } } }
       })
 
       render(
@@ -133,9 +157,18 @@ describe('MarginProfitSubscreen', () => {
         />
       )
 
+      // Wait for loading to complete
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /margen de ganancia actual/i })).toBeInTheDocument()
-        expect(screen.getByText(/\+15%/)).toBeInTheDocument()
+        expect(screen.queryByTestId('profit-margin-card-skeleton')).not.toBeInTheDocument()
+      }, { timeout: 3000 })
+
+      // Check that provider data is displayed
+      await waitFor(() => {
+        expect(screen.getByText(/Origen:\s*GE/)).toBeInTheDocument()
+        expect(screen.getByText('Fedex')).toBeInTheDocument()
+        expect(screen.getByText('DHL')).toBeInTheDocument()
+        expect(screen.getByText('+10%')).toBeInTheDocument()
+        expect(screen.getByText('+$15')).toBeInTheDocument()
       })
     })
 
@@ -177,7 +210,7 @@ describe('MarginProfitSubscreen', () => {
   describe('Given the refetch functionality', () => {
     it('When refetch is called after form submission, Then it updates the displayed data', async () => {
       const initialMargin = null
-      const updatedMargin: ProfitMargin = {
+      const updatedMargin = {
         value: 20,
         type: 'percentage'
       }
@@ -238,7 +271,7 @@ describe('MarginProfitSubscreen', () => {
 
     it('When component renders, Then elements are in correct order', async () => {
       mockedAxios.get.mockResolvedValueOnce({
-        data: { data: { data: { profitMargin: null } } }
+        data: { data: { data: { providers: [] } } }
       })
 
       render(
@@ -248,8 +281,14 @@ describe('MarginProfitSubscreen', () => {
         />
       )
 
+      // Wait for loading to complete - skeleton should disappear
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /bienvenido john/i })).toBeInTheDocument()
+        expect(screen.queryByTestId('profit-margin-card-skeleton')).not.toBeInTheDocument()
+      }, { timeout: 3000 })
+
+      // Wait for the content to load
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /margen de ganancia no establecido/i })).toBeInTheDocument()
       })
 
       const headings = screen.getAllByRole('heading')
@@ -257,11 +296,12 @@ describe('MarginProfitSubscreen', () => {
       // Welcome message should be first
       expect(headings[0]).toHaveTextContent(/bienvenido john/i)
       
-      // Profit margin status should be second
-      expect(headings[1]).toHaveTextContent(/margen de ganancia/i)
+      // Profit margin status should be second (in view mode by default)
+      expect(headings[1]).toHaveTextContent(/margen de ganancia no establecido/i)
       
-      // Form heading should be third
-      expect(headings[2]).toHaveTextContent(/actualizar margen de ganancia/i)
+      // Should have subscreen navigation buttons
+      expect(screen.getByRole('button', { name: /ver proveedores/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /editar margen de ganancia/i })).toBeInTheDocument()
     })
   })
 

@@ -72,6 +72,11 @@ export const deleteSession = async () => {
   await cookies().delete(COOKIE_SESSION_KEY)
 }
 
+export const deleteUserInfo = async () => {
+  await cookies().delete(COOKIE_USER_INFO_KEY)
+}
+
 export const signOut = async () => {
   await deleteSession()
+  await deleteUserInfo()
 }
