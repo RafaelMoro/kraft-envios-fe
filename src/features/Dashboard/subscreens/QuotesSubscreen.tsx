@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import { Button } from "flowbite-react"
+import { RiFileCopyLine, RiStickyNoteAddLine } from "@remixicon/react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
 import { LoginData } from "@/shared/types/login.types"
@@ -11,8 +12,8 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { CourierFilter } from "@/features/Quotes/CourierFilter"
 import { SourceFilterDropdown } from "@/features/Quotes/SourceFilterDropdown"
 import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
-import { RiFileCopyLine, RiStickyNoteAddLine } from "@remixicon/react"
 import { useQuoteFilters } from "@/shared/hooks/useQuotesFilters"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -22,16 +23,35 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>([])
+  const [errorActionBar, setErrorActionBar] = useState<string | null>(null)
 
   // State used for the action bar
   const [selectedQuotes, setSelectedQuotes] = useState<QuoteUI[]>([])
   const addSelectedQuote = (quote: QuoteUI) => {
+    if (errorActionBar) setErrorActionBar(null)
+
     const newSelectedQuote = [...selectedQuotes, quote]
     setSelectedQuotes(newSelectedQuote)
   }
   const removeSelectedQuote = (quoteId: string) => {
+    if (errorActionBar) setErrorActionBar(null)
+
     const filtered = selectedQuotes.filter((q) => q.id !== quoteId)
     setSelectedQuotes(filtered)
+  }
+
+  const handleClickCopyInfo = () => {
+    if (selectedQuotes.length === 0) {
+      setErrorActionBar('Debes seleccionar al menos una cotización para copiar su información.')
+      // TODO: Add return
+    }
+  }
+
+  const handleClickCreateGuide = () => {
+    if (selectedQuotes.length > 1) {
+      setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
+      // TODO: Add return
+    }
   }
 
   const {
@@ -91,15 +111,20 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
           <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
-            <Button color="alternative" className="inline-flex gap-2">
+            <Button color="alternative" className="inline-flex gap-2" onClick={handleClickCopyInfo}>
               <RiFileCopyLine size={20} />
               Copiar información
             </Button>
-            <Button className="inline-flex gap-2">
+            <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
               <RiStickyNoteAddLine size={20} />
               Crear guía
             </Button>
           </div>
+          { errorActionBar && (
+            <div className="flex justify-end">
+              <ErrorMessage>{errorActionBar}</ErrorMessage>
+            </div>
+          )}
           <div data-testid="quotes-filters" className="flex flex-col md:flex-row items-center gap-3 mb-5">
             <p>Filtrar por:</p>
             <Button color="light" onClick={resetFiltersQuotes}>Limpiar filtros</Button>
