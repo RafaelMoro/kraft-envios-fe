@@ -11,6 +11,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { CourierFilter } from "@/features/Quotes/CourierFilter"
 import { SourceFilterDropdown } from "@/features/Quotes/SourceFilterDropdown"
 import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
+import { RiFileCopyLine, RiStickyNoteAddLine } from "@remixicon/react"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -111,12 +112,22 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
-          <div className="flex flex-col md:flex-row items-center gap-3 mb-5">
+          <div data-testid="quotes-filters" className="flex flex-col md:flex-row items-center gap-3">
             <p>Filtrar por:</p>
             <Button color="light" onClick={resetFiltersQuotes}>Limpiar filtros</Button>
             <CourierFilter selectedCourier={selectedCourier} setSelectedCourier={setSelectedCourier} filterQuotesByCourier={filterQuotesByCourier} resetFiltersQuotes={resetFiltersQuotes} />
             <SourceFilterDropdown selectedSource={selectedSource} setSelectedSource={setSelectedSource} filterQuotesBySource={filterQuotesBySource} resetFiltersQuotes={resetFiltersQuotes} />
             <TimeFilterDropdown selectedType={selectedTimeType} setSelectedType={setSelectedTimeType} filterQuotesByType={filterQuotesByTimeType} resetFiltersQuotes={resetFiltersQuotes} />
+          </div>
+          <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2 mb-5">
+            <Button color="alternative" className="inline-flex gap-2">
+              <RiFileCopyLine size={20} />
+              Copiar información
+            </Button>
+            <Button className="inline-flex gap-2">
+              <RiStickyNoteAddLine size={20} />
+              Crear guía
+            </Button>
           </div>
             { filteredQuotes.length === 0 && (
               <div className="min-h-[500px]">
