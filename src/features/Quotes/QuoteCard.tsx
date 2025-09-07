@@ -12,6 +12,7 @@ interface QuoteProps {
 export const QuoteCard = ({ quote }: QuoteProps) => {
   const isOtherProvider = quote.logoSrc.provider === 'other'
   const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
+  const is99Provider = quote.courier === 'NextDay'
   const isFedexProvider = quote.logoSrc.provider === 'fedex'
 
   const titleStyles = clsx(
@@ -32,12 +33,12 @@ export const QuoteCard = ({ quote }: QuoteProps) => {
                 <Image src={quote.logoSrc.source} alt="Fedex provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
               </picture>
             ) }
-            { isOtherProvider && (
-              <picture className="flex h-16 md:h-28 w-16 md:w-28 dark:bg-gray-100 rounded-full justify-center items-center">
+            { (isOtherProvider || is99Provider) && (
+              <picture className="flex h-16 w-16 md:h-24 md:w-24 dark:bg-gray-100 rounded-full justify-center items-center">
                 <Image src={quote.logoSrc.source} alt="Other provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
               </picture>
             ) }
-            { (!isPaquetExpProvider && !isOtherProvider && !isFedexProvider) && (
+            { (!isPaquetExpProvider && !isOtherProvider && !isFedexProvider && !is99Provider) && (
               <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
             )}
           </div>
