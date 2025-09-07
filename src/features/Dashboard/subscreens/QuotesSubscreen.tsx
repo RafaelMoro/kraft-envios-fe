@@ -24,6 +24,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(null)
   const [selectedSource, setSelectedSource] = useState<QuoteSource | null>(null)
   const [selectedTimeType, setSelectedTimeType] = useState<QuoteTypeService | null>(null)
+  // Reference to the quotes section for scrolling into view
   const quotesSectionRef = useRef(null)
 
   const updateAllQuotes = (quotesGotten: Quote[]) => {
