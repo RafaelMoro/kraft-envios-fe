@@ -9,15 +9,13 @@ export const getQuoteMutationCb = (data: GetQuoteForm) => {
 export const categorizeImg = (courier: QuoteCourier | null): ProviderImg => {
   if (!courier) return 'other'
 
-  const normalized = courier.toString().toLowerCase()
-
-  if (normalized.includes('dhl')) return 'dhl'
-  if (normalized.includes('estafeta')) return 'estafeta'
-  if (normalized.includes('ups')) return 'ups'
-  if (normalized.includes('paquet')) return 'paquetexpres'
-  if (normalized.includes('fedex')) return 'fedex'
-  if (normalized.includes('next') || normalized.includes('99') || normalized.includes('99min')) return 'ninetyNineMin'
-  if (normalized.includes('ampm') || normalized.includes('ampm')) return 'ampm'
+  if (courier === 'DHL') return 'dhl'
+  if (courier === 'Estafeta') return 'estafeta'
+  if (courier === 'UPS') return 'ups'
+  if (courier === 'Paquetexpress') return 'paquetexpres'
+  if (courier === 'Fedex') return 'fedex'
+  if (courier === 'NextDay') return 'ninetyNineMin'
+  if (courier === 'AMPM') return 'ampm'
 
   // Fallback to 'other' as the last option
   return 'other'
