@@ -1,3 +1,9 @@
+## v0.11.1 (2025-09-07)
+
+### Pull Requests
+[#26](https://github.com/RafaelMoro/kraft-envios-fe/pull/26) | Change 99min logo and other fixes
+
+
 ## v0.11.0 (2025-09-06)
 
 ### Pull Requests
