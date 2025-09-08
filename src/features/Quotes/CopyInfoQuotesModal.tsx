@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react"
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, TextInput } from "flowbite-react"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
