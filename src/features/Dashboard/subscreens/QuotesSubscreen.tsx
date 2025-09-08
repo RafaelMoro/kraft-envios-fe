@@ -61,7 +61,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     try {
       const message = formatQuotesSendWhatsapp(selectedQuotes)
       await navigator.clipboard.writeText(message)
-      setSuccessCopyActionBar('Cotizaciones copiadas.')
+      const successMsg = isMobile ? 'Copiado' : 'Cotizaciones copiadas.'
+      setSuccessCopyActionBar(successMsg)
     } catch (error) {
       console.error('Failed to copy to clipboard:', error)
       setErrorActionBar('Error al copiar las cotizaciones al portapapeles.')
@@ -142,18 +143,18 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
             <Button color="alternative" className="inline-flex gap-2" onClick={handleSendInfo}>
               <RiSendPlaneLine size={20} />
-              Mandar información
+              { !isMobile ? 'Mandar información' : 'Mandar' }
             </Button>
             <Button color={Boolean(successCopyActionBar) ? "green" : "alternative"} className="inline-flex gap-2" onClick={handleCopyInfo}>
               { successCopyActionBar ? (
                 <>
                   <RiCheckDoubleLine size={20} />
-                  {successCopyActionBar}
+                  { !isMobile && successCopyActionBar}
                 </>
               ): (
                 <>
                   <RiFileCopyLine size={20} />
-                  Copiar cotizaciones
+                  { !isMobile ? 'Copiar cotizaciones' : 'Copiar' }
                 </>
               )}
             </Button>
