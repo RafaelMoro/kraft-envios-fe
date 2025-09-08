@@ -157,7 +157,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             )}
         </section>
       )}
-      <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} />
+      <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
     </main>
   )
 }

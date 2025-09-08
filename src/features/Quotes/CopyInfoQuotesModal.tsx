@@ -1,13 +1,16 @@
 import { useState } from "react"
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, TextInput } from "flowbite-react"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
+import { QuoteUI } from "@/shared/types/quotes.types";
+import { formatQuotesSendWhatsapp } from "@/shared/utils/quotes.utils";
 
 interface CopyInfoQuotesModalProps {
   open: boolean;
+  selectedQuotes: QuoteUI[]
   toggleModal: () => void;
 }
 
-export const CopyInfoQuotesModal = ({ open, toggleModal }: CopyInfoQuotesModalProps) => {
+export const CopyInfoQuotesModal = ({ open, toggleModal, selectedQuotes }: CopyInfoQuotesModalProps) => {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
   const [phoneError, setPhoneError] = useState<string | null>(null)
 
@@ -15,6 +18,13 @@ export const CopyInfoQuotesModal = ({ open, toggleModal }: CopyInfoQuotesModalPr
     const value = e.target.value
     setPhoneNumber(value)
     if (phoneError) setPhoneError(null)
+  }
+
+  const sendWhatsappMessage = () => {
+    const message = formatQuotesSendWhatsapp(selectedQuotes)
+    const completeMessage = `Hola Rafael. Las cotizaciones son: ${message}`
+    const whatsappUrl = `https://wa.me/52${phoneNumber}?text=${encodeURIComponent(completeMessage)}`
+    return whatsappUrl
   }
 
   const handleSendInfo = () => {
@@ -26,6 +36,8 @@ export const CopyInfoQuotesModal = ({ open, toggleModal }: CopyInfoQuotesModalPr
 
     // TODO: Implement the logic to send quote information via WhatsApp
     console.log("Sending quote info to:", phoneNumber)
+    const whatsappUrl = sendWhatsappMessage()
+    console.log('WhatsApp URL:', whatsappUrl)
     
     // Reset form and close modal
     setPhoneNumber("")
