@@ -34,10 +34,10 @@ export const CopyInfoQuotesModal = ({ open, toggleModal, selectedQuotes }: CopyI
       return
     }
 
-    // TODO: Implement the logic to send quote information via WhatsApp
-    console.log("Sending quote info to:", phoneNumber)
     const whatsappUrl = sendWhatsappMessage()
-    console.log('WhatsApp URL:', whatsappUrl)
+    
+    // Redirect to WhatsApp URL
+    window.open(whatsappUrl, '_blank')
     
     // Reset form and close modal
     setPhoneNumber("")
