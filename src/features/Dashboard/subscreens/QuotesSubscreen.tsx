@@ -1,6 +1,6 @@
 import { useRef, useState } from "react"
 import { Button } from "flowbite-react"
-import { RiFileCopyLine, RiSendPlaneLine, RiStickyNoteAddLine } from "@remixicon/react"
+import { RiCheckDoubleLine, RiFileCopyLine, RiSendPlaneLine, RiStickyNoteAddLine } from "@remixicon/react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
 import { LoginData } from "@/shared/types/login.types"
@@ -29,6 +29,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const [selectedQuotes, setSelectedQuotes] = useState<QuoteUI[]>([])
   const [errorActionBar, setErrorActionBar] = useState<string | null>(null)
   const [openCopyModal, setOpenCopyModal] = useState<boolean>(false)
+  const [successCopyActionBar, setSuccessCopyActionBar] = useState<string | null>(null)
   const toggleCopyModal = () => setOpenCopyModal((prev) => !prev)
   const addSelectedQuote = (quote: QuoteUI) => {
     if (errorActionBar) setErrorActionBar(null)
@@ -60,8 +61,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     try {
       const message = formatQuotesSendWhatsapp(selectedQuotes)
       await navigator.clipboard.writeText(message)
-      // TODO: Show success message to user
-      console.log('Quotes copied to clipboard successfully')
+      setSuccessCopyActionBar('Cotizaciones copiadas.')
     } catch (error) {
       console.error('Failed to copy to clipboard:', error)
       setErrorActionBar('Error al copiar las cotizaciones al portapapeles.')
@@ -137,8 +137,17 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
               Mandar información
             </Button>
             <Button color="alternative" className="inline-flex gap-2" onClick={handleCopyInfo}>
-              <RiFileCopyLine size={20} />
-              Copiar cotizaciones
+              { successCopyActionBar ? (
+                <>
+                  <RiCheckDoubleLine size={20} />
+                  {successCopyActionBar}
+                </>
+              ): (
+                <>
+                  <RiFileCopyLine size={20} />
+                  Copiar cotizaciones
+                </>
+              )}
             </Button>
             <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
               <RiStickyNoteAddLine size={20} />
