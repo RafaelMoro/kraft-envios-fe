@@ -1,13 +1,13 @@
 import { useRef, useState } from "react"
 import { Button } from "flowbite-react"
-import { RiFileCopyLine, RiStickyNoteAddLine } from "@remixicon/react"
+import { RiFileCopyLine, RiSendPlaneLine, RiStickyNoteAddLine } from "@remixicon/react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
 import { LoginData } from "@/shared/types/login.types"
 import { Quote, QuoteUI } from "@/shared/types/quotes.types"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { QuoteCard } from "@/features/Quotes/QuoteCard"
-import { formatQuoteServiceName, getQuoteImg } from "@/shared/utils/quotes.utils"
+import { formatQuoteServiceName, formatQuotesSendWhatsapp, getQuoteImg } from "@/shared/utils/quotes.utils"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { CourierFilter } from "@/features/Quotes/CourierFilter"
 import { SourceFilterDropdown } from "@/features/Quotes/SourceFilterDropdown"
@@ -43,12 +43,29 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     setSelectedQuotes(filtered)
   }
 
-  const handleClickCopyInfo = () => {
+  const handleSendInfo = () => {
+    if (selectedQuotes.length === 0) {
+      setErrorActionBar('Debes seleccionar al menos una cotización para mandar la información via Whatsapp.')
+      return
+    }
+    toggleCopyModal()
+  }
+
+  const handleCopyInfo = async () => {
     if (selectedQuotes.length === 0) {
       setErrorActionBar('Debes seleccionar al menos una cotización para copiar su información.')
       return
     }
-    toggleCopyModal()
+
+    try {
+      const message = formatQuotesSendWhatsapp(selectedQuotes)
+      await navigator.clipboard.writeText(message)
+      // TODO: Show success message to user
+      console.log('Quotes copied to clipboard successfully')
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error)
+      setErrorActionBar('Error al copiar las cotizaciones al portapapeles.')
+    }
   }
 
   const handleClickCreateGuide = () => {
@@ -115,9 +132,13 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
           <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
-            <Button color="alternative" className="inline-flex gap-2" onClick={handleClickCopyInfo}>
+            <Button color="alternative" className="inline-flex gap-2" onClick={handleSendInfo}>
+              <RiSendPlaneLine size={20} />
+              Mandar información
+            </Button>
+            <Button color="alternative" className="inline-flex gap-2" onClick={handleCopyInfo}>
               <RiFileCopyLine size={20} />
-              Copiar información
+              Copiar cotizaciones
             </Button>
             <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
               <RiStickyNoteAddLine size={20} />
