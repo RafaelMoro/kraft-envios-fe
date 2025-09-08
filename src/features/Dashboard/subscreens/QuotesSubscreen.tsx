@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "flowbite-react"
 import { RiCheckDoubleLine, RiFileCopyLine, RiSendPlaneLine, RiStickyNoteAddLine } from "@remixicon/react"
 
@@ -68,6 +68,14 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     }
   }
 
+  useEffect(() => {
+    if (successCopyActionBar) {
+      setTimeout(() => {
+        setSuccessCopyActionBar(null)
+      }, 2000)
+    }
+  }, [successCopyActionBar])
+
   const handleClickCreateGuide = () => {
     if (selectedQuotes.length > 1) {
       setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
@@ -136,7 +144,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
               <RiSendPlaneLine size={20} />
               Mandar información
             </Button>
-            <Button color="alternative" className="inline-flex gap-2" onClick={handleCopyInfo}>
+            <Button color={Boolean(successCopyActionBar) ? "green" : "alternative"} className="inline-flex gap-2" onClick={handleCopyInfo}>
               { successCopyActionBar ? (
                 <>
                   <RiCheckDoubleLine size={20} />
