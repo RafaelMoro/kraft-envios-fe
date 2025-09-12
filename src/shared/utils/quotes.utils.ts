@@ -114,6 +114,6 @@ export const filterQuotesByTimeTypeUtil = (quotes: QuoteUI[], timeType: QuoteTyp
 }
 
 export const formatQuotesSendWhatsapp = (quotes: QuoteUI[]): string => {
-  const quotesFormatted = quotes.map((quote) => `${quote.service} - ${quote.amountFormatted}`)
-  return quotesFormatted.join(' | ')
+  const quotesFormatted = quotes.map((quote, index) => `${index + 1}. ${quote.courier} ${quote.amountFormatted}`).join('\n')
+  return quotesFormatted
 }
