@@ -25,7 +25,12 @@ interface QuotesProps {
 
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
+
+  // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
+  const [isIntersectingForm, setIsIntersectingForm] = useState<boolean>(false)
+
+  // All quotes and filtered quotes state
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>([])
 
@@ -139,7 +144,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     <main className='w-full p-4 flex flex-col gap-5 align-center'>
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-center text-xl mb-5">Ingrese los siguientes datos para obtener una cotización</p>
-      <QuoteForm updateQuotes={updateAllQuotes} />
+      <ActionBarIntersectionObserver setIntersecting={setIsIntersectingForm}>
+        <QuoteForm updateQuotes={updateAllQuotes} />
+      </ActionBarIntersectionObserver>
       { allQuotes.length > 0 && (
         <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
@@ -187,7 +194,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             )}
         </section>
       )}
-      { !isIntersectingActionBar && allQuotes.length > 0 && (
+      { !isIntersectingActionBar && !isIntersectingForm && allQuotes.length > 0 && (
         <article data-testid="sticky-action-bar" className="sticky z-50 bottom-20 md:bottom-28 w-full flex justify-center md:justify-end">
           <div className="max-w-xl p-6 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow-2xl flex flex-col md:flex-row  justify-between gap-3 md:gap-5">
             <p className="text-gray-600 dark:text-gray-400">Cotizaciones seleccionadas: {selectedQuotes.length}</p>
