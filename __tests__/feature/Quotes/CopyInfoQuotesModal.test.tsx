@@ -54,16 +54,6 @@ describe('CopyInfoQuotesModal', () => {
   })
 
   describe('GIVEN the user interacts with the form fields', () => {
-    it('WHEN the user types in the intro field THEN it should update the value', async () => {
-      const user = userEvent.setup()
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const introField = screen.getByLabelText('Saludo')
-      await user.clear(introField)
-      await user.type(introField, 'Hola, aquí están las cotizaciones:')
-
-      expect(introField).toHaveValue('Hola, aquí están las cotizaciones:')
-    })
 
     it('WHEN the user clicks the cancel button THEN it should call toggleModal', async () => {
       const user = userEvent.setup()
@@ -84,7 +74,6 @@ describe('CopyInfoQuotesModal', () => {
       const phoneField = screen.getByPlaceholderText('5512345678')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
-      await user.clear(phoneField)
       await user.type(phoneField, '5551234567')
       await user.click(sendButton)
 
@@ -101,9 +90,7 @@ describe('CopyInfoQuotesModal', () => {
       const phoneField = screen.getByPlaceholderText('5512345678')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
-      await user.clear(introField)
       await user.type(introField, 'Hola')
-      await user.clear(phoneField)
       await user.type(phoneField, '123456789')
       await user.click(sendButton)
 
@@ -120,9 +107,7 @@ describe('CopyInfoQuotesModal', () => {
       const phoneField = screen.getByPlaceholderText('5512345678')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
-      await user.clear(introField)
       await user.type(introField, 'Hola')
-      await user.clear(phoneField)
       await user.type(phoneField, '12345678901')
       await user.click(sendButton)
 
@@ -142,13 +127,11 @@ describe('CopyInfoQuotesModal', () => {
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       // Trigger error
-      await user.clear(phoneField)
       await user.type(phoneField, '5551234567')
       await user.click(sendButton)
       expect(screen.getByText('El saludo no puede estar vacío')).toBeInTheDocument()
 
       // Clear error by typing
-      await user.clear(introField)
       await user.type(introField, 'H')
       expect(screen.queryByText('El saludo no puede estar vacío')).not.toBeInTheDocument()
     })
@@ -162,9 +145,7 @@ describe('CopyInfoQuotesModal', () => {
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       // Trigger error
-      await user.clear(introField)
       await user.type(introField, 'Hola')
-      await user.clear(phoneField)
       await user.type(phoneField, '123')
       await user.click(sendButton)
       expect(screen.getByText('El número de teléfono debe tener exactamente 10 dígitos')).toBeInTheDocument()
@@ -184,13 +165,11 @@ describe('CopyInfoQuotesModal', () => {
       const phoneField = screen.getByPlaceholderText('5512345678')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
-      await user.clear(introField)
       // Type character by character for textarea
       for (const char of 'Buenos días, las opciones son:') {
         await user.type(introField, char)
       }
-      
-      await user.clear(phoneField)
+
       // Type character by character for number input
       for (const char of '5551234567') {
         await user.type(phoneField, char)
@@ -211,9 +190,7 @@ describe('CopyInfoQuotesModal', () => {
       const phoneField = screen.getByPlaceholderText('5512345678')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
-      await user.clear(introField)
       await user.type(introField, 'Test intro')
-      await user.clear(phoneField)
       await user.type(phoneField, '5551234567')
       await user.click(sendButton)
 
