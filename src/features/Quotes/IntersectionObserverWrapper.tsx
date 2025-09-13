@@ -6,7 +6,7 @@ interface ActionBarIntersectionObserverProps {
   setIntersecting: (isIntersecting: boolean) => void;
 }
 
-export const ActionBarIntersectionObserver = ({ children, setIntersecting }: ActionBarIntersectionObserverProps) => {
+export const IntersectionObserverWrapper = ({ children, setIntersecting }: ActionBarIntersectionObserverProps) => {
   const ref = useRef(null)
   const observer = useRef<IntersectionObserver | null>(null)
 

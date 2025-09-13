@@ -15,7 +15,7 @@ import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
 import { useQuoteFilters } from "@/shared/hooks/useQuotesFilters"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
-import { ActionBarIntersectionObserver } from "@/features/Quotes/ActionBarIntersectionObserver"
+import { IntersectionObserverWrapper } from "@/features/Quotes/IntersectionObserverWrapper"
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 
@@ -144,14 +144,14 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     <main className='w-full p-4 flex flex-col gap-5 align-center'>
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-center text-xl mb-5">Ingrese los siguientes datos para obtener una cotización</p>
-      <ActionBarIntersectionObserver setIntersecting={setIsIntersectingForm}>
+      <IntersectionObserverWrapper setIntersecting={setIsIntersectingForm}>
         <QuoteForm updateQuotes={updateAllQuotes} />
-      </ActionBarIntersectionObserver>
+      </IntersectionObserverWrapper>
       { allQuotes.length > 0 && (
         <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
-          <ActionBarIntersectionObserver setIntersecting={setIsIntersectingActionBar}>
+          <IntersectionObserverWrapper setIntersecting={setIsIntersectingActionBar}>
             <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
               <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
               <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
@@ -160,7 +160,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
                 Crear guía
               </Button>
             </div>
-          </ActionBarIntersectionObserver>
+          </IntersectionObserverWrapper>
           { errorActionBar && (
             <div className="flex justify-end">
               <ErrorMessage>{errorActionBar}</ErrorMessage>
