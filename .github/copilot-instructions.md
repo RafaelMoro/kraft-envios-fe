@@ -24,6 +24,10 @@ For the unit tests, consider the following instructions:
 
 - Do not use document.querySelector() or document.getElementById() in tests. These methods break the testing library abstraction and make tests brittle. Instead, use testing-library queries like getByRole, getByText, getByLabelText, or add data-testid attributes to components and use getByTestId for elements that are hard to query semantically.
 
+- Do not test CSS classes directly using toHaveClass() unless absolutely necessary for critical functionality. CSS classes are implementation details that can change frequently and make tests brittle. Instead, focus on testing user-visible behavior, accessibility, and component functionality. If you need to verify styling, consider testing the visual outcome or behavior rather than the specific CSS classes applied.
+
+- Avoid writing redundant tests with identical expectations when using Gherkin syntax. If multiple test scenarios have the same assertions and expected behavior, consolidate them into a single meaningful test or ensure each test validates genuinely different behavior. For example, testing "primary styling" and "alternative styling" separately is unnecessary if both only verify the same text display without testing actual styling differences. Focus on testing distinct behaviors rather than different prop combinations that produce identical outcomes.
+
 ## Mocks
 
 - Do not export them as default, use name exports

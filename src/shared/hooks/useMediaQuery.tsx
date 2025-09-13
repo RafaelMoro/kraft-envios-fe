@@ -15,8 +15,8 @@ export const useMediaQuery = () => {
   const mq = (q: string) => window.matchMedia(q).matches
 
   return {
-    isMobile: mq('(max-width: 768px)'),
-    isMobileTablet: mq('(max-width: 1024px)'),
+    isMobile: mq('(max-width: 767px)'),
+    isMobileTablet: mq('(max-width: 1023px)'),
     isDesktop: mq('(min-width: 1024px)'),
     isDesktopX2: mq('(min-width: 1280px)')
   }

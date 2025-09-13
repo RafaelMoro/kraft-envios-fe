@@ -20,7 +20,7 @@ export interface DashboardProps {
 
 export const Dashboard = ({ userInfo }: DashboardProps) => {
   const router = useRouter()
-  const { isMobile } = useMediaQuery()
+  const { isMobileTablet } = useMediaQuery()
 
   // TODO: Change this to null when we have more screens
   const [screen, setScreen] = useState<DashboardScreens | null>('quotes')
@@ -34,11 +34,11 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
     router.push(LOGIN_ROUTE)
   }
 
-  if (isMobile) {
+  if (isMobileTablet) {
     return (
       <div className='mt-3 flex flex-col gap-4"'>
         <header className="p-4 flex flex-row justify-between items-center">
-          <Logo isMobile={isMobile} />
+          <Logo isMobile={isMobileTablet} />
           <HeaderMenuMobile screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} />
         </header>
         { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }

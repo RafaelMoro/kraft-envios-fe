@@ -9,21 +9,25 @@ export const getQuoteMutationCb = (data: GetQuoteForm) => {
 export const categorizeImg = (courier: QuoteCourier | null): ProviderImg => {
   if (!courier) return 'other'
 
-  const normalized = courier.toString().toLowerCase()
-
-  if (normalized.includes('dhl')) return 'dhl'
-  if (normalized.includes('estafeta')) return 'estafeta'
-  if (normalized.includes('ups')) return 'ups'
-  if (normalized.includes('paquet')) return 'paquetexpres'
-  if (normalized.includes('fedex')) return 'fedex'
-  if (normalized.includes('next') || normalized.includes('99') || normalized.includes('99min')) return 'ninetyNineMin'
-  if (normalized.includes('ampm') || normalized.includes('ampm')) return 'ampm'
+  if (courier === 'DHL') return 'dhl'
+  if (courier === 'Estafeta') return 'estafeta'
+  if (courier === 'UPS') return 'ups'
+  if (courier === 'Paquetexpress') return 'paquetexpres'
+  if (courier === 'Fedex') return 'fedex'
+  if (courier === 'NextDay') return 'ninetyNineMin'
+  if (courier === 'AMPM') return 'ampm'
 
   // Fallback to 'other' as the last option
   return 'other'
 }
 
-export const getQuoteImg = (courier: QuoteCourier | null, isMobile: boolean): QuoteImage => {
+export const getQuoteImg = ({
+  courier,
+  isMobile,
+}: {
+  courier: QuoteCourier | null;
+  isMobile: boolean;
+}): QuoteImage => {
   const provider = categorizeImg(courier)
 
   const quoteImgDict: QuoteImgDict = {
@@ -59,9 +63,9 @@ export const getQuoteImg = (courier: QuoteCourier | null, isMobile: boolean): Qu
     },
     "ninetyNineMin": {
       source: "/img/99min-logo.svg",
-  provider: "ninetyNineMin",
-      width: isMobile ? 90 : 150,
-      height: isMobile ? 90 : 150
+      provider: "ninetyNineMin",
+      width: isMobile ? 40 : 60,
+      height: isMobile ? 40 : 60
     },
     "ampm": {
       source: "/img/ampm-logo.svg",
@@ -107,4 +111,9 @@ export const filterQuotesBySourceUtil = (quotes: QuoteUI[], source: QuoteSource)
 
 export const filterQuotesByTimeTypeUtil = (quotes: QuoteUI[], timeType: QuoteTypeService): QuoteUI[] => {
   return quotes.filter((qt) => qt.typeService === timeType)
+}
+
+export const formatQuotesSendWhatsapp = (quotes: QuoteUI[]): string => {
+  const quotesFormatted = quotes.map((quote, index) => `${index + 1}. ${quote.courier} ${quote.amountFormatted}`).join('\n')
+  return quotesFormatted
 }
