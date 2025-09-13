@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Button } from "flowbite-react"
-import { RiCheckDoubleLine, RiFileCopyLine, RiStickyNoteAddLine } from "@remixicon/react"
+import { RiStickyNoteAddLine } from "@remixicon/react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
 import { LoginData } from "@/shared/types/login.types"
@@ -17,6 +17,7 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
 import { ActionBarIntersectionObserver } from "@/features/Quotes/ActionBarIntersectionObserver"
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
+import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -146,19 +147,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <ActionBarIntersectionObserver setIntersecting={setIsIntersecting}>
             <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
               <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
-              <Button color={Boolean(successCopyActionBar) ? "green" : "alternative"} className="inline-flex gap-2" onClick={handleCopyInfo}>
-                { successCopyActionBar ? (
-                  <>
-                    <RiCheckDoubleLine size={20} />
-                    { !isMobile && successCopyActionBar}
-                  </>
-                ): (
-                  <>
-                    <RiFileCopyLine size={20} />
-                    { !isMobile ? 'Copiar cotizaciones' : 'Copiar' }
-                  </>
-                )}
-              </Button>
+              <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
               <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
                 <RiStickyNoteAddLine size={20} />
                 Crear guía
@@ -201,7 +190,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       { !isIntersecting && allQuotes.length > 0 && (
         <article data-testid="sticky-action-bar" className="sticky z-50 bottom-28 w-full flex justify-between">
           <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
-          <Button>Copiar cotizaciones</Button>
+          <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
         </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
