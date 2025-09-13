@@ -146,8 +146,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
           <ActionBarIntersectionObserver setIntersecting={setIsIntersecting}>
             <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
-              <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
               <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
+              <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
               <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
                 <RiStickyNoteAddLine size={20} />
                 Crear guía
@@ -189,9 +189,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       )}
       { !isIntersecting && allQuotes.length > 0 && (
         <article data-testid="sticky-action-bar" className="sticky z-50 bottom-28 w-full flex justify-end">
-          <div className="max-w-sm p-6 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow-2xl flex justify-between gap-5">
-            <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
+          <div className="max-w-md p-6 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow-2xl flex justify-between gap-5">
             <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
+            <SendInfoButton isPrimary isMobile={isMobile} handleSendInfo={handleSendInfo} />
           </div>
         </article>
       )}
