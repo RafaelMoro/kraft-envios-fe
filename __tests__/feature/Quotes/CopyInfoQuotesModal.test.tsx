@@ -87,7 +87,7 @@ describe('CopyInfoQuotesModal', () => {
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
       const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       await user.type(introField, 'Hola')
@@ -141,7 +141,7 @@ describe('CopyInfoQuotesModal', () => {
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
       const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       // Trigger error
