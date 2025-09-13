@@ -55,6 +55,23 @@ describe('QuotesSubscreen', () => {
     version: '1.0.0'
   }
 
+  // Mock clipboard API
+  const mockWriteText = jest.fn()
+  Object.assign(navigator, {
+    clipboard: {
+      writeText: mockWriteText
+    }
+  })
+
+  // Mock IntersectionObserver
+  const mockIntersectionObserver = jest.fn()
+  mockIntersectionObserver.mockReturnValue({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  })
+  window.IntersectionObserver = mockIntersectionObserver
+
   const mockQuotes: Quote[] = [
     {
       id: '1',
@@ -84,6 +101,8 @@ describe('QuotesSubscreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockWriteText.mockResolvedValue(undefined)
+    
     // Mock successful API response for quote form
     mockedAxios.post.mockResolvedValue({
       data: {
@@ -408,4 +427,83 @@ describe('QuotesSubscreen', () => {
       }, { timeout: 1000 })
     })
   })
+
+  describe('Given the action bar functionality', () => {
+    beforeEach(async () => {
+      const user = userEvent.setup()
+      
+      render(
+        <QuotesSubscreenWrapper
+          push={mockPush}
+          userInfo={mockUserInfo}
+        />
+      )
+
+      // Submit quote form to get quotes first
+      await user.type(screen.getByLabelText(/código postal de origen/i), '12345')
+      await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
+      await user.type(screen.getByLabelText(/peso/i), '2')
+      await user.type(screen.getByLabelText(/largo/i), '10')
+      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/ancho/i), '10')
+      await user.click(screen.getByRole('button', { name: /cotizar/i }))
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /cotizaciones/i })).toBeInTheDocument()
+      })
+    })
+
+    it('When quotes are available, Then it displays action bar with buttons', () => {
+      expect(screen.getByTestId('quotes-action-bar')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /copiar/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /mandar información/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /crear guía/i })).toBeInTheDocument()
+    })
+
+    it('When copy button is clicked without selected quotes, Then it shows error message', async () => {
+      const user = userEvent.setup()
+      
+      const copyButton = screen.getByRole('button', { name: /copiar/i })
+      await user.click(copyButton)
+
+      expect(screen.getByText(/debes seleccionar al menos una cotización para copiar/i)).toBeInTheDocument()
+    })
+
+    it('When send info button is clicked without selected quotes, Then it shows error message', async () => {
+      const user = userEvent.setup()
+      
+      const sendButton = screen.getByRole('button', { name: /mandar información/i })
+      await user.click(sendButton)
+
+      expect(screen.getByText(/debes seleccionar al menos una cotización para mandar la información/i)).toBeInTheDocument()
+    })
+
+    it('When create guide button is clicked with multiple selected quotes, Then it shows error message', async () => {
+      const user = userEvent.setup()
+      
+      // First select multiple quotes by clicking on checkboxes
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[0])
+      await user.click(checkboxes[1])
+
+      const createGuideButton = screen.getByRole('button', { name: /crear guía/i })
+      await user.click(createGuideButton)
+
+      expect(screen.getByText(/solo puede seleccionar una sola cotización para crear una guía/i)).toBeInTheDocument()
+    })
+
+    it('When send info button is clicked with selected quotes, Then it opens copy modal', async () => {
+      const user = userEvent.setup()
+      
+      // Select a quote via checkbox
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[0])
+
+      const sendButton = screen.getByRole('button', { name: /mandar información/i })
+      await user.click(sendButton)
+
+      // Modal should open
+      expect(screen.getByText(/copiar información via whatsapp/i)).toBeInTheDocument()
+    })
+  })  
 })
