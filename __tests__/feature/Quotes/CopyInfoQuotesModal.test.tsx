@@ -71,7 +71,7 @@ describe('CopyInfoQuotesModal', () => {
       const user = userEvent.setup()
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       await user.type(phoneField, '5551234567')

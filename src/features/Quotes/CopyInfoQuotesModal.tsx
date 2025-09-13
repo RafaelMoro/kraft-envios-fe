@@ -90,6 +90,7 @@ ${message}
               <TextInput
                 id="phoneNumber"
                 placeholder="5512345678"
+                data-testid="phone-input"
                 type="number"
                 inputMode="numeric"
                 value={phoneNumber}
