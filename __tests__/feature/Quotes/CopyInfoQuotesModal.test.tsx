@@ -71,9 +71,13 @@ describe('CopyInfoQuotesModal', () => {
 
       const phoneField = screen.getByPlaceholderText('5512345678')
       await user.clear(phoneField)
-      await user.type(phoneField, '5551234567')
+      // Type character by character to handle number input field properly
+      for (const char of '5551234567') {
+        await user.type(phoneField, char)
+      }
 
-      expect(phoneField).toHaveValue('5551234567')
+      // For number input, the value might be returned as a number
+      expect(phoneField).toHaveValue(5551234567)
     })
 
     it('WHEN the user clicks the cancel button THEN it should call toggleModal', async () => {
@@ -196,9 +200,17 @@ describe('CopyInfoQuotesModal', () => {
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       await user.clear(introField)
-      await user.type(introField, 'Buenos días, las opciones son:')
+      // Type character by character for textarea
+      for (const char of 'Buenos días, las opciones son:') {
+        await user.type(introField, char)
+      }
+      
       await user.clear(phoneField)
-      await user.type(phoneField, '5551234567')
+      // Type character by character for number input
+      for (const char of '5551234567') {
+        await user.type(phoneField, char)
+      }
+      
       await user.click(sendButton)
 
       const expectedMessage = `Buenos días, las opciones son:
