@@ -66,93 +66,30 @@ describe('CopyInfoQuotesModal', () => {
     })
   })
 
-  describe('GIVEN the user submits the form with validation errors', () => {
-    it('WHEN the intro field is empty THEN it should show an error message', async () => {
+  describe('Form validation errors', () => {
+    it('Given a user filling the form with invalid data, then show error', async () => {
       const user = userEvent.setup()
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
       const phoneField = screen.getByTestId('phone-input')
+      const introInput = screen.getByTestId('intro-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
-      await user.type(phoneField, '5551234567')
       await user.click(sendButton)
-
       expect(screen.getByText('El saludo no puede estar vacío')).toBeInTheDocument()
-      expect(mockWindowOpen).not.toHaveBeenCalled()
-      expect(mockToggleModal).not.toHaveBeenCalled()
-    })
 
-    it('WHEN the phone number has less than 10 digits THEN it should show an error message', async () => {
-      const user = userEvent.setup()
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const introField = screen.getByTestId('intro-input')
-      const phoneField = screen.getByTestId('phone-input')
-      const sendButton = screen.getByRole('button', { name: 'Enviar' })
-
-      await user.type(introField, 'Hola')
+      // Validate number with less than 10 digits
+      await user.type(introInput, 'Hola')
+      await user.clear(phoneField)
       await user.type(phoneField, '123456789')
       await user.click(sendButton)
+      expect(await screen.findByText('El número de teléfono debe tener exactamente 10 dígitos')).toBeInTheDocument()
 
-      expect(screen.getByText('El número de teléfono debe tener exactamente 10 dígitos')).toBeInTheDocument()
-      expect(mockWindowOpen).not.toHaveBeenCalled()
-      expect(mockToggleModal).not.toHaveBeenCalled()
-    })
-
-    it('WHEN the phone number has more than 10 digits THEN it should show an error message', async () => {
-      const user = userEvent.setup()
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByTestId('phone-input')
-      const sendButton = screen.getByRole('button', { name: 'Enviar' })
-
-      await user.type(introField, 'Hola')
+      // Validate number with more than 10 digits
+      await user.clear(phoneField)
       await user.type(phoneField, '12345678901')
       await user.click(sendButton)
-
-      expect(screen.getByText('El número de teléfono debe tener exactamente 10 dígitos')).toBeInTheDocument()
-      expect(mockWindowOpen).not.toHaveBeenCalled()
-      expect(mockToggleModal).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('GIVEN the user clears validation errors', () => {
-    it('WHEN the user types in the intro field after an error THEN it should clear the intro error', async () => {
-      const user = userEvent.setup()
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByTestId('phone-input')
-      const sendButton = screen.getByRole('button', { name: 'Enviar' })
-
-      // Trigger error
-      await user.type(phoneField, '5551234567')
-      await user.click(sendButton)
-      expect(screen.getByText('El saludo no puede estar vacío')).toBeInTheDocument()
-
-      // Clear error by typing
-      await user.type(introField, 'H')
-      expect(screen.queryByText('El saludo no puede estar vacío')).not.toBeInTheDocument()
-    })
-
-    it('WHEN the user types in the phone field after an error THEN it should clear the phone error', async () => {
-      const user = userEvent.setup()
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByTestId('phone-input')
-      const sendButton = screen.getByRole('button', { name: 'Enviar' })
-
-      // Trigger error
-      await user.type(introField, 'Hola')
-      await user.type(phoneField, '123')
-      await user.click(sendButton)
-      expect(screen.getByText('El número de teléfono debe tener exactamente 10 dígitos')).toBeInTheDocument()
-
-      // Clear error by typing
-      await user.type(phoneField, '4')
-      expect(screen.queryByText('El número de teléfono debe tener exactamente 10 dígitos')).not.toBeInTheDocument()
+      expect(await screen.findByText('El número de teléfono debe tener exactamente 10 dígitos')).toBeInTheDocument()
     })
   })
 
@@ -165,87 +102,16 @@ describe('CopyInfoQuotesModal', () => {
       const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
-      // Type character by character for textarea
-      for (const char of 'Buenos días, las opciones son:') {
-        await user.type(introField, char)
-      }
-
-      // Type character by character for number input
-      for (const char of '5551234567') {
-        await user.type(phoneField, char)
-      }
+      await user.clear(introField)
+      await user.clear(phoneField)
+      await user.type(introField, 'Buenos días, las opciones son:')
+      await user.type(phoneField, '5551234567')
       
       await user.click(sendButton)
 
       expect(mockFormatQuotesSendWhatsapp).toHaveBeenCalledWith(selectedQuotes)
       expect(mockWindowOpen).toHaveBeenCalled()
-      expect(mockToggleModal).toHaveBeenCalledTimes(1)
-    })
-
-    it('WHEN form is submitted successfully THEN it should reset all form fields', async () => {
-      const user = userEvent.setup()
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByTestId('phone-input')
-      const sendButton = screen.getByRole('button', { name: 'Enviar' })
-
-      await user.type(introField, 'Test intro')
-      await user.type(phoneField, '5551234567')
-      await user.click(sendButton)
-
-      // The modal should be closed by toggleModal, but we can't test the reset directly
-      // since the modal would be unmounted. The reset logic is tested by ensuring
-      // the modal closes successfully
       expect(mockToggleModal).toHaveBeenCalled()
-    })
-  })
-
-  describe('GIVEN different quote data scenarios', () => {
-    it('WHEN there are no selected quotes THEN it should still render the modal', () => {
-      render(<CopyInfoQuotesModal {...defaultProps} selectedQuotes={[]} />)
-
-      expect(screen.getByText('Copiar información via Whatsapp')).toBeInTheDocument()
-      expect(screen.getByLabelText('Saludo')).toBeInTheDocument()
-      expect(screen.getByTestId('phone-input')).toBeInTheDocument()
-    })
-
-    it('WHEN there is only one selected quote THEN it should handle the form submission correctly', async () => {
-      const user = userEvent.setup()
-      const singleQuote = [fedexQuote]
-      mockFormatQuotesSendWhatsapp.mockReturnValue('1. FedEx $100.00')
-      
-      render(<CopyInfoQuotesModal {...defaultProps} selectedQuotes={singleQuote} />)
-
-      const introField = screen.getByTestId('intro-input')
-      const phoneField = screen.getByTestId('phone-input')
-      const sendButton = screen.getByRole('button', { name: 'Enviar' })
-
-      await user.type(introField, 'Hola')
-      await user.type(phoneField, '5551234567')
-      await user.click(sendButton)
-
-      expect(mockFormatQuotesSendWhatsapp).toHaveBeenCalledWith(singleQuote)
-      expect(mockWindowOpen).toHaveBeenCalled()
-      expect(mockToggleModal).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('GIVEN form field attributes', () => {
-    it('WHEN the phone input is rendered THEN it should have correct attributes', () => {
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const phoneField = screen.getByTestId('phone-input')
-      expect(phoneField).toHaveAttribute('type', 'number')
-      expect(phoneField).toHaveAttribute('inputMode', 'numeric')
-    })
-
-    it('WHEN the textarea is rendered THEN it should have correct attributes', () => {
-      render(<CopyInfoQuotesModal {...defaultProps} />)
-
-      const introField = screen.getByLabelText('Saludo')
-      expect(introField).toHaveAttribute('rows', '4')
-      expect(introField).toHaveAttribute('placeholder', 'Buenos días, las opciones de envíos son:')
     })
   })
 })

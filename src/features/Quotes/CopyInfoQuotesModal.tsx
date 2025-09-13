@@ -14,7 +14,6 @@ interface CopyInfoQuotesModalProps {
 export const CopyInfoQuotesModal = ({ open, toggleModal, selectedQuotes }: CopyInfoQuotesModalProps) => {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
   const [intro, setIntro] = useState<string>("")
-  console.log('intro', intro)
   const [phoneError, setPhoneError] = useState<string | null>(null)
   const [introError, setIntroError] = useState<string | null>(null)
 
