@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Button } from "flowbite-react"
-import { RiCheckDoubleLine, RiFileCopyLine, RiSendPlaneLine, RiStickyNoteAddLine } from "@remixicon/react"
+import { RiCheckDoubleLine, RiFileCopyLine, RiStickyNoteAddLine } from "@remixicon/react"
 
 import { QuoteForm } from "@/features/Quotes/QuoteForm"
 import { LoginData } from "@/shared/types/login.types"
@@ -16,6 +16,7 @@ import { useQuoteFilters } from "@/shared/hooks/useQuotesFilters"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
 import { ActionBarIntersectionObserver } from "@/features/Quotes/ActionBarIntersectionObserver"
+import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -144,10 +145,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
           <ActionBarIntersectionObserver setIntersecting={setIsIntersecting}>
             <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
-              <Button color="alternative" className="inline-flex gap-2" onClick={handleSendInfo}>
-                <RiSendPlaneLine size={20} />
-                { !isMobile ? 'Mandar información' : 'Mandar' }
-              </Button>
+              <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
               <Button color={Boolean(successCopyActionBar) ? "green" : "alternative"} className="inline-flex gap-2" onClick={handleCopyInfo}>
                 { successCopyActionBar ? (
                   <>
@@ -202,7 +200,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       )}
       { !isIntersecting && allQuotes.length > 0 && (
         <article data-testid="sticky-action-bar" className="sticky z-50 bottom-28 w-full flex justify-between">
-          <Button>Enviar cotizaciones</Button>
+          <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
           <Button>Copiar cotizaciones</Button>
         </article>
       )}
