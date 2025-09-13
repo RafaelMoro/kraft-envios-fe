@@ -31,7 +31,10 @@ export const CopyInfoQuotesModal = ({ open, toggleModal, selectedQuotes }: CopyI
 
   const sendWhatsappMessage = () => {
     const message = formatQuotesSendWhatsapp(selectedQuotes)
-    const completeMessage = `Hola Rafael. Las cotizaciones son: ${message}`
+    const completeMessage = `${intro}
+  
+${message}
+    `
     const whatsappUrl = `https://wa.me/52${phoneNumber}?text=${encodeURIComponent(completeMessage)}`
     return whatsappUrl
   }
@@ -55,6 +58,8 @@ export const CopyInfoQuotesModal = ({ open, toggleModal, selectedQuotes }: CopyI
     // Reset form and close modal
     setPhoneNumber("")
     setPhoneError(null)
+    setIntro("")
+    setIntroError(null)
     toggleModal()
   }
 
