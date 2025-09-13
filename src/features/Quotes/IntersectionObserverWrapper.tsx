@@ -25,7 +25,7 @@ export const IntersectionObserverWrapper = ({ children, setIntersecting }: Actio
     if (!ref.current) return
 
     observer.current = new IntersectionObserver(async ([entry]) => {
-      if (entry.intersectionRatio < 0) return
+      if (!entry || entry.intersectionRatio < 0) return
       setIntersecting(entry.isIntersecting)
     })
     observer.current.observe(ref.current)

@@ -130,6 +130,21 @@ describe('IntersectionObserverWrapper', () => {
 
       expect(mockSetIntersecting).toHaveBeenCalledWith(false)
     })
+
+    it('WHEN entry is undefined THEN it should not call setIntersecting', () => {
+      render(<IntersectionObserverWrapper {...defaultProps} />)
+
+      // Get the callback function that was passed to IntersectionObserver
+      const observerCallback = (global.IntersectionObserver as jest.Mock).mock.calls[0][0]
+
+      // Simulate undefined entry (destructuring an empty array)
+      const mockEntry = undefined
+
+      // Call the observer callback with undefined entry
+      observerCallback([mockEntry])
+
+      expect(mockSetIntersecting).not.toHaveBeenCalled()
+    })
   })
 
   describe('GIVEN the component unmounts', () => {
