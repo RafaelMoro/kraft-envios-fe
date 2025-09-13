@@ -41,7 +41,7 @@ describe('CopyInfoQuotesModal', () => {
       expect(screen.getByText(/Ingrese un saludo y el whatsapp para enviar la información/)).toBeInTheDocument()
       expect(screen.getByLabelText('Saludo')).toBeInTheDocument()
       expect(screen.getByPlaceholderText('Buenos días, las opciones de envíos son:')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('5512345678')).toBeInTheDocument()
+      expect(screen.getByTestId('phone-input')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Cancelar' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Enviar' })).toBeInTheDocument()
     })
@@ -86,7 +86,7 @@ describe('CopyInfoQuotesModal', () => {
       const user = userEvent.setup()
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
-      const introField = screen.getByLabelText('Saludo')
+      const introField = screen.getByTestId('intro-input')
       const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
@@ -104,7 +104,7 @@ describe('CopyInfoQuotesModal', () => {
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
       const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       await user.type(introField, 'Hola')
@@ -123,7 +123,7 @@ describe('CopyInfoQuotesModal', () => {
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
       const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       // Trigger error
@@ -162,7 +162,7 @@ describe('CopyInfoQuotesModal', () => {
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
       const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       // Type character by character for textarea
@@ -187,7 +187,7 @@ describe('CopyInfoQuotesModal', () => {
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
       const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       await user.type(introField, 'Test intro')
@@ -207,7 +207,7 @@ describe('CopyInfoQuotesModal', () => {
 
       expect(screen.getByText('Copiar información via Whatsapp')).toBeInTheDocument()
       expect(screen.getByLabelText('Saludo')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('5512345678')).toBeInTheDocument()
+      expect(screen.getByTestId('phone-input')).toBeInTheDocument()
     })
 
     it('WHEN there is only one selected quote THEN it should handle the form submission correctly', async () => {
@@ -217,8 +217,8 @@ describe('CopyInfoQuotesModal', () => {
       
       render(<CopyInfoQuotesModal {...defaultProps} selectedQuotes={singleQuote} />)
 
-      const introField = screen.getByLabelText('Saludo')
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const introField = screen.getByTestId('intro-input')
+      const phoneField = screen.getByTestId('phone-input')
       const sendButton = screen.getByRole('button', { name: 'Enviar' })
 
       await user.type(introField, 'Hola')
@@ -235,7 +235,7 @@ describe('CopyInfoQuotesModal', () => {
     it('WHEN the phone input is rendered THEN it should have correct attributes', () => {
       render(<CopyInfoQuotesModal {...defaultProps} />)
 
-      const phoneField = screen.getByPlaceholderText('5512345678')
+      const phoneField = screen.getByTestId('phone-input')
       expect(phoneField).toHaveAttribute('type', 'number')
       expect(phoneField).toHaveAttribute('inputMode', 'numeric')
     })
