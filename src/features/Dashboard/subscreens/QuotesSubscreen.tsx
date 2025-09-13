@@ -15,6 +15,7 @@ import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
 import { useQuoteFilters } from "@/shared/hooks/useQuotesFilters"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
+import { ActionBarIntersectionObserver } from "@/features/Quotes/ActionBarIntersectionObserver"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -22,6 +23,7 @@ interface QuotesProps {
 
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
+  const [isIntersecting, setIsIntersecting] = useState<boolean>(true)
   const [allQuotes, setAllQuotes] = useState<QuoteUI[]>([])
   const [filteredQuotes, setAllFilteredQuotes] = useState<QuoteUI[]>([])
 
@@ -140,29 +142,31 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
           <h2 className="text-2xl font-bold text-center">Cotizaciones</h2>
           <p className="text-gray-600 text-center mb-5">Aquí se mostrarán las cotizaciones generadas.</p>
-          <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
-            <Button color="alternative" className="inline-flex gap-2" onClick={handleSendInfo}>
-              <RiSendPlaneLine size={20} />
-              { !isMobile ? 'Mandar información' : 'Mandar' }
-            </Button>
-            <Button color={Boolean(successCopyActionBar) ? "green" : "alternative"} className="inline-flex gap-2" onClick={handleCopyInfo}>
-              { successCopyActionBar ? (
-                <>
-                  <RiCheckDoubleLine size={20} />
-                  { !isMobile && successCopyActionBar}
-                </>
-              ): (
-                <>
-                  <RiFileCopyLine size={20} />
-                  { !isMobile ? 'Copiar cotizaciones' : 'Copiar' }
-                </>
-              )}
-            </Button>
-            <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
-              <RiStickyNoteAddLine size={20} />
-              Crear guía
-            </Button>
-          </div>
+          <ActionBarIntersectionObserver setIntersecting={setIsIntersecting}>
+            <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
+              <Button color="alternative" className="inline-flex gap-2" onClick={handleSendInfo}>
+                <RiSendPlaneLine size={20} />
+                { !isMobile ? 'Mandar información' : 'Mandar' }
+              </Button>
+              <Button color={Boolean(successCopyActionBar) ? "green" : "alternative"} className="inline-flex gap-2" onClick={handleCopyInfo}>
+                { successCopyActionBar ? (
+                  <>
+                    <RiCheckDoubleLine size={20} />
+                    { !isMobile && successCopyActionBar}
+                  </>
+                ): (
+                  <>
+                    <RiFileCopyLine size={20} />
+                    { !isMobile ? 'Copiar cotizaciones' : 'Copiar' }
+                  </>
+                )}
+              </Button>
+              <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
+                <RiStickyNoteAddLine size={20} />
+                Crear guía
+              </Button>
+            </div>
+          </ActionBarIntersectionObserver>
           { errorActionBar && (
             <div className="flex justify-end">
               <ErrorMessage>{errorActionBar}</ErrorMessage>
@@ -195,6 +199,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
               </div>
             )}
         </section>
+      )}
+      { !isIntersecting && allQuotes.length > 0 && (
+        <article data-testid="sticky-action-bar" className="sticky z-50 bottom-28 w-full flex justify-between">
+          <Button>Enviar cotizaciones</Button>
+          <Button>Copiar cotizaciones</Button>
+        </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
     </main>
