@@ -188,8 +188,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         </section>
       )}
       { !isIntersecting && allQuotes.length > 0 && (
-        <article data-testid="sticky-action-bar" className="sticky z-50 bottom-28 w-full flex justify-end">
-          <div className="max-w-md p-6 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow-2xl flex justify-between gap-5">
+        <article data-testid="sticky-action-bar" className="sticky z-50 bottom-20 md:bottom-28 w-full flex justify-center md:justify-end">
+          <div className="max-w-xl p-6 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow-2xl flex flex-col md:flex-row  justify-between gap-3 md:gap-5">
+            <p className="text-gray-600 dark:text-gray-400">Cotizaciones seleccionadas: {selectedQuotes.length}</p>
             <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
             <SendInfoButton isPrimary isMobile={isMobile} handleSendInfo={handleSendInfo} />
           </div>
