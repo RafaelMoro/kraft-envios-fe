@@ -1,3 +1,9 @@
+## v0.12.0 (2025-09-13)
+
+### Pull Requests
+[#27](https://github.com/RafaelMoro/kraft-envios-fe/pull/27) | Add Action bar and sticky action bar
+
+
 ## v0.11.1 (2025-09-07)
 
 ### Pull Requests
