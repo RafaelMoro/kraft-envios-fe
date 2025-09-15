@@ -15,7 +15,7 @@ import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
 import { useQuoteFilters } from "@/shared/hooks/useQuotesFilters"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
-import { IntersectionObserverWrapper } from "@/features/Quotes/IntersectionObserverWrapper"
+import { IntersectionObserverWrapper } from "@/shared/ui/organisms/IntersectionObserverWrapper"
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 
