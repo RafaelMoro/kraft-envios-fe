@@ -3,6 +3,7 @@ import { Modal, ModalBody, ModalHeader } from "flowbite-react"
 
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
+import { OriginAddressForm } from "./OriginAddressForm";
 
 interface CreateGuideProps {
   open: boolean;
@@ -20,6 +21,9 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
         <div className="py-6">
           <Stepper steps={steps} currentStep={step} />
         </div>
+        { step === 1 && (
+          <OriginAddressForm />
+        )}
       </ModalBody>
     </Modal>
   )
