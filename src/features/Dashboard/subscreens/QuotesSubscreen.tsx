@@ -18,6 +18,7 @@ import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
 import { IntersectionObserverWrapper } from "@/shared/ui/organisms/IntersectionObserverWrapper"
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
+import { CreateGuideModal } from "@/features/Guides/CreateGuideModal"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -25,6 +26,10 @@ interface QuotesProps {
 
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
+
+  // Create Guide
+  const [openCreateGuide, setOpenCreateGuide] = useState<boolean>(false)
+  const toggleCreateGuide = () => setOpenCreateGuide((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -89,8 +94,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const handleClickCreateGuide = () => {
     if (selectedQuotes.length > 1) {
       setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
-      // TODO: Add return
+      return;
     }
+    toggleCreateGuide()
   }
 
   const {
@@ -204,6 +210,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
+      <CreateGuideModal open={openCreateGuide} toggleModal={toggleCreateGuide} />
     </main>
   )
 }
