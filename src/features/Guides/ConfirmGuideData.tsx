@@ -1,4 +1,5 @@
 import { CreateGuideFormValues } from "@/shared/types/guides.types"
+import { formatPhoneNumber } from "@/shared/utils/global.utils"
 import { Button } from "flowbite-react"
 
 interface ConfirmGuideDataProps {
@@ -16,7 +17,7 @@ export const ConfirmGuideData = ({ formData, goPrev }: ConfirmGuideDataProps) =>
         <h5 className="text-lg font-bold">Datos del remitente</h5>
         <ul className="grid grid-cols-1 lg:grid-cols-2 gap-2 list-disc">
           <li className="ml-6"><span className="font-semibold">Nombre de la persona:</span> {originAddress.name}</li>
-          <li className="ml-6 text-base"><span className="font-semibold">Teléfono de contacto:</span> {originAddress.phone}</li>
+          <li className="ml-6 text-base"><span className="font-semibold">Teléfono de contacto:</span> {formatPhoneNumber(originAddress.phone)}</li>
           <li className="ml-6 text-base"><span className="font-semibold">Correo electrónico:</span> {originAddress.email}</li>
           <li className="ml-6 text-base"><span className="font-semibold">Nombre de la compañia:</span> {originAddress.company}</li>
           <li className="ml-6 text-base"><span className="font-semibold">Domicilio:</span> {originAddress.street1}</li>
@@ -31,7 +32,7 @@ export const ConfirmGuideData = ({ formData, goPrev }: ConfirmGuideDataProps) =>
         <h5 className="text-lg font-bold">Datos del destinatario</h5>
         <ul className="grid grid-cols-1 lg:grid-cols-2 gap-2 list-disc">
           <li className="ml-6"><span className="font-semibold">Nombre de la persona:</span> {destinationAddress.name}</li>
-          <li className="ml-6 text-base"><span className="font-semibold">Teléfono de contacto:</span> {destinationAddress.phone}</li>
+          <li className="ml-6 text-base"><span className="font-semibold">Teléfono de contacto:</span> {formatPhoneNumber(destinationAddress.phone)}</li>
           <li className="ml-6 text-base"><span className="font-semibold">Correo electrónico:</span> {destinationAddress.email}</li>
           <li className="ml-6 text-base"><span className="font-semibold">Nombre de la compañia:</span> {destinationAddress.company}</li>
           <li className="ml-6 text-base"><span className="font-semibold">Domicilio:</span> {destinationAddress.street1}</li>
