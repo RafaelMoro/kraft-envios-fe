@@ -13,7 +13,7 @@ interface ParcelInfoFormProps {
   updateParcelInfo: (data: ParcelInfoFormValues) => void
 }
 
-export const ParcelInfoForm = ({ goNext, goPrev, updateParcelInfo }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({ parcelInfo, goNext, goPrev, updateParcelInfo }: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -41,7 +41,7 @@ export const ParcelInfoForm = ({ goNext, goPrev, updateParcelInfo }: ParcelInfoF
           </div>
           <TextInput
             data-testid="content"
-            // defaultValue={addressData.name}
+            defaultValue={parcelInfo.content}
             id="content"
             type="text"
             {...register("content")}
@@ -56,7 +56,7 @@ export const ParcelInfoForm = ({ goNext, goPrev, updateParcelInfo }: ParcelInfoF
           </div>
           <TextInput
             data-testid="value"
-            // defaultValue={addressData.name}
+            defaultValue={parcelInfo.value}
             id="value"
             type="number"
             {...register("value")}
@@ -71,7 +71,7 @@ export const ParcelInfoForm = ({ goNext, goPrev, updateParcelInfo }: ParcelInfoF
           </div>
           <TextInput
             data-testid="quantity"
-            // defaultValue={addressData.name}
+            defaultValue={parcelInfo.quantity}
             id="quantity"
             type="number"
             {...register("quantity")}
