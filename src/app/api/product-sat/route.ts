@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import axios, { AxiosResponse } from "axios";
 import { GetProductId, GetProductSatIdPayload } from "@/shared/types/guides.types";
 import { GeneralError } from "@/shared/types/global.types";
+import { replaceSpacesWithPlus } from "@/shared/utils/guides.utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     const payload: GetProductSatIdPayload = await request.json()
-    const uri = `${satUri}?search=${encodeURIComponent(payload.search)}`
+    const uri = `${satUri}?search=${replaceSpacesWithPlus(payload.search)}`
     const res: AxiosResponse<GetProductId> = await axios.get(uri)
     // Slicing products to 100
     const products = res?.data?.data?.slice(0, 100) || []
