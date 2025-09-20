@@ -1,5 +1,5 @@
 import { CreateGuideFormValues } from "@/shared/types/guides.types"
-import { formatPhoneNumber } from "@/shared/utils/global.utils"
+import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { Button } from "flowbite-react"
 
 interface ConfirmGuideDataProps {
@@ -47,7 +47,7 @@ export const ConfirmGuideData = ({ formData, goPrev }: ConfirmGuideDataProps) =>
         <h5 className="text-lg font-bold">Información del paquete</h5>
         <ul className="grid grid-cols-1 gap-2 list-disc">
           <li className="ml-6"><span className="font-semibold">Descripción del contenido del paquete:</span> {parcelInfo.content}</li>
-          <li className="ml-6"><span className="font-semibold">Valor del paquete:</span> {parcelInfo.value}</li>
+          <li className="ml-6"><span className="font-semibold">Valor del paquete:</span> {formatNumberToCurrency(parcelInfo.value)}</li>
           <li className="ml-6"><span className="font-semibold">Cantidad:</span> {parcelInfo.quantity}</li>
         </ul>
       </article>
