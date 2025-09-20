@@ -183,7 +183,7 @@ export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress, goP
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
+            <Label htmlFor="reference">Referencia del domicilio</Label>
           </div>
           <TextInput
             data-testid="reference"
