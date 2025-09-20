@@ -148,7 +148,7 @@ export type CreateUserPayload = {
 //#region Validation schemas
 
 const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
-const emailValidation = string().email(ERROR_INVALID_EMAIL).required(ERROR_EMAIL_REQUIRED).matches(emailRegex, ERROR_INVALID_EMAIL);
+export const emailValidation = string().email(ERROR_INVALID_EMAIL).required(ERROR_EMAIL_REQUIRED).matches(emailRegex, ERROR_INVALID_EMAIL);
 
 const passwordValidation = (requiredMessage: string, onlyRequired = false) => {
   if (onlyRequired) return string().required(requiredMessage);

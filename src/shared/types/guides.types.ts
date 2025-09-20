@@ -1,4 +1,5 @@
 import { object, ObjectSchema, string } from "yup";
+import { emailValidation } from "./login.types";
 
 export type OriginAddressFormValues = {
   name: string;
@@ -28,6 +29,6 @@ export const OriginAddressFormSchema: ObjectSchema<OriginAddressFormValues> = ob
     .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
     .min(10, 'El teléfono debe tener 10 dígitos')
     .max(10, 'El teléfono debe tener 10 dígitos'),
-  email: string().email('Por favor, ingrese un correo electrónico válido').required('El correo electrónico es requerido'),
+  email: emailValidation,
   reference: string().required('Referencia del domicilio es requerida').min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
 })
