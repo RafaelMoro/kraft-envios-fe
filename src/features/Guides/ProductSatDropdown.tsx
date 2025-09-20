@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
 import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { useMutation } from "@tanstack/react-query"
@@ -12,33 +12,58 @@ export const ProductSatDropdown = () => {
     setSearchTerm(e.target.value)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { mutate: getProducts, isPending, data } = useMutation<any, GeneralApiError, GetProductSatIdPayload>({
+  const {
+    mutate: getProducts,
+    isPending,
+    data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } = useMutation<any, GeneralApiError, GetProductSatIdPayload>({
     mutationFn: getProductSatInfo,
   })
 
+  // Debounce searchTerm and trigger getProducts after 2 seconds
+  useEffect(() => {
+    if (!searchTerm.trim()) return
+
+    const timeoutId = setTimeout(() => {
+      const payload: GetProductSatIdPayload = { search: searchTerm }
+      getProducts(payload)
+    }, 1500)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm, getProducts])
+
+  // Log data when it changes
+  useEffect(() => {
+    if (data) {
+      console.log('Product SAT data received:', data)
+    }
+  }, [data])
+
   return (
-    <Dropdown
-      label=""
-      renderTrigger={() => (
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="content">Tipo de producto:</Label>
-          </div>
-          <TextInput
-            data-testid="product-autocomplete"
-            id="product-autocomplete"
-            type="text"
-            value={searchTerm}
-            onChange={handleChangeTerm}
-            placeholder="Ropa"
-          />
+    <>
+      <div>
+        <div className="mb-2 block">
+          <Label htmlFor="content">Tipo de producto:</Label>
         </div>
-      )}
-    >
-      <DropdownItem>
-        Todos
-      </DropdownItem>
-    </Dropdown>
+        <TextInput
+          data-testid="product-autocomplete"
+          id="product-autocomplete"
+          type="text"
+          value={searchTerm}
+          onChange={handleChangeTerm}
+          placeholder="Ropa"
+        />
+      </div>
+      <Dropdown
+        label="Hola"
+        // renderTrigger={() => (
+        // )}
+      >
+        <DropdownItem>
+          Todos
+        </DropdownItem>
+      </Dropdown>
+    </>
   )
 }

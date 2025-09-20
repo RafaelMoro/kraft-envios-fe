@@ -11,13 +11,13 @@ export async function POST(request: NextRequest) {
     }
 
     const payload: GetProductSatIdPayload = await request.json()
-    const uri = `${satUri}?search=${payload.search}`
+    const uri = `${satUri}?search=${encodeURIComponent(payload.search)}`
     const res: AxiosResponse<GetProductId> = await axios.get(uri)
-    // TODO: Cut the response to the first 100
-    console.log('res', res.data)
-    return NextResponse.json({ data: res.data }, { status: 201 })
+    // Slicing products to 100
+    const products = res?.data?.data?.slice(0, 100) || []
+    return NextResponse.json(products, { status: 201 })
   } catch (error) {
-    console.log('error')
+    console.log('error', error)
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
     return NextResponse.json({ message }, { status: 400 })
   }
