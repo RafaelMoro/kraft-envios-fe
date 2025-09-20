@@ -7,10 +7,12 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 // react form event handled by react-hook-form SubmitHandler
 
 interface OriginAddressFormProps {
+  originAddressData: OriginAddressFormValues
   goNext: () => void
+  updateOriginAddress: (data: OriginAddressFormValues) => void
 }
 
-export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
+export const OriginAddressForm = ({ originAddressData, goNext, updateOriginAddress }: OriginAddressFormProps) => {
   const {
     register,
     handleSubmit,
@@ -22,9 +24,8 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
   const onSubmit: SubmitHandler<OriginAddressFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    // updateCompanyDetails(data)
-    console.log('data', data)
-    // goNext()
+    updateOriginAddress(data)
+    goNext()
   }
 
   return (
@@ -36,7 +37,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="name"
-            // defaultValue={personalInformation.name}
+            defaultValue={originAddressData.name}
             id="name"
             type="text"
             {...register("name")}
@@ -51,7 +52,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="street1"
-            // defaultValue={personalInformation.name}
+            defaultValue={originAddressData.street1}
             id="street1"
             type="text"
             {...register("street1")}
@@ -66,7 +67,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="neighborhood"
-            // defaultValue={personalInformation.name}
+            defaultValue={originAddressData.neighborhood}
             id="neighborhood"
             type="text"
             {...register("neighborhood")}
@@ -81,7 +82,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="external_number"
-            // defaultValue={personalInformation.name}
+            defaultValue={originAddressData.external_number}
             id="external_number"
             type="text"
             inputMode="numeric"
@@ -97,7 +98,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="city"
-            // defaultValue={personalInformation.name}
+            defaultValue={originAddressData.city}
             id="city"
             type="text"
             {...register("city")}
@@ -112,7 +113,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="company"
-            // defaultValue={personalInformation.name}
+            defaultValue={originAddressData.company}
             id="company"
             type="text"
             {...register("company")}
@@ -127,7 +128,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="state"
-            // defaultValue={personalInformation.name}
+            defaultValue={originAddressData.state}
             id="state"
             type="text"
             {...register("state")}
@@ -145,7 +146,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
             id="phone"
             type="text"
             inputMode="numeric"
-            // defaultValue={personalInformation.phone ?? ''}
+            defaultValue={originAddressData.phone}
             {...register("phone")}
           />
           { errors?.phone?.message && (
@@ -159,6 +160,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           <TextInput
             id="email"
             type="email"
+            defaultValue={originAddressData.email}
             {...register("email")}
           />
           { errors?.email?.message && (
@@ -171,7 +173,7 @@ export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
           </div>
           <TextInput
             data-testid="reference"
-            // defaultValue={companyDetails.companyName ?? ''}
+            defaultValue={originAddressData.reference}
             id="reference"
             type="text"
             {...register("reference")}

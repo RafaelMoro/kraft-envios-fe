@@ -1,6 +1,10 @@
 import { object, ObjectSchema, string } from "yup";
 import { emailValidation } from "./login.types";
 
+export type CreateGuideFormValues = {
+  originAddress: OriginAddressFormValues
+}
+
 export type OriginAddressFormValues = {
   name: string;
   street1: string;
