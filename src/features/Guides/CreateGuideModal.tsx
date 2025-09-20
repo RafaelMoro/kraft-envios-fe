@@ -7,6 +7,7 @@ import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
 import { useRef } from "react";
 import { CreateGuideFormValues, CreateGuideAddressFormValues } from "@/shared/types/guides.types";
 import { initialStateForm } from "@/shared/constants/guides.constants";
+import { ParcelInfoForm } from "./ParcelInfoForm";
 
 interface CreateGuideProps {
   open: boolean;
@@ -58,6 +59,9 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
             toggleModal={toggleModal}
             goPrev={goPrev}
           />
+        )}
+        { step === 3 && (
+          <ParcelInfoForm />
         )}
       </ModalBody>
     </Modal>
