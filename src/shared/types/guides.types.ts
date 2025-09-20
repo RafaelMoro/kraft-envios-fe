@@ -2,10 +2,11 @@ import { object, ObjectSchema, string } from "yup";
 import { emailValidation } from "./login.types";
 
 export type CreateGuideFormValues = {
-  originAddress: OriginAddressFormValues
+  originAddress: CreateGuideAddressFormValues;
+  destinationAddress: CreateGuideAddressFormValues;
 }
 
-export type OriginAddressFormValues = {
+export type CreateGuideAddressFormValues = {
   name: string;
   street1: string;
   neighborhood: string;
@@ -20,7 +21,7 @@ export type OriginAddressFormValues = {
 
 //#region Schemas
 
-export const OriginAddressFormSchema: ObjectSchema<OriginAddressFormValues> = object({
+export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValues> = object({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
   street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
   neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),

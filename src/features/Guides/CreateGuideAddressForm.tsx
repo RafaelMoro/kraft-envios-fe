@@ -2,29 +2,29 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
-import { OriginAddressFormSchema, OriginAddressFormValues } from "@/shared/types/guides.types"
+import { CreateGuideAddressFormSchema, CreateGuideAddressFormValues } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 // react form event handled by react-hook-form SubmitHandler
 
 interface OriginAddressFormProps {
-  originAddressData: OriginAddressFormValues
+  addressData: CreateGuideAddressFormValues
   goNext: () => void
-  updateOriginAddress: (data: OriginAddressFormValues) => void
+  updateAddress: (data: CreateGuideAddressFormValues) => void
 }
 
-export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOriginAddress }: OriginAddressFormProps) => {
+export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress }: OriginAddressFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<OriginAddressFormValues>({
-    resolver: yupResolver(OriginAddressFormSchema)
+  } = useForm<CreateGuideAddressFormValues>({
+    resolver: yupResolver(CreateGuideAddressFormSchema)
   })
 
-  const onSubmit: SubmitHandler<OriginAddressFormValues> = (data, event) => {
+  const onSubmit: SubmitHandler<CreateGuideAddressFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    updateOriginAddress(data)
+    updateAddress(data)
     goNext()
   }
 
@@ -37,7 +37,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="name"
-            defaultValue={originAddressData.name}
+            defaultValue={addressData.name}
             id="name"
             type="text"
             {...register("name")}
@@ -52,7 +52,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="street1"
-            defaultValue={originAddressData.street1}
+            defaultValue={addressData.street1}
             id="street1"
             type="text"
             {...register("street1")}
@@ -67,7 +67,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="neighborhood"
-            defaultValue={originAddressData.neighborhood}
+            defaultValue={addressData.neighborhood}
             id="neighborhood"
             type="text"
             {...register("neighborhood")}
@@ -82,7 +82,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="external_number"
-            defaultValue={originAddressData.external_number}
+            defaultValue={addressData.external_number}
             id="external_number"
             type="text"
             inputMode="numeric"
@@ -98,7 +98,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="city"
-            defaultValue={originAddressData.city}
+            defaultValue={addressData.city}
             id="city"
             type="text"
             {...register("city")}
@@ -113,7 +113,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="company"
-            defaultValue={originAddressData.company}
+            defaultValue={addressData.company}
             id="company"
             type="text"
             {...register("company")}
@@ -128,7 +128,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="state"
-            defaultValue={originAddressData.state}
+            defaultValue={addressData.state}
             id="state"
             type="text"
             {...register("state")}
@@ -146,7 +146,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
             id="phone"
             type="text"
             inputMode="numeric"
-            defaultValue={originAddressData.phone}
+            defaultValue={addressData.phone}
             {...register("phone")}
           />
           { errors?.phone?.message && (
@@ -160,7 +160,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           <TextInput
             id="email"
             type="email"
-            defaultValue={originAddressData.email}
+            defaultValue={addressData.email}
             {...register("email")}
           />
           { errors?.email?.message && (
@@ -173,7 +173,7 @@ export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOrigin
           </div>
           <TextInput
             data-testid="reference"
-            defaultValue={originAddressData.reference}
+            defaultValue={addressData.reference}
             id="reference"
             type="text"
             {...register("reference")}

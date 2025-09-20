@@ -5,7 +5,8 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
 import { useRef } from "react";
-import { CreateGuideFormValues, OriginAddressFormValues } from "@/shared/types/guides.types";
+import { CreateGuideFormValues, CreateGuideAddressFormValues } from "@/shared/types/guides.types";
+import { initialStateAddressForm } from "@/shared/constants/guides.constants";
 
 interface CreateGuideProps {
   open: boolean;
@@ -17,21 +18,14 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
   const formData = useRef<CreateGuideFormValues>({
-    originAddress: {
-      name: "",
-      street1: "",
-      neighborhood: "",
-      external_number: "",
-      city: "",
-      company: "",
-      state: "",
-      phone: "",
-      email: "",
-      reference: ""
-    }
+    originAddress: initialStateAddressForm,
+    destinationAddress: initialStateAddressForm,
   })
-  const updateOriginAddress = (data: OriginAddressFormValues) => {
+  const updateOriginAddress = (data: CreateGuideAddressFormValues) => {
     formData.current.originAddress = data
+  }
+  const updateDestinationAddress = (data: CreateGuideAddressFormValues) => {
+    formData.current.destinationAddress = data
   }
 
   return (
@@ -42,7 +36,10 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           <Stepper steps={steps} currentStep={step} />
         </div>
         { step === 1 && (
-          <CreateGuideAddressForm goNext={goNext} updateOriginAddress={updateOriginAddress} originAddressData={formData.current.originAddress} />
+          <CreateGuideAddressForm goNext={goNext} updateAddress={updateOriginAddress} addressData={formData.current.originAddress} />
+        )}
+        { step === 2 && (
+          <CreateGuideAddressForm goNext={goNext} updateAddress={updateDestinationAddress} addressData={formData.current.destinationAddress} />
         )}
       </ModalBody>
     </Modal>
