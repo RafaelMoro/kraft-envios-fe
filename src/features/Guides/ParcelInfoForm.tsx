@@ -5,6 +5,7 @@ import { Button, Label, TextInput } from "flowbite-react"
 
 import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { ProductSatDropdown } from "./ProductSatDropdown"
 
 interface ParcelInfoFormProps {
   parcelInfo: ParcelInfoFormValues
@@ -34,7 +35,7 @@ export const ParcelInfoForm = ({ parcelInfo, goNext, goPrev, updateParcelInfo }:
       onSubmit={handleSubmit(onSubmit)}
     >
       <section className="flex flex-col gap-4">
-        <p>Dropdown sat product id</p>
+        <ProductSatDropdown />
         <div>
           <div className="mb-2 block">
             <Label htmlFor="content">Contenido del paquete</Label>
