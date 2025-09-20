@@ -12,7 +12,7 @@ interface OriginAddressFormProps {
   updateOriginAddress: (data: OriginAddressFormValues) => void
 }
 
-export const OriginAddressForm = ({ originAddressData, goNext, updateOriginAddress }: OriginAddressFormProps) => {
+export const CreateGuideAddressForm = ({ originAddressData, goNext, updateOriginAddress }: OriginAddressFormProps) => {
   const {
     register,
     handleSubmit,
