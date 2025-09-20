@@ -6,7 +6,7 @@ import { HiChevronDown } from "react-icons/hi"
 
 import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { GetProductSatIdPayload } from "@/shared/types/guides.types"
+import { GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
 
 export const ProductSatDropdown = () => {
   // Dropdown visibility state
@@ -24,6 +24,8 @@ export const ProductSatDropdown = () => {
   const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
   }
+
+  const [options, setOptions] = useState<SearchProduct[]>([])
 
   const {
     mutate: getProducts,
@@ -46,10 +48,11 @@ export const ProductSatDropdown = () => {
     return () => clearTimeout(timeoutId)
   }, [searchTerm, getProducts])
 
-  // Log data when it changes
+  // Update options based on the data received
   useEffect(() => {
     if (data) {
-      console.log('Product SAT data received:', data)
+      const products = data?.data?.products || []
+      setOptions(products)
     }
   }, [data])
 
@@ -68,18 +71,19 @@ export const ProductSatDropdown = () => {
         onBlur={handleInputBlur}
         placeholder="Ropa"
         rightIcon={HiChevronDown}
+        autoComplete="off"
       />
       { showDropdown && (
         <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
-          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
+          { options.length === 0 && searchTerm.length === 0 && (
+            <li className="p-2 rounded-lg">Escribe para buscar productos</li>
+          )}
+          { (options.length === 0 && searchTerm.length > 0) && (
+            <li className="p-2 rounded-lg">No se encontraron productos</li>
+          )}
+          { options.length > 0 && options.map((opt) => (
+            <li key={opt.code} className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">{opt.description}</li>
+          ))}
         </ul>
       ) }
     </div>
