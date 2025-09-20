@@ -1,10 +1,35 @@
 "use client"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 
-export const ParcelInfoForm = () => {
+import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema } from "@/shared/types/guides.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+
+interface ParcelInfoFormProps {
+  goNext: () => void
+  goPrev: () => void
+}
+
+export const ParcelInfoForm = ({ goNext, goPrev }: ParcelInfoFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ParcelInfoFormValues>({
+    resolver: yupResolver(ParcelInfoFormValuesFormSchema)
+  })
+
+  const onSubmit: SubmitHandler<ParcelInfoFormValues> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    // updateAddress(data)
+    goNext()
+  }
+
   return (
     <form
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <section className="flex flex-col gap-4">
         <p>Dropdown sat product id</p>
@@ -17,11 +42,11 @@ export const ParcelInfoForm = () => {
             // defaultValue={addressData.name}
             id="content"
             type="text"
-            // {...register("name")}
+            {...register("content")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.content?.message && (
+            <ErrorMessage>{errors.content?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -32,11 +57,11 @@ export const ParcelInfoForm = () => {
             // defaultValue={addressData.name}
             id="value"
             type="number"
-            // {...register("name")}
+            {...register("value")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.value?.message && (
+            <ErrorMessage>{errors.value?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -47,11 +72,11 @@ export const ParcelInfoForm = () => {
             // defaultValue={addressData.name}
             id="quantity"
             type="number"
-            // {...register("name")}
+            {...register("quantity")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.quantity?.message && (
+            <ErrorMessage>{errors.quantity?.message}</ErrorMessage>
+          )}
         </div>
       </section>
       <div className="flex justify-between mt-4">
@@ -59,7 +84,7 @@ export const ParcelInfoForm = () => {
           color="light"
           data-testid="parcel-info-form-cancel-button"
           className="hover:cursor-pointer"
-          // onClick={handleCancel}
+          onClick={goPrev}
         >
           Regresar
         </Button>

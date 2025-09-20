@@ -1,4 +1,4 @@
-import { object, ObjectSchema, string } from "yup";
+import { object, ObjectSchema, string, number } from "yup";
 import { emailValidation } from "./login.types";
 
 export type CreateGuideFormValues = {
@@ -19,6 +19,12 @@ export type CreateGuideAddressFormValues = {
   reference: string
 }
 
+export type ParcelInfoFormValues = {
+  content: string;
+  value: number;
+  quantity: number;
+}
+
 //#region Schemas
 
 export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValues> = object({
@@ -36,4 +42,10 @@ export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormVa
     .max(10, 'El teléfono debe tener 10 dígitos'),
   email: emailValidation,
   reference: string().required('Referencia del domicilio es requerida').min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
+})
+
+export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> = object({
+  content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres'),
+  value: number().required('Valor es requerido').min(1, 'El valor debe ser un número positivo'),
+  quantity: number().required('Cantidad es requerida').min(1, 'La cantidad debe ser al menos 1'),
 })

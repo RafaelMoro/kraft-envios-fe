@@ -61,7 +61,7 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           />
         )}
         { step === 3 && (
-          <ParcelInfoForm />
+          <ParcelInfoForm goNext={goNext} goPrev={goPrev} />
         )}
       </ModalBody>
     </Modal>
