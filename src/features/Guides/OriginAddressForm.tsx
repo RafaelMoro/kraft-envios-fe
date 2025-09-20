@@ -1,8 +1,34 @@
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form"
 
-export const OriginAddressForm = () => {
+import { OriginAddressFormSchema, OriginAddressFormValues } from "@/shared/types/guides.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+// react form event handled by react-hook-form SubmitHandler
+
+interface OriginAddressFormProps {
+  goNext: () => void
+}
+
+export const OriginAddressForm = ({ goNext }: OriginAddressFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<OriginAddressFormValues>({
+    resolver: yupResolver(OriginAddressFormSchema)
+  })
+
+  const onSubmit: SubmitHandler<OriginAddressFormValues> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    // updateCompanyDetails(data)
+    console.log('data', data)
+    // goNext()
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <section className="grid grid-cols-2 gap-4">
         <div>
           <div className="mb-2 block">
@@ -13,11 +39,11 @@ export const OriginAddressForm = () => {
             // defaultValue={personalInformation.name}
             id="name"
             type="text"
-            // {...register("name")}
+            {...register("name")}
           />
-          {/* { errors?.name?.message && (
+          { errors?.name?.message && (
             <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -28,11 +54,11 @@ export const OriginAddressForm = () => {
             // defaultValue={personalInformation.name}
             id="street1"
             type="text"
-            // {...register("name")}
+            {...register("street1")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.street1?.message && (
+            <ErrorMessage>{errors.street1?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -43,11 +69,11 @@ export const OriginAddressForm = () => {
             // defaultValue={personalInformation.name}
             id="neighborhood"
             type="text"
-            // {...register("name")}
+            {...register("neighborhood")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.neighborhood?.message && (
+            <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -57,12 +83,13 @@ export const OriginAddressForm = () => {
             data-testid="external_number"
             // defaultValue={personalInformation.name}
             id="external_number"
-            type="number"
-            // {...register("name")}
+            type="text"
+            inputMode="numeric"
+            {...register("external_number")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.external_number?.message && (
+            <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -73,11 +100,11 @@ export const OriginAddressForm = () => {
             // defaultValue={personalInformation.name}
             id="city"
             type="text"
-            // {...register("name")}
+            {...register("city")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.city?.message && (
+            <ErrorMessage>{errors.city?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -88,11 +115,11 @@ export const OriginAddressForm = () => {
             // defaultValue={personalInformation.name}
             id="company"
             type="text"
-            // {...register("name")}
+            {...register("company")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.company?.message && (
+            <ErrorMessage>{errors.company?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -103,11 +130,11 @@ export const OriginAddressForm = () => {
             // defaultValue={personalInformation.name}
             id="state"
             type="text"
-            // {...register("name")}
+            {...register("state")}
           />
-          {/* { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          { errors?.state?.message && (
+            <ErrorMessage>{errors.state?.message}</ErrorMessage>
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -119,11 +146,11 @@ export const OriginAddressForm = () => {
             type="text"
             inputMode="numeric"
             // defaultValue={personalInformation.phone ?? ''}
-            // {...register("phone")}
+            {...register("phone")}
           />
-          {/* { errors?.phone?.message && (
+          { errors?.phone?.message && (
             <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -132,11 +159,11 @@ export const OriginAddressForm = () => {
           <TextInput
             id="email"
             type="email"
-            // {...register("email")}
+            {...register("email")}
           />
-          {/* { errors?.email?.message && (
+          { errors?.email?.message && (
             <ErrorMessage>{errors.email?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -147,11 +174,11 @@ export const OriginAddressForm = () => {
             // defaultValue={companyDetails.companyName ?? ''}
             id="reference"
             type="text"
-            // {...register("companyName")}
+            {...register("reference")}
           />
-          {/* { errors?.companyName?.message && (
-            <ErrorMessage>{errors.companyName?.message}</ErrorMessage>
-          )} */}
+          { errors?.reference?.message && (
+            <ErrorMessage>{errors.reference?.message}</ErrorMessage>
+          )}
         </div>
       </section>
       <div className="flex justify-between mt-4">

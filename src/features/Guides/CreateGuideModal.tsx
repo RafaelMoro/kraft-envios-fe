@@ -22,7 +22,7 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           <Stepper steps={steps} currentStep={step} />
         </div>
         { step === 1 && (
-          <OriginAddressForm />
+          <OriginAddressForm goNext={goNext} />
         )}
       </ModalBody>
     </Modal>
