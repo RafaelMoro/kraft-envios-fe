@@ -7,11 +7,13 @@ import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema } from "@/shared/t
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface ParcelInfoFormProps {
+  parcelInfo: ParcelInfoFormValues
   goNext: () => void
   goPrev: () => void
+  updateParcelInfo: (data: ParcelInfoFormValues) => void
 }
 
-export const ParcelInfoForm = ({ goNext, goPrev }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({ goNext, goPrev, updateParcelInfo }: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -23,7 +25,7 @@ export const ParcelInfoForm = ({ goNext, goPrev }: ParcelInfoFormProps) => {
   const onSubmit: SubmitHandler<ParcelInfoFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    // updateAddress(data)
+    updateParcelInfo(data)
     goNext()
   }
 

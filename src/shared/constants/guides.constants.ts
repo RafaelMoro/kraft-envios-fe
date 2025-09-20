@@ -13,7 +13,13 @@ export const initialStateAddressForm: CreateGuideAddressFormValues = {
   reference: ""
 }
 
+
 export const initialStateForm: CreateGuideFormValues = {
   originAddress: initialStateAddressForm,
   destinationAddress: initialStateAddressForm,
+  parcelInfo: {
+    content: "",
+    value: 0,
+    quantity: 0
+  }
 }

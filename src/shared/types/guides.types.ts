@@ -4,6 +4,7 @@ import { emailValidation } from "./login.types";
 export type CreateGuideFormValues = {
   originAddress: CreateGuideAddressFormValues;
   destinationAddress: CreateGuideAddressFormValues;
+  parcelInfo: ParcelInfoFormValues;
 }
 
 export type CreateGuideAddressFormValues = {

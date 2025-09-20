@@ -5,7 +5,7 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
 import { useRef } from "react";
-import { CreateGuideFormValues, CreateGuideAddressFormValues } from "@/shared/types/guides.types";
+import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValues } from "@/shared/types/guides.types";
 import { initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
 
@@ -27,6 +27,9 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
   }
   const updateDestinationAddress = (data: CreateGuideAddressFormValues) => {
     formData.current.destinationAddress = data
+  }
+  const updateParcelInfo = (data: ParcelInfoFormValues) => {
+    formData.current.parcelInfo = data
   }
   const closeModal = () => {
     toggleModal()
@@ -61,7 +64,12 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           />
         )}
         { step === 3 && (
-          <ParcelInfoForm goNext={goNext} goPrev={goPrev} />
+          <ParcelInfoForm
+            parcelInfo={formData.current.parcelInfo}
+            goNext={goNext}
+            goPrev={goPrev}
+            updateParcelInfo={updateParcelInfo}
+          />
         )}
       </ModalBody>
     </Modal>
