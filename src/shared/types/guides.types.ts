@@ -32,6 +32,9 @@ export type ParcelInfoFormValues = {
 
 //#region Responses
 
+/**
+ * This interface represents the structure of a product returned by the SAT API.
+ */
 export interface SatProduct {
   code: string;
   created_at: string;
@@ -41,12 +44,31 @@ export interface SatProduct {
   updated_at: string;
 }
 
+/**
+ * This interface is the formatted data to be used in the dropdown
+ */
+export interface SearchProduct {
+  code: string;
+  description: string
+}
+
+/**
+ * This interface represents the structure of the response from the SAT API when fetching products.
+ */
 export interface GetProductId {
   data: SatProduct[]
   meta: {
     authors: string[]
     copyright: string
   }
+}
+
+/**
+ * This interface represents the structure of the response from our API when fetching SAT products.
+ */
+export interface FetchSatProductsResponse {
+  message: string | null
+  products: SearchProduct[]
 }
 
 //#region Schemas
