@@ -23,3 +23,5 @@ export const initialStateForm: CreateGuideFormValues = {
     quantity: 0
   }
 }
+
+export const GET_SAT_PRODUCT_ENDPOINT = '/api/product-sat'

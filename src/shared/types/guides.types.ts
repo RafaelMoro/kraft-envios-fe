@@ -1,6 +1,10 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailValidation } from "./login.types";
 
+export type GetProductSatIdPayload = {
+  search: string
+}
+
 export type CreateGuideFormValues = {
   originAddress: CreateGuideAddressFormValues;
   destinationAddress: CreateGuideAddressFormValues;
@@ -24,6 +28,25 @@ export type ParcelInfoFormValues = {
   content: string;
   value: number;
   quantity: number;
+}
+
+//#region Responses
+
+export interface SatProduct {
+  code: string;
+  created_at: string;
+  description: string;
+  id: string;
+  similar_words: null | string;
+  updated_at: string;
+}
+
+export interface GetProductId {
+  data: SatProduct[]
+  meta: {
+    authors: string[]
+    copyright: string
+  }
 }
 
 //#region Schemas
