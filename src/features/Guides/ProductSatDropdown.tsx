@@ -1,8 +1,10 @@
 "use client"
 import { useState, useEffect } from "react"
 import { Label, TextInput } from "flowbite-react"
-import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { useMutation } from "@tanstack/react-query"
+import { HiChevronDown } from "react-icons/hi"
+
+import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { GetProductSatIdPayload } from "@/shared/types/guides.types"
 
@@ -65,6 +67,7 @@ export const ProductSatDropdown = () => {
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         placeholder="Ropa"
+        rightIcon={HiChevronDown}
       />
       { showDropdown && (
         <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
