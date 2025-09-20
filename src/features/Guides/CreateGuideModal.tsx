@@ -9,6 +9,7 @@ import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValu
 import { initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
 import { ConfirmGuideData } from "./ConfirmGuideData";
+import { ProductSatDropdown } from "./ProductSatDropdown";
 
 interface CreateGuideProps {
   open: boolean;
@@ -76,8 +77,9 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
-            updateSelectedProduct={updateSelectedProduct}
-          />
+          >
+            <ProductSatDropdown selectedProduct={selectedProduct.current} updateSelectedOption={updateSelectedProduct} />
+          </ParcelInfoForm>
         )}
         { step === 4 && (
           <ConfirmGuideData formData={formData.current} goPrev={goPrev} selectedProduct={selectedProduct.current} />

@@ -9,10 +9,11 @@ import { GeneralApiError } from "@/shared/types/global.types"
 import { GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
 
 interface ProductSatDropdownProps {
+  selectedProduct: SearchProduct | null
   updateSelectedOption: (option: SearchProduct) => void
 }
 
-export const ProductSatDropdown = ({ updateSelectedOption }: ProductSatDropdownProps) => {
+export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: ProductSatDropdownProps) => {
   // Flag to check if an option has been selected and prevent fetching term
   const [hasSelectedOption, setHasSelectedOption] = useState<boolean>(false)
 
@@ -29,7 +30,7 @@ export const ProductSatDropdown = ({ updateSelectedOption }: ProductSatDropdownP
   }
 
   // Search term state
-  const [searchTerm, setSearchTerm] = useState<string>("")
+  const [searchTerm, setSearchTerm] = useState<string>(selectedProduct?.description ?? '')
   const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
     // If the user writes or deletes the term, then set the flag to false
     if (hasSelectedOption) setHasSelectedOption(false)

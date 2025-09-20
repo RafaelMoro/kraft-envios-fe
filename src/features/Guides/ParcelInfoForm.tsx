@@ -1,21 +1,21 @@
 "use client"
+import { ReactNode } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 
-import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema, SearchProduct } from "@/shared/types/guides.types"
+import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { ProductSatDropdown } from "./ProductSatDropdown"
 
 interface ParcelInfoFormProps {
   parcelInfo: ParcelInfoFormValues
+  children: ReactNode
   goNext: () => void
   goPrev: () => void
   updateParcelInfo: (data: ParcelInfoFormValues) => void
-  updateSelectedProduct: (option: SearchProduct) => void
 }
 
-export const ParcelInfoForm = ({ parcelInfo, goNext, goPrev, updateParcelInfo, updateSelectedProduct }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({ children, parcelInfo, goNext, goPrev, updateParcelInfo }: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -36,7 +36,7 @@ export const ParcelInfoForm = ({ parcelInfo, goNext, goPrev, updateParcelInfo, u
       onSubmit={handleSubmit(onSubmit)}
     >
       <section className="flex flex-col gap-4">
-        <ProductSatDropdown updateSelectedOption={updateSelectedProduct} />
+        { children }
         <div>
           <div className="mb-2 block">
             <Label htmlFor="content">Contenido del paquete</Label>
