@@ -7,9 +7,20 @@ import { GeneralApiError } from "@/shared/types/global.types"
 import { GetProductSatIdPayload } from "@/shared/types/guides.types"
 
 export const ProductSatDropdown = () => {
+  // Dropdown visibility state
+  const [showDropdown, setShowDropdown] = useState<boolean>(false)
+  // Search term state
   const [searchTerm, setSearchTerm] = useState<string>("")
   const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
+  }
+
+  const handleInputFocus = () => {
+    setShowDropdown(true)
+  }
+
+  const handleInputBlur = () => {
+    setShowDropdown(false)
   }
 
   const {
@@ -51,19 +62,23 @@ export const ProductSatDropdown = () => {
         type="text"
         value={searchTerm}
         onChange={handleChangeTerm}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
         placeholder="Ropa"
       />
-      <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
-        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
-      </ul>
+      { showDropdown && (
+        <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
+          <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
+        </ul>
+      ) }
     </div>
   )
 }
