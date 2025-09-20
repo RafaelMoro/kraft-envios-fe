@@ -3,9 +3,10 @@ import { Button } from "flowbite-react"
 
 interface ConfirmGuideDataProps {
   formData: CreateGuideFormValues
+  goPrev: () => void
 }
 
-export const ConfirmGuideData = ({ formData }: ConfirmGuideDataProps) => {
+export const ConfirmGuideData = ({ formData, goPrev }: ConfirmGuideDataProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
   return (
@@ -50,7 +51,7 @@ export const ConfirmGuideData = ({ formData }: ConfirmGuideDataProps) => {
         </ul>
       </article>
       <footer className="flex justify-between">
-        <Button color="light" data-testid="confirm-guide-cancel-button" className="hover:cursor-pointer">
+        <Button color="light" data-testid="confirm-guide-cancel-button" className="hover:cursor-pointer" onClick={goPrev}>
           Regresar
         </Button>
         <Button data-testid="confirm-guide-send-button" className="hover:cursor-pointer">

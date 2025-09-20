@@ -73,7 +73,7 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           />
         )}
         { step === 4 && (
-          <ConfirmGuideData formData={formData.current} />
+          <ConfirmGuideData formData={formData.current} goPrev={goPrev} />
         )}
       </ModalBody>
     </Modal>
