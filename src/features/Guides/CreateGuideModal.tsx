@@ -5,7 +5,7 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
 import { useRef } from "react";
-import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValues } from "@/shared/types/guides.types";
+import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValues, SearchProduct } from "@/shared/types/guides.types";
 import { initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
 import { ConfirmGuideData } from "./ConfirmGuideData";
@@ -19,6 +19,11 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
   // TODO: Change this to step 1 after finishing product sat dropdown
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 3 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+
+  const selectedProduct = useRef<SearchProduct | null>(null)
+  const updateSelectedProduct = (option: SearchProduct) => {
+    selectedProduct.current = option
+  }
 
   const formData = useRef<CreateGuideFormValues>(initialStateForm)
   const resetFormData = () => {
@@ -71,10 +76,11 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
+            updateSelectedProduct={updateSelectedProduct}
           />
         )}
         { step === 4 && (
-          <ConfirmGuideData formData={formData.current} goPrev={goPrev} />
+          <ConfirmGuideData formData={formData.current} goPrev={goPrev} selectedProduct={selectedProduct.current} />
         )}
       </ModalBody>
     </Modal>

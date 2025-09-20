@@ -3,7 +3,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 
-import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema } from "@/shared/types/guides.types"
+import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema, SearchProduct } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { ProductSatDropdown } from "./ProductSatDropdown"
 
@@ -12,9 +12,10 @@ interface ParcelInfoFormProps {
   goNext: () => void
   goPrev: () => void
   updateParcelInfo: (data: ParcelInfoFormValues) => void
+  updateSelectedProduct: (option: SearchProduct) => void
 }
 
-export const ParcelInfoForm = ({ parcelInfo, goNext, goPrev, updateParcelInfo }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({ parcelInfo, goNext, goPrev, updateParcelInfo, updateSelectedProduct }: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -35,7 +36,7 @@ export const ParcelInfoForm = ({ parcelInfo, goNext, goPrev, updateParcelInfo }:
       onSubmit={handleSubmit(onSubmit)}
     >
       <section className="flex flex-col gap-4">
-        <ProductSatDropdown />
+        <ProductSatDropdown updateSelectedOption={updateSelectedProduct} />
         <div>
           <div className="mb-2 block">
             <Label htmlFor="content">Contenido del paquete</Label>

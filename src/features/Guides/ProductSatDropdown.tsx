@@ -8,23 +8,35 @@ import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
 
-export const ProductSatDropdown = () => {
+interface ProductSatDropdownProps {
+  updateSelectedOption: (option: SearchProduct) => void
+}
+
+export const ProductSatDropdown = ({ updateSelectedOption }: ProductSatDropdownProps) => {
+  // Flag to check if an option has been selected and prevent fetching term
+  const [hasSelectedOption, setHasSelectedOption] = useState<boolean>(false)
+
   // Dropdown visibility state
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
   const handleInputFocus = () => {
     setShowDropdown(true)
   }
-
   const handleInputBlur = () => {
-    setShowDropdown(false)
+    // Add a small delay to allow option selection to complete before closing dropdown
+    setTimeout(() => {
+      setShowDropdown(false)
+    }, 150)
   }
 
   // Search term state
   const [searchTerm, setSearchTerm] = useState<string>("")
   const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // If the user writes or deletes the term, then set the flag to false
+    if (hasSelectedOption) setHasSelectedOption(false)
     setSearchTerm(e.target.value)
   }
 
+  // Options state
   const [options, setOptions] = useState<SearchProduct[]>([])
 
   const {
@@ -38,7 +50,7 @@ export const ProductSatDropdown = () => {
 
   // Debounce searchTerm and trigger getProducts after 2 seconds
   useEffect(() => {
-    if (!searchTerm.trim()) return
+    if (!searchTerm.trim() || hasSelectedOption) return
 
     const timeoutId = setTimeout(() => {
       const payload: GetProductSatIdPayload = { search: searchTerm }
@@ -46,7 +58,7 @@ export const ProductSatDropdown = () => {
     }, 1500)
 
     return () => clearTimeout(timeoutId)
-  }, [searchTerm, getProducts])
+  }, [searchTerm, hasSelectedOption, getProducts])
 
   // Update options based on the data received
   useEffect(() => {
@@ -55,6 +67,12 @@ export const ProductSatDropdown = () => {
       setOptions(products)
     }
   }, [data])
+
+  const handleSelectOption = (option: SearchProduct) => {
+    updateSelectedOption(option)
+    setSearchTerm(option.description)
+    setHasSelectedOption(true)
+  }
 
   return (
     <div className="relative">
@@ -82,7 +100,7 @@ export const ProductSatDropdown = () => {
             <li className="p-2 rounded-lg">No se encontraron productos</li>
           )}
           { options.length > 0 && options.map((opt) => (
-            <li key={opt.code} className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">{opt.description}</li>
+            <li key={opt.code} onClick={() => handleSelectOption(opt)} className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">{opt.description}</li>
           ))}
         </ul>
       ) }

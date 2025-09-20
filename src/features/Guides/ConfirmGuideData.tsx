@@ -1,14 +1,16 @@
-import { CreateGuideFormValues } from "@/shared/types/guides.types"
+import { CreateGuideFormValues, SearchProduct } from "@/shared/types/guides.types"
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { Button } from "flowbite-react"
 
 interface ConfirmGuideDataProps {
   formData: CreateGuideFormValues
+  selectedProduct: SearchProduct | null
   goPrev: () => void
 }
 
-export const ConfirmGuideData = ({ formData, goPrev }: ConfirmGuideDataProps) => {
+export const ConfirmGuideData = ({ formData, selectedProduct, goPrev }: ConfirmGuideDataProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
+  console.log('selected product', selectedProduct)
 
   return (
     <section className="flex flex-col gap-10">
