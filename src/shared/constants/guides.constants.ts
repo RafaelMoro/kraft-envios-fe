@@ -1,4 +1,4 @@
-import { CreateGuideAddressFormValues } from "../types/guides.types";
+import { CreateGuideAddressFormValues, CreateGuideFormValues } from "../types/guides.types";
 
 export const initialStateAddressForm: CreateGuideAddressFormValues = {
   name: "",
@@ -11,4 +11,9 @@ export const initialStateAddressForm: CreateGuideAddressFormValues = {
   phone: "",
   email: "",
   reference: ""
+}
+
+export const initialStateForm: CreateGuideFormValues = {
+  originAddress: initialStateAddressForm,
+  destinationAddress: initialStateAddressForm,
 }

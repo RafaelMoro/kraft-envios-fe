@@ -6,7 +6,7 @@ import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
 import { useRef } from "react";
 import { CreateGuideFormValues, CreateGuideAddressFormValues } from "@/shared/types/guides.types";
-import { initialStateAddressForm } from "@/shared/constants/guides.constants";
+import { initialStateForm } from "@/shared/constants/guides.constants";
 
 interface CreateGuideProps {
   open: boolean;
@@ -17,19 +17,24 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
-  const formData = useRef<CreateGuideFormValues>({
-    originAddress: initialStateAddressForm,
-    destinationAddress: initialStateAddressForm,
-  })
+  const formData = useRef<CreateGuideFormValues>(initialStateForm)
+  const resetFormData = () => {
+    formData.current = initialStateForm
+  }
   const updateOriginAddress = (data: CreateGuideAddressFormValues) => {
     formData.current.originAddress = data
   }
   const updateDestinationAddress = (data: CreateGuideAddressFormValues) => {
     formData.current.destinationAddress = data
   }
+  const closeModal = () => {
+    toggleModal()
+    resetSteps()
+    resetFormData()
+  }
 
   return (
-    <Modal show={open} onClose={toggleModal}>
+    <Modal show={open} onClose={closeModal}>
       <ModalHeader>Crear guía</ModalHeader>
       <ModalBody>
         <div className="py-6">
@@ -40,7 +45,7 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
             goNext={goNext}
             updateAddress={updateOriginAddress}
             addressData={formData.current.originAddress}
-            toggleModal={toggleModal}
+            toggleModal={closeModal}
             goPrev={goPrev}
           />
         )}
