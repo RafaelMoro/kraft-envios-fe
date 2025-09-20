@@ -36,10 +36,23 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           <Stepper steps={steps} currentStep={step} />
         </div>
         { step === 1 && (
-          <CreateGuideAddressForm goNext={goNext} updateAddress={updateOriginAddress} addressData={formData.current.originAddress} />
+          <CreateGuideAddressForm
+            goNext={goNext}
+            updateAddress={updateOriginAddress}
+            addressData={formData.current.originAddress}
+            toggleModal={toggleModal}
+            goPrev={goPrev}
+          />
         )}
         { step === 2 && (
-          <CreateGuideAddressForm goNext={goNext} updateAddress={updateDestinationAddress} addressData={formData.current.destinationAddress} />
+          <CreateGuideAddressForm
+            goNext={goNext}
+            updateAddress={updateDestinationAddress}
+            addressData={formData.current.destinationAddress}
+            isDestination
+            toggleModal={toggleModal}
+            goPrev={goPrev}
+          />
         )}
       </ModalBody>
     </Modal>

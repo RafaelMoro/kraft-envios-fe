@@ -9,10 +9,15 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 interface OriginAddressFormProps {
   addressData: CreateGuideAddressFormValues
   goNext: () => void
+  goPrev: () => void
   updateAddress: (data: CreateGuideAddressFormValues) => void
+  toggleModal: () => void
+  isDestination?: boolean
 }
 
-export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress }: OriginAddressFormProps) => {
+export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
+  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
+  const cancelColorButton = isDestination ? "light" : "red"
   const {
     register,
     handleSubmit,
@@ -26,6 +31,15 @@ export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress }: O
     event?.stopPropagation()
     updateAddress(data)
     goNext()
+  }
+
+  const handleCancel = () => {
+    if (isDestination) {
+      goPrev()
+      return;
+    }
+
+    toggleModal()
   }
 
   return (
@@ -184,8 +198,8 @@ export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress }: O
         </div>
       </section>
       <div className="flex justify-between mt-4">
-        <Button outline color="red" data-testid="origin-address-cancel-button" className="hover:cursor-pointer">
-          Cancelar
+        <Button {...(!isDestination && { outline: true })} color={cancelColorButton} data-testid="origin-address-cancel-button" className="hover:cursor-pointer" onClick={handleCancel}>
+          {cancelButtonText}
         </Button>
         <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
           Siguiente
