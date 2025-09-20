@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
+import { Label, TextInput } from "flowbite-react"
 import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { useMutation } from "@tanstack/react-query"
 import { GeneralApiError } from "@/shared/types/global.types"
@@ -41,29 +41,29 @@ export const ProductSatDropdown = () => {
   }, [data])
 
   return (
-    <>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="content">Tipo de producto:</Label>
-        </div>
-        <TextInput
-          data-testid="product-autocomplete"
-          id="product-autocomplete"
-          type="text"
-          value={searchTerm}
-          onChange={handleChangeTerm}
-          placeholder="Ropa"
-        />
+    <div className="relative">
+      <div className="mb-2 block">
+        <Label htmlFor="content">Tipo de producto:</Label>
       </div>
-      <Dropdown
-        label="Hola"
-        // renderTrigger={() => (
-        // )}
-      >
-        <DropdownItem>
-          Todos
-        </DropdownItem>
-      </Dropdown>
-    </>
+      <TextInput
+        data-testid="product-autocomplete"
+        id="product-autocomplete"
+        type="text"
+        value={searchTerm}
+        onChange={handleChangeTerm}
+        placeholder="Ropa"
+      />
+      <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Mascota</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para mascota</li>
+        <li className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">Comida para gatos</li>
+      </ul>
+    </div>
   )
 }

@@ -16,7 +16,8 @@ interface CreateGuideProps {
 }
 
 export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
-  const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
+  // TODO: Change this to step 1 after finishing product sat dropdown
+  const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 3 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
   const formData = useRef<CreateGuideFormValues>(initialStateForm)
