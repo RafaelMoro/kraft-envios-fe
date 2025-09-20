@@ -46,6 +46,6 @@ export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormVa
 
 export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> = object({
   content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres'),
-  value: number().required('Valor es requerido').min(1, 'El valor debe ser un número positivo'),
-  quantity: number().required('Cantidad es requerida').min(1, 'La cantidad debe ser al menos 1'),
+  value: number().typeError('Valor es requerido').required('Valor es requerido').min(1, 'El valor debe ser al menos 1'),
+  quantity: number().typeError('Cantidad es requerida').required('Cantidad es requerida').min(1, 'La cantidad debe ser al menos 1'),
 })
