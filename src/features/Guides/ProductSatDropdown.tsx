@@ -9,18 +9,18 @@ import { GetProductSatIdPayload } from "@/shared/types/guides.types"
 export const ProductSatDropdown = () => {
   // Dropdown visibility state
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
-  // Search term state
-  const [searchTerm, setSearchTerm] = useState<string>("")
-  const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
-  }
-
   const handleInputFocus = () => {
     setShowDropdown(true)
   }
 
   const handleInputBlur = () => {
     setShowDropdown(false)
+  }
+
+  // Search term state
+  const [searchTerm, setSearchTerm] = useState<string>("")
+  const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
   }
 
   const {
