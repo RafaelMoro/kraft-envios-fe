@@ -83,7 +83,6 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           <ParcelInfoForm
             parcelInfo={formData.current.parcelInfo}
             searchProductSat={searchProductSat}
-            errorProductSat={errorProductSat}
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}

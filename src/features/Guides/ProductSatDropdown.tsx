@@ -7,6 +7,7 @@ import { HiChevronDown } from "react-icons/hi"
 import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface ProductSatDropdownProps {
   searchProductSat: string
@@ -33,10 +34,19 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
   }
 
   const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value
+    
+    // Validate that input only contains letters, digits, and spaces
+    const hasSpecialChars = /[^a-zA-Z0-9\s]/.test(inputValue)
+    
+    if (hasSpecialChars) {
+      updateErrorProductSat('No se permiten caracteres especiales')
+    }
+    
     // If the user writes or deletes the term, then set the flag to false
     if (hasSelectedOption) setHasSelectedOption(false)
     if (errorProductSat) updateErrorProductSat('')
-    setSearchProductSat(e.target.value)
+    setSearchProductSat(inputValue)
   }
 
   // Options state
@@ -53,7 +63,7 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
 
   // Debounce searchTerm and trigger getProducts after 2 seconds
   useEffect(() => {
-    if (!searchProductSat.trim() || hasSelectedOption) return
+    if (!searchProductSat.trim() || hasSelectedOption || errorProductSat) return
 
     const timeoutId = setTimeout(() => {
       const payload: GetProductSatIdPayload = { search: searchProductSat }
@@ -61,7 +71,7 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
     }, 1500)
 
     return () => clearTimeout(timeoutId)
-  }, [searchProductSat, hasSelectedOption, getProducts])
+  }, [searchProductSat, hasSelectedOption, errorProductSat, getProducts])
 
   // Update options based on the data received
   useEffect(() => {
@@ -79,8 +89,11 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
 
   return (
     <div className="relative">
-      <div className="mb-2 block">
+      <div className="mb-2 flex flex-col gap-2">
         <Label htmlFor="content">Tipo de producto:</Label>
+        { errorProductSat && (
+            <ErrorMessage>{errorProductSat}</ErrorMessage>
+          )}
       </div>
       <TextInput
         data-testid="product-autocomplete"

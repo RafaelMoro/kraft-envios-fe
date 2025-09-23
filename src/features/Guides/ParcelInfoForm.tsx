@@ -10,7 +10,6 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 interface ParcelInfoFormProps {
   parcelInfo: ParcelInfoFormValues
   searchProductSat: string
-  errorProductSat: string
   children: ReactNode
   goNext: () => void
   goPrev: () => void
@@ -18,7 +17,7 @@ interface ParcelInfoFormProps {
   updateErrorProductSat: (message: string) => void
 }
 
-export const ParcelInfoForm = ({ children, searchProductSat, errorProductSat, parcelInfo, goNext, goPrev, updateParcelInfo, updateErrorProductSat }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({ children, searchProductSat, parcelInfo, goNext, goPrev, updateParcelInfo, updateErrorProductSat }: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -45,9 +44,6 @@ export const ParcelInfoForm = ({ children, searchProductSat, errorProductSat, pa
     >
       <section className="flex flex-col gap-4">
         { children }
-        { errorProductSat && (
-          <ErrorMessage>{errorProductSat}</ErrorMessage>
-        )}
         <div>
           <div className="mb-2 block">
             <Label htmlFor="content">Contenido del paquete</Label>
