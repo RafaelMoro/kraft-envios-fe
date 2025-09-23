@@ -26,9 +26,10 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
     selectedProduct.current = option
   }
 
-  const formData = useRef<CreateGuideFormValues>(initialStateForm)
+  const formData = useRef<CreateGuideFormValues>({...initialStateForm})
   const resetFormData = () => {
-    formData.current = initialStateForm
+    formData.current = {...initialStateForm}
+    selectedProduct.current = null
   }
   const updateOriginAddress = (data: CreateGuideAddressFormValues) => {
     formData.current.originAddress = data
@@ -40,9 +41,9 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
     formData.current.parcelInfo = data
   }
   const closeModal = () => {
-    toggleModal()
-    resetSteps()
     resetFormData()
+    resetSteps()
+    toggleModal()
   }
 
   return (
