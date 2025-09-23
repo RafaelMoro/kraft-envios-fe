@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Label, TextInput } from "flowbite-react"
+import { Label, Spinner, TextInput } from "flowbite-react"
 import { useMutation } from "@tanstack/react-query"
 import { HiChevronDown } from "react-icons/hi"
 
@@ -94,13 +94,14 @@ export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: Pr
       />
       { showDropdown && (
         <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
-          { options.length === 0 && searchTerm.length === 0 && (
+          { (isPending && searchTerm.length > 0) && (<Spinner aria-label="loading suggestions sat product" />) }
+          { (options.length === 0 && searchTerm.length === 0 && !isPending)&& (
             <li className="p-2 rounded-lg">Escribe para buscar productos</li>
           )}
-          { (options.length === 0 && searchTerm.length > 0) && (
+          { (options.length === 0 && searchTerm.length > 0 && !isPending) && (
             <li className="p-2 rounded-lg">No se encontraron productos</li>
           )}
-          { options.length > 0 && options.map((opt) => (
+          { (options.length > 0 && !isPending) && options.map((opt) => (
             <li key={opt.code} onClick={() => handleSelectOption(opt)} className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">{opt.description}</li>
           ))}
         </ul>
