@@ -9,13 +9,16 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface ParcelInfoFormProps {
   parcelInfo: ParcelInfoFormValues
+  searchProductSat: string
+  errorProductSat: string
   children: ReactNode
   goNext: () => void
   goPrev: () => void
   updateParcelInfo: (data: ParcelInfoFormValues) => void
+  updateErrorProductSat: (message: string) => void
 }
 
-export const ParcelInfoForm = ({ children, parcelInfo, goNext, goPrev, updateParcelInfo }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({ children, searchProductSat, errorProductSat, parcelInfo, goNext, goPrev, updateParcelInfo, updateErrorProductSat }: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -27,6 +30,11 @@ export const ParcelInfoForm = ({ children, parcelInfo, goNext, goPrev, updatePar
   const onSubmit: SubmitHandler<ParcelInfoFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+    if (!searchProductSat) {
+      // show error
+      updateErrorProductSat('Debes de buscar un producto para categorizarlo')
+      return;
+    }
     updateParcelInfo(data)
     goNext()
   }
@@ -37,6 +45,9 @@ export const ParcelInfoForm = ({ children, parcelInfo, goNext, goPrev, updatePar
     >
       <section className="flex flex-col gap-4">
         { children }
+        { errorProductSat && (
+          <ErrorMessage>{errorProductSat}</ErrorMessage>
+        )}
         <div>
           <div className="mb-2 block">
             <Label htmlFor="content">Contenido del paquete</Label>

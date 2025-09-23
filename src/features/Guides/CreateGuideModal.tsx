@@ -1,10 +1,10 @@
 "use client"
 import { Modal, ModalBody, ModalHeader } from "flowbite-react"
+import { useRef, useState } from "react";
 
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
-import { useRef } from "react";
 import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValues, SearchProduct } from "@/shared/types/guides.types";
 import { initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
@@ -21,11 +21,17 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 3 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
+  // Reference to save the selected product
   const selectedProduct = useRef<SearchProduct | null>(null)
   const updateSelectedProduct = (option: SearchProduct) => {
     selectedProduct.current = option
   }
 
+  // Search term state for product sat
+  const [searchProductSat, setSearchProductSat] = useState<string>(selectedProduct.current?.description ?? '')
+  const [errorProductSat, setErrorProductSat] = useState<string>('')
+
+  // Form data to collect all steps data
   const formData = useRef<CreateGuideFormValues>({...initialStateForm})
   const resetFormData = () => {
     formData.current = {...initialStateForm}
@@ -40,6 +46,7 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
   const updateParcelInfo = (data: ParcelInfoFormValues) => {
     formData.current.parcelInfo = data
   }
+
   const closeModal = () => {
     resetFormData()
     resetSteps()
@@ -75,11 +82,20 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
         { step === 3 && (
           <ParcelInfoForm
             parcelInfo={formData.current.parcelInfo}
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
+            updateErrorProductSat={setErrorProductSat}
           >
-            <ProductSatDropdown selectedProduct={selectedProduct.current} updateSelectedOption={updateSelectedProduct} />
+            <ProductSatDropdown
+              searchProductSat={searchProductSat}
+              errorProductSat={errorProductSat}
+              setSearchProductSat={setSearchProductSat}
+              updateSelectedOption={updateSelectedProduct}
+              updateErrorProductSat={setErrorProductSat}
+            />
           </ParcelInfoForm>
         )}
         { step === 4 && (

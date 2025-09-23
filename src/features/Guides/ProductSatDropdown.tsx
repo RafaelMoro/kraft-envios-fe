@@ -9,11 +9,14 @@ import { GeneralApiError } from "@/shared/types/global.types"
 import { GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
 
 interface ProductSatDropdownProps {
-  selectedProduct: SearchProduct | null
+  searchProductSat: string
+  errorProductSat: string
+  setSearchProductSat: (term: string) => void
   updateSelectedOption: (option: SearchProduct) => void
+  updateErrorProductSat: (message: string) => void
 }
 
-export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: ProductSatDropdownProps) => {
+export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearchProductSat, updateSelectedOption, updateErrorProductSat }: ProductSatDropdownProps) => {
   // Flag to check if an option has been selected and prevent fetching term
   const [hasSelectedOption, setHasSelectedOption] = useState<boolean>(false)
 
@@ -29,12 +32,11 @@ export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: Pr
     }, 150)
   }
 
-  // Search term state
-  const [searchTerm, setSearchTerm] = useState<string>(selectedProduct?.description ?? '')
   const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
     // If the user writes or deletes the term, then set the flag to false
     if (hasSelectedOption) setHasSelectedOption(false)
-    setSearchTerm(e.target.value)
+    if (errorProductSat) updateErrorProductSat('')
+    setSearchProductSat(e.target.value)
   }
 
   // Options state
@@ -51,15 +53,15 @@ export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: Pr
 
   // Debounce searchTerm and trigger getProducts after 2 seconds
   useEffect(() => {
-    if (!searchTerm.trim() || hasSelectedOption) return
+    if (!searchProductSat.trim() || hasSelectedOption) return
 
     const timeoutId = setTimeout(() => {
-      const payload: GetProductSatIdPayload = { search: searchTerm }
+      const payload: GetProductSatIdPayload = { search: searchProductSat }
       getProducts(payload)
     }, 1500)
 
     return () => clearTimeout(timeoutId)
-  }, [searchTerm, hasSelectedOption, getProducts])
+  }, [searchProductSat, hasSelectedOption, getProducts])
 
   // Update options based on the data received
   useEffect(() => {
@@ -71,7 +73,7 @@ export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: Pr
 
   const handleSelectOption = (option: SearchProduct) => {
     updateSelectedOption(option)
-    setSearchTerm(option.description)
+    setSearchProductSat(option.description)
     setHasSelectedOption(true)
   }
 
@@ -84,7 +86,7 @@ export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: Pr
         data-testid="product-autocomplete"
         id="product-autocomplete"
         type="text"
-        value={searchTerm}
+        value={searchProductSat}
         onChange={handleChangeTerm}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
@@ -94,11 +96,11 @@ export const ProductSatDropdown = ({ selectedProduct, updateSelectedOption }: Pr
       />
       { showDropdown && (
         <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
-          { (isPending && searchTerm.length > 0) && (<Spinner aria-label="loading suggestions sat product" />) }
-          { (options.length === 0 && searchTerm.length === 0 && !isPending)&& (
+          { (isPending && searchProductSat.length > 0) && (<Spinner aria-label="loading suggestions sat product" />) }
+          { (options.length === 0 && searchProductSat.length === 0 && !isPending)&& (
             <li className="p-2 rounded-lg">Escribe para buscar productos</li>
           )}
-          { (options.length === 0 && searchTerm.length > 0 && !isPending) && (
+          { (options.length === 0 && searchProductSat.length > 0 && !isPending) && (
             <li className="p-2 rounded-lg">No se encontraron productos</li>
           )}
           { (options.length > 0 && !isPending) && options.map((opt) => (
