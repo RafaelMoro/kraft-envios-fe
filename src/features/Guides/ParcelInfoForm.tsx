@@ -8,16 +8,17 @@ import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema } from "@/shared/t
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface ParcelInfoFormProps {
+  children: ReactNode
+  isMobileTablet: boolean
   parcelInfo: ParcelInfoFormValues
   searchProductSat: string
-  children: ReactNode
   goNext: () => void
   goPrev: () => void
   updateParcelInfo: (data: ParcelInfoFormValues) => void
   updateErrorProductSat: (message: string) => void
 }
 
-export const ParcelInfoForm = ({ children, searchProductSat, parcelInfo, goNext, goPrev, updateParcelInfo, updateErrorProductSat }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({ children, searchProductSat, parcelInfo, isMobileTablet, goNext, goPrev, updateParcelInfo, updateErrorProductSat }: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -42,6 +43,7 @@ export const ParcelInfoForm = ({ children, searchProductSat, parcelInfo, goNext,
     <form
       onSubmit={handleSubmit(onSubmit)}
     >
+      { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">Información del paquete</h5>)}
       <section className="flex flex-col gap-4">
         { children }
         <div>

@@ -7,7 +7,9 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 // react form event handled by react-hook-form SubmitHandler
 
 interface OriginAddressFormProps {
+  title: string
   addressData: CreateGuideAddressFormValues
+  isMobileTablet: boolean
   goNext: () => void
   goPrev: () => void
   updateAddress: (data: CreateGuideAddressFormValues) => void
@@ -15,7 +17,7 @@ interface OriginAddressFormProps {
   isDestination?: boolean
 }
 
-export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
+export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
   const cancelColorButton = isDestination ? "light" : "red"
   const {
@@ -44,6 +46,7 @@ export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress, goP
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">{title}</h5>)}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <div className="mb-2 block">

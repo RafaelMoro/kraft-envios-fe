@@ -15,6 +15,7 @@ import { QuoteUI } from "@/shared/types/quotes.types";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideMnCb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "./ResultGuideScreen";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 
 interface CreateGuideProps {
   open: boolean;
@@ -23,6 +24,7 @@ interface CreateGuideProps {
 }
 
 export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGuideProps) => {
+  const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
@@ -73,23 +75,29 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
     <Modal show={open} onClose={closeModal}>
       <ModalHeader>Crear guía</ModalHeader>
       <ModalBody>
-        <div className="py-6">
-          <Stepper steps={steps} currentStep={step} />
-        </div>
+        { !isMobileTablet && (
+          <div className="py-6">
+            <Stepper steps={steps} currentStep={step} />
+          </div>
+        )}
         { step === 1 && (
           <CreateGuideAddressForm
+            title="Domicilio origen"
             goNext={goNext}
             updateAddress={updateOriginAddress}
             addressData={formData.current.originAddress}
+            isMobileTablet={isMobileTablet}
             toggleModal={closeModal}
             goPrev={goPrev}
           />
         )}
         { step === 2 && (
           <CreateGuideAddressForm
+            title="Domicilio destino"
             goNext={goNext}
             updateAddress={updateDestinationAddress}
             addressData={formData.current.destinationAddress}
+            isMobileTablet={isMobileTablet}
             isDestination
             toggleModal={toggleModal}
             goPrev={goPrev}
@@ -99,6 +107,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
           <ParcelInfoForm
             parcelInfo={formData.current.parcelInfo}
             searchProductSat={searchProductSat}
+            isMobileTablet={isMobileTablet}
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
