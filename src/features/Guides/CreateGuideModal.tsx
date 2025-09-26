@@ -14,6 +14,7 @@ import { ProductSatDropdown } from "./ProductSatDropdown";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideMnCb } from "@/shared/utils/guides.utils";
+import { ResultGuideScreen } from "./ResultGuideScreen";
 
 interface CreateGuideProps {
   open: boolean;
@@ -58,12 +59,15 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
     toggleModal()
   }
 
-  const { mutate: createGuide, data, isError, isPending } = useMutation<MnGuide, GeneralApiError, CreateGuideMnPayload>({
+  const { mutate: createGuide, data, isError, isPending, isSuccess } = useMutation<MnGuide, GeneralApiError, CreateGuideMnPayload>({
     mutationFn: createGuideMnCb,
+    onSuccess: () => {
+      goNext()
+    },
+    onError: () => {
+      goNext()
+    }
   })
-  console.log('guide', data)
-  console.log('isError', isError)
-  console.log('isPending', isPending)
 
   return (
     <Modal show={open} onClose={closeModal}>
@@ -119,6 +123,9 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
             createGuide={createGuide}
           />
         )}
+        { (isError || isSuccess) && step === 5 && (
+          <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} />
+        ) }
       </ModalBody>
     </Modal>
   )

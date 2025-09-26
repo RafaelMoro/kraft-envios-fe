@@ -20,6 +20,10 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    if (res?.data?.data?.guide === null || res?.data?.messages.some((mess) => mess.toLowerCase().includes('request failed with status code 400'))) {
+      return NextResponse.json({ message: 'Error creating guide' }, { status: 400 })
+    }
+
     return NextResponse.json(res.data, { status: 201 })
 
   } catch (error) {
