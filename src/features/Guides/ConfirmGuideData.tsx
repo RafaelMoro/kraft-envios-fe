@@ -1,10 +1,11 @@
+import { useMutation } from "@tanstack/react-query";
+import { Button } from "flowbite-react"
+
 import { GeneralApiError } from "@/shared/types/global.types";
-import { CreateGuideFormValues, CreateGuideMnPayload, SearchProduct } from "@/shared/types/guides.types"
+import { CreateGuideFormValues, CreateGuideMnPayload, CreateMnGuideResponse, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { createGuideMnCb } from "@/shared/utils/guides.utils";
-import { useMutation } from "@tanstack/react-query";
-import { Button } from "flowbite-react"
 
 interface ConfirmGuideDataProps {
   formData: CreateGuideFormValues;
@@ -16,12 +17,10 @@ interface ConfirmGuideDataProps {
 export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, goPrev }: ConfirmGuideDataProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
-  // TODO: Change any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { mutate: createGuide, data } = useMutation<any, GeneralApiError, CreateGuideMnPayload>({
+  const { mutate: createGuide, data } = useMutation<CreateMnGuideResponse, GeneralApiError, CreateGuideMnPayload>({
     mutationFn: createGuideMnCb,
   })
-  console.log('data from confirm data guide', data)
+  console.log('guide', (data)?.data?.guide)
 
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
