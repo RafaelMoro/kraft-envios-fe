@@ -11,14 +11,9 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
 
   if (isMobileTablet) {
     return (
-      <article className="w-full flex gap-2 items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-indigo-600 dark:border-indigo-500 flex items-center justify-center">
-          <span className="text-indigo-600 dark:text-indigo-400">{currentStep}</span>
-        </div>
-        <h3 className="text-sm text-indigo-600 dark:text-indigo-400">
+      <h3 className="text-xl font-semibold text-center">
           { stepsArray[currentStep - 1] }
-        </h3>
-      </article>
+      </h3>
     )
   }
 
