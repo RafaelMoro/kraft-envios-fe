@@ -57,6 +57,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     const filtered = selectedQuotes.filter((q) => q.id !== quoteId)
     setSelectedQuotes(filtered)
   }
+  const resetSelectedQuotes = () => setSelectedQuotes([])
 
   const handleSendInfo = () => {
     if (selectedQuotes.length === 0) {
@@ -161,7 +162,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-center text-xl mb-5">Ingrese los siguientes datos para obtener una cotización</p>
       <IntersectionObserverWrapper setIntersecting={setIsIntersectingForm}>
-        <QuoteForm updateQuotes={updateAllQuotes} />
+        <QuoteForm updateQuotes={updateAllQuotes} resetSelectedQuotes={resetSelectedQuotes} />
       </IntersectionObserverWrapper>
       { allQuotes.length > 0 && (
         <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
