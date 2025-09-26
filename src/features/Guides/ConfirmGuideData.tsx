@@ -1,4 +1,4 @@
-import { CreateGuideFormValues, SearchProduct } from "@/shared/types/guides.types"
+import { CreateGuideFormValues, CreateGuideMnPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { Button } from "flowbite-react"
@@ -12,8 +12,26 @@ interface ConfirmGuideDataProps {
 
 export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, goPrev }: ConfirmGuideDataProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
-  console.log('selectedQuotes', selectedQuotes)
-  console.log('selected product', selectedProduct)
+
+  const handleSubmit = () => {
+    const quoteId = selectedQuotes?.[0]?.id
+    const satProductId = selectedProduct?.code ?? ''
+    const payload: CreateGuideMnPayload = {
+      quoteId,
+      origin: {
+        ...originAddress,
+        country: 'MX'
+      },
+      destination: {
+        ...destinationAddress,
+        country: 'MX'
+      },
+      parcel: {
+        ...parcelInfo,
+        satProductId,
+      }
+    }
+  }
 
   return (
     <section className="flex flex-col gap-10">

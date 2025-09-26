@@ -30,6 +30,13 @@ export type ParcelInfoFormValues = {
   quantity: number;
 }
 
+export type CreateGuideMnPayload = {
+  quoteId: string
+  origin: CreateGuideAddressFormValues & { country: string };
+  destination: CreateGuideAddressFormValues & { country: string };
+  parcel: ParcelInfoFormValues & { satProductId: string };
+}
+
 //#region Responses
 
 /**
