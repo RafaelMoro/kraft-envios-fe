@@ -10,15 +10,16 @@ import { initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
 import { ConfirmGuideData } from "./ConfirmGuideData";
 import { ProductSatDropdown } from "./ProductSatDropdown";
+import { QuoteUI } from "@/shared/types/quotes.types";
 
 interface CreateGuideProps {
   open: boolean;
+  selectedQuotes: QuoteUI[]
   toggleModal: () => void;
 }
 
-export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
-  // TODO: Change this to step 1 after finishing product sat dropdown
-  const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 3 })
+export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGuideProps) => {
+  const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
   // Reference to save the selected product
@@ -98,7 +99,12 @@ export const CreateGuideModal = ({ open, toggleModal }: CreateGuideProps) => {
           </ParcelInfoForm>
         )}
         { step === 4 && (
-          <ConfirmGuideData formData={formData.current} goPrev={goPrev} selectedProduct={selectedProduct.current} />
+          <ConfirmGuideData
+            formData={formData.current}
+            goPrev={goPrev}
+            selectedProduct={selectedProduct.current}
+            selectedQuotes={selectedQuotes}
+          />
         )}
       </ModalBody>
     </Modal>

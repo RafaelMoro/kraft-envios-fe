@@ -1,15 +1,18 @@
 import { CreateGuideFormValues, SearchProduct } from "@/shared/types/guides.types"
+import { QuoteUI } from "@/shared/types/quotes.types";
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { Button } from "flowbite-react"
 
 interface ConfirmGuideDataProps {
-  formData: CreateGuideFormValues
-  selectedProduct: SearchProduct | null
+  formData: CreateGuideFormValues;
+  selectedProduct: SearchProduct | null;
+  selectedQuotes: QuoteUI[];
   goPrev: () => void
 }
 
-export const ConfirmGuideData = ({ formData, selectedProduct, goPrev }: ConfirmGuideDataProps) => {
+export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, goPrev }: ConfirmGuideDataProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
+  console.log('selectedQuotes', selectedQuotes)
   console.log('selected product', selectedProduct)
 
   return (

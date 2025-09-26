@@ -92,10 +92,20 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }, [successCopyActionBar])
 
   const handleClickCreateGuide = () => {
+    if (selectedQuotes.length === 0) {
+      setErrorActionBar('Debes seleccionar una cotización para crear una guía.')
+      return;
+    }
     if (selectedQuotes.length > 1) {
       setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
       return;
     }
+    // TODO: Remove this validation when all couriers support guide creation
+    if (selectedQuotes.some((q) => q.source !== 'Mn')) {
+      setErrorActionBar('La creación de guías solo es compatible con el tipo "Mn".')
+      return;
+    }
+
     toggleCreateGuide()
   }
 
@@ -210,7 +220,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
-      <CreateGuideModal open={openCreateGuide} toggleModal={toggleCreateGuide} />
+      <CreateGuideModal open={openCreateGuide} toggleModal={toggleCreateGuide} selectedQuotes={selectedQuotes} />
     </main>
   )
 }
