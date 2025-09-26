@@ -13,9 +13,10 @@ import { useEffect } from "react"
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
   resetSelectedQuotes: () => void
+  resetFiltersQuotes: () => void;
 }
 
-export const QuoteForm = ({ updateQuotes, resetSelectedQuotes }: QuoteFormProps) => {
+export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuotes }: QuoteFormProps) => {
   const {
     register,
     handleSubmit,
@@ -37,6 +38,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes }: QuoteFormProps)
   const clearQuotes = () => {
     reset()
     resetSelectedQuotes()
+    resetFiltersQuotes()
     updateQuotes([])
   }
 
