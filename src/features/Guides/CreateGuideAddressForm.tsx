@@ -44,7 +44,7 @@ export const CreateGuideAddressForm = ({ addressData, goNext, updateAddress, goP
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <section className="grid grid-cols-2 gap-4">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <div className="mb-2 block">
             <Label htmlFor="name">Nombre de la persona</Label>
