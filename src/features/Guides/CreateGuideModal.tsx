@@ -51,6 +51,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
   const closeModal = () => {
     resetFormData()
     resetSteps()
+    setSearchProductSat('')
     toggleModal()
   }
 
