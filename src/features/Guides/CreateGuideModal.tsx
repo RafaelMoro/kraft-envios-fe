@@ -124,7 +124,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
           />
         )}
         { (isError || isSuccess) && step === 5 && (
-          <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} />
+          <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
         ) }
       </ModalBody>
     </Modal>
