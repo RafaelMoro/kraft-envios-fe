@@ -6,8 +6,9 @@ import { HiChevronDown } from "react-icons/hi"
 
 import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
+import { FetchSatProductsResponse, GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { AxiosResponse } from "axios"
 
 interface ProductSatDropdownProps {
   searchProductSat: string
@@ -56,9 +57,7 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
     mutate: getProducts,
     isPending,
     data
-    // TODO: Change any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } = useMutation<any, GeneralApiError, GetProductSatIdPayload>({
+  } = useMutation<AxiosResponse<FetchSatProductsResponse>, GeneralApiError, GetProductSatIdPayload>({
     mutationFn: getProductSatInfo,
   })
 
@@ -77,7 +76,6 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
   // Update options based on the data received
   useEffect(() => {
     if (data) {
-      console.log('data', data)
       const products = data?.data?.products || []
       setOptions(products)
     }
