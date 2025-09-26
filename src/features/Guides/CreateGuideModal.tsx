@@ -1,16 +1,19 @@
 "use client"
-import { Modal, ModalBody, ModalHeader } from "flowbite-react"
 import { useRef, useState } from "react";
+import { Modal, ModalBody, ModalHeader } from "flowbite-react"
+import { useMutation } from "@tanstack/react-query";
 
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
-import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValues, SearchProduct } from "@/shared/types/guides.types";
+import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValues, SearchProduct, CreateGuideMnPayload, MnGuide } from "@/shared/types/guides.types";
 import { initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
 import { ConfirmGuideData } from "./ConfirmGuideData";
 import { ProductSatDropdown } from "./ProductSatDropdown";
 import { QuoteUI } from "@/shared/types/quotes.types";
+import { GeneralApiError } from "@/shared/types/global.types";
+import { createGuideMnCb } from "@/shared/utils/guides.utils";
 
 interface CreateGuideProps {
   open: boolean;
@@ -54,6 +57,13 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
     setSearchProductSat('')
     toggleModal()
   }
+
+  const { mutate: createGuide, data, isError, isPending } = useMutation<MnGuide, GeneralApiError, CreateGuideMnPayload>({
+    mutationFn: createGuideMnCb,
+  })
+  console.log('guide', data)
+  console.log('isError', isError)
+  console.log('isPending', isPending)
 
   return (
     <Modal show={open} onClose={closeModal}>
@@ -105,6 +115,8 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
             goPrev={goPrev}
             selectedProduct={selectedProduct.current}
             selectedQuotes={selectedQuotes}
+            isPending={isPending}
+            createGuide={createGuide}
           />
         )}
       </ModalBody>

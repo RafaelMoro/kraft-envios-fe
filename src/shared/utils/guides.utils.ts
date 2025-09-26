@@ -9,7 +9,7 @@ export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
 
 export const createGuideMnCb = async (data: CreateGuideMnPayload) => {
   const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_MN_ENDPOINT, data)
-  return res?.data
+  return res?.data?.data?.guide
 }
 
 /**

@@ -1,26 +1,20 @@
-import { useMutation } from "@tanstack/react-query";
-import { Button } from "flowbite-react"
+import { Button, Spinner } from "flowbite-react"
 
-import { GeneralApiError } from "@/shared/types/global.types";
-import { CreateGuideFormValues, CreateGuideMnPayload, CreateMnGuideResponse, SearchProduct } from "@/shared/types/guides.types"
+import { CreateGuideFormValues, CreateGuideMnPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
-import { createGuideMnCb } from "@/shared/utils/guides.utils";
 
 interface ConfirmGuideDataProps {
   formData: CreateGuideFormValues;
   selectedProduct: SearchProduct | null;
   selectedQuotes: QuoteUI[];
+  isPending: boolean;
   goPrev: () => void
+  createGuide: (payload: CreateGuideMnPayload) => void;
 }
 
-export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, goPrev }: ConfirmGuideDataProps) => {
+export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, isPending, goPrev, createGuide }: ConfirmGuideDataProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
-
-  const { mutate: createGuide, data } = useMutation<CreateMnGuideResponse, GeneralApiError, CreateGuideMnPayload>({
-    mutationFn: createGuideMnCb,
-  })
-  console.log('guide', (data)?.data?.guide)
 
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
@@ -89,7 +83,7 @@ export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, go
           Regresar
         </Button>
         <Button onClick={handleSubmit} data-testid="confirm-guide-send-button" className="hover:cursor-pointer">
-          Crear guia
+          { isPending ? (<Spinner aria-label="loading create guide Kraft" />) : "Crear guia" }
         </Button>
       </footer>
     </section>
