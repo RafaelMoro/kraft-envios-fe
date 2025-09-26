@@ -56,6 +56,7 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
     mutate: getProducts,
     isPending,
     data
+    // TODO: Change any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useMutation<any, GeneralApiError, GetProductSatIdPayload>({
     mutationFn: getProductSatInfo,
@@ -76,6 +77,7 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
   // Update options based on the data received
   useEffect(() => {
     if (data) {
+      console.log('data', data)
       const products = data?.data?.products || []
       setOptions(products)
     }

@@ -78,6 +78,30 @@ export interface FetchSatProductsResponse {
   products: SearchProduct[]
 }
 
+export interface MnGuide {
+  token: string;
+  tracking_number: string;
+  carrier: string;
+  tracking_status: null;
+  price: string;
+  waybill: null;
+  label_url: string;
+  cancellable: boolean;
+  created_at: string;
+  label_status: string
+}
+
+export interface CreateMnGuideResponse {
+  data: {
+    guide: MnGuide
+  }
+  error: null;
+  message: null;
+  messages: string[]
+  success: boolean;
+  version: string;
+}
+
 //#region Schemas
 
 export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValues> = object({

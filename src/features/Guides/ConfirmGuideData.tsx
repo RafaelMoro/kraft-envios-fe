@@ -1,6 +1,9 @@
+import { GeneralApiError } from "@/shared/types/global.types";
 import { CreateGuideFormValues, CreateGuideMnPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
+import { createGuideMnCb } from "@/shared/utils/guides.utils";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "flowbite-react"
 
 interface ConfirmGuideDataProps {
@@ -12,6 +15,13 @@ interface ConfirmGuideDataProps {
 
 export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, goPrev }: ConfirmGuideDataProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
+
+  // TODO: Change any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { mutate: createGuide, data } = useMutation<any, GeneralApiError, CreateGuideMnPayload>({
+    mutationFn: createGuideMnCb,
+  })
+  console.log('data from confirm data guide', data)
 
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
@@ -31,6 +41,7 @@ export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, go
         satProductId,
       }
     }
+    createGuide(payload)
   }
 
   return (
@@ -78,7 +89,7 @@ export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, go
         <Button color="light" data-testid="confirm-guide-cancel-button" className="hover:cursor-pointer" onClick={goPrev}>
           Regresar
         </Button>
-        <Button data-testid="confirm-guide-send-button" className="hover:cursor-pointer">
+        <Button onClick={handleSubmit} data-testid="confirm-guide-send-button" className="hover:cursor-pointer">
           Crear guia
         </Button>
       </footer>

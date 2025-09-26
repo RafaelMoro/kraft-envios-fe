@@ -25,3 +25,4 @@ export const initialStateForm: CreateGuideFormValues = {
 }
 
 export const GET_SAT_PRODUCT_ENDPOINT = '/api/product-sat'
+export const CREATE_GUIDE_MN_ENDPOINT = '/api/guides/mn'
