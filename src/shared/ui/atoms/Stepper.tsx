@@ -1,5 +1,3 @@
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
-
 interface StepperProps {
   steps: Set<string>
   currentStep: number
@@ -7,15 +5,6 @@ interface StepperProps {
 
 export const Stepper = ({ steps, currentStep }: StepperProps) => {
   const stepsArray = Array.from(steps)
-  const { isMobileTablet } = useMediaQuery()
-
-  if (isMobileTablet) {
-    return (
-      <h3 className="text-xl font-semibold text-center">
-          { stepsArray[currentStep - 1] }
-      </h3>
-    )
-  }
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 md:px-0">
