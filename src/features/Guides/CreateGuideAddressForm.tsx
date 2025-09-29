@@ -4,7 +4,6 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 import { CreateGuideAddressFormSchema, CreateGuideAddressFormValues } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-// react form event handled by react-hook-form SubmitHandler
 
 interface OriginAddressFormProps {
   title: string
@@ -126,11 +125,11 @@ export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goN
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="company">Nombre de la compañia</Label>
+            <Label htmlFor="company">Nombre de la compañia (Opcional)</Label>
           </div>
           <TextInput
             data-testid="company"
-            defaultValue={addressData.company}
+            defaultValue={addressData.company ?? ''}
             id="company"
             type="text"
             {...register("company")}
@@ -172,12 +171,12 @@ export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goN
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="email">Correo electrónico</Label>
+            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
           </div>
           <TextInput
             id="email"
             type="email"
-            defaultValue={addressData.email}
+            defaultValue={addressData.email ?? ''}
             {...register("email")}
           />
           { errors?.email?.message && (
@@ -186,11 +185,11 @@ export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goN
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="reference">Referencia del domicilio</Label>
+            <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
           </div>
           <TextInput
             data-testid="reference"
-            defaultValue={addressData.reference}
+            defaultValue={addressData.reference ?? ''}
             id="reference"
             type="text"
             {...register("reference")}
