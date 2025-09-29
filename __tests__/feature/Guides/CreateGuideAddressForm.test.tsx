@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { CreateGuideAddressForm } from '@/features/Guides/CreateGuideAddressForm'
 import { initialStateAddressForm } from '@/shared/constants/guides.constants'
 
@@ -100,6 +101,41 @@ describe('CreateGuideAddressForm', () => {
       expect(cancelButton).toBeInTheDocument()
       expect(cancelButton).toHaveTextContent('Regresar')
       expect(cancelButton).toHaveClass('border-gray-300')
+    })
+  })
+
+  describe('Form validation for required fields', () => {
+    it('should display validation errors when submitting form with empty required fields', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user submits form with empty required fields
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then validation errors should be displayed for required fields
+      expect(await screen.findByText('Nombre es requerido')).toBeInTheDocument()
+      expect(await screen.findByText('Calle es requerida')).toBeInTheDocument()
+      expect(await screen.findByText('Colonia es requerida')).toBeInTheDocument()
+      expect(await screen.findByText('Número exterior es requerido')).toBeInTheDocument()
+      expect(await screen.findByText('Ciudad es requerida')).toBeInTheDocument()
+      expect(await screen.findByText('Estado es requerido')).toBeInTheDocument()
+      expect(await screen.findByText('El teléfono es requerido')).toBeInTheDocument()
+    })
+
+    it('should not call updateAddress and goNext when form has validation errors', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user submits form with empty required fields
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then updateAddress and goNext should not be called
+      expect(mockUpdateAddress).not.toHaveBeenCalled()
+      expect(mockGoNext).not.toHaveBeenCalled()
     })
   })
 })
