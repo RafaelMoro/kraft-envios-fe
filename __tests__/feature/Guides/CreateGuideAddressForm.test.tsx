@@ -204,25 +204,29 @@ describe('CreateGuideAddressForm', () => {
       expect(await screen.findByText('El teléfono debe tener 10 dígitos')).toBeInTheDocument()
     })
 
-    it.only('should display validation error for invalid email format', async () => {
+    it('should display validation error for invalid email format', async () => {
       // Given the CreateGuideAddressForm is rendered
       const user = userEvent.setup()
       renderComponent()
 
-      // When user enters invalid email format
-      const emailInput = screen.getByLabelText(/correo electrónico/i)
-      await user.type(emailInput, 'invalid-email-format')
+      // When user fills all required fields first
+      await user.type(screen.getByTestId('name'), 'John Doe')
+      await user.type(screen.getByTestId('street1'), 'Main Street 123')
+      await user.type(screen.getByTestId('neighborhood'), 'Downtown')
+      await user.type(screen.getByTestId('external_number'), '123')
+      await user.type(screen.getByTestId('city'), 'Mexico City')
+      await user.type(screen.getByTestId('state'), 'CDMX')
+      await user.type(screen.getByTestId('phone'), '5555551234')
       
-      expect(emailInput).toHaveValue('invalid-email-format')
+      // And user enters invalid email format
+      const emailInput = screen.getByLabelText(/correo electrónico/i)
+      await user.type(emailInput, 'invalid-email-format@a')
+      
       const submitButton = screen.getByTestId('origin-address-next-button')
       await user.click(submitButton)
 
-      await waitFor(() => {
-        screen.debug(undefined, 1000000000)
-      })
-
       // Then appropriate format validation error should be displayed
-      // expect(await screen.findByText('Correo electrónico inválido')).toBeInTheDocument()
+      expect(await screen.findByText('Correo electrónico inválido')).toBeInTheDocument()
     })
 
     it('should display validation error for company with less than 2 characters', async () => {
