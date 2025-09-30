@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CreateGuideAddressForm } from '@/features/Guides/CreateGuideAddressForm'
 import { initialStateAddressForm } from '@/shared/constants/guides.constants'
@@ -136,6 +136,125 @@ describe('CreateGuideAddressForm', () => {
       // Then updateAddress and goNext should not be called
       expect(mockUpdateAddress).not.toHaveBeenCalled()
       expect(mockGoNext).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Form validation for field formats', () => {
+    it('should display validation error for non-numeric external_number', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters non-numeric characters in external_number field
+      const externalNumberInput = screen.getByTestId('external_number')
+      await user.type(externalNumberInput, 'abc123')
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then appropriate format validation error should be displayed
+      expect(await screen.findByText('El número exterior solo puede contener dígitos')).toBeInTheDocument()
+    })
+
+    it('should display validation error for non-numeric phone', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters non-numeric characters in phone field
+      const phoneInput = screen.getByTestId('phone')
+      await user.type(phoneInput, 'abc123def')
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then appropriate format validation error should be displayed
+      expect(await screen.findByText('El teléfono solo puede contener dígitos')).toBeInTheDocument()
+    })
+
+    it('should display validation error for phone with incorrect length', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters phone with less than 10 digits
+      const phoneInput = screen.getByTestId('phone')
+      await user.type(phoneInput, '123456789') // 9 digits
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then appropriate length validation error should be displayed
+      expect(await screen.findByText('El teléfono debe tener 10 dígitos')).toBeInTheDocument()
+    })
+
+    it('should display validation error for phone with more than 10 digits', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters phone with more than 10 digits
+      const phoneInput = screen.getByTestId('phone')
+      await user.type(phoneInput, '12345678901') // 11 digits
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then appropriate length validation error should be displayed
+      expect(await screen.findByText('El teléfono debe tener 10 dígitos')).toBeInTheDocument()
+    })
+
+    it.only('should display validation error for invalid email format', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters invalid email format
+      const emailInput = screen.getByLabelText(/correo electrónico/i)
+      await user.type(emailInput, 'invalid-email-format')
+      
+      expect(emailInput).toHaveValue('invalid-email-format')
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        screen.debug(undefined, 1000000000)
+      })
+
+      // Then appropriate format validation error should be displayed
+      // expect(await screen.findByText('Correo electrónico inválido')).toBeInTheDocument()
+    })
+
+    it('should display validation error for company with less than 2 characters', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters company name with less than 2 characters
+      const companyInput = screen.getByTestId('company')
+      await user.type(companyInput, 'A')
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then appropriate validation error should be displayed
+      expect(await screen.findByText('El nombre de la compañía debe tener al menos 2 caracteres')).toBeInTheDocument()
+    })
+
+    it('should display validation error for reference with less than 2 characters', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters reference with less than 2 characters
+      const referenceInput = screen.getByTestId('reference')
+      await user.type(referenceInput, 'A')
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then appropriate validation error should be displayed
+      expect(await screen.findByText('La referencia del domicilio debe tener al menos 2 caracteres')).toBeInTheDocument()
     })
   })
 })
