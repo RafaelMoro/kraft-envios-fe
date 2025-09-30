@@ -261,4 +261,79 @@ describe('CreateGuideAddressForm', () => {
       expect(await screen.findByText('La referencia del domicilio debe tener al menos 2 caracteres')).toBeInTheDocument()
     })
   })
+
+  describe('Form submission', () => {
+    it('should call updateAddress and goNext when form is submitted with valid data', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user fills all required fields with valid data
+      await user.type(screen.getByTestId('name'), 'John Doe')
+      await user.type(screen.getByTestId('street1'), 'Main Street 123')
+      await user.type(screen.getByTestId('neighborhood'), 'Downtown')
+      await user.type(screen.getByTestId('external_number'), '123')
+      await user.type(screen.getByTestId('city'), 'Mexico City')
+      await user.type(screen.getByTestId('state'), 'CDMX')
+      await user.type(screen.getByTestId('phone'), '5555551234')
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then updateAddress should be called with the form data
+      expect(mockUpdateAddress).toHaveBeenCalledWith({
+        name: 'John Doe',
+        street1: 'Main Street 123',
+        neighborhood: 'Downtown',
+        external_number: '123',
+        city: 'Mexico City',
+        company: '',
+        state: 'CDMX',
+        phone: '5555551234',
+        email: '',
+        reference: ''
+      })
+      
+      // And goNext should be called
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    })
+
+    it('should call updateAddress and goNext when form is submitted with valid data including optional fields', async () => {
+      // Given the CreateGuideAddressForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user fills all fields (required and optional) with valid data
+      await user.type(screen.getByTestId('name'), 'Jane Smith')
+      await user.type(screen.getByTestId('street1'), 'Oak Avenue 456')
+      await user.type(screen.getByTestId('neighborhood'), 'Uptown')
+      await user.type(screen.getByTestId('external_number'), '456')
+      await user.type(screen.getByTestId('city'), 'Guadalajara')
+      await user.type(screen.getByTestId('company'), 'ACME Corp')
+      await user.type(screen.getByTestId('state'), 'Jalisco')
+      await user.type(screen.getByTestId('phone'), '3331234567')
+      await user.type(screen.getByLabelText(/correo electrónico/i), 'jane@example.com')
+      await user.type(screen.getByTestId('reference'), 'Next to the park')
+      
+      const submitButton = screen.getByTestId('origin-address-next-button')
+      await user.click(submitButton)
+
+      // Then updateAddress should be called with all the form data
+      expect(mockUpdateAddress).toHaveBeenCalledWith({
+        name: 'Jane Smith',
+        street1: 'Oak Avenue 456',
+        neighborhood: 'Uptown',
+        external_number: '456',
+        city: 'Guadalajara',
+        company: 'ACME Corp',
+        state: 'Jalisco',
+        phone: '3331234567',
+        email: 'jane@example.com',
+        reference: 'Next to the park'
+      })
+      
+      // And goNext should be called
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    })
+  })
 })
