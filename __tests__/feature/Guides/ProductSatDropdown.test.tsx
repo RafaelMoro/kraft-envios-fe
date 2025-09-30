@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ProductSatDropdown } from '@/features/Guides/ProductSatDropdown'
 
@@ -87,6 +88,54 @@ describe('ProductSatDropdown', () => {
 
       // Then input should display the provided value
       expect(screen.getByTestId('product-autocomplete')).toHaveValue(searchValue)
+    })
+  })
+
+  describe('Dropdown visibility on focus', () => {
+    it('should show dropdown when input field is focused', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user focuses on the input field
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input)
+
+      // Then dropdown should become visible
+      expect(screen.getByRole('list')).toBeInTheDocument()
+    })
+
+    it('should show initial message when dropdown is opened with empty search', async () => {
+      // Given the ProductSatDropdown is rendered with empty search term
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: '' })
+
+      // When user focuses on the input field
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input)
+
+      // Then dropdown should show initial message
+      expect(screen.getByText('Escribe para buscar productos')).toBeInTheDocument()
+    })
+
+    it('should hide dropdown when input field loses focus', async () => {
+      // Given the ProductSatDropdown is rendered and dropdown is open
+      const user = userEvent.setup()
+      renderComponent()
+      
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input)
+      
+      // Verify dropdown is visible
+      expect(screen.getByRole('list')).toBeInTheDocument()
+
+      // When user blurs the input field
+      await user.tab()
+
+      // Then dropdown should be hidden after delay
+      await waitFor(() => {
+        expect(screen.queryByRole('list')).not.toBeInTheDocument()
+      }, { timeout: 300 })
     })
   })
 })
