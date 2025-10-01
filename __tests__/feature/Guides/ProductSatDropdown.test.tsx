@@ -630,4 +630,166 @@ describe('ProductSatDropdown', () => {
       expect(screen.queryByLabelText('loading suggestions sat product')).not.toBeInTheDocument()
     })
   })
+
+  describe('Product selection behavior', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+      mockGetProductSatInfo.mockClear()
+    })
+
+    afterEach(() => {
+      jest.runOnlyPendingTimers()
+      jest.useRealTimers()
+    })
+
+    it('should call updateSelectedOption and fill input when user clicks on a product', async () => {
+      // Given the ProductSatDropdown is rendered with products available
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      const mockProducts = [
+        { code: 'PROD001', description: 'Ropa deportiva' },
+        { code: 'PROD002', description: 'Ropa casual' },
+        { code: 'PROD003', description: 'Ropa formal' }
+      ]
+      
+      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
+        data: { message: null, products: mockProducts },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as unknown as never
+      }
+      
+      mockGetProductSatInfo.mockResolvedValue(mockResponse)
+      
+      // Create a wrapper that actually updates the searchProductSat prop
+      const TestWrapper = () => {
+        const [searchProductSat, setSearchProductSat] = useState('')
+        const [errorProductSat, setErrorProductSat] = useState('')
+        
+        return (
+          <ProductSatDropdown
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
+            setSearchProductSat={setSearchProductSat}
+            updateSelectedOption={mockUpdateSelectedOption}
+            updateErrorProductSat={setErrorProductSat}
+          />
+        )
+      }
+      
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false }
+        }
+      })
+      
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TestWrapper />
+        </QueryClientProvider>
+      )
+
+      // When user types to load products first
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input)
+      await user.type(input, 'ropa')
+      jest.advanceTimersByTime(1500)
+
+      // And waits for products to load
+      await waitFor(() => {
+        expect(screen.getByText('Ropa deportiva')).toBeInTheDocument()
+      })
+
+      // And user clicks on a product option
+      await user.click(screen.getByText('Ropa casual'))
+
+      // Then updateSelectedOption should be called with the selected product
+      expect(mockUpdateSelectedOption).toHaveBeenCalledWith({
+        code: 'PROD002',
+        description: 'Ropa casual'
+      })
+      expect(mockUpdateSelectedOption).toHaveBeenCalledTimes(1)
+
+      // And input should be filled with product description
+      await waitFor(() => {
+        expect(input).toHaveValue('Ropa casual')
+      })
+    })
+
+    it('should prevent further API calls after product selection', async () => {
+      // Given the ProductSatDropdown is rendered with products available
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      const mockProducts = [
+        { code: 'PROD001', description: 'Ropa deportiva' }
+      ]
+      
+      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
+        data: { message: null, products: mockProducts },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as unknown as never
+      }
+      
+      mockGetProductSatInfo.mockResolvedValue(mockResponse)
+      
+      // Create a wrapper that actually updates the searchProductSat prop
+      const TestWrapper = () => {
+        const [searchProductSat, setSearchProductSat] = useState('')
+        const [errorProductSat, setErrorProductSat] = useState('')
+        
+        return (
+          <ProductSatDropdown
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
+            setSearchProductSat={setSearchProductSat}
+            updateSelectedOption={mockUpdateSelectedOption}
+            updateErrorProductSat={setErrorProductSat}
+          />
+        )
+      }
+      
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false }
+        }
+      })
+      
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TestWrapper />
+        </QueryClientProvider>
+      )
+
+      // When user types to load products first
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input)
+      await user.type(input, 'ropa')
+      jest.advanceTimersByTime(1500)
+
+      // And waits for products to load
+      await waitFor(() => {
+        expect(screen.getByText('Ropa deportiva')).toBeInTheDocument()
+      })
+
+      // And user clicks on a product option
+      await user.click(screen.getByText('Ropa deportiva'))
+
+      // Then the first API call should have been made
+      expect(mockGetProductSatInfo).toHaveBeenCalledTimes(1)
+      mockGetProductSatInfo.mockClear()
+
+      // When user types again after selection (which should not trigger API)
+      await user.clear(input)
+      await user.type(input, 'nueva')
+      jest.advanceTimersByTime(1500)
+
+      // Then no additional API call should be made (hasSelectedOption flag prevents it)
+      expect(mockGetProductSatInfo).not.toHaveBeenCalled()
+    })
+  })
 })
