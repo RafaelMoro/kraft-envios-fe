@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ConfirmGuideData } from '@/features/Guides/ConfirmGuideData'
 import { CreateGuideFormValues, SearchProduct } from '@/shared/types/guides.types'
 import { QuoteUI } from '@/shared/types/quotes.types'
@@ -140,6 +141,180 @@ describe('ConfirmGuideData', () => {
       
       expect(screen.getByTestId('confirm-guide-send-button')).toBeInTheDocument()
       expect(screen.getByText('Crear guia')).toBeInTheDocument()
+    })
+  })
+
+  describe('Guide creation submission', () => {
+    it('should call createGuide with correct payload structure when user clicks submit button', async () => {
+      // Given the ConfirmGuideData is rendered with valid data
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user clicks the 'Crear guia' button
+      const submitButton = screen.getByTestId('confirm-guide-send-button')
+      await user.click(submitButton)
+
+      // Then createGuide should be called with correct payload structure
+      expect(mockCreateGuide).toHaveBeenCalledTimes(1)
+      expect(mockCreateGuide).toHaveBeenCalledWith({
+        quoteId: 'quote-123',
+        origin: {
+          ...mockOriginAddress,
+          country: 'MX'
+        },
+        destination: {
+          ...mockDestinationAddress,
+          country: 'MX'
+        },
+        parcel: {
+          ...mockParcelInfo,
+          satProductId: 'SAT12345'
+        }
+      })
+    })
+
+    it('should include correct satProductId from selected product when product exists', async () => {
+      // Given the ConfirmGuideData is rendered with a specific selected product
+      const user = userEvent.setup()
+      const customProduct = {
+        code: 'CUSTOM_SAT_CODE',
+        description: 'Custom product'
+      }
+      renderComponent({ selectedProduct: customProduct })
+
+      // When user clicks the submit button
+      const submitButton = screen.getByTestId('confirm-guide-send-button')
+      await user.click(submitButton)
+
+      // Then payload should include the correct satProductId from the product
+      expect(mockCreateGuide).toHaveBeenCalledWith(
+        expect.objectContaining({
+          parcel: expect.objectContaining({
+            satProductId: 'CUSTOM_SAT_CODE'
+          })
+        })
+      )
+    })
+
+    it('should include empty string for satProductId when no product is selected', async () => {
+      // Given the ConfirmGuideData is rendered without selected product
+      const user = userEvent.setup()
+      renderComponent({ selectedProduct: null })
+
+      // When user clicks the submit button
+      const submitButton = screen.getByTestId('confirm-guide-send-button')
+      await user.click(submitButton)
+
+      // Then payload should include empty string for satProductId
+      expect(mockCreateGuide).toHaveBeenCalledWith(
+        expect.objectContaining({
+          parcel: expect.objectContaining({
+            satProductId: ''
+          })
+        })
+      )
+    })
+
+    it('should use first quote ID from selectedQuotes array', async () => {
+      // Given the ConfirmGuideData is rendered with multiple quotes
+      const user = userEvent.setup()
+      const multipleQuotes = [
+        {
+          id: 'first-quote',
+          service: 'Express',
+          total: 250.50,
+          typeService: 'nextDay' as const,
+          courier: 'DHL' as const,
+          source: 'Mn' as const,
+          amountFormatted: '$250.50',
+          logoSrc: {
+            source: 'dhl-logo.svg',
+            provider: 'dhl' as const,
+            width: 100,
+            height: 50
+          }
+        },
+        {
+          id: 'second-quote',
+          service: 'Standard',
+          total: 150.00,
+          typeService: 'standard' as const,
+          courier: 'Estafeta' as const,
+          source: 'Mn' as const,
+          amountFormatted: '$150.00',
+          logoSrc: {
+            source: 'estafeta-logo.svg',
+            provider: 'estafeta' as const,
+            width: 100,
+            height: 50
+          }
+        }
+      ]
+      renderComponent({ selectedQuotes: multipleQuotes })
+
+      // When user clicks the submit button
+      const submitButton = screen.getByTestId('confirm-guide-send-button')
+      await user.click(submitButton)
+
+      // Then payload should use the first quote's ID
+      expect(mockCreateGuide).toHaveBeenCalledWith(
+        expect.objectContaining({
+          quoteId: 'first-quote'
+        })
+      )
+    })
+
+    it('should include country MX for both origin and destination addresses', async () => {
+      // Given the ConfirmGuideData is rendered with address data
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user clicks the submit button
+      const submitButton = screen.getByTestId('confirm-guide-send-button')
+      await user.click(submitButton)
+
+      // Then both origin and destination should have country 'MX'
+      expect(mockCreateGuide).toHaveBeenCalledWith(
+        expect.objectContaining({
+          origin: expect.objectContaining({
+            country: 'MX'
+          }),
+          destination: expect.objectContaining({
+            country: 'MX'
+          })
+        })
+      )
+    })
+
+    it('should spread all form data properties into payload correctly', async () => {
+      // Given the ConfirmGuideData is rendered with complete form data
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user clicks the submit button
+      const submitButton = screen.getByTestId('confirm-guide-send-button')
+      await user.click(submitButton)
+
+      // Then payload should contain all original form data properties
+      const expectedCall = mockCreateGuide.mock.calls[0][0]
+      
+      // Verify origin contains all address fields plus country
+      expect(expectedCall.origin).toEqual({
+        ...mockOriginAddress,
+        country: 'MX'
+      })
+      
+      // Verify destination contains all address fields plus country
+      expect(expectedCall.destination).toEqual({
+        ...mockDestinationAddress,
+        country: 'MX'
+      })
+      
+      // Verify parcel contains all parcel info plus satProductId
+      expect(expectedCall.parcel).toEqual({
+        ...mockParcelInfo,
+        satProductId: 'SAT12345'
+      })
     })
   })
 })
