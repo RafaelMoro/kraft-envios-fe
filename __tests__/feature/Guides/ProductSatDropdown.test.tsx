@@ -138,4 +138,86 @@ describe('ProductSatDropdown', () => {
       }, { timeout: 300 })
     })
   })
+
+  describe('Valid input handling', () => {
+    it('should call setSearchProductSat when user types valid text', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user types valid text in input
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, 'ropa')
+
+      // Then setSearchProductSat should be called for each character typed
+      expect(mockSetSearchProductSat).toHaveBeenCalledTimes(4)
+      // Each call receives the individual character being typed
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(1, 'r')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(2, 'o')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(3, 'p')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(4, 'a')
+    })
+
+    it('should clear error when user types valid text and error exists', async () => {
+      // Given the ProductSatDropdown is rendered with an existing error
+      const user = userEvent.setup()
+      renderComponent({ errorProductSat: 'Test error message' })
+
+      // When user types valid text in input
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, 'a')
+
+      // Then updateErrorProductSat should be called to clear the error
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('')
+    })
+
+    it('should accept letters and numbers as valid characters', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user types letters and numbers
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, 'abc123')
+
+      // Then setSearchProductSat should be called for each character
+      expect(mockSetSearchProductSat).toHaveBeenCalledTimes(6)
+      // Verify individual characters are passed
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(1, 'a')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(2, 'b')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(3, 'c')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(4, '1')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(5, '2')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(6, '3')
+    })
+
+    it('should accept spaces as valid characters', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user types text with spaces
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, 'a b')
+
+      // Then setSearchProductSat should be called for each character including space
+      expect(mockSetSearchProductSat).toHaveBeenCalledTimes(3)
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(1, 'a')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(2, ' ')
+      expect(mockSetSearchProductSat).toHaveBeenNthCalledWith(3, 'b')
+    })
+
+    it('should not call updateErrorProductSat when typing valid characters and no error exists', async () => {
+      // Given the ProductSatDropdown is rendered without error
+      const user = userEvent.setup()
+      renderComponent({ errorProductSat: '' })
+
+      // When user types valid text
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, 'valid text')
+
+      // Then updateErrorProductSat should not be called for error clearing
+      expect(mockUpdateErrorProductSat).not.toHaveBeenCalled()
+    })
+  })
 })
