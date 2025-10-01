@@ -477,4 +477,157 @@ describe('ProductSatDropdown', () => {
       expect(screen.getByRole('list')).toBeInTheDocument()
     })
   })
+
+  describe('Product list display', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+      mockGetProductSatInfo.mockClear()
+    })
+
+    afterEach(() => {
+      jest.runOnlyPendingTimers()
+      jest.useRealTimers()
+    })
+
+    it('should display products as clickable list items when API returns results', async () => {
+      // Given the ProductSatDropdown is rendered and API will return products
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      const mockProducts = [
+        { code: 'PROD001', description: 'Ropa deportiva' },
+        { code: 'PROD002', description: 'Ropa casual' },
+        { code: 'PROD003', description: 'Ropa formal' }
+      ]
+      
+      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
+        data: { message: null, products: mockProducts },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as unknown as never
+      }
+      
+      mockGetProductSatInfo.mockResolvedValue(mockResponse)
+      
+      // Create a wrapper that actually updates the searchProductSat prop
+      const TestWrapper = () => {
+        const [searchProductSat, setSearchProductSat] = useState('')
+        const [errorProductSat, setErrorProductSat] = useState('')
+        
+        return (
+          <ProductSatDropdown
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
+            setSearchProductSat={setSearchProductSat}
+            updateSelectedOption={mockUpdateSelectedOption}
+            updateErrorProductSat={setErrorProductSat}
+          />
+        )
+      }
+      
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false }
+        }
+      })
+      
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TestWrapper />
+        </QueryClientProvider>
+      )
+
+      // When user types search term and API call completes
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input) // Focus to show dropdown
+      await user.type(input, 'ropa')
+
+      // And waits for debounce to trigger API call
+      jest.advanceTimersByTime(1500)
+
+      // Then products should be displayed as clickable list items
+      await waitFor(() => {
+        expect(screen.getByText('Ropa deportiva')).toBeInTheDocument()
+        expect(screen.getByText('Ropa casual')).toBeInTheDocument()
+        expect(screen.getByText('Ropa formal')).toBeInTheDocument()
+      })
+
+      // Verify dropdown is visible and contains the products
+      expect(screen.getByRole('list')).toBeInTheDocument()
+      
+      // Verify that all products are rendered as list items
+      const listItems = screen.getAllByRole('listitem')
+      expect(listItems).toHaveLength(3)
+      
+      // Verify products are clickable (have onclick handlers)
+      expect(screen.getByText('Ropa deportiva')).toBeInTheDocument()
+      expect(screen.getByText('Ropa casual')).toBeInTheDocument()
+      expect(screen.getByText('Ropa formal')).toBeInTheDocument()
+    })
+
+    it('should not display loading spinner when products are loaded', async () => {
+      // Given the ProductSatDropdown is rendered and API returns products
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      const mockProducts = [
+        { code: 'PROD001', description: 'Ropa deportiva' }
+      ]
+      
+      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
+        data: { message: null, products: mockProducts },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as unknown as never
+      }
+      
+      mockGetProductSatInfo.mockResolvedValue(mockResponse)
+      
+      // Create a wrapper that actually updates the searchProductSat prop
+      const TestWrapper = () => {
+        const [searchProductSat, setSearchProductSat] = useState('')
+        const [errorProductSat, setErrorProductSat] = useState('')
+        
+        return (
+          <ProductSatDropdown
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
+            setSearchProductSat={setSearchProductSat}
+            updateSelectedOption={mockUpdateSelectedOption}
+            updateErrorProductSat={setErrorProductSat}
+          />
+        )
+      }
+      
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false }
+        }
+      })
+      
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TestWrapper />
+        </QueryClientProvider>
+      )
+
+      // When user types search term and API call completes
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input) // Focus to show dropdown
+      await user.type(input, 'ropa')
+
+      // And waits for debounce to trigger API call
+      jest.advanceTimersByTime(1500)
+
+      // Then products should be displayed and loading spinner should not be present
+      await waitFor(() => {
+        expect(screen.getByText('Ropa deportiva')).toBeInTheDocument()
+      })
+
+      // Verify loading spinner is not displayed
+      expect(screen.queryByLabelText('loading suggestions sat product')).not.toBeInTheDocument()
+    })
+  })
 })
