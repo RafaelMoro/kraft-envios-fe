@@ -1,12 +1,17 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useState } from 'react'
 import { ProductSatDropdown } from '@/features/Guides/ProductSatDropdown'
 
 // Mock the guides utils
 jest.mock('../../../src/shared/utils/guides.utils', () => ({
   getProductSatInfo: jest.fn()
 }))
+
+// Get the mocked function
+import { getProductSatInfo } from '@/shared/utils/guides.utils'
+const mockGetProductSatInfo = getProductSatInfo as jest.MockedFunction<typeof getProductSatInfo>
 
 // Mock functions for props
 const mockSetSearchProductSat = jest.fn()
@@ -308,6 +313,98 @@ describe('ProductSatDropdown', () => {
 
       // Then no error should be triggered for valid characters
       expect(mockUpdateErrorProductSat).not.toHaveBeenCalledWith('No se permiten caracteres especiales')
+    })
+  })
+
+  describe('Debounced API call trigger', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+      mockGetProductSatInfo.mockClear()
+    })
+
+    afterEach(() => {
+      jest.runOnlyPendingTimers()
+      jest.useRealTimers()
+    })
+
+    it('should call getProductSatInfo after debounce delay when user types search term', async () => {
+      // Given the ProductSatDropdown is rendered with a working state connection
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      // Create a wrapper that actually updates the searchProductSat prop
+      const TestWrapper = () => {
+        const [searchProductSat, setSearchProductSat] = useState('')
+        const [errorProductSat, setErrorProductSat] = useState('')
+        
+        return (
+          <ProductSatDropdown
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
+            setSearchProductSat={setSearchProductSat}
+            updateSelectedOption={mockUpdateSelectedOption}
+            updateErrorProductSat={setErrorProductSat}
+          />
+        )
+      }
+      
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false }
+        }
+      })
+      
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TestWrapper />
+        </QueryClientProvider>
+      )
+
+      // When user types search term
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input) // Focus to show dropdown
+      await user.type(input, 'ropa')
+
+      // And waits for debounce (1.5s)
+      jest.advanceTimersByTime(1500)
+
+      // Let React finish any pending updates
+      await waitFor(() => {
+        expect(mockGetProductSatInfo).toHaveBeenCalledTimes(1)
+      })
+
+      // Then getProductSatInfo should be called with correct payload
+      expect(mockGetProductSatInfo).toHaveBeenCalledWith({ search: 'ropa' })
+    })
+
+    it('should not call API when search term is empty', async () => {
+      // Given the ProductSatDropdown is rendered with empty search
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      renderComponent({ searchProductSat: '' })
+
+      // When user focuses input without typing
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input)
+
+      // And waits for debounce
+      jest.advanceTimersByTime(1500)
+
+      // Then getProductSatInfo should not be called
+      expect(mockGetProductSatInfo).not.toHaveBeenCalled()
+    })
+
+    it('should not call API when there is an error', async () => {
+      // Given the ProductSatDropdown is rendered with an error
+      renderComponent({ 
+        searchProductSat: 'test',
+        errorProductSat: 'Test error' 
+      })
+
+      // When user waits for debounce
+      jest.advanceTimersByTime(1500)
+
+      // Then getProductSatInfo should not be called
+      expect(mockGetProductSatInfo).not.toHaveBeenCalled()
     })
   })
 })
