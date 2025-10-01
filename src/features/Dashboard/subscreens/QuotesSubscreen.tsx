@@ -15,9 +15,10 @@ import { TimeFilterDropdown } from "@/features/Quotes/TimeFilterDropdown"
 import { useQuoteFilters } from "@/shared/hooks/useQuotesFilters"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
-import { IntersectionObserverWrapper } from "@/features/Quotes/IntersectionObserverWrapper"
+import { IntersectionObserverWrapper } from "@/shared/ui/organisms/IntersectionObserverWrapper"
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
+import { CreateGuideModal } from "@/features/Guides/CreateGuideModal"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -25,6 +26,10 @@ interface QuotesProps {
 
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
+
+  // Create Guide
+  const [openCreateGuide, setOpenCreateGuide] = useState<boolean>(false)
+  const toggleCreateGuide = () => setOpenCreateGuide((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -52,6 +57,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     const filtered = selectedQuotes.filter((q) => q.id !== quoteId)
     setSelectedQuotes(filtered)
   }
+  const resetSelectedQuotes = () => setSelectedQuotes([])
 
   const handleSendInfo = () => {
     if (selectedQuotes.length === 0) {
@@ -87,10 +93,21 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }, [successCopyActionBar])
 
   const handleClickCreateGuide = () => {
+    if (selectedQuotes.length === 0) {
+      setErrorActionBar('Debes seleccionar una cotización para crear una guía.')
+      return;
+    }
     if (selectedQuotes.length > 1) {
       setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
-      // TODO: Add return
+      return;
     }
+    // TODO: Remove this validation when all couriers support guide creation
+    if (selectedQuotes.some((q) => q.source !== 'Mn')) {
+      setErrorActionBar('La creación de guías solo es compatible con el tipo "Mn".')
+      return;
+    }
+
+    toggleCreateGuide()
   }
 
   const {
@@ -145,7 +162,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-center text-xl mb-5">Ingrese los siguientes datos para obtener una cotización</p>
       <IntersectionObserverWrapper setIntersecting={setIsIntersectingForm}>
-        <QuoteForm updateQuotes={updateAllQuotes} />
+        <QuoteForm updateQuotes={updateAllQuotes} resetSelectedQuotes={resetSelectedQuotes} resetFiltersQuotes={resetFiltersQuotes} />
       </IntersectionObserverWrapper>
       { allQuotes.length > 0 && (
         <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
@@ -204,6 +221,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
+      <CreateGuideModal open={openCreateGuide} toggleModal={toggleCreateGuide} selectedQuotes={selectedQuotes} />
     </main>
   )
 }

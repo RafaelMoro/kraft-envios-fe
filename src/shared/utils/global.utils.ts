@@ -43,3 +43,18 @@ export const formatNumberToCurrency = (amount: number): string =>
 export const createUniqueId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 };
+
+/**
+ * Format a 10-digit phone number string into `NNN NNN NNNN`.
+ * If the input doesn't contain exactly 10 digits after stripping non-digits, returns the original input.
+ * @example formatPhoneNumber('2213526425') => '221 352 6425'
+ */
+export const formatPhoneNumber = (phone: string): string => {
+  if (!phone) return phone
+  const digits = phone.replace(/\D/g, '')
+  if (digits.length !== 10) return phone
+  const part1 = digits.substring(0, 3)
+  const part2 = digits.substring(3, 6)
+  const part3 = digits.substring(6, 10)
+  return `${part1} ${part2} ${part3}`
+}

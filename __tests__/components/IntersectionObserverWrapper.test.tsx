@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { IntersectionObserverWrapper } from '@/features/Quotes/IntersectionObserverWrapper'
+import { IntersectionObserverWrapper } from '@/shared/ui/organisms/IntersectionObserverWrapper'
 
 // Mock IntersectionObserver
 const mockIntersectionObserver = jest.fn()
