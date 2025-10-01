@@ -220,4 +220,94 @@ describe('ProductSatDropdown', () => {
       expect(mockUpdateErrorProductSat).not.toHaveBeenCalled()
     })
   })
+
+  describe('Special character validation', () => {
+    it('should display error when user types special characters', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user types special characters
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, '@')
+
+      // Then updateErrorProductSat should be called with the error message
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('No se permiten caracteres especiales')
+    })
+
+    it('should display error for various special characters', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user types different special characters
+      const input = screen.getByTestId('product-autocomplete')
+      
+      // Test different special characters one by one
+      await user.clear(input)
+      await user.type(input, '#')
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('No se permiten caracteres especiales')
+
+      await user.clear(input)
+      await user.type(input, '$')
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('No se permiten caracteres especiales')
+
+      await user.clear(input)
+      await user.type(input, '%')
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('No se permiten caracteres especiales')
+
+      await user.clear(input)
+      await user.type(input, '!')
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('No se permiten caracteres especiales')
+    })
+
+    it('should display error when special characters are mixed with valid text', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user types valid text followed by special character
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, 'abc@')
+
+      // Then updateErrorProductSat should be called with the error message
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('No se permiten caracteres especiales')
+    })
+
+    it('should call setSearchProductSat even when special characters are entered', async () => {
+      // Given the ProductSatDropdown is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user types special characters
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, '@#')
+
+      // Then setSearchProductSat should still be called for each character
+      expect(mockSetSearchProductSat).toHaveBeenCalledWith('@')
+      expect(mockSetSearchProductSat).toHaveBeenCalledWith('#')
+      expect(mockSetSearchProductSat).toHaveBeenCalledTimes(2)
+    })
+
+    it('should not trigger error for valid characters after special character validation', async () => {
+      // Given the ProductSatDropdown is rendered and user has typed special character
+      const user = userEvent.setup()
+      renderComponent()
+      
+      // First type a special character to trigger error
+      const input = screen.getByTestId('product-autocomplete')
+      await user.type(input, '@')
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('No se permiten caracteres especiales')
+      
+      // Clear the mock to reset call count
+      mockUpdateErrorProductSat.mockClear()
+      
+      // When user then types valid characters
+      await user.clear(input)
+      await user.type(input, 'abc')
+
+      // Then no error should be triggered for valid characters
+      expect(mockUpdateErrorProductSat).not.toHaveBeenCalledWith('No se permiten caracteres especiales')
+    })
+  })
 })
