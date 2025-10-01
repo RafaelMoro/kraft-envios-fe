@@ -2,7 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
+import { AxiosResponse } from 'axios'
 import { ProductSatDropdown } from '@/features/Guides/ProductSatDropdown'
+import { FetchSatProductsResponse } from '@/shared/types/guides.types'
 
 // Mock the guides utils
 jest.mock('../../../src/shared/utils/guides.utils', () => ({
@@ -405,6 +407,74 @@ describe('ProductSatDropdown', () => {
 
       // Then getProductSatInfo should not be called
       expect(mockGetProductSatInfo).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Loading state display', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+      mockGetProductSatInfo.mockClear()
+    })
+
+    afterEach(() => {
+      jest.runOnlyPendingTimers()
+      jest.useRealTimers()
+    })
+
+    it('should display loading spinner when API call is in progress', async () => {
+      // Given the ProductSatDropdown is rendered and API call will be pending
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      // Mock getProductSatInfo to return a pending promise (never resolves during test)
+      const pendingPromise = new Promise<AxiosResponse<FetchSatProductsResponse>>(() => {
+        // Never resolves - this keeps the mutation in pending state
+      })
+      mockGetProductSatInfo.mockReturnValue(pendingPromise)
+      
+      // Create a wrapper that actually updates the searchProductSat prop
+      const TestWrapper = () => {
+        const [searchProductSat, setSearchProductSat] = useState('')
+        const [errorProductSat, setErrorProductSat] = useState('')
+        
+        return (
+          <ProductSatDropdown
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
+            setSearchProductSat={setSearchProductSat}
+            updateSelectedOption={mockUpdateSelectedOption}
+            updateErrorProductSat={setErrorProductSat}
+          />
+        )
+      }
+      
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false }
+        }
+      })
+      
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TestWrapper />
+        </QueryClientProvider>
+      )
+
+      // When user types search term and API call is triggered
+      const input = screen.getByTestId('product-autocomplete')
+      await user.click(input) // Focus to show dropdown
+      await user.type(input, 'ropa')
+
+      // And waits for debounce to trigger API call
+      jest.advanceTimersByTime(1500)
+
+      // Then loading spinner should be displayed
+      await waitFor(() => {
+        expect(screen.getByLabelText('loading suggestions sat product')).toBeInTheDocument()
+      })
+
+      // Verify dropdown is visible and contains the spinner
+      expect(screen.getByRole('list')).toBeInTheDocument()
     })
   })
 })
