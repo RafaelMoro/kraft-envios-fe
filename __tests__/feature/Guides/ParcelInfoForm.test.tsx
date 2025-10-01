@@ -270,4 +270,179 @@ describe('ParcelInfoForm', () => {
       })
     })
   })
+
+  describe('Valid form submission', () => {
+    it('should call updateParcelInfo and goNext when form is submitted with valid data and searchProductSat exists', async () => {
+      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: 'Ropa deportiva' })
+
+      // When user enters valid data in all fields
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Camiseta deportiva')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '250')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '3')
+      
+      // And submits the form
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then updateParcelInfo should be called with the correct data
+      await waitFor(() => {
+        expect(mockUpdateParcelInfo).toHaveBeenCalledWith({
+          content: 'Camiseta deportiva',
+          value: 250,
+          quantity: 3
+        })
+      })
+
+      // And goNext should be called
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+
+      // And updateErrorProductSat should not be called
+      expect(mockUpdateErrorProductSat).not.toHaveBeenCalled()
+    })
+
+    it('should handle form submission with minimum valid values', async () => {
+      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: 'Producto válido' })
+
+      // When user enters minimum valid data
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'AB') // Minimum 2 characters
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '1') // Minimum value 1
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '1') // Minimum quantity 1
+      
+      // And submits the form
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then updateParcelInfo should be called with the minimum valid data
+      await waitFor(() => {
+        expect(mockUpdateParcelInfo).toHaveBeenCalledWith({
+          content: 'AB',
+          value: 1,
+          quantity: 1
+        })
+      })
+
+      // And goNext should be called
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle form submission with large numeric values', async () => {
+      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: 'Producto caro' })
+
+      // When user enters large numeric values
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Producto de alto valor')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '99999')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '100')
+      
+      // And submits the form
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then updateParcelInfo should be called with the large values
+      await waitFor(() => {
+        expect(mockUpdateParcelInfo).toHaveBeenCalledWith({
+          content: 'Producto de alto valor',
+          value: 99999,
+          quantity: 100
+        })
+      })
+
+      // And goNext should be called
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle form submission with long content text', async () => {
+      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: 'Producto con descripción larga' })
+
+      // When user enters long content text
+      const longContent = 'Este es un contenido muy largo que describe detalladamente el producto que se está enviando, incluyendo todas sus características y especificaciones técnicas importantes'
+      
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, longContent)
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '500')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '2')
+      
+      // And submits the form
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then updateParcelInfo should be called with the long content
+      await waitFor(() => {
+        expect(mockUpdateParcelInfo).toHaveBeenCalledWith({
+          content: longContent,
+          value: 500,
+          quantity: 2
+        })
+      })
+
+      // And goNext should be called
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    })
+
+    it('should prevent default form submission behavior', async () => {
+      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: 'Producto válido' })
+
+      // When user enters valid data and submits
+      const contentInput = screen.getByTestId('content')
+      await user.type(contentInput, 'Contenido válido')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '100')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '1')
+
+      // And submits the form
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then form submission should be handled properly without page reload
+      await waitFor(() => {
+        expect(mockUpdateParcelInfo).toHaveBeenCalled()
+        expect(mockGoNext).toHaveBeenCalled()
+      })
+    })
+  })
 })
