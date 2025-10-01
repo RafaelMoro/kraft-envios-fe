@@ -12,13 +12,16 @@ import { useEffect } from "react"
 
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
+  resetSelectedQuotes: () => void
+  resetFiltersQuotes: () => void;
 }
 
-export const QuoteForm = ({ updateQuotes }: QuoteFormProps) => {
+export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuotes }: QuoteFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<GetQuoteForm>({
     resolver: yupResolver(QuoteFormSchema)
   })
@@ -30,6 +33,13 @@ export const QuoteForm = ({ updateQuotes }: QuoteFormProps) => {
 
   const onSubmit: SubmitHandler<GetQuoteForm> = (data) => {
     getQuotes(data)
+  }
+
+  const clearQuotes = () => {
+    reset()
+    resetSelectedQuotes()
+    resetFiltersQuotes()
+    updateQuotes([])
   }
 
   useEffect(() => {
@@ -139,7 +149,15 @@ export const QuoteForm = ({ updateQuotes }: QuoteFormProps) => {
           </div>
         </div>
       </section>
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-6">
+        <Button
+          color="light"
+          className="hover:cursor-pointer"
+          disabled={isPending}
+          onClick={clearQuotes}
+          >
+          Crear nueva cotización
+        </Button>
         <Button
           className="hover:cursor-pointer"
           disabled={isPending}
