@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ParcelInfoForm } from '@/features/Guides/ParcelInfoForm'
 import { ParcelInfoFormValues } from '@/shared/types/guides.types'
 
@@ -103,6 +104,170 @@ describe('ParcelInfoForm', () => {
       // Verify form contains the buttons
       expect(form).toContainElement(screen.getByTestId('parcel-info-form-cancel-button'))
       expect(form).toContainElement(screen.getByTestId('parcel-info-form-next-button'))
+    })
+  })
+
+  describe('Form validation errors', () => {
+    it('should display validation error when content field is empty and form is submitted', async () => {
+      // Given the ParcelInfoForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user submits form without entering content
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then content validation error should be displayed
+      await waitFor(() => {
+        expect(screen.getByText('Contenido es requerido')).toBeInTheDocument()
+      })
+    })
+
+    it('should display validation error when content field has less than 2 characters', async () => {
+      // Given the ParcelInfoForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters only 1 character in content field and submits
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'a')
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then content validation error should be displayed
+      await waitFor(() => {
+        expect(screen.getByText('El contenido debe tener al menos 2 caracteres')).toBeInTheDocument()
+      })
+    })
+
+    it('should display validation error when value field is 0 and form is submitted', async () => {
+      // Given the ParcelInfoForm is rendered with valid content
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters valid content but leaves value as 0 and submits
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Valid content')
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then value validation error should be displayed
+      await waitFor(() => {
+        expect(screen.getByText('El valor debe ser al menos 1')).toBeInTheDocument()
+      })
+    })
+
+    it('should display validation error when quantity field is 0 and form is submitted', async () => {
+      // Given the ParcelInfoForm is rendered with valid content and value
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters valid content and value but leaves quantity as 0 and submits
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Valid content')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '100')
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then quantity validation error should be displayed
+      await waitFor(() => {
+        expect(screen.getByText('La cantidad debe ser al menos 1')).toBeInTheDocument()
+      })
+    })
+
+    it('should display multiple validation errors when multiple fields are invalid', async () => {
+      // Given the ParcelInfoForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user submits form with all invalid data
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'a') // Less than 2 characters
+      
+      // Value and quantity remain 0 (invalid)
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then all validation errors should be displayed
+      await waitFor(() => {
+        expect(screen.getByText('El contenido debe tener al menos 2 caracteres')).toBeInTheDocument()
+        expect(screen.getByText('El valor debe ser al menos 1')).toBeInTheDocument()
+        expect(screen.getByText('La cantidad debe ser al menos 1')).toBeInTheDocument()
+      })
+    })
+
+    it('should not display validation errors when all fields are valid', async () => {
+      // Given the ParcelInfoForm is rendered
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user enters valid data in all fields
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Valid content')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '100')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '2')
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then no validation errors should be displayed
+      expect(screen.queryByText('Contenido es requerido')).not.toBeInTheDocument()
+      expect(screen.queryByText('El contenido debe tener al menos 2 caracteres')).not.toBeInTheDocument()
+      expect(screen.queryByText('El valor debe ser al menos 1')).not.toBeInTheDocument()
+      expect(screen.queryByText('La cantidad debe ser al menos 1')).not.toBeInTheDocument()
+
+      // And form submission functions should be called
+      expect(mockUpdateParcelInfo).toHaveBeenCalledWith({
+        content: 'Valid content',
+        value: 100,
+        quantity: 2
+      })
+      expect(mockGoNext).toHaveBeenCalled()
+    })
+
+    it('should clear validation errors when user corrects invalid fields', async () => {
+      // Given the ParcelInfoForm is rendered and has validation errors
+      const user = userEvent.setup()
+      renderComponent()
+
+      // First, trigger validation errors
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Contenido es requerido')).toBeInTheDocument()
+      })
+
+      // When user enters valid content
+      const contentInput = screen.getByTestId('content')
+      await user.type(contentInput, 'Valid content')
+      
+      // And submits again
+      await user.click(submitButton)
+
+      // Then content validation error should be cleared
+      await waitFor(() => {
+        expect(screen.queryByText('Contenido es requerido')).not.toBeInTheDocument()
+        expect(screen.queryByText('El contenido debe tener al menos 2 caracteres')).not.toBeInTheDocument()
+      })
     })
   })
 })
