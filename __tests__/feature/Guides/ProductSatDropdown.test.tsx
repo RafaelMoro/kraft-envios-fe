@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { AxiosResponse } from 'axios'
-import { ProductSatDropdown } from '@/features/Guides/ProductSatDropdown'
+import { ProductSatDropdown } from '@/features/Guides/Mn/ProductSatDropdown'
 import { FetchSatProductsResponse } from '@/shared/types/guides.types'
 
 // Mock the guides utils

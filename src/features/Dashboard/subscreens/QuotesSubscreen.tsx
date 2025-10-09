@@ -18,7 +18,7 @@ import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
 import { IntersectionObserverWrapper } from "@/shared/ui/organisms/IntersectionObserverWrapper"
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
-import { CreateGuideModal } from "@/features/Guides/CreateGuideModal"
+import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
 
 interface QuotesProps {
   userInfo: LoginData | null

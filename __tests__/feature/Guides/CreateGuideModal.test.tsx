@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CreateGuideModal } from '@/features/Guides/CreateGuideModal'
+import { CreateGuideModal } from '@/features/Guides/Mn/CreateGuideModal'
 import { QuoteUI } from '@/shared/types/quotes.types'
 
 // Mock functions for props
