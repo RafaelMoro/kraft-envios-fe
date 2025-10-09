@@ -126,9 +126,9 @@ describe('ResultGuideScreen', () => {
       expect(screen.getByText('Error al crear la guía')).toBeInTheDocument()
     })
 
-    it('should render tracking number with guide.tracking_number value', () => {
+    it('should render tracking number with guide.trackingNumber value', () => {
       // Given the ResultGuideScreen is rendered with a guide containing specific tracking number
-      const customGuide = { ...mockGuide, tracking_number: 'CUSTOM123' }
+      const customGuide = { ...mockGuide, trackingNumber: 'CUSTOM123' }
       renderComponent({ guide: customGuide })
 
       // Then the tracking number should be displayed correctly
@@ -153,9 +153,9 @@ describe('ResultGuideScreen', () => {
       expect(screen.getByText('$1,250.75')).toBeInTheDocument()
     })
 
-    it('should render label link with guide.label_url using optional chaining', () => {
+    it('should render label link with guide.labelUrl using optional chaining', () => {
       // Given the ResultGuideScreen is rendered with a guide containing specific label URL
-      const customGuide = { ...mockGuide, label_url: 'https://custom-label.pdf' }
+      const customGuide = { ...mockGuide, labelUrl: 'https://custom-label.pdf' }
       renderComponent({ guide: customGuide })
 
       // Then the label link should have the correct href
