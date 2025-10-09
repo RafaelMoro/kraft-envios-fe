@@ -6,7 +6,14 @@ import { useMutation } from "@tanstack/react-query";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
-import { CreateGuideFormValues, CreateGuideAddressFormValues, ParcelInfoFormValues, SearchProduct, CreateGuideMnPayload, GlobalCreateGuideResponse } from "@/shared/types/guides.types";
+import {
+  CreateGuideFormValues,
+  CreateGuideAddressFormValues,
+  ParcelInfoFormValues,
+  SearchProduct,
+  CreateGuideMnPayload,
+  GlobalCreateGuideResponse,
+} from "@/shared/types/guides.types";
 import { initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
 import { ConfirmGuideData } from "./ConfirmGuideData";
