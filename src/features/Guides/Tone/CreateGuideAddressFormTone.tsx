@@ -1,12 +1,30 @@
+import { CreateGuideAddressFormSchemaTone, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form"
 
 interface CreateGuideAddressFormToneProps {
   isDestination: boolean
+  goNext: () => void
 }
 
-export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddressFormToneProps) => {
-  // TODO: Add useForm and schema
-  // TODO: Add onSubmit fn
+export const CreateGuideAddressFormTone = ({ isDestination, goNext }: CreateGuideAddressFormToneProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateGuideAddressFormValuesTone>({
+    resolver: yupResolver(CreateGuideAddressFormSchemaTone)
+  })
+
+  const onSubmit: SubmitHandler<CreateGuideAddressFormValuesTone> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    // updateAddress(data)
+    goNext()
+  }
+
   // TODO: Add handleCancel fn
 
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -14,7 +32,7 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
 
   return (
     <form
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
@@ -26,11 +44,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             // defaultValue={addressData.name}
             id="name"
             type="text"
-            // {...register("name")}
+            {...register("name")}
           />
-          {/* { errors?.name?.message && (
+          { errors?.name?.message && (
             <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -41,11 +59,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             // defaultValue={addressData.lastName}
             id="lastName"
             type="text"
-            // {...register("lastName")}
+            {...register("lastName")}
           />
-          {/* { errors?.lastName?.message && (
+          { errors?.lastName?.message && (
             <ErrorMessage>{errors.lastName?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -56,11 +74,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             // defaultValue={addressData.street1}
             id="street1"
             type="text"
-            // {...register("street1")}
+            {...register("street1")}
           />
-          {/* { errors?.street1?.message && (
+          { errors?.street1?.message && (
             <ErrorMessage>{errors.street1?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -71,11 +89,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             // defaultValue={addressData.neighborhood}
             id="neighborhood"
             type="text"
-            // {...register("neighborhood")}
+            {...register("neighborhood")}
           />
-          {/* { errors?.neighborhood?.message && (
+          { errors?.neighborhood?.message && (
             <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -87,11 +105,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             id="external_number"
             type="text"
             inputMode="numeric"
-            // {...register("external_number")}
+            {...register("external_number")}
           />
-          {/* { errors?.external_number?.message && (
+          { errors?.external_number?.message && (
             <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -102,11 +120,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             // defaultValue={addressData.town}
             id="town"
             type="text"
-            // {...register("town")}
+            {...register("town")}
           />
-          {/* { errors?.town?.message && (
+          { errors?.town?.message && (
             <ErrorMessage>{errors.town?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -117,11 +135,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             // defaultValue={addressData.state}
             id="state"
             type="text"
-            // {...register("state")}
+            {...register("state")}
           />
-          {/* { errors?.state?.message && (
+          { errors?.state?.message && (
             <ErrorMessage>{errors.state?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -133,11 +151,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             type="text"
             inputMode="numeric"
             // defaultValue={addressData.phone}
-            // {...register("phone")}
+            {...register("phone")}
           />
-          {/* { errors?.phone?.message && (
+          { errors?.phone?.message && (
             <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -147,11 +165,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             id="email"
             type="email"
             // defaultValue={addressData.email ?? ''}
-            // {...register("email")}
+            {...register("email")}
           />
-          {/* { errors?.email?.message && (
+          { errors?.email?.message && (
             <ErrorMessage>{errors.email?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -162,11 +180,11 @@ export const CreateGuideAddressFormTone = ({ isDestination }: CreateGuideAddress
             // defaultValue={addressData.reference ?? ''}
             id="reference"
             type="text"
-            // {...register("reference")}
+            {...register("reference")}
           />
-          {/* { errors?.reference?.message && (
+          { errors?.reference?.message && (
             <ErrorMessage>{errors.reference?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
       </section>
       <div className="flex justify-between mt-4">
