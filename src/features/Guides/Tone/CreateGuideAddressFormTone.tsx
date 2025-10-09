@@ -5,7 +5,7 @@ import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 interface CreateGuideAddressFormToneProps {
-  isDestination: boolean
+  isDestination?: boolean
   goNext: () => void
 }
 

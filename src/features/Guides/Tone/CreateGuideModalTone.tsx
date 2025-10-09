@@ -4,6 +4,7 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
+import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
 
 interface CreateGuideModalToneProps {
   open: boolean;
@@ -34,6 +35,17 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
           <div className="py-6">
             <Stepper steps={steps} currentStep={step} />
           </div>
+        )}
+        { step === 1 && (
+          <CreateGuideAddressFormTone
+            goNext={goNext}
+          />
+        )}
+        { step === 2 && (
+          <CreateGuideAddressFormTone
+            goNext={goNext}
+            isDestination
+          />
         )}
       </ModalBody>
     </Modal>
