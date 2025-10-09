@@ -78,22 +78,18 @@ export interface FetchSatProductsResponse {
   products: SearchProduct[]
 }
 
-export interface MnGuide {
-  token: string;
-  tracking_number: string;
+export interface GlobalCreateGuideResponse {
+  trackingNumber: string;
   carrier: string;
-  tracking_status: null;
   price: string;
-  waybill: null;
-  label_url: string;
-  cancellable: boolean;
-  created_at: string;
-  label_status: string
+  guideLink: string | null;
+  labelUrl: string | null;
+  file: string | null;
 }
 
 export interface CreateMnGuideResponse {
   data: {
-    guide: MnGuide
+    guide: GlobalCreateGuideResponse
   }
   error: null;
   message: null;

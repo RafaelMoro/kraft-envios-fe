@@ -1,23 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ResultGuideScreen } from '@/features/Guides/ResultGuideScreen'
-import { MnGuide } from '@/shared/types/guides.types'
+import { GlobalCreateGuideResponse } from '@/shared/types/guides.types'
 
 // Mock functions for props
 const mockCloseModal = jest.fn()
 
 // Mock data for testing
-const mockGuide: MnGuide = {
-  token: 'test-token-123',
-  tracking_number: 'KF123456789',
+const mockGuide: GlobalCreateGuideResponse = {
+  trackingNumber: 'KF123456789',
   carrier: 'DHL Express',
-  tracking_status: null,
   price: '250.50',
-  waybill: null,
-  label_url: 'https://example.com/label.pdf',
-  cancellable: true,
-  created_at: '2024-01-15T10:30:00Z',
-  label_status: 'ready'
+  labelUrl: 'https://example.com/label.pdf',
+  guideLink: null,
+  file: null
 }
 
 const defaultProps = {
