@@ -8,6 +8,7 @@ import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
 import { useRef } from "react";
 import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone } from "@/shared/types/guides.types";
 import { initialStateFormTone } from "@/shared/constants/guides.constants";
+import { ParcelInfoFormTone } from "./ParcelInfoFormTone";
 
 interface CreateGuideModalToneProps {
   open: boolean;
@@ -31,7 +32,6 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
     formData.current.destinationAddress = data
   }
 
-  // TODO: Change close Modal fn
   const closeModal = () => {
     resetFormData()
     resetSteps()
@@ -66,6 +66,15 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
             isDestination
             toggleModal={toggleModal}
             goPrev={goPrev}
+          />
+        )}
+        { step === 3 && (
+          <ParcelInfoFormTone
+            // parcelInfo={formData.current.parcelInfo}
+            isMobileTablet={isMobileTablet}
+            goNext={goNext}
+            goPrev={goPrev}
+            // updateParcelInfo={updateParcelInfo}
           />
         )}
       </ModalBody>
