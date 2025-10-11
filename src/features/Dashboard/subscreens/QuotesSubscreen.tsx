@@ -19,6 +19,7 @@ import { IntersectionObserverWrapper } from "@/shared/ui/organisms/IntersectionO
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
+import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -28,8 +29,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
 
   // Create Guide
-  const [openCreateGuide, setOpenCreateGuide] = useState<boolean>(false)
-  const toggleCreateGuide = () => setOpenCreateGuide((prev) => !prev)
+  const [openCreateGuideMn, setOpenCreateGuideMn] = useState<boolean>(false)
+  const toggleCreateGuideMn = () => setOpenCreateGuideMn((prev) => !prev)
+  const [openCreateGuideTone, setOpenCreateGuideTone] = useState<boolean>(false)
+  const toggleCreateGuideTone = () => setOpenCreateGuideTone((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -102,12 +105,17 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       return;
     }
     // TODO: Remove this validation when all couriers support guide creation
-    if (selectedQuotes.some((q) => q.source !== 'Mn')) {
-      setErrorActionBar('La creación de guías solo es compatible con el tipo "Mn".')
+    if (selectedQuotes.some((q) => q.source !== 'Mn' && q.source !== 'TONE')) {
+      setErrorActionBar('La creación de guías solo es compatible con el tipo "Mn" o "TONE".')
       return;
     }
 
-    toggleCreateGuide()
+    if (selectedQuotes[0].source === 'TONE') {
+      toggleCreateGuideTone()
+      return;
+    }
+
+    toggleCreateGuideMn()
   }
 
   const {
@@ -221,7 +229,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
-      <CreateGuideModal open={openCreateGuide} toggleModal={toggleCreateGuide} selectedQuotes={selectedQuotes} />
+      <CreateGuideModal open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} />
+      <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} />
     </main>
   )
 }
