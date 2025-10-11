@@ -14,6 +14,7 @@ import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
 import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideToneCb } from "@/shared/utils/guides.utils";
+import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
 
 interface CreateGuideModalToneProps {
   open: boolean;
@@ -102,6 +103,9 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
             createGuide={createGuide}
           />
         )}
+        { (isError || isSuccess) && step === 5 && (
+          <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
+        ) }
       </ModalBody>
     </Modal>
   )
