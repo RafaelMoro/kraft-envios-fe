@@ -8,9 +8,10 @@ interface CreateGuideFormValuesTone {
   isMobileTablet: boolean
   goNext: () => void
   goPrev: () => void
+  updateParcelInfo: (data: ParcelInfoFormValuesTone) => void
 }
 
-export const ParcelInfoFormTone = ({ isMobileTablet, goNext, goPrev }: CreateGuideFormValuesTone) => {
+export const ParcelInfoFormTone = ({ isMobileTablet, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone) => {
   const {
     register,
     handleSubmit,
@@ -22,7 +23,7 @@ export const ParcelInfoFormTone = ({ isMobileTablet, goNext, goPrev }: CreateGui
   const onSubmit: SubmitHandler<ParcelInfoFormValuesTone> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    // updateParcelInfo(data)
+    updateParcelInfo(data)
     goNext()
   }
 

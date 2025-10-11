@@ -14,6 +14,7 @@ export type CreateGuideFormValues = {
 export type CreateGuideFormValuesTone = {
   originAddress: CreateGuideAddressFormValuesTone;
   destinationAddress: CreateGuideAddressFormValuesTone;
+  parcelInfo: ParcelInfoFormValuesTone;
 }
 
 export type CreateGuideAddressFormValues = {

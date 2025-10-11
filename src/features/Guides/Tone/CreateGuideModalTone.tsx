@@ -6,7 +6,7 @@ import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
 import { useRef } from "react";
-import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone } from "@/shared/types/guides.types";
+import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, ParcelInfoFormValuesTone } from "@/shared/types/guides.types";
 import { initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormTone } from "./ParcelInfoFormTone";
 
@@ -30,6 +30,9 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
   }
   const updateDestinationAddress = (data: CreateGuideAddressFormValuesTone) => {
     formData.current.destinationAddress = data
+  }
+  const updateParcelInfo = (data: ParcelInfoFormValuesTone) => {
+    formData.current.parcelInfo = data
   }
 
   const closeModal = () => {
@@ -74,7 +77,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
             isMobileTablet={isMobileTablet}
             goNext={goNext}
             goPrev={goPrev}
-            // updateParcelInfo={updateParcelInfo}
+            updateParcelInfo={updateParcelInfo}
           />
         )}
       </ModalBody>

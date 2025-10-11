@@ -44,7 +44,10 @@ export const initialStateAddressTone: CreateGuideAddressFormValuesTone = {
 
 export const initialStateFormTone: CreateGuideFormValuesTone = {
   originAddress: initialStateAddressTone,
-  destinationAddress: initialStateAddressTone
+  destinationAddress: initialStateAddressTone,
+  parcelInfo: {
+    content: ""
+  }
 }
 
 export const GET_SAT_PRODUCT_ENDPOINT = '/api/product-sat'
