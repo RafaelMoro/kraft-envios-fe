@@ -54,11 +54,26 @@ export type ParcelInfoFormValuesTone = {
   content: string;
 }
 
+export type ParcelInfoValuesTone = {
+  content: string;
+  notifyMe: boolean;
+}
+
 export type CreateGuideMnPayload = {
   quoteId: string
   origin: CreateGuideAddressFormValues & { country: string };
   destination: CreateGuideAddressFormValues & { country: string };
   parcel: ParcelInfoFormValues & { satProductId: string };
+}
+
+export type CreateGuideTonePayload = {
+  quoteToken: string;
+  notifyMe: boolean;
+  originAddress: CreateGuideAddressFormValuesTone;
+  destinationAddress: CreateGuideAddressFormValuesTone;
+  parcelInfo: {
+    content: string;
+  };
 }
 
 //#region Responses

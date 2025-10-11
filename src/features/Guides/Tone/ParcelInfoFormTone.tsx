@@ -1,7 +1,7 @@
 import { Button, Label, TextInput, ToggleSwitch } from "flowbite-react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { SubmitHandler, useForm } from "react-hook-form"
-import { ParcelInfoFormValuesFormtoneSchema, ParcelInfoFormValuesTone } from "@/shared/types/guides.types"
+import { ParcelInfoFormValuesFormtoneSchema, ParcelInfoFormValuesTone, ParcelInfoValuesTone } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { useState } from "react"
 
@@ -10,7 +10,7 @@ interface CreateGuideFormValuesTone {
   parcelInfo: ParcelInfoFormValuesTone
   goNext: () => void
   goPrev: () => void
-  updateParcelInfo: (data: ParcelInfoFormValuesTone) => void
+  updateParcelInfo: (data: ParcelInfoValuesTone) => void
 }
 
 export const ParcelInfoFormTone = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone) => {
@@ -27,7 +27,8 @@ export const ParcelInfoFormTone = ({ isMobileTablet, parcelInfo, goNext, goPrev,
   const onSubmit: SubmitHandler<ParcelInfoFormValuesTone> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    updateParcelInfo(data)
+    const updatedData: ParcelInfoValuesTone = { ...data, notifyMe }
+    updateParcelInfo(updatedData)
     goNext()
   }
 

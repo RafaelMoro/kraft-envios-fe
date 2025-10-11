@@ -7,7 +7,7 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
-import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, ParcelInfoFormValuesTone } from "@/shared/types/guides.types";
+import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, ParcelInfoValuesTone } from "@/shared/types/guides.types";
 import { initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormTone } from "./ParcelInfoFormTone";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
@@ -33,7 +33,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
   const updateDestinationAddress = (data: CreateGuideAddressFormValuesTone) => {
     formData.current.destinationAddress = data
   }
-  const updateParcelInfo = (data: ParcelInfoFormValuesTone) => {
+  const updateParcelInfo = (data: ParcelInfoValuesTone) => {
     formData.current.parcelInfo = data
   }
 
