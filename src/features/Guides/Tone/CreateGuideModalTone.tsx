@@ -5,6 +5,9 @@ import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
+import { useRef } from "react";
+import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone } from "@/shared/types/guides.types";
+import { initialStateFormTone } from "@/shared/constants/guides.constants";
 
 interface CreateGuideModalToneProps {
   open: boolean;
@@ -17,10 +20,20 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
-  // TODO: Add form data reference
+  const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
+  const resetFormData = () => {
+    formData.current = {...initialStateFormTone}
+  }
+  const updateOriginAddress = (data: CreateGuideAddressFormValuesTone) => {
+    formData.current.originAddress = data
+  }
+  const updateDestinationAddress = (data: CreateGuideAddressFormValuesTone) => {
+    formData.current.destinationAddress = data
+  }
+
   // TODO: Change close Modal fn
   const closeModal = () => {
-    // resetFormData()
+    resetFormData()
     resetSteps()
     toggleModal()
   }
@@ -39,11 +52,13 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
         { step === 1 && (
           <CreateGuideAddressFormTone
             goNext={goNext}
+            updateAddress={updateOriginAddress}
           />
         )}
         { step === 2 && (
           <CreateGuideAddressFormTone
             goNext={goNext}
+            updateAddress={updateDestinationAddress}
             isDestination
           />
         )}

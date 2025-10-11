@@ -11,6 +11,11 @@ export type CreateGuideFormValues = {
   parcelInfo: ParcelInfoFormValues;
 }
 
+export type CreateGuideFormValuesTone = {
+  originAddress: CreateGuideAddressFormValuesTone;
+  destinationAddress: CreateGuideAddressFormValuesTone;
+}
+
 export type CreateGuideAddressFormValues = {
   name: string;
   street1: string;

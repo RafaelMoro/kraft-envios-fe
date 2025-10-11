@@ -7,9 +7,10 @@ import { SubmitHandler, useForm } from "react-hook-form"
 interface CreateGuideAddressFormToneProps {
   isDestination?: boolean
   goNext: () => void
+  updateAddress: (data: CreateGuideAddressFormValuesTone) => void
 }
 
-export const CreateGuideAddressFormTone = ({ isDestination, goNext }: CreateGuideAddressFormToneProps) => {
+export const CreateGuideAddressFormTone = ({ isDestination, goNext, updateAddress }: CreateGuideAddressFormToneProps) => {
   const {
     register,
     handleSubmit,
@@ -21,7 +22,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext }: CreateGuid
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesTone> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    // updateAddress(data)
+    updateAddress(data)
     goNext()
   }
 
