@@ -53,3 +53,4 @@ export const initialStateFormTone: CreateGuideFormValuesTone = {
 
 export const GET_SAT_PRODUCT_ENDPOINT = '/api/product-sat'
 export const CREATE_GUIDE_MN_ENDPOINT = '/api/guides/mn'
+export const CREATE_GUIDE_MN_ENDPOINT_TONE = '/api/guides/tone'

@@ -7,10 +7,13 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
-import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, ParcelInfoValuesTone } from "@/shared/types/guides.types";
+import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, CreateGuideTonePayload, GlobalCreateGuideResponse, ParcelInfoValuesTone } from "@/shared/types/guides.types";
 import { initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormTone } from "./ParcelInfoFormTone";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
+import { useMutation } from "@tanstack/react-query";
+import { GeneralApiError } from "@/shared/types/global.types";
+import { createGuideToneCb } from "@/shared/utils/guides.utils";
 
 interface CreateGuideModalToneProps {
   open: boolean;
@@ -43,7 +46,15 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
     toggleModal()
   }
 
-  // TODO: Add mutation
+  const { mutate: createGuide, data, isError, isPending, isSuccess } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideTonePayload>({
+    mutationFn: createGuideToneCb,
+    onSuccess: () => {
+      goNext()
+    },
+    onError: () => {
+      goNext()
+    }
+  })
 
   return (
     <Modal show={open} onClose={closeModal}>
