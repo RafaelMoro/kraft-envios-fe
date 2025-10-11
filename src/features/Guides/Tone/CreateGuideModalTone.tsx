@@ -10,6 +10,7 @@ import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
 import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, ParcelInfoFormValuesTone } from "@/shared/types/guides.types";
 import { initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormTone } from "./ParcelInfoFormTone";
+import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
 
 interface CreateGuideModalToneProps {
   open: boolean;
@@ -79,6 +80,14 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
+          />
+        )}
+        { step === 4 && (
+          <ConfirmGuideDataTone
+            formData={formData.current}
+            goPrev={goPrev}
+            selectedQuotes={selectedQuotes}
+            isPending={false}
           />
         )}
       </ModalBody>
