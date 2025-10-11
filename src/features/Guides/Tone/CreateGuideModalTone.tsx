@@ -1,11 +1,12 @@
 "use client"
+import { useRef } from "react";
+import { Modal, ModalBody, ModalHeader } from "flowbite-react";
+
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
-import { useRef } from "react";
 import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, ParcelInfoFormValuesTone } from "@/shared/types/guides.types";
 import { initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormTone } from "./ParcelInfoFormTone";
@@ -73,7 +74,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
         )}
         { step === 3 && (
           <ParcelInfoFormTone
-            // parcelInfo={formData.current.parcelInfo}
+            parcelInfo={formData.current.parcelInfo}
             isMobileTablet={isMobileTablet}
             goNext={goNext}
             goPrev={goPrev}

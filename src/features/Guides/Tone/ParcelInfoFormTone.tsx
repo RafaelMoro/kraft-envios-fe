@@ -6,12 +6,13 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface CreateGuideFormValuesTone {
   isMobileTablet: boolean
+  parcelInfo: ParcelInfoFormValuesTone
   goNext: () => void
   goPrev: () => void
   updateParcelInfo: (data: ParcelInfoFormValuesTone) => void
 }
 
-export const ParcelInfoFormTone = ({ isMobileTablet, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone) => {
+export const ParcelInfoFormTone = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone) => {
   const {
     register,
     handleSubmit,
@@ -38,7 +39,7 @@ export const ParcelInfoFormTone = ({ isMobileTablet, goNext, goPrev, updateParce
         </div>
         <TextInput
           data-testid="content"
-          // defaultValue={parcelInfo.content}
+          defaultValue={parcelInfo.content}
           id="content"
           type="text"
           {...register("content")}
