@@ -1,5 +1,8 @@
 import { Button, Label, TextInput } from "flowbite-react"
-import { SubmitHandler } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { ParcelInfoFormValuesFormtoneSchema, ParcelInfoFormValuesTone } from "@/shared/types/guides.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface CreateGuideFormValuesTone {
   isMobileTablet: boolean
@@ -8,16 +11,24 @@ interface CreateGuideFormValuesTone {
 }
 
 export const ParcelInfoFormTone = ({ isMobileTablet, goNext, goPrev }: CreateGuideFormValuesTone) => {
-  // const onSubmit: SubmitHandler<ParcelInfoFormValues> = (data, event) => {
-  //   event?.preventDefault()
-  //   event?.stopPropagation()
-  //   // updateParcelInfo(data)
-  //   goNext()
-  // }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ParcelInfoFormValuesTone>({
+    resolver: yupResolver(ParcelInfoFormValuesFormtoneSchema)
+  })
+
+  const onSubmit: SubmitHandler<ParcelInfoFormValuesTone> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    // updateParcelInfo(data)
+    goNext()
+  }
 
   return (
     <form
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">Información del paquete</h5>)}
       <div>
@@ -29,11 +40,11 @@ export const ParcelInfoFormTone = ({ isMobileTablet, goNext, goPrev }: CreateGui
           // defaultValue={parcelInfo.content}
           id="content"
           type="text"
-          // {...register("content")}
+          {...register("content")}
         />
-        {/* { errors?.content?.message && (
+        { errors?.content?.message && (
           <ErrorMessage>{errors.content?.message}</ErrorMessage>
-        )} */}
+        )}
       </div>
       <div className="flex justify-between mt-4">
         <Button

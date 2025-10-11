@@ -49,6 +49,10 @@ export type ParcelInfoFormValues = {
   quantity: number;
 }
 
+export type ParcelInfoFormValuesTone = {
+  content: string;
+}
+
 export type CreateGuideMnPayload = {
   quoteId: string
   origin: CreateGuideAddressFormValues & { country: string };
@@ -183,3 +187,7 @@ export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFo
   ["reference", "reference"],
   ["email", "email"]
 ])
+
+export const ParcelInfoFormValuesFormtoneSchema: ObjectSchema<ParcelInfoFormValuesTone> = object({
+  content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres')
+})
