@@ -53,6 +53,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
           <CreateGuideAddressFormTone
             goNext={goNext}
             updateAddress={updateOriginAddress}
+            toggleModal={toggleModal}
+            goPrev={goPrev}
           />
         )}
         { step === 2 && (
@@ -60,6 +62,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
             goNext={goNext}
             updateAddress={updateDestinationAddress}
             isDestination
+            toggleModal={toggleModal}
+            goPrev={goPrev}
           />
         )}
       </ModalBody>

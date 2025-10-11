@@ -7,10 +7,12 @@ import { SubmitHandler, useForm } from "react-hook-form"
 interface CreateGuideAddressFormToneProps {
   isDestination?: boolean
   goNext: () => void
+  goPrev: () => void
+  toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
 }
 
-export const CreateGuideAddressFormTone = ({ isDestination, goNext, updateAddress }: CreateGuideAddressFormToneProps) => {
+export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, toggleModal, updateAddress }: CreateGuideAddressFormToneProps) => {
   const {
     register,
     handleSubmit,
@@ -26,7 +28,14 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, updateAddres
     goNext()
   }
 
-  // TODO: Add handleCancel fn
+  const handleCancel = () => {
+    if (isDestination) {
+      goPrev()
+      return;
+    }
+
+    toggleModal()
+  }
 
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
   const cancelColorButton = isDestination ? "light" : "red"
@@ -194,7 +203,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, updateAddres
           color={cancelColorButton}
           data-testid="origin-address-cancel-button"
           className="hover:cursor-pointer"
-          // onClick={handleCancel}
+          onClick={handleCancel}
         >
           {cancelButtonText}
         </Button>
