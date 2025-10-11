@@ -9,9 +9,10 @@ interface ConfirmGuideDataToneProps {
   selectedQuotes: QuoteUI[]
   isPending: boolean;
   goPrev: () => void
+  createGuide: (payload: CreateGuideTonePayload) => void;
 }
 
-export const ConfirmGuideDataTone = ({ formData, selectedQuotes, isPending, goPrev }: ConfirmGuideDataToneProps) => {
+export const ConfirmGuideDataTone = ({ formData, selectedQuotes, isPending, goPrev, createGuide }: ConfirmGuideDataToneProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
   const handleSubmit = () => {
@@ -25,7 +26,7 @@ export const ConfirmGuideDataTone = ({ formData, selectedQuotes, isPending, goPr
         content: parcelInfo.content,
       }
     }
-    // createGuide(payload)
+    createGuide(payload)
   }
 
   return (

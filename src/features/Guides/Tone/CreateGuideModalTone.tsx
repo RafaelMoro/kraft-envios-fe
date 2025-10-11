@@ -98,7 +98,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
             formData={formData.current}
             goPrev={goPrev}
             selectedQuotes={selectedQuotes}
-            isPending={false}
+            isPending={isPending}
+            createGuide={createGuide}
           />
         )}
       </ModalBody>
