@@ -47,6 +47,7 @@ export const initialStateFormTone: CreateGuideFormValuesTone = {
   destinationAddress: initialStateAddressTone,
   parcelInfo: {
     content: "",
+    notifyMe: false,
   }
 }
 

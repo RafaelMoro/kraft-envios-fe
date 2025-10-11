@@ -1,6 +1,6 @@
 import { Button, Spinner } from "flowbite-react"
 
-import { CreateGuideFormValuesTone } from "@/shared/types/guides.types"
+import { CreateGuideFormValuesTone, CreateGuideTonePayload } from "@/shared/types/guides.types"
 import { formatPhoneNumber } from "@/shared/utils/global.utils"
 import { QuoteUI } from "@/shared/types/quotes.types"
 
@@ -16,7 +16,15 @@ export const ConfirmGuideDataTone = ({ formData, selectedQuotes, isPending, goPr
 
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
-    // const payload = {}
+    const payload: CreateGuideTonePayload = {
+      quoteToken: quoteId,
+      notifyMe: parcelInfo.notifyMe,
+      originAddress,
+      destinationAddress,
+      parcelInfo: {
+        content: parcelInfo.content,
+      }
+    }
     // createGuide(payload)
   }
 

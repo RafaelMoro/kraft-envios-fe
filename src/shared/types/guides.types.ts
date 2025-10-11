@@ -14,7 +14,7 @@ export type CreateGuideFormValues = {
 export type CreateGuideFormValuesTone = {
   originAddress: CreateGuideAddressFormValuesTone;
   destinationAddress: CreateGuideAddressFormValuesTone;
-  parcelInfo: ParcelInfoFormValuesTone;
+  parcelInfo: ParcelInfoValuesTone;
 }
 
 export type CreateGuideAddressFormValues = {
@@ -50,10 +50,16 @@ export type ParcelInfoFormValues = {
   quantity: number;
 }
 
+/**
+ * This type represents the parcel information for the form without the checkbox
+ */
 export type ParcelInfoFormValuesTone = {
   content: string;
 }
 
+/**
+ * This type represents the parcel information needed for the mutation
+ */
 export type ParcelInfoValuesTone = {
   content: string;
   notifyMe: boolean;
