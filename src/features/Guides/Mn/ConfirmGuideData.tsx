@@ -3,6 +3,7 @@ import { Button, Spinner } from "flowbite-react"
 import { CreateGuideFormValues, CreateGuideMnPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
+import { verifyAndUpdateAddress } from "@/shared/utils/guides.utils"
 
 interface ConfirmGuideDataProps {
   formData: CreateGuideFormValues;
@@ -19,14 +20,19 @@ export const ConfirmGuideData = ({ formData, selectedProduct, selectedQuotes, is
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
     const satProductId = selectedProduct?.code ?? ''
+    
+    // Verify and update addresses with default values for empty optional fields
+    const verifiedOriginAddress = verifyAndUpdateAddress(originAddress)
+    const verifiedDestinationAddress = verifyAndUpdateAddress(destinationAddress)
+    
     const payload: CreateGuideMnPayload = {
       quoteId,
       origin: {
-        ...originAddress,
+        ...verifiedOriginAddress,
         country: 'MX'
       },
       destination: {
-        ...destinationAddress,
+        ...verifiedDestinationAddress,
         country: 'MX'
       },
       parcel: {
