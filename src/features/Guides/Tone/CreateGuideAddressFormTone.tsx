@@ -6,13 +6,16 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 interface CreateGuideAddressFormToneProps {
   isDestination?: boolean
+  addressData: CreateGuideAddressFormValuesTone
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
 }
 
-export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, toggleModal, updateAddress }: CreateGuideAddressFormToneProps) => {
+export const CreateGuideAddressFormTone = ({
+  isDestination, addressData, goNext, goPrev, toggleModal, updateAddress,
+}: CreateGuideAddressFormToneProps) => {
   const {
     register,
     handleSubmit,
@@ -51,7 +54,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="name"
-            // defaultValue={addressData.name}
+            defaultValue={addressData.name}
             id="name"
             type="text"
             {...register("name")}
@@ -66,7 +69,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="lastName"
-            // defaultValue={addressData.lastName}
+            defaultValue={addressData.lastName}
             id="lastName"
             type="text"
             {...register("lastName")}
@@ -81,7 +84,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="street1"
-            // defaultValue={addressData.street1}
+            defaultValue={addressData.street1}
             id="street1"
             type="text"
             {...register("street1")}
@@ -96,7 +99,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="neighborhood"
-            // defaultValue={addressData.neighborhood}
+            defaultValue={addressData.neighborhood}
             id="neighborhood"
             type="text"
             {...register("neighborhood")}
@@ -111,7 +114,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="external_number"
-            // defaultValue={addressData.external_number}
+            defaultValue={addressData.external_number}
             id="external_number"
             type="text"
             inputMode="numeric"
@@ -127,7 +130,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="town"
-            // defaultValue={addressData.town}
+            defaultValue={addressData.town}
             id="town"
             type="text"
             {...register("town")}
@@ -142,7 +145,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="state"
-            // defaultValue={addressData.state}
+            defaultValue={addressData.state}
             id="state"
             type="text"
             {...register("state")}
@@ -160,7 +163,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
             id="phone"
             type="text"
             inputMode="numeric"
-            // defaultValue={addressData.phone}
+            defaultValue={addressData.phone}
             {...register("phone")}
           />
           { errors?.phone?.message && (
@@ -174,7 +177,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           <TextInput
             id="email"
             type="email"
-            // defaultValue={addressData.email ?? ''}
+            defaultValue={addressData.email ?? ''}
             {...register("email")}
           />
           { errors?.email?.message && (
@@ -187,7 +190,7 @@ export const CreateGuideAddressFormTone = ({ isDestination, goNext, goPrev, togg
           </div>
           <TextInput
             data-testid="reference"
-            // defaultValue={addressData.reference ?? ''}
+            defaultValue={addressData.reference ?? ''}
             id="reference"
             type="text"
             {...register("reference")}
