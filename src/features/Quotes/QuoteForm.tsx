@@ -86,12 +86,18 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             <div className="mb-2 block">
               <Label htmlFor="destinationPostalCode">Código Postal de Destino</Label>
             </div>
-            <TextInput
-              id="destinationPostalCode"
-              type="text"
-              inputMode="numeric"
-              {...register("destinationPostalCode")}
-            />
+            <div className="grid grid-cols-1 grid-rows-1">
+              <TextInput
+                id="destinationPostalCode"
+                className="col-start-1 col-end-2 row-start-1 row-end-2"
+                type="text"
+                inputMode="numeric"
+                {...register("destinationPostalCode")}
+              />
+              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("destinationPostalCode")}>
+                <RiCloseLine />
+              </button>
+            </div>
             { errors.destinationPostalCode?.message && (
               <ErrorMessage>{errors.destinationPostalCode?.message}</ErrorMessage>
             )}
@@ -106,12 +112,18 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             <div className="mb-2 block">
               <Label htmlFor="length">Largo</Label>
             </div>
-            <TextInput
-              id="length"
-              type="number"
-              required
-              {...register("length")}
-            />
+            <div className="grid grid-cols-1 grid-rows-1">
+              <TextInput
+                id="length"
+                type="number"
+                className="col-start-1 col-end-2 row-start-1 row-end-2"
+                required
+                {...register("length")}
+              />
+              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("length")}>
+                <RiCloseLine />
+              </button>
+            </div>
             { errors.length?.message && (
               <ErrorMessage>{errors.length?.message}</ErrorMessage>
             )}
@@ -120,12 +132,18 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             <div className="mb-2 block">
               <Label htmlFor="height">Alto</Label>
             </div>
-            <TextInput
-              id="height"
-              type="number"
-              required
-              {...register("height")}
-            />
+            <div className="grid grid-cols-1 grid-rows-1">
+              <TextInput
+                id="height"
+                className="col-start-1 col-end-2 row-start-1 row-end-2"
+                type="number"
+                required
+                {...register("height")}
+              />
+              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("height")}>
+                <RiCloseLine />
+              </button>
+            </div>
             { errors.height?.message && (
               <ErrorMessage>{errors.height?.message}</ErrorMessage>
             )}
@@ -134,12 +152,18 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             <div className="mb-2 block">
               <Label htmlFor="width">Ancho</Label>
             </div>
-            <TextInput
-              id="width"
-              type="number"
-              required
-              {...register("width")}
-            />
+            <div className="grid grid-cols-1 grid-rows-1">
+              <TextInput
+                id="width"
+                className="col-start-1 col-end-2 row-start-1 row-end-2"
+                type="number"
+                required
+                {...register("width")}
+              />
+              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("width")}>
+                <RiCloseLine />
+              </button>
+            </div>
             { errors.width?.message && (
               <ErrorMessage>{errors.width?.message}</ErrorMessage>
             )}
@@ -148,12 +172,18 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             <div className="mb-2 block">
               <Label htmlFor="weight">Peso</Label>
             </div>
-            <TextInput
-              id="weight"
-              type="number"
-              required
-              {...register("weight")}
-            />
+            <div className="grid grid-cols-1 grid-rows-1">
+              <TextInput
+                id="weight"
+                className="col-start-1 col-end-2 row-start-1 row-end-2"
+                type="number"
+                required
+                {...register("weight")}
+              />
+              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("weight")}>
+                <RiCloseLine />
+              </button>
+            </div>
             { errors.weight?.message && (
               <ErrorMessage>{errors.weight?.message}</ErrorMessage>
             )}
