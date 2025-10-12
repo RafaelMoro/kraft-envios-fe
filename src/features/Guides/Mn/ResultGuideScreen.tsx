@@ -1,10 +1,10 @@
-import { MnGuide } from "@/shared/types/guides.types";
+import { GlobalCreateGuideResponse } from "@/shared/types/guides.types";
 import { formatNumberToCurrency } from "@/shared/utils/global.utils";
 import { RiAttachmentLine, RiFileList3Line, RiMoneyDollarCircleLine, RiTruckLine } from "@remixicon/react";
 import { Button } from "flowbite-react";
 
 interface ResultGuideScreenProps {
-  guide: MnGuide | undefined;
+  guide: GlobalCreateGuideResponse | undefined;
   isSuccess: boolean;
   isError: boolean;
   closeModal: () => void
@@ -22,7 +22,7 @@ export const ResultGuideScreen = ({ guide, isSuccess, isError, closeModal }: Res
           <article className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="inline-flex gap-2">
               <RiFileList3Line />
-              <p>Número de guía: {guide.tracking_number}</p>
+              <p>Número de guía: {guide.trackingNumber}</p>
             </div>
             <div className="inline-flex gap-2">
               <RiTruckLine />
@@ -34,7 +34,7 @@ export const ResultGuideScreen = ({ guide, isSuccess, isError, closeModal }: Res
             </div>
             <div className="inline-flex gap-2">
               <RiAttachmentLine />
-              <a href={guide?.label_url} target="_blank" rel="noopener noreferrer">Ver etiqueta</a>
+              <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer">Ver etiqueta</a>
             </div>
           </article>
           <Button onClick={closeModal} outline>

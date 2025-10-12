@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { CreateGuideAddressForm } from '@/features/Guides/CreateGuideAddressForm'
+import { CreateGuideAddressForm } from '@/features/Guides/Mn/CreateGuideAddressForm'
 import { initialStateAddressForm } from '@/shared/constants/guides.constants'
 
 // Mock functions for props

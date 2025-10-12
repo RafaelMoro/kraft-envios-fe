@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ParcelInfoForm } from '@/features/Guides/ParcelInfoForm'
+import { ParcelInfoForm } from '@/features/Guides/Mn/ParcelInfoForm'
 import { ParcelInfoFormValues } from '@/shared/types/guides.types'
 
 // Mock functions for props
