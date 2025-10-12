@@ -63,6 +63,8 @@ describe('QuoteInput', () => {
       // Then clear button should be present
       const clearButton = screen.getByRole('button')
       expect(clearButton).toBeInTheDocument()
+      expect(clearButton).not.toHaveClass('mr-6')
+      expect(clearButton).toHaveClass('mr-2')
       
       // Then input should have required attribute
       expect(input).toBeRequired()
