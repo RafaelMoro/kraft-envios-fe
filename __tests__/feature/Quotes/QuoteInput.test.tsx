@@ -68,4 +68,28 @@ describe('QuoteInput', () => {
       expect(input).toBeRequired()
     })
   })
+
+  describe('GIVEN QuoteInput with inputType number', () => {
+    it('WHEN component renders THEN input should have type number and clear button should have mr-6 margin class', () => {
+      const mockClearInput = jest.fn()
+      
+      render(
+        <TestQuoteInputWrapper
+          label="Number Input"
+          inputId="numberField"
+          inputType="number"
+          clearInput={mockClearInput}
+        />
+      )
+
+      // Then input should have type number
+      const input = screen.getByLabelText(/number input/i)
+      expect(input).toHaveAttribute('type', 'number')
+      
+      // Then clear button should have mr-6 margin class for number input arrows
+      const clearButton = screen.getByRole('button')
+      expect(clearButton).toHaveClass('mr-6')
+      expect(clearButton).not.toHaveClass('mr-2')
+    })
+  })
 })
