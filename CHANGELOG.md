@@ -1,3 +1,9 @@
+## v0.15.0 (2025-10-12)
+
+### Pull Requests
+[#33](https://github.com/RafaelMoro/kraft-envios-fe/pull/33) | Add feature to quote inputs to clear input
+
+
 ## v0.14.0 (2025-10-12)
 
 ### Pull Requests
