@@ -9,6 +9,7 @@ import { GetQuoteDataAxios, GetQuoteForm, Quote, QuoteFormSchema } from "@/share
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
 import { useEffect } from "react"
+import { RiCloseLine } from "@remixicon/react"
 
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
@@ -49,6 +50,10 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quotesFetched])
 
+  const clearInput = (inputName: string) => {
+    reset({ [inputName]: '' })
+  }
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -61,12 +66,18 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             <div className="mb-2 block">
               <Label htmlFor="originPostalCode">Código Postal de Origen</Label>
             </div>
-            <TextInput
-              id="originPostalCode"
-              type="text"
-              inputMode="numeric"
-              {...register("originPostalCode")}
-            />
+            <div className="grid grid-cols-1 grid-rows-1">
+              <TextInput
+                className="col-start-1 col-end-2 row-start-1 row-end-2"
+                id="originPostalCode"
+                type="text"
+                inputMode="numeric"
+                {...register("originPostalCode")}
+              />
+              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("originPostalCode")}>
+                <RiCloseLine />
+              </button>
+            </div>
             { errors.originPostalCode?.message && (
               <ErrorMessage>{errors.originPostalCode?.message}</ErrorMessage>
             )}
