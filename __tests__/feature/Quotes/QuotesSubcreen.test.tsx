@@ -194,7 +194,7 @@ describe('QuotesSubscreen', () => {
       await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
       await user.type(screen.getByLabelText(/peso/i), '2')
       await user.type(screen.getByLabelText(/largo/i), '10')
-      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/alto/i), '10')
       await user.type(screen.getByLabelText(/ancho/i), '10')
 
       await user.click(screen.getByRole('button', { name: /cotizar/i }))
@@ -223,7 +223,7 @@ describe('QuotesSubscreen', () => {
       await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
       await user.type(screen.getByLabelText(/peso/i), '2')
       await user.type(screen.getByLabelText(/largo/i), '10')
-      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/alto/i), '10')
       await user.type(screen.getByLabelText(/ancho/i), '10')
       await user.click(screen.getByRole('button', { name: /cotizar/i }))
 
@@ -249,7 +249,7 @@ describe('QuotesSubscreen', () => {
       await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
       await user.type(screen.getByLabelText(/peso/i), '2')
       await user.type(screen.getByLabelText(/largo/i), '10')
-      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/alto/i), '10')
       await user.type(screen.getByLabelText(/ancho/i), '10')
       await user.click(screen.getByRole('button', { name: /cotizar/i }))
 
@@ -280,7 +280,7 @@ describe('QuotesSubscreen', () => {
       await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
       await user.type(screen.getByLabelText(/peso/i), '2')
       await user.type(screen.getByLabelText(/largo/i), '10')
-      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/alto/i), '10')
       await user.type(screen.getByLabelText(/ancho/i), '10')
       await user.click(screen.getByRole('button', { name: /cotizar/i }))
 
@@ -334,7 +334,7 @@ describe('QuotesSubscreen', () => {
       await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
       await user.type(screen.getByLabelText(/peso/i), '2')
       await user.type(screen.getByLabelText(/largo/i), '10')
-      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/alto/i), '10')
       await user.type(screen.getByLabelText(/ancho/i), '10')
       await user.click(screen.getByRole('button', { name: /cotizar/i }))
 
@@ -410,7 +410,7 @@ describe('QuotesSubscreen', () => {
       await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
       await user.type(screen.getByLabelText(/peso/i), '2')
       await user.type(screen.getByLabelText(/largo/i), '10')
-      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/alto/i), '10')
       await user.type(screen.getByLabelText(/ancho/i), '10')
       await user.click(screen.getByRole('button', { name: /cotizar/i }))
 
@@ -444,7 +444,7 @@ describe('QuotesSubscreen', () => {
       await user.type(screen.getByLabelText(/código postal de destino/i), '67890')
       await user.type(screen.getByLabelText(/peso/i), '2')
       await user.type(screen.getByLabelText(/largo/i), '10')
-      await user.type(screen.getByLabelText(/altura/i), '10')
+      await user.type(screen.getByLabelText(/alto/i), '10')
       await user.type(screen.getByLabelText(/ancho/i), '10')
       await user.click(screen.getByRole('button', { name: /cotizar/i }))
 

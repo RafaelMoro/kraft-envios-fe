@@ -10,12 +10,20 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('QuoteForm', () => {
-  it('Show the fields needed for the quote form', () => {
-    const updateQuotes = jest.fn()
+  const defaultProps = {
+    updateQuotes: jest.fn(),
+    resetSelectedQuotes: jest.fn(),
+    resetFiltersQuotes: jest.fn()
+  }
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('Show the fields needed for the quote form', () => {
     render(
       <QueryProviderWrapper>
-        <QuoteForm updateQuotes={updateQuotes} />
+        <QuoteForm {...defaultProps} />
       </QueryProviderWrapper>
     )
 
@@ -26,45 +34,38 @@ describe('QuoteForm', () => {
     // Package fields
     expect(screen.getByLabelText(/Peso/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Largo/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Altura/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Alto/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Ancho/i)).toBeInTheDocument()
 
     // Submit button
     expect(screen.getByRole('button', { name: /Cotizar/i })).toBeInTheDocument()
+    // New clear button
+    expect(screen.getByRole('button', { name: /Crear nueva cotización/i })).toBeInTheDocument()
   })
 
   describe('Form validation', () => {
     it('shows required field errors when submitting empty form', async () => {
-      const updateQuotes = jest.fn()
-
       render(
         <QueryProviderWrapper>
-          <QuoteForm updateQuotes={updateQuotes} />
+          <QuoteForm {...defaultProps} />
         </QueryProviderWrapper>
       )
 
       const user = userEvent.setup()
-      const weightInput = screen.getByLabelText(/Peso/i)
-      const lengthInput = screen.getByLabelText(/Largo/i)
-      const heightInput = screen.getByLabelText(/Altura/i)
-      const widthInput = screen.getByLabelText(/Ancho/i)
-
-      await user.type(weightInput, '0')
-      await user.type(lengthInput, '0')
-      await user.type(heightInput, '0')
-      await user.type(widthInput, '0')
+      
+      // Submit form without filling any fields
       await user.click(screen.getByRole('button', { name: /Cotizar/i }))
 
-      expect(screen.getByText(/La dirección postal de origen es requerida/i)).toBeInTheDocument()
-      expect(screen.getByText(/La dirección postal de destino es requerida/i)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/La dirección postal de origen es requerida/i)).toBeInTheDocument()
+        expect(screen.getByText(/La dirección postal de destino es requerida/i)).toBeInTheDocument()
+      })
     })
 
     it('shows specific validation messages for postal code length and numeric min', async () => {
-      const updateQuotes = jest.fn()
-
       render(
         <QueryProviderWrapper>
-          <QuoteForm updateQuotes={updateQuotes} />
+          <QuoteForm {...defaultProps} />
         </QueryProviderWrapper>
       )
 
@@ -75,7 +76,7 @@ describe('QuoteForm', () => {
       await user.type(screen.getByLabelText(/Código Postal de Destino/i), '123')
       await user.type(screen.getByLabelText(/Peso/i), '0')
       await user.type(screen.getByLabelText(/Largo/i), '0')
-      await user.type(screen.getByLabelText(/Altura/i), '0')
+      await user.type(screen.getByLabelText(/Alto/i), '0')
       await user.type(screen.getByLabelText(/Ancho/i), '0')
 
       await user.click(screen.getByRole('button', { name: /Cotizar/i }))
@@ -113,12 +114,11 @@ describe('QuoteForm', () => {
           }
         }
       })
-      const updateQuotes = jest.fn()
       const user = userEvent.setup()
   
       render(
         <QueryProviderWrapper>
-          <QuoteForm updateQuotes={updateQuotes} />
+          <QuoteForm {...defaultProps} />
         </QueryProviderWrapper>
       )
   
@@ -126,7 +126,7 @@ describe('QuoteForm', () => {
       const destinationInput = screen.getByLabelText(/Código Postal de Destino/i)
       const weightInput = screen.getByLabelText(/Peso/i)
       const lengthInput = screen.getByLabelText(/Largo/i)
-      const heightInput = screen.getByLabelText(/Altura/i)
+      const heightInput = screen.getByLabelText(/Alto/i)
       const widthInput = screen.getByLabelText(/Ancho/i)
   
       await user.type(originInput, '12345')
@@ -138,7 +138,7 @@ describe('QuoteForm', () => {
       await user.click(screen.getByRole('button', { name: /Cotizar/i }))
   
       await waitFor(() => {
-        expect(updateQuotes).toHaveBeenCalledWith(
+        expect(defaultProps.updateQuotes).toHaveBeenCalledWith(
           [
             {
               "id": "a48f570d-b45d-489f-99a3-5cfb266db69e",
