@@ -93,20 +93,6 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="weight">Peso</Label>
-            </div>
-            <TextInput
-              id="weight"
-              type="number"
-              required
-              {...register("weight")}
-            />
-            { errors.weight?.message && (
-              <ErrorMessage>{errors.weight?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
               <Label htmlFor="length">Largo</Label>
             </div>
             <TextInput
@@ -121,7 +107,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
           </div>
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="height">Altura</Label>
+              <Label htmlFor="height">Alto</Label>
             </div>
             <TextInput
               id="height"
@@ -145,6 +131,20 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             />
             { errors.width?.message && (
               <ErrorMessage>{errors.width?.message}</ErrorMessage>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="weight">Peso</Label>
+            </div>
+            <TextInput
+              id="weight"
+              type="number"
+              required
+              {...register("weight")}
+            />
+            { errors.weight?.message && (
+              <ErrorMessage>{errors.weight?.message}</ErrorMessage>
             )}
           </div>
         </div>
