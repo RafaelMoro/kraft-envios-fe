@@ -34,7 +34,6 @@ export const QuoteInput = ({ inputId, label, inputType, errorMessage, isNumericI
           type={inputType}
           className="col-start-1 col-end-2 row-start-1 row-end-2"
           {...((isNumericInput && inputType === 'text') && { inputMode: 'numeric' })}
-          required
           {...register(inputId)}
         />
         <button className={buttonCss} onClick={() => clearInput(inputId)}>
