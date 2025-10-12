@@ -120,7 +120,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
                 required
                 {...register("length")}
               />
-              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("length")}>
+              <button className="justify-self-end mr-6 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("length")}>
                 <RiCloseLine />
               </button>
             </div>
@@ -140,7 +140,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
                 required
                 {...register("height")}
               />
-              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("height")}>
+              <button className="justify-self-end mr-6 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("height")}>
                 <RiCloseLine />
               </button>
             </div>
@@ -160,7 +160,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
                 required
                 {...register("width")}
               />
-              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("width")}>
+              <button className="justify-self-end mr-6 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("width")}>
                 <RiCloseLine />
               </button>
             </div>
@@ -180,7 +180,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
                 required
                 {...register("weight")}
               />
-              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("weight")}>
+              <button className="justify-self-end mr-6 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("weight")}>
                 <RiCloseLine />
               </button>
             </div>
