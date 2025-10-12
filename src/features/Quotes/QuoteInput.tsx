@@ -33,7 +33,7 @@ export const QuoteInput = ({ inputId, label, inputType, errorMessage, isNumericI
           id={inputId}
           type={inputType}
           className="col-start-1 col-end-2 row-start-1 row-end-2"
-          {...(isNumericInput && { inputMode: 'numeric' })}
+          {...((isNumericInput && inputType === 'text') && { inputMode: 'numeric' })}
           required
           {...register(inputId)}
         />
