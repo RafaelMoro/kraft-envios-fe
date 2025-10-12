@@ -1,23 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ResultGuideScreen } from '@/features/Guides/ResultGuideScreen'
-import { MnGuide } from '@/shared/types/guides.types'
+import { ResultGuideScreen } from '@/features/Guides/Mn/ResultGuideScreen'
+import { GlobalCreateGuideResponse } from '@/shared/types/guides.types'
 
 // Mock functions for props
 const mockCloseModal = jest.fn()
 
 // Mock data for testing
-const mockGuide: MnGuide = {
-  token: 'test-token-123',
-  tracking_number: 'KF123456789',
+const mockGuide: GlobalCreateGuideResponse = {
+  trackingNumber: 'KF123456789',
   carrier: 'DHL Express',
-  tracking_status: null,
   price: '250.50',
-  waybill: null,
-  label_url: 'https://example.com/label.pdf',
-  cancellable: true,
-  created_at: '2024-01-15T10:30:00Z',
-  label_status: 'ready'
+  labelUrl: 'https://example.com/label.pdf',
+  guideLink: null,
+  file: null
 }
 
 const defaultProps = {
@@ -130,9 +126,9 @@ describe('ResultGuideScreen', () => {
       expect(screen.getByText('Error al crear la guía')).toBeInTheDocument()
     })
 
-    it('should render tracking number with guide.tracking_number value', () => {
+    it('should render tracking number with guide.trackingNumber value', () => {
       // Given the ResultGuideScreen is rendered with a guide containing specific tracking number
-      const customGuide = { ...mockGuide, tracking_number: 'CUSTOM123' }
+      const customGuide = { ...mockGuide, trackingNumber: 'CUSTOM123' }
       renderComponent({ guide: customGuide })
 
       // Then the tracking number should be displayed correctly
@@ -157,9 +153,9 @@ describe('ResultGuideScreen', () => {
       expect(screen.getByText('$1,250.75')).toBeInTheDocument()
     })
 
-    it('should render label link with guide.label_url using optional chaining', () => {
+    it('should render label link with guide.labelUrl using optional chaining', () => {
       // Given the ResultGuideScreen is rendered with a guide containing specific label URL
-      const customGuide = { ...mockGuide, label_url: 'https://custom-label.pdf' }
+      const customGuide = { ...mockGuide, labelUrl: 'https://custom-label.pdf' }
       renderComponent({ guide: customGuide })
 
       // Then the label link should have the correct href

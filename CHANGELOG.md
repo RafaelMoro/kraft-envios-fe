@@ -1,3 +1,9 @@
+## v0.14.0 (2025-10-12)
+
+### Pull Requests
+[#31](https://github.com/RafaelMoro/kraft-envios-fe/pull/31) | Add tone create guide modal
+
+
 ## v0.13.0 (2025-10-01)
 
 ### Pull Requests
