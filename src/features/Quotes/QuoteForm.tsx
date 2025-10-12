@@ -10,6 +10,7 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
 import { useEffect } from "react"
 import { RiCloseLine } from "@remixicon/react"
+import { QuoteInput } from "./QuoteInput"
 
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
@@ -62,26 +63,15 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
       <section className="flex flex-col gap-5">
         <h4 className="text-xl font-semibold mb-4">Domicilio</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="originPostalCode">Código Postal de Origen</Label>
-            </div>
-            <div className="grid grid-cols-1 grid-rows-1">
-              <TextInput
-                className="col-start-1 col-end-2 row-start-1 row-end-2"
-                id="originPostalCode"
-                type="text"
-                inputMode="numeric"
-                {...register("originPostalCode")}
-              />
-              <button className="justify-self-end mr-2 col-start-1 col-end-2 row-start-1 row-end-2 z-10" onClick={() => clearInput("originPostalCode")}>
-                <RiCloseLine />
-              </button>
-            </div>
-            { errors.originPostalCode?.message && (
-              <ErrorMessage>{errors.originPostalCode?.message}</ErrorMessage>
-            )}
-          </div>
+          <QuoteInput
+            label="Código Postal de Origen"
+            inputId="originPostalCode"
+            inputType="text"
+            isNumericInput
+            clearInput={clearInput}
+            register={register}
+            errorMessage={errors.originPostalCode?.message}
+          />
           <div>
             <div className="mb-2 block">
               <Label htmlFor="destinationPostalCode">Código Postal de Destino</Label>
