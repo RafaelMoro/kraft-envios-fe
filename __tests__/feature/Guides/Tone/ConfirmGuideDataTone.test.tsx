@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ConfirmGuideDataTone } from '@/features/Guides/Tone/ConfirmGuideDataTone'
 import { CreateGuideFormValuesTone } from '@/shared/types/guides.types'
 import { fedexQuote } from '../../../mocks/quotes.mocks'
@@ -96,6 +97,90 @@ describe('ConfirmGuideDataTone', () => {
       // Then it should display action buttons
       expect(screen.getByRole('button', { name: 'Regresar' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Crear guia' })).toBeInTheDocument()
+    })
+  })
+
+  describe('Payload construction and guide creation', () => {
+    it('should call createGuide with correct payload when Crear guia button is clicked', async () => {
+      // Given ConfirmGuideDataTone is rendered with form data and selected quotes
+      const user = userEvent.setup()
+      renderComponent()
+
+      // When user clicks the 'Crear guia' button
+      const createButton = screen.getByRole('button', { name: 'Crear guia' })
+      await user.click(createButton)
+
+      // Then createGuide should be called with the correct payload structure
+      expect(mockCreateGuide).toHaveBeenCalledTimes(1)
+      expect(mockCreateGuide).toHaveBeenCalledWith({
+        quoteToken: '1', // fedexQuote.id
+        notifyMe: true, // parcelInfo.notifyMe
+        originAddress: {
+          name: 'Juan Pérez',
+          lastName: 'González',
+          street1: 'Av. Principal 123',
+          neighborhood: 'Centro',
+          town: 'Guadalajara',
+          external_number: '123',
+          state: 'Jalisco',
+          phone: '5551234567',
+          email: 'juan@example.com',
+          reference: 'Entre calle A y B'
+        },
+        destinationAddress: {
+          name: 'María López',
+          lastName: 'Martínez',
+          street1: 'Calle Secundaria 456',
+          neighborhood: 'Roma Norte',
+          town: 'Ciudad de México',
+          external_number: '456',
+          state: 'CDMX',
+          phone: '5559876543',
+          email: 'maria@example.com',
+          reference: 'Edificio azul'
+        },
+        parcelInfo: {
+          content: 'Documentos importantes'
+        }
+      })
+    })
+
+    it('should handle case when no quotes are selected', async () => {
+      // Given ConfirmGuideDataTone is rendered with empty selectedQuotes
+      const user = userEvent.setup()
+      renderComponent({ selectedQuotes: [] })
+
+      // When user clicks the 'Crear guia' button
+      const createButton = screen.getByRole('button', { name: 'Crear guia' })
+      await user.click(createButton)
+
+      // Then createGuide should be called with undefined quoteToken
+      expect(mockCreateGuide).toHaveBeenCalledTimes(1)
+      expect(mockCreateGuide).toHaveBeenCalledWith(expect.objectContaining({
+        quoteToken: undefined
+      }))
+    })
+
+    it('should construct payload with notifyMe value from parcelInfo', async () => {
+      // Given ConfirmGuideDataTone is rendered with notifyMe=false
+      const user = userEvent.setup()
+      const customFormData = {
+        ...mockFormData,
+        parcelInfo: {
+          content: 'Test content',
+          notifyMe: false
+        }
+      }
+      renderComponent({ formData: customFormData })
+
+      // When user clicks the 'Crear guia' button
+      const createButton = screen.getByRole('button', { name: 'Crear guia' })
+      await user.click(createButton)
+
+      // Then createGuide should be called with notifyMe=false
+      expect(mockCreateGuide).toHaveBeenCalledWith(expect.objectContaining({
+        notifyMe: false
+      }))
     })
   })
 })
