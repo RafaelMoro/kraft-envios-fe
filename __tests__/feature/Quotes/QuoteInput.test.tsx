@@ -92,4 +92,25 @@ describe('QuoteInput', () => {
       expect(clearButton).not.toHaveClass('mr-2')
     })
   })
+
+  describe('GIVEN QuoteInput with isNumericInput true and inputType text', () => {
+    it('WHEN component renders THEN input should have inputMode numeric attribute', () => {
+      const mockClearInput = jest.fn()
+      
+      render(
+        <TestQuoteInputWrapper
+          label="Numeric Text Input"
+          inputId="numericTextField"
+          inputType="text"
+          isNumericInput={true}
+          clearInput={mockClearInput}
+        />
+      )
+
+      // Then input should have type text but inputMode numeric
+      const input = screen.getByLabelText(/numeric text input/i)
+      expect(input).toHaveAttribute('type', 'text')
+      expect(input).toHaveAttribute('inputmode', 'numeric')
+    })
+  })
 })
