@@ -1,3 +1,9 @@
+## v0.17.0 (2025-10-13)
+
+### Pull Requests
+[#35](https://github.com/RafaelMoro/kraft-envios-fe/pull/35) | Show volumetric weight info in quotes
+
+
 ## v0.16.0 (2025-10-13)
 
 ### Pull Requests
