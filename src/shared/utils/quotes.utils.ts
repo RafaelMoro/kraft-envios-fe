@@ -117,3 +117,7 @@ export const formatQuotesSendWhatsapp = (quotes: QuoteUI[]): string => {
   const quotesFormatted = quotes.map((quote, index) => `${index + 1}. ${quote.courier} ${quote.amountFormatted}`).join('\n')
   return quotesFormatted
 }
+
+export const calculateVolumetricWeight = (length: number, height: number, width: number): number => {
+  return (length * height * width) / 5000
+}
