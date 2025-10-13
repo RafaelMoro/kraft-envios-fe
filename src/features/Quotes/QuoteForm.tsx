@@ -1,14 +1,15 @@
 "use client"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
 import { Button, Spinner } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 import { GeneralApiError } from "@/shared/types/global.types"
-import { GetQuoteDataAxios, GetQuoteForm, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
+import { GetQuoteDataAxios, GetQuoteForm, PackageType, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
 import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
 import { QuoteInput } from "./QuoteInput"
+import { TypePackage } from "./TypePackage"
 
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
@@ -17,6 +18,10 @@ interface QuoteFormProps {
 }
 
 export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuotes }: QuoteFormProps) => {
+  const [typePackage, setTypePackage] = useState<PackageType>('box')
+  const updateTypePackage = (type: PackageType) => {
+    setTypePackage(type)
+  }
   const {
     register,
     handleSubmit,
@@ -85,6 +90,10 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
       <section className="flex flex-col gap-5">
         <h4 className="text-xl font-semibold">Paquete:</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TypePackage
+            typePackage={typePackage}
+            updateTypePackage={updateTypePackage}
+          />
           <QuoteInput
             label="Largo"
             inputId="length"
