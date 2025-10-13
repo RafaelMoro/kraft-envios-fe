@@ -175,9 +175,11 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             errorMessage={errors.weight?.message}
           />
           { weightInfoText && (
-            <p className="w-full flex items-center text-sm text-center text-gray-500 mt-2 md:col-span-2">
-              {weightInfoText}
-            </p>
+            <div className="w-full flex items-center justify-center text-sm text-center text-gray-500 mt-2 md:col-span-2">
+              <p>
+                {weightInfoText}
+              </p>
+            </div>
           )}
         </div>
       </section>
