@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axios from 'axios';
 
@@ -161,6 +161,222 @@ describe('QuoteForm', () => {
       expect(lengthInput.value).toBe('')
       expect(heightInput.value).toBe('')
       expect(widthInput.value).toBe('')
+    })
+  })
+
+  describe('Volumetric weight functionality', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
+    })
+
+    it('Given dimension inputs are filled, When values change, Then volumetric weight should be calculated and displayed after 500ms', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+
+      const lengthInput = screen.getByLabelText(/Largo/i)
+      const heightInput = screen.getByLabelText(/Alto/i)  
+      const widthInput = screen.getByLabelText(/Ancho/i)
+
+      // Fill in dimensions (10cm x 10cm x 10cm = 1000cm³ / 5000 = 0.2kg volumetric weight)
+      await user.type(lengthInput, '10')
+      await user.type(heightInput, '10')
+      await user.type(widthInput, '10')
+
+      // Fast-forward time by 500ms to trigger the debounced calculation
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText(/Peso Volumétrico: 0\.20 kg/i)).toBeInTheDocument()
+      })
+    })
+
+    it('Given dimensions and weight are provided, When both values exist, Then both masa weight and volumetric weight should be displayed with the higher value as quote weight', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+
+      const lengthInput = screen.getByLabelText(/Largo/i)
+      const heightInput = screen.getByLabelText(/Alto/i)  
+      const widthInput = screen.getByLabelText(/Ancho/i)
+      const weightInput = screen.getByLabelText(/Peso/i)
+
+      // Fill in dimensions and weight
+      // Dimensions: 20cm x 15cm x 10cm = 3000cm³ / 5000 = 0.6kg volumetric weight
+      // Weight: 2kg (higher than volumetric, so should be used for quote)
+      await user.type(lengthInput, '20')
+      await user.type(heightInput, '15')
+      await user.type(widthInput, '10')
+      await user.type(weightInput, '2')
+
+      // Fast-forward time by 500ms to trigger the debounced calculation
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      await waitFor(() => {
+        const weightInfo = screen.getByText(/Peso Masa: 2\.00 kg \| Peso Volumétrico: 0\.60 kg \| Peso a cotizar: 2\.00 kg/i)
+        expect(weightInfo).toBeInTheDocument()
+      })
+    })
+
+    it('Given dimensions and weight are provided, When volumetric weight is higher, Then volumetric weight should be used for quote calculation', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+
+      const lengthInput = screen.getByLabelText(/Largo/i)
+      const heightInput = screen.getByLabelText(/Alto/i)  
+      const widthInput = screen.getByLabelText(/Ancho/i)
+      const weightInput = screen.getByLabelText(/Peso/i)
+
+      // Fill in dimensions and weight
+      // Dimensions: 50cm x 40cm x 30cm = 60000cm³ / 5000 = 12kg volumetric weight
+      // Weight: 5kg (lower than volumetric, so volumetric should be used)
+      await user.type(lengthInput, '50')
+      await user.type(heightInput, '40')
+      await user.type(widthInput, '30')
+      await user.type(weightInput, '5')
+
+      // Fast-forward time by 500ms to trigger the debounced calculation
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      await waitFor(() => {
+        const weightInfo = screen.getByText(/Peso Masa: 5\.00 kg \| Peso Volumétrico: 12\.00 kg \| Peso a cotizar: 12\.00 kg/i)
+        expect(weightInfo).toBeInTheDocument()
+      })
+    })
+
+    it('Given only dimensions are provided without weight, When volumetric weight is calculated, Then only volumetric and quote weight should be shown', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+
+      const lengthInput = screen.getByLabelText(/Largo/i)
+      const heightInput = screen.getByLabelText(/Alto/i)  
+      const widthInput = screen.getByLabelText(/Ancho/i)
+
+      // Fill in only dimensions (25cm x 20cm x 15cm = 7500cm³ / 5000 = 1.5kg volumetric weight)
+      await user.type(lengthInput, '25')
+      await user.type(heightInput, '20')
+      await user.type(widthInput, '15')
+
+      // Fast-forward time by 500ms to trigger the debounced calculation
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      await waitFor(() => {
+        const weightInfo = screen.getByText(/Peso Volumétrico: 1\.50 kg \| Peso a cotizar: 1\.50 kg/i)
+        expect(weightInfo).toBeInTheDocument()
+        
+        // Should not show "Peso Masa" when weight is not provided
+        expect(screen.queryByText(/Peso Masa:/i)).not.toBeInTheDocument()
+      })
+    })
+
+    it('Given dimensions are cleared, When any dimension becomes empty, Then volumetric weight display should be hidden', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+
+      const lengthInput = screen.getByLabelText(/Largo/i)
+      const heightInput = screen.getByLabelText(/Alto/i)  
+      const widthInput = screen.getByLabelText(/Ancho/i)
+
+      // First fill in dimensions to show volumetric weight
+      await user.type(lengthInput, '10')
+      await user.type(heightInput, '10')
+      await user.type(widthInput, '10')
+
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText(/Peso Volumétrico:/i)).toBeInTheDocument()
+      })
+
+      // Clear one dimension
+      await user.clear(lengthInput)
+
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Peso Volumétrico:/i)).not.toBeInTheDocument()
+      })
+    })
+
+    it('Given dimension inputs have values, When package type changes to envelope, Then volumetric weight should be recalculated with envelope dimensions', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+
+      // First enter some box dimensions
+      const lengthInput = screen.getByLabelText(/Largo/i)
+      const heightInput = screen.getByLabelText(/Alto/i)  
+      const widthInput = screen.getByLabelText(/Ancho/i)
+
+      await user.type(lengthInput, '20')
+      await user.type(heightInput, '20')
+      await user.type(widthInput, '20')
+
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      // Verify initial volumetric weight is calculated
+      await waitFor(() => {
+        expect(screen.getByText(/Peso Volumétrico: 1\.60 kg/i)).toBeInTheDocument()
+      })
+
+      // Change to envelope package type
+      await user.click(screen.getByText(/Tipo de paquete: Caja de cartón/i))
+      await user.click(screen.getByText(/^Sobre$/i))
+
+      // Wait for envelope dimensions to be set and volumetric weight recalculated
+      act(() => {
+        jest.advanceTimersByTime(500)
+      })
+
+      await waitFor(() => {
+        // Envelope dimensions: 34cm x 27cm x 2cm = 1836cm³ / 5000 = 0.37kg (rounded to 0.37)
+        expect(screen.getByText(/Peso Volumétrico: 0\.37 kg/i)).toBeInTheDocument()
+      })
     })
   })
 
