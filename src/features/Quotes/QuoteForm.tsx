@@ -143,7 +143,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             updateTypePackage={updateTypePackage}
           />
           <QuoteInput
-            label="Largo"
+            label="Largo (cm)"
             inputId="length"
             inputType="number"
             clearInput={clearInput}
@@ -151,7 +151,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             errorMessage={errors.length?.message}
           />
           <QuoteInput
-            label="Alto"
+            label="Alto (cm)"
             inputId="height"
             inputType="number"
             clearInput={clearInput}
@@ -159,7 +159,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             errorMessage={errors.height?.message}
           />
           <QuoteInput
-            label="Ancho"
+            label="Ancho (cm)"
             inputId="width"
             inputType="number"
             clearInput={clearInput}
@@ -167,7 +167,7 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             errorMessage={errors.width?.message}
           />
           <QuoteInput
-            label="Peso"
+            label="Peso (kg)"
             inputId="weight"
             inputType="number"
             clearInput={clearInput}
