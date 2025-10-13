@@ -7,7 +7,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 import { GeneralApiError } from "@/shared/types/global.types"
 import { GetQuoteDataAxios, GetQuoteForm, PackageType, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
-import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
+import { getQuoteMutationCb, calculateVolumetricWeight } from "@/shared/utils/quotes.utils"
 import { QuoteInput } from "./QuoteInput"
 import { TypePackage } from "./TypePackage"
 import { DEFAULT_ENVELOPE_HEIGHT, DEFAULT_ENVELOPE_LENGTH, DEFAULT_ENVELOPE_WIDTH } from "@/shared/constants/quotes.constants"
@@ -19,6 +19,9 @@ interface QuoteFormProps {
 }
 
 export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuotes }: QuoteFormProps) => {
+  const [volumetricWeight, setVolumetricWeight] = useState<number | null>(null)
+
+  // State for type of package
   const [typePackage, setTypePackage] = useState<PackageType>('box')
   const updateTypePackage = (type: PackageType) => {
     setTypePackage(type)
@@ -29,16 +32,19 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
     }
     clearPackageDimensions()
   }
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
+    watch,
     reset,
     resetField,
   } = useForm<GetQuoteForm>({
     resolver: yupResolver(QuoteFormSchema)
   })
+  const [length, height, width, weight] = watch(['length', 'height', 'width', 'weight'])
 
   const { mutate: getQuotes, isPending, data } = useMutation<GetQuoteDataAxios, GeneralApiError, GetQuoteForm>({
     mutationFn: getQuoteMutationCb,
@@ -63,10 +69,25 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quotesFetched])
 
+  // Effect to calculate volumetric weight with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (length && height && width) {
+        const volumetric = calculateVolumetricWeight(length, height, width)
+        setVolumetricWeight(volumetric)
+      } else {
+        setVolumetricWeight(null)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [length, height, width])
+
   const clearInput = (inputName: string) => {
     reset({ [inputName]: '' })
   }
 
+  // Functions to handle package type changes
   const setDefaultEnvelope = () => {
     setValue('length', DEFAULT_ENVELOPE_LENGTH)
     setValue('height', DEFAULT_ENVELOPE_HEIGHT)
@@ -147,6 +168,11 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             register={register}
             errorMessage={errors.weight?.message}
           />
+          { volumetricWeight !== null && (
+            <p className="w-full flex items-center text-sm text-center text-gray-500 mt-2 md:col-span-2">
+              Peso Masa: {weight} kg | Peso Volumétrico: {volumetricWeight.toFixed(2)} kg | Peso a cotizar: {Math.max(weight, volumetricWeight).toFixed(2)} kg
+            </p>
+          )}
         </div>
       </section>
       <div className="flex justify-center gap-6">
