@@ -100,6 +100,12 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
     resetField('width')
   }
 
+  const weightInfoText = (weight && volumetricWeight !== null)
+    ? `Peso Masa: ${weight} kg | Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(weight, volumetricWeight).toFixed(2)} kg`
+    : volumetricWeight !== null
+      ? `Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(weight, volumetricWeight).toFixed(2)} kg`
+      : ''
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -168,9 +174,9 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
             register={register}
             errorMessage={errors.weight?.message}
           />
-          { volumetricWeight !== null && (
+          { weightInfoText && (
             <p className="w-full flex items-center text-sm text-center text-gray-500 mt-2 md:col-span-2">
-              Peso Masa: {weight} kg | Peso Volumétrico: {volumetricWeight.toFixed(2)} kg | Peso a cotizar: {Math.max(weight, volumetricWeight).toFixed(2)} kg
+              {weightInfoText}
             </p>
           )}
         </div>
