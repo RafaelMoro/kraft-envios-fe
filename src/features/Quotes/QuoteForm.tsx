@@ -10,6 +10,7 @@ import { GetQuoteDataAxios, GetQuoteForm, PackageType, Quote, QuoteFormSchema } 
 import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
 import { QuoteInput } from "./QuoteInput"
 import { TypePackage } from "./TypePackage"
+import { DEFAULT_ENVELOPE_HEIGHT, DEFAULT_ENVELOPE_LENGTH, DEFAULT_ENVELOPE_WIDTH } from "@/shared/constants/quotes.constants"
 
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
@@ -21,12 +22,20 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
   const [typePackage, setTypePackage] = useState<PackageType>('box')
   const updateTypePackage = (type: PackageType) => {
     setTypePackage(type)
+
+    if (type === 'envelope') {
+      setDefaultEnvelope()
+      return
+    }
+    clearPackageDimensions()
   }
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     reset,
+    resetField,
   } = useForm<GetQuoteForm>({
     resolver: yupResolver(QuoteFormSchema)
   })
@@ -56,6 +65,18 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
 
   const clearInput = (inputName: string) => {
     reset({ [inputName]: '' })
+  }
+
+  const setDefaultEnvelope = () => {
+    setValue('length', DEFAULT_ENVELOPE_LENGTH)
+    setValue('height', DEFAULT_ENVELOPE_HEIGHT)
+    setValue('width', DEFAULT_ENVELOPE_WIDTH)
+  }
+
+  const clearPackageDimensions = () => {
+    resetField('length')
+    resetField('height')
+    resetField('width')
   }
 
   return (

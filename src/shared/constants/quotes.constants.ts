@@ -1,0 +1,3 @@
+export const DEFAULT_ENVELOPE_LENGTH = 34
+export const DEFAULT_ENVELOPE_HEIGHT = 27
+export const DEFAULT_ENVELOPE_WIDTH = 2
