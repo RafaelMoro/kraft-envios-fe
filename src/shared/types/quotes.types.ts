@@ -27,10 +27,14 @@ export const QUOTE_SERVICE_TYPES = [
   'nextDay'
 ] as const
 
+export const TYPE_PACKAGE = ['box', 'envelope'] as const
+
 // Derive the type from the runtime constant so changing one source keeps both in sync.
 export type QuoteCourier = typeof QUOTE_COURIERS[number]
 export type QuoteSource = typeof QUOTE_SOURCES[number]
 export type QuoteTypeService = typeof QUOTE_SERVICE_TYPES[number]
+
+export type PackageType = typeof TYPE_PACKAGE[number]
 
 //#region Interfaces and types
 export interface Quote {
