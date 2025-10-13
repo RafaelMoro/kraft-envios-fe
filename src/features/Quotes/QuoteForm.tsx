@@ -101,9 +101,9 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
   }
 
   const weightInfoText = (weight && volumetricWeight !== null)
-    ? `Peso Masa: ${weight} kg | Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(weight, volumetricWeight).toFixed(2)} kg`
+    ? `Peso Masa: ${Number(weight).toFixed(2)} kg | Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(Number(weight), volumetricWeight).toFixed(2)} kg`
     : volumetricWeight !== null
-      ? `Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(weight, volumetricWeight).toFixed(2)} kg`
+      ? `Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(Number(weight) || 0, volumetricWeight).toFixed(2)} kg`
       : ''
 
   return (
