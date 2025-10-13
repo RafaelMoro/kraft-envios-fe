@@ -1,3 +1,9 @@
+## v0.16.0 (2025-10-13)
+
+### Pull Requests
+[#34](https://github.com/RafaelMoro/kraft-envios-fe/pull/34) | Add type of package dropdown
+
+
 ## v0.15.0 (2025-10-12)
 
 ### Pull Requests
