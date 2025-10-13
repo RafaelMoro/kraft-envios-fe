@@ -1,3 +1,21 @@
+## v0.17.0 (2025-10-13)
+
+### Pull Requests
+[#35](https://github.com/RafaelMoro/kraft-envios-fe/pull/35) | Show volumetric weight info in quotes
+
+
+## v0.16.0 (2025-10-13)
+
+### Pull Requests
+[#34](https://github.com/RafaelMoro/kraft-envios-fe/pull/34) | Add type of package dropdown
+
+
+## v0.15.0 (2025-10-12)
+
+### Pull Requests
+[#33](https://github.com/RafaelMoro/kraft-envios-fe/pull/33) | Add feature to quote inputs to clear input
+
+
 ## v0.14.0 (2025-10-12)
 
 ### Pull Requests

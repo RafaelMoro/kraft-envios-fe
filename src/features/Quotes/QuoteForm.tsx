@@ -1,14 +1,16 @@
 "use client"
+import { useEffect, useState } from "react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
-import { Button, Label, Spinner, TextInput } from "flowbite-react"
+import { Button, Spinner } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 import { GeneralApiError } from "@/shared/types/global.types"
-import { GetQuoteDataAxios, GetQuoteForm, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
-import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { getQuoteMutationCb } from "@/shared/utils/quotes.utils"
-import { useEffect } from "react"
+import { GetQuoteDataAxios, GetQuoteForm, PackageType, Quote, QuoteFormSchema } from "@/shared/types/quotes.types"
+import { getQuoteMutationCb, calculateVolumetricWeight } from "@/shared/utils/quotes.utils"
+import { QuoteInput } from "./QuoteInput"
+import { TypePackage } from "./TypePackage"
+import { DEFAULT_ENVELOPE_HEIGHT, DEFAULT_ENVELOPE_LENGTH, DEFAULT_ENVELOPE_WIDTH } from "@/shared/constants/quotes.constants"
 
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
@@ -17,14 +19,32 @@ interface QuoteFormProps {
 }
 
 export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuotes }: QuoteFormProps) => {
+  const [volumetricWeight, setVolumetricWeight] = useState<number | null>(null)
+
+  // State for type of package
+  const [typePackage, setTypePackage] = useState<PackageType>('box')
+  const updateTypePackage = (type: PackageType) => {
+    setTypePackage(type)
+
+    if (type === 'envelope') {
+      setDefaultEnvelope()
+      return
+    }
+    clearPackageDimensions()
+  }
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
+    watch,
     reset,
+    resetField,
   } = useForm<GetQuoteForm>({
     resolver: yupResolver(QuoteFormSchema)
   })
+  const [length, height, width, weight] = watch(['length', 'height', 'width', 'weight'])
 
   const { mutate: getQuotes, isPending, data } = useMutation<GetQuoteDataAxios, GeneralApiError, GetQuoteForm>({
     mutationFn: getQuoteMutationCb,
@@ -49,6 +69,43 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quotesFetched])
 
+  // Effect to calculate volumetric weight with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (length && height && width) {
+        const volumetric = calculateVolumetricWeight(length, height, width)
+        setVolumetricWeight(volumetric)
+      } else {
+        setVolumetricWeight(null)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [length, height, width])
+
+  const clearInput = (inputName: string) => {
+    reset({ [inputName]: '' })
+  }
+
+  // Functions to handle package type changes
+  const setDefaultEnvelope = () => {
+    setValue('length', DEFAULT_ENVELOPE_LENGTH)
+    setValue('height', DEFAULT_ENVELOPE_HEIGHT)
+    setValue('width', DEFAULT_ENVELOPE_WIDTH)
+  }
+
+  const clearPackageDimensions = () => {
+    resetField('length')
+    resetField('height')
+    resetField('width')
+  }
+
+  const weightInfoText = (weight && volumetricWeight !== null)
+    ? `Peso Masa: ${Number(weight).toFixed(2)} kg | Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(Number(weight), volumetricWeight).toFixed(2)} kg`
+    : volumetricWeight !== null
+      ? `Peso Volumétrico: ${volumetricWeight.toFixed(2)} kg | Peso a cotizar: ${Math.max(Number(weight) || 0, volumetricWeight).toFixed(2)} kg`
+      : ''
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -57,96 +114,73 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
       <section className="flex flex-col gap-5">
         <h4 className="text-xl font-semibold mb-4">Domicilio</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="originPostalCode">Código Postal de Origen</Label>
-            </div>
-            <TextInput
-              id="originPostalCode"
-              type="text"
-              inputMode="numeric"
-              {...register("originPostalCode")}
-            />
-            { errors.originPostalCode?.message && (
-              <ErrorMessage>{errors.originPostalCode?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="destinationPostalCode">Código Postal de Destino</Label>
-            </div>
-            <TextInput
-              id="destinationPostalCode"
-              type="text"
-              inputMode="numeric"
-              {...register("destinationPostalCode")}
-            />
-            { errors.destinationPostalCode?.message && (
-              <ErrorMessage>{errors.destinationPostalCode?.message}</ErrorMessage>
-            )}
-          </div>
+          <QuoteInput
+            label="Código Postal de Origen"
+            inputId="originPostalCode"
+            inputType="text"
+            isNumericInput
+            clearInput={clearInput}
+            register={register}
+            errorMessage={errors.originPostalCode?.message}
+          />
+          <QuoteInput
+            label="Código Postal de Destino"
+            inputId="destinationPostalCode"
+            inputType="text"
+            isNumericInput
+            clearInput={clearInput}
+            register={register}
+            errorMessage={errors.destinationPostalCode?.message}
+          />
         </div>
       </section>
 
       <section className="flex flex-col gap-5">
         <h4 className="text-xl font-semibold">Paquete:</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="weight">Peso</Label>
+          <TypePackage
+            typePackage={typePackage}
+            updateTypePackage={updateTypePackage}
+          />
+          <QuoteInput
+            label="Largo (cm)"
+            inputId="length"
+            inputType="number"
+            clearInput={clearInput}
+            register={register}
+            errorMessage={errors.length?.message}
+          />
+          <QuoteInput
+            label="Alto (cm)"
+            inputId="height"
+            inputType="number"
+            clearInput={clearInput}
+            register={register}
+            errorMessage={errors.height?.message}
+          />
+          <QuoteInput
+            label="Ancho (cm)"
+            inputId="width"
+            inputType="number"
+            clearInput={clearInput}
+            register={register}
+            errorMessage={errors.width?.message}
+          />
+          <QuoteInput
+            label="Peso (kg)"
+            inputId="weight"
+            inputType="number"
+            clearInput={clearInput}
+            register={register}
+            errorMessage={errors.weight?.message}
+          />
+          { weightInfoText && (
+            <div className="w-full flex items-center justify-center text-sm text-center text-gray-500 mt-2 md:col-span-2">
+              <p>
+                {weightInfoText}
+              </p>
             </div>
-            <TextInput
-              id="weight"
-              type="number"
-              required
-              {...register("weight")}
-            />
-            { errors.weight?.message && (
-              <ErrorMessage>{errors.weight?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="length">Largo</Label>
-            </div>
-            <TextInput
-              id="length"
-              type="number"
-              required
-              {...register("length")}
-            />
-            { errors.length?.message && (
-              <ErrorMessage>{errors.length?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="height">Altura</Label>
-            </div>
-            <TextInput
-              id="height"
-              type="number"
-              required
-              {...register("height")}
-            />
-            { errors.height?.message && (
-              <ErrorMessage>{errors.height?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="width">Ancho</Label>
-            </div>
-            <TextInput
-              id="width"
-              type="number"
-              required
-              {...register("width")}
-            />
-            { errors.width?.message && (
-              <ErrorMessage>{errors.width?.message}</ErrorMessage>
-            )}
-          </div>
+          )}
         </div>
       </section>
       <div className="flex justify-center gap-6">
