@@ -27,7 +27,7 @@ export const HeaderMenuMobile = ({ screen, updateScreen, handleSignOut }: Header
       <Button onClick={toggleDrawer} color="dark">
         <RiMenuLine />
       </Button>
-      <Drawer open={openDrawer} onClose={toggleDrawer}>
+      <Drawer className="bg-blue-800 dark:bg-blue-900" open={openDrawer} onClose={toggleDrawer}>
         <DrawerHeader title="Menu" />
         <DrawerItems>
           <Sidebar
