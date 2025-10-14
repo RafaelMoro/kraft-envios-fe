@@ -54,7 +54,7 @@ export const HeaderMenuMobile = ({ screen, updateScreen, handleSignOut }: Header
 
                   <SidebarItemGroup>
                     <ToggleDarkMode cssClass="w-full my-5" />
-                    <Button outline color="red" className="w-full" onClick={handleSignOut}>Cerrar sesión</Button>
+                    <Button color="dark" className="w-full" onClick={handleSignOut}>Cerrar sesión</Button>
                   </SidebarItemGroup>
                 </SidebarItems>
               </div>
