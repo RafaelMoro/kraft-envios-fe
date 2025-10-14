@@ -28,7 +28,7 @@ export const HeaderMenuMobile = ({ screen, updateScreen, handleSignOut }: Header
         <RiMenuLine />
       </Button>
       <Drawer className="bg-blue-800 dark:bg-blue-900" open={openDrawer} onClose={toggleDrawer}>
-        <DrawerHeader title="Menu" />
+        <DrawerHeader title="Menu principal" />
         <DrawerItems>
           <Sidebar
             aria-label="Sidebar header menu mobile"
