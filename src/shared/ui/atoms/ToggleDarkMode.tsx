@@ -33,8 +33,13 @@ export const ToggleDarkMode = ({ cssClass }: ToggleDarkModeProps) => {
     getThemePreference().then((theme) => setMode(theme as ThemeMode))
   }, [])
 
+  const buttonClasses = clsx(
+    'border border-gray-100 border-1 hover:bg-blue-700 text-white',
+    cssClass
+  )
+
   return (
-    <Button className={clsx(cssClass)} data-testid="toggle-theme-mode-button" onClick={toggleDarkMode} color="light" outline>
+    <Button className={buttonClasses} data-testid="toggle-theme-mode-button" onClick={toggleDarkMode} color="light" outline>
       <NightIcon />
     </Button>
   )
