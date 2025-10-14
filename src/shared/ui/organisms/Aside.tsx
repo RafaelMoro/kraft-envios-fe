@@ -40,7 +40,7 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
           </DashboardAsideLink>
         ) }
       </nav>
-      <Button color="red" outline onClick={handleSignOut}>Cerrar sesión</Button>
+      <Button color="dark" onClick={handleSignOut}>Cerrar sesión</Button>
     </aside>
   )
 }
