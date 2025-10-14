@@ -7,7 +7,7 @@ interface LogoProps {
 
 export const Logo = ({ isMobile }: LogoProps) => {
   const pictureStyles = clsx(
-    "flex dark:bg-gray-100 rounded-full justify-center items-center",
+    "flex bg-gray-100 rounded-full justify-center items-center",
     { "h-28 w-28": !isMobile },
     { "h-16 w-16": isMobile }
   )
