@@ -1,10 +1,10 @@
-import { RiBuilding3Line } from "@remixicon/react"
+import { Button, Checkbox } from "flowbite-react"
+import { RiArrowRightFill, RiBuilding3Line } from "@remixicon/react"
 import Image from "next/image"
 import clsx from "clsx"
 
 import { QuoteTypeService, QuoteUI } from "@/shared/types/quotes.types"
 import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon"
-import { Checkbox } from "flowbite-react"
 
 interface QuoteProps {
   quote: QuoteUI
@@ -13,7 +13,6 @@ interface QuoteProps {
 }
 
 export const QuoteCard = ({ quote, addSelectedQuote, removeSelectedQuote }: QuoteProps) => {
-  console.log('quote', quote)
   const isOtherProvider = quote.logoSrc.provider === 'other'
   const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
   const is99Provider = quote.courier === 'NextDay'
@@ -80,6 +79,13 @@ export const QuoteCard = ({ quote, addSelectedQuote, removeSelectedQuote }: Quot
         <p className="md:col-span-2 lg:col-span-3 md:row-span-2 font-semibold text-2xl">
           {quote.amountFormatted}
         </p>
+        <Button
+          className="col-span-2 col-start-2 col-end-4 inline-flex gap-2"
+          // onClick={handleClickCreateGuide}
+        >
+          Crear guía
+          <RiArrowRightFill size={20} />
+        </Button>
       </div>
     </article>
   )
