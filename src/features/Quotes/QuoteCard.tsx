@@ -9,12 +9,11 @@ import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon"
 interface QuoteProps {
   quote: QuoteUI
   isMobile?: boolean;
-  isDesktop?: boolean
   addSelectedQuote: (quote: QuoteUI) => void
   removeSelectedQuote: (quoteId: string) => void
 }
 
-export const QuoteCard = ({ quote, isMobile = false, isDesktop = false, addSelectedQuote, removeSelectedQuote }: QuoteProps) => {
+export const QuoteCard = ({ quote, isMobile = false, addSelectedQuote, removeSelectedQuote }: QuoteProps) => {
   const isOtherProvider = quote.logoSrc.provider === 'other'
   const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
   const is99Provider = quote.courier === 'NextDay'
@@ -88,11 +87,11 @@ export const QuoteCard = ({ quote, isMobile = false, isDesktop = false, addSelec
           {quote.amountFormatted}
         </p>
         <Button
-          className="col-span-2 md:col-span-3 lg:col-span-4 col-start-2 col-end-4 md:col-start-4 md:col-end-7 lg:col-start-9 lg:col-end-13 inline-flex gap-2"
+          className="col-span-2 md:col-span-3 lg:col-span-4 col-start-2 col-end-4 md:col-start-4 md:col-end-7 lg:col-start-9 lg:col-end-12 inline-flex gap-2"
           // onClick={handleClickCreateGuide}
         >
           Crear guía
-          { (isMobile || isDesktop) && (<RiArrowRightFill size={20} />)}
+          { (isMobile) && (<RiArrowRightFill size={20} />)}
         </Button>
       </div>
     </article>
