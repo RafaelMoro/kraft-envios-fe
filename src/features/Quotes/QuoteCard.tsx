@@ -2,7 +2,7 @@ import { RiBuilding3Line } from "@remixicon/react"
 import Image from "next/image"
 import clsx from "clsx"
 
-import { QuoteUI } from "@/shared/types/quotes.types"
+import { QuoteTypeService, QuoteUI } from "@/shared/types/quotes.types"
 import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon"
 import { Checkbox } from "flowbite-react"
 
@@ -13,15 +13,22 @@ interface QuoteProps {
 }
 
 export const QuoteCard = ({ quote, addSelectedQuote, removeSelectedQuote }: QuoteProps) => {
+  console.log('quote', quote)
   const isOtherProvider = quote.logoSrc.provider === 'other'
   const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
   const is99Provider = quote.courier === 'NextDay'
   const isFedexProvider = quote.logoSrc.provider === 'fedex'
 
   const titleStyles = clsx(
-    "col-span-2 md:col-span-5 lg:col-span-8 text-base text-gray-900 dark:text-white",
+    "text-base font-semibold text-gray-900 dark:text-white",
     { "place-self-end justify-self-start": isOtherProvider || isFedexProvider }
   )
+
+  const typeService = (quoteType: QuoteTypeService | null) => {
+    if (!quoteType) return 'Standard'
+    if (quoteType === 'nextDay') return 'Siguiente día'
+    return 'Standard'
+  }
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checkboxChecked = e.target.checked
@@ -57,9 +64,13 @@ export const QuoteCard = ({ quote, addSelectedQuote, removeSelectedQuote }: Quot
             <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
           )}
         </div>
-        <h5 className={titleStyles}>
-          {quote.service}
-        </h5>
+        <div className="col-span-2 md:col-span-5 lg:col-span-8">
+          <span className="text-xs font-light text-blue-700 dark:text-blue-600">Paquetería</span>
+          <h5 className={titleStyles}>
+            {quote.service}
+          </h5>
+          <span className="text-sm">{typeService(quote.typeService)}</span>
+        </div>
         <p className="md:col-span-2 lg:col-span-3 md:row-span-2 font-semibold text-2xl">
           {quote.amountFormatted}
         </p>
