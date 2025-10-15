@@ -4,15 +4,10 @@ import Image from "next/image"
 import { useNotification } from "@/shared/hooks/useNotification"
 import { Notification } from "../../shared/ui/atoms/Notification"
 import { LoginCard } from "./LoginCard"
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 
 export const Login = () => {
   const { notificationMessage, openNotification, toggleNotification, updateNotificationMessage
   } = useNotification()
-  const { isDesktop } = useMediaQuery()
-
-  const imageWidth = isDesktop ? 324: 224
-  const imageHeight = isDesktop ? 212 : 112
 
   return (
     <div className="min-h-screen grid lg:grid-rows-1 lg:grid-cols-2 relative">
@@ -24,9 +19,7 @@ export const Login = () => {
         <LoginCard toggleNotification={toggleNotification} updateNotificationMessage={updateNotificationMessage}  />
       </main>
       <aside className="bg-blue-800 dark:bg-blue-900 order-2 lg:order-1 flex justify-center items-center">
-        <div className="bg-white rounded-full w-[174px] h-[174px] md:w-[224px] md:h-[224px] lg:w-[324px] lg:h-[324px] flex justify-center items-center">
-          <Image src="/kraft-logo.svg" alt="Kraft logo" width={imageWidth} height={imageHeight} className="object-cover" />
-        </div>
+        <Image src="/kraft-logo-white.png" alt="Kraft logo" width={524} height={412} className="object-cover w-56 h-28 md:w-[424px] md:h-[312px] lg:w-[524px] lg:h-[412px]" />
       </aside>
     </div>
   )
