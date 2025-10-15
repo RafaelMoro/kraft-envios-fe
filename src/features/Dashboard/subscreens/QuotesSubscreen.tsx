@@ -210,6 +210,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
                     <QuoteCard
                       key={`${qt.id}-${qt.service}`}
                       quote={qt}
+                      isMobile={isMobile}
                       addSelectedQuote={addSelectedQuote}
                       removeSelectedQuote={removeSelectedQuote}
                     />
