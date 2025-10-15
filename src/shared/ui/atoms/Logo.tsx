@@ -1,22 +1,17 @@
 import Image from "next/image"
-import clsx from "clsx"
 
 interface LogoProps {
-  isMobile: boolean
+  isLogoBlue?: boolean;
 }
 
-export const Logo = ({ isMobile }: LogoProps) => {
-  const pictureStyles = clsx(
-    "flex bg-gray-100 rounded-full justify-center items-center",
-    { "h-28 w-28": !isMobile },
-    { "h-16 w-16": isMobile }
-  )
-  const width = isMobile ? 66 : 112
-  const height = isMobile ? 33 : 66
-
+export const Logo = ({ isLogoBlue = false }: LogoProps) => {
   return (
-    <picture className={pictureStyles}>
-      <Image src="/kraft-logo.svg" alt="Kraft logo" width={width} height={height} className="object-cover" />
+    <picture>
+      { isLogoBlue ? (
+        <Image src="/kraft-logo.svg" alt="Kraft logo" width={224} height={112} className="flex justify-center items-center object-cover w-36 h-20 md:w-52 md:h-32 lg:w-72 lg:h-32" />
+      ) : (
+        <Image src="/kraft-logo-white.webp" alt="Kraft logo" width={524} height={412} className="flex justify-center items-center object-cover w-16 h-9 md:w-72 md:h-32" />
+      ) }
     </picture>
   )
 }

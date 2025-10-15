@@ -38,7 +38,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
     return (
       <div className='mt-3 flex flex-col gap-4"'>
         <header className="p-4 flex flex-row justify-between items-center">
-          <Logo isMobile={isMobileTablet} />
+          <Logo isLogoBlue />
           <HeaderMenuMobile screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} />
         </header>
         { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }

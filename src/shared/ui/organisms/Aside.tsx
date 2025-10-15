@@ -21,7 +21,7 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
   return (
     <aside className="w-full bg-blue-800 dark:bg-blue-900 p-4">
       <div className='flex w-full justify-between'>
-        <Logo isMobile={false} />
+        <Logo />
         <ToggleDarkMode />
       </div>
       <nav className="mt-10 flex flex-col mb-10">
