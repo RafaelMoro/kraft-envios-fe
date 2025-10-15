@@ -28,9 +28,10 @@ interface CreateGuideProps {
   open: boolean;
   selectedQuotes: QuoteUI[]
   toggleModal: () => void;
+  resetSelectedQuotes: () => void
 }
 
-export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGuideProps) => {
+export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelectedQuotes }: CreateGuideProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
@@ -65,6 +66,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes }: CreateGu
     resetFormData()
     resetSteps()
     setSearchProductSat('')
+    resetSelectedQuotes()
     toggleModal()
   }
 
