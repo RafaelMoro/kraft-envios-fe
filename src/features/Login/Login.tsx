@@ -19,7 +19,7 @@ export const Login = () => {
         <LoginCard toggleNotification={toggleNotification} updateNotificationMessage={updateNotificationMessage}  />
       </main>
       <aside className="bg-blue-800 dark:bg-blue-900 order-2 lg:order-1 flex justify-center items-center">
-        <Image src="/kraft-logo-white.png" alt="Kraft logo" width={524} height={412} className="object-cover w-56 h-28 md:w-[424px] md:h-[312px] lg:w-[524px] lg:h-[412px]" />
+        <Image src="/kraft-logo-white.webp" alt="Kraft logo" width={524} height={412} className="object-cover w-56 h-28 md:w-[424px] md:h-[312px] lg:w-[524px] lg:h-[412px]" />
       </aside>
     </div>
   )
