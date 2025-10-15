@@ -7,13 +7,14 @@ import { QuoteTypeService, QuoteUI } from "@/shared/types/quotes.types"
 import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon"
 
 interface QuoteProps {
-  quote: QuoteUI
+  quote: QuoteUI;
   isMobile?: boolean;
+  handleCreateGuide: () => void;
   addSelectedQuote: (quote: QuoteUI) => void
   removeSelectedQuote: (quoteId: string) => void
 }
 
-export const QuoteCard = ({ quote, isMobile = false, addSelectedQuote, removeSelectedQuote }: QuoteProps) => {
+export const QuoteCard = ({ quote, isMobile = false, addSelectedQuote, removeSelectedQuote, handleCreateGuide }: QuoteProps) => {
   const isOtherProvider = quote.logoSrc.provider === 'other'
   const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
   const is99Provider = quote.courier === 'NextDay'
@@ -88,7 +89,7 @@ export const QuoteCard = ({ quote, isMobile = false, addSelectedQuote, removeSel
         </p>
         <Button
           className="col-span-2 md:col-span-3 lg:col-span-4 col-start-2 col-end-4 md:col-start-4 md:col-end-7 lg:col-start-9 lg:col-end-12 inline-flex gap-2"
-          // onClick={handleClickCreateGuide}
+          onClick={handleCreateGuide}
         >
           Crear guía
           { (isMobile) && (<RiArrowRightFill size={20} />)}

@@ -213,6 +213,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
                       isMobile={isMobile}
                       addSelectedQuote={addSelectedQuote}
                       removeSelectedQuote={removeSelectedQuote}
+                      handleCreateGuide={handleClickCreateGuide}
                     />
                   )) }
                 </div>
