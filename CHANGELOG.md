@@ -1,3 +1,9 @@
+## v0.18.0 (2025-10-15)
+
+### Pull Requests
+[#37](https://github.com/RafaelMoro/kraft-envios-fe/pull/37) | Change visual style of aside and Login - add white logo
+
+
 ## v0.17.0 (2025-10-13)
 
 ### Pull Requests
