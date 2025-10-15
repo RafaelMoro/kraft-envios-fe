@@ -27,8 +27,8 @@ export const HeaderMenuMobile = ({ screen, updateScreen, handleSignOut }: Header
       <Button onClick={toggleDrawer} color="dark">
         <RiMenuLine />
       </Button>
-      <Drawer open={openDrawer} onClose={toggleDrawer}>
-        <DrawerHeader title="Menu" />
+      <Drawer className="bg-blue-800 dark:bg-blue-900" open={openDrawer} onClose={toggleDrawer}>
+        <DrawerHeader title="Menu principal" />
         <DrawerItems>
           <Sidebar
             aria-label="Sidebar header menu mobile"
@@ -54,7 +54,7 @@ export const HeaderMenuMobile = ({ screen, updateScreen, handleSignOut }: Header
 
                   <SidebarItemGroup>
                     <ToggleDarkMode cssClass="w-full my-5" />
-                    <Button outline color="red" className="w-full" onClick={handleSignOut}>Cerrar sesión</Button>
+                    <Button color="dark" className="w-full" onClick={handleSignOut}>Cerrar sesión</Button>
                   </SidebarItemGroup>
                 </SidebarItems>
               </div>

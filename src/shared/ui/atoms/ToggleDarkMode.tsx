@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { Button, ThemeMode } from "flowbite-react"
+import clsx from "clsx"
 
 import { NightIcon } from "../icons/NightIcon"
 import { saveThemeApi } from "@/shared/utils/global.utils";
@@ -32,8 +33,13 @@ export const ToggleDarkMode = ({ cssClass }: ToggleDarkModeProps) => {
     getThemePreference().then((theme) => setMode(theme as ThemeMode))
   }, [])
 
+  const buttonClasses = clsx(
+    'border border-gray-100 border-1 hover:bg-blue-700 text-white',
+    cssClass
+  )
+
   return (
-    <Button className={cssClass && cssClass} data-testid="toggle-theme-mode-button" onClick={toggleDarkMode} color="dark" outline>
+    <Button className={buttonClasses} data-testid="toggle-theme-mode-button" onClick={toggleDarkMode} color="light" outline>
       <NightIcon />
     </Button>
   )
