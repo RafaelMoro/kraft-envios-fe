@@ -71,15 +71,15 @@ export const QuoteCard = ({ quote, addSelectedQuote, removeSelectedQuote }: Quot
           </h5>
           <span className="text-sm">{typeService(quote.typeService)}</span>
         </div>
-        <p className="md:col-span-2 lg:col-span-3 md:row-span-2 font-semibold text-2xl">
-          {quote.amountFormatted}
-        </p>
-        <div className="md:col-span-2 inline-flex gap-2 text-gray-700 dark:text-gray-400 justify-self-end">
+        <div className="col-span-2 col-start-1 col-end-3 inline-flex gap-2 text-gray-700 dark:text-gray-400 justify-self-center">
           <RiBuilding3Line size={20} />
           <p className="text-xs">
             {quote.source}
           </p>
         </div>
+        <p className="md:col-span-2 lg:col-span-3 md:row-span-2 font-semibold text-2xl">
+          {quote.amountFormatted}
+        </p>
       </div>
     </article>
   )
