@@ -20,6 +20,7 @@ import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
 import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
+import { TEMPORAL_ERROR_CREATION_GUIDE_SELECTION } from "@/shared/constants/quotes.constants"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -106,7 +107,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     }
     // TODO: Remove this validation when all couriers support guide creation
     if (selectedQuotes.some((q) => q.source !== 'Mn' && q.source !== 'TONE')) {
-      setErrorActionBar('La creación de guías solo es compatible con el tipo "Mn" o "TONE".')
+      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
       return;
     }
 
@@ -115,6 +116,20 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       return;
     }
 
+    toggleCreateGuideMn()
+  }
+
+  const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
+    if (quote.source !== 'Mn' && quote.source !== 'TONE') {
+      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
+      return;
+    }
+    setSelectedQuotes([quote])
+
+    if (quote.source === 'TONE') {
+      toggleCreateGuideTone()
+      return;
+    }
     toggleCreateGuideMn()
   }
 
@@ -213,7 +228,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
                       isMobile={isMobile}
                       addSelectedQuote={addSelectedQuote}
                       removeSelectedQuote={removeSelectedQuote}
-                      handleCreateGuide={handleClickCreateGuide}
+                      handleCreateGuide={handleCreateGuideQuoteCard}
                     />
                   )) }
                 </div>
