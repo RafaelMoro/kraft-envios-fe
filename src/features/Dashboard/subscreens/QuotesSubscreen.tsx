@@ -26,7 +26,7 @@ interface QuotesProps {
 }
 
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
-  const { isMobile } = useMediaQuery()
+  const { isMobile, isDesktop } = useMediaQuery()
 
   // Create Guide
   const [openCreateGuideMn, setOpenCreateGuideMn] = useState<boolean>(false)
@@ -211,6 +211,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
                       key={`${qt.id}-${qt.service}`}
                       quote={qt}
                       isMobile={isMobile}
+                      isDesktop={isDesktop}
                       addSelectedQuote={addSelectedQuote}
                       removeSelectedQuote={removeSelectedQuote}
                     />
