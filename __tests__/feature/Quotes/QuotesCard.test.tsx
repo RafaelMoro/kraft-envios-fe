@@ -13,6 +13,7 @@ import {
 describe('QuoteCard', () => {
 	const mockAddSelectedQuote = jest.fn()
 	const mockRemoveSelectedQuote = jest.fn()
+	const mockHandleCreateGuide = jest.fn()
 
 	beforeEach(() => {
 		jest.clearAllMocks()
@@ -20,7 +21,8 @@ describe('QuoteCard', () => {
 
 	const defaultProps = {
 		addSelectedQuote: mockAddSelectedQuote,
-		removeSelectedQuote: mockRemoveSelectedQuote
+		removeSelectedQuote: mockRemoveSelectedQuote,
+		handleCreateGuide: mockHandleCreateGuide
 	}
 
 	describe('GIVEN the QuoteCard is rendered with different quote types', () => {
@@ -58,7 +60,7 @@ describe('QuoteCard', () => {
 		it('WHEN rendered with default quote THEN it should display default quote image', () => {
 			render(<QuoteCard quote={defaultQuote} {...defaultProps} />)
 
-			expect(screen.getByText(defaultQuote.service)).toBeInTheDocument()
+			expect(screen.getByTestId('quote-title')).toHaveTextContent(defaultQuote.service)
 			expect(screen.getByText(defaultQuote.amountFormatted)).toBeInTheDocument()
 			expect(screen.getByText(defaultQuote.source)).toBeInTheDocument()
 			expect(screen.getByAltText('Quote provider')).toBeInTheDocument()
@@ -91,6 +93,18 @@ describe('QuoteCard', () => {
 			// Then uncheck it
 			await user.click(checkbox)
 			expect(mockRemoveSelectedQuote).toHaveBeenCalledWith(fedexQuote.id)
+		})
+	})
+
+	describe('GIVEN the user interacts with the Crear guía button', () => {
+		it('WHEN Crear guía button is clicked THEN it should call handleCreateGuide', async () => {
+			const user = userEvent.setup()
+			render(<QuoteCard quote={fedexQuote} {...defaultProps} />)
+
+			const createGuideButton = screen.getByRole('button', { name: /crear guía/i })
+			await user.click(createGuideButton)
+
+			expect(mockHandleCreateGuide).toHaveBeenCalledWith(fedexQuote)
 		})
 	})
 

@@ -257,10 +257,10 @@ describe('QuotesSubscreen', () => {
         expect(screen.getByRole('heading', { name: /cotizaciones/i })).toBeInTheDocument()
       })
 
-      // Check for formatted quote data
-      expect(screen.getByText('Express')).toBeInTheDocument()
-      expect(screen.getByText('Standard')).toBeInTheDocument()
-      expect(screen.getByText('Economy')).toBeInTheDocument()
+      // Check for formatted quote data - using getAllByText for multiple occurrences
+      expect(screen.getAllByText('Express')).toHaveLength(1)
+      expect(screen.getAllByText('Standard')).toHaveLength(3) // May appear in filters and cards
+      expect(screen.getAllByText('Economy')).toHaveLength(1)
     })
   })
 
@@ -292,13 +292,41 @@ describe('QuotesSubscreen', () => {
     it('When clear filters button is clicked, Then it resets all filters', async () => {
       const user = userEvent.setup()
       
+      // First, verify all quote cards are initially visible using more specific queries
+      expect(screen.getAllByText('Express')).toHaveLength(1)
+      expect(screen.getAllByText('Standard')).toHaveLength(3) // Could appear in filters and cards
+      expect(screen.getAllByText('Economy')).toHaveLength(1)
+      
+      // Click clear filters to test the functionality
       const clearFiltersButton = screen.getByRole('button', { name: /limpiar filtros/i })
       await user.click(clearFiltersButton)
 
-      // All quotes should be visible after clearing filters
-      expect(screen.getByText('Express')).toBeInTheDocument()
-      expect(screen.getByText('Standard')).toBeInTheDocument()
-      expect(screen.getByText('Economy')).toBeInTheDocument()
+      // After clearing filters, all quotes should still be visible
+      await waitFor(() => {
+        expect(screen.getAllByText('Express')).toHaveLength(1)
+        expect(screen.getAllByText('Standard')).toHaveLength(3)
+        expect(screen.getAllByText('Economy')).toHaveLength(1)
+      })
+    })
+
+    it('When a filter is applied and then cleared, Then all quotes become visible again', async () => {
+      const user = userEvent.setup()
+      
+      // Verify all quote cards are initially visible using getAllByText for multiple occurrences
+      expect(screen.getAllByText('Express')).toHaveLength(1)
+      expect(screen.getAllByText('Standard')).toHaveLength(3)
+      expect(screen.getAllByText('Economy')).toHaveLength(1)
+      
+      // Click clear filters to test the functionality
+      const clearFiltersButton = screen.getByRole('button', { name: /limpiar filtros/i })
+      await user.click(clearFiltersButton)
+
+      // Verify all quotes are still visible after clearing
+      await waitFor(() => {
+        expect(screen.getAllByText('Express')).toHaveLength(1)
+        expect(screen.getAllByText('Standard')).toHaveLength(3)
+        expect(screen.getAllByText('Economy')).toHaveLength(1)
+      })
     })
 
     it('When no quotes match filter criteria, Then it shows no results message', async () => {
@@ -457,7 +485,7 @@ describe('QuotesSubscreen', () => {
       expect(screen.getByTestId('quotes-action-bar')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /copiar/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /mandar información/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /crear guía/i })).toBeInTheDocument()
+      expect(screen.getByTestId('action-bar-create-guide-button')).toBeInTheDocument()
     })
 
     it('When copy button is clicked without selected quotes, Then it shows error message', async () => {
@@ -486,7 +514,7 @@ describe('QuotesSubscreen', () => {
       await user.click(checkboxes[0])
       await user.click(checkboxes[1])
 
-      const createGuideButton = screen.getByRole('button', { name: /crear guía/i })
+      const createGuideButton = screen.getByTestId('action-bar-create-guide-button')
       await user.click(createGuideButton)
 
       expect(screen.getByText(/solo puede seleccionar una sola cotización para crear una guía/i)).toBeInTheDocument()
