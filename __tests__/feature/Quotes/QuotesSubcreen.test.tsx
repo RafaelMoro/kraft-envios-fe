@@ -457,7 +457,7 @@ describe('QuotesSubscreen', () => {
       expect(screen.getByTestId('quotes-action-bar')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /copiar/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /mandar información/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /crear guía/i })).toBeInTheDocument()
+      expect(screen.getByTestId('action-bar-create-guide-button')).toBeInTheDocument()
     })
 
     it('When copy button is clicked without selected quotes, Then it shows error message', async () => {
