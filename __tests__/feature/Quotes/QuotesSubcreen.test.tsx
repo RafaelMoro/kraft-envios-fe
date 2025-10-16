@@ -486,7 +486,7 @@ describe('QuotesSubscreen', () => {
       await user.click(checkboxes[0])
       await user.click(checkboxes[1])
 
-      const createGuideButton = screen.getByRole('button', { name: /crear guía/i })
+      const createGuideButton = screen.getByTestId('action-bar-create-guide-button')
       await user.click(createGuideButton)
 
       expect(screen.getByText(/solo puede seleccionar una sola cotización para crear una guía/i)).toBeInTheDocument()

@@ -195,7 +195,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
               <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
               <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
-              <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
+              <Button data-testid="action-bar-create-guide-button" className="inline-flex gap-2" onClick={handleClickCreateGuide}>
                 <RiStickyNoteAddLine size={20} />
                 Crear guía
               </Button>
