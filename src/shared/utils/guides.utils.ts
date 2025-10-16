@@ -14,6 +14,7 @@ import {
   FetchSatProductsResponse,
   GetProductSatIdPayload,
   CreateGuideAddressFormValues,
+  CreateGuideAddressFormValuesTone,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -52,6 +53,19 @@ export const verifyAndUpdateAddress = (address: CreateGuideAddressFormValues): C
   return {
     ...address,
     company: address.company?.trim() || DEFAULT_COMPANY,
+    email: address.email?.trim() || DEFAULT_EMAIL,
+    reference: address.reference?.trim() || DEFAULT_REFERENCE
+  }
+}
+
+/**
+ * Verifies and updates address data by replacing empty optional fields with default values
+ * @param address - The address object to verify and update
+ * @returns Updated address object with default values for empty optional fields
+ */
+export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValuesTone): CreateGuideAddressFormValuesTone => {
+  return {
+    ...address,
     email: address.email?.trim() || DEFAULT_EMAIL,
     reference: address.reference?.trim() || DEFAULT_REFERENCE
   }
