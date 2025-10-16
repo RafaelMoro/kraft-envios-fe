@@ -29,8 +29,12 @@ export const createGuideMnCb = async (data: CreateGuideMnPayload) => {
 }
 
 export const createGuideToneCb = async (data: CreateGuideTonePayload) => {
-  const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_MN_ENDPOINT_TONE, data)
-  return res?.data?.data?.guide
+  try {
+    const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_MN_ENDPOINT_TONE, data)
+    return res?.data?.data?.guide
+  } catch (error) {
+    throw error
+  }
 }
 
 /**
