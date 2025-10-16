@@ -115,7 +115,7 @@ describe('ConfirmGuideDataTone', () => {
       expect(mockCreateGuide).toHaveBeenCalledWith({
         quoteToken: '1', // fedexQuote.id
         notifyMe: true, // parcelInfo.notifyMe
-        originAddress: {
+        origin: {
           name: 'Juan Pérez',
           lastName: 'González',
           street1: 'Av. Principal 123',
@@ -127,7 +127,7 @@ describe('ConfirmGuideDataTone', () => {
           email: 'juan@example.com',
           reference: 'Entre calle A y B'
         },
-        destinationAddress: {
+        destination: {
           name: 'María López',
           lastName: 'Martínez',
           street1: 'Calle Secundaria 456',
@@ -139,7 +139,7 @@ describe('ConfirmGuideDataTone', () => {
           email: 'maria@example.com',
           reference: 'Edificio azul'
         },
-        parcelInfo: {
+        parcel: {
           content: 'Documentos importantes'
         }
       })
