@@ -5,12 +5,13 @@ import { Button } from "flowbite-react";
 
 interface ResultGuideScreenProps {
   guide: GlobalCreateGuideResponse | undefined;
+  errorMessage?: string
   isSuccess: boolean;
   isError: boolean;
   closeModal: () => void
 }
 
-export const ResultGuideScreen = ({ guide, isSuccess, isError, closeModal }: ResultGuideScreenProps) => {
+export const ResultGuideScreen = ({ guide, isSuccess, isError, errorMessage, closeModal }: ResultGuideScreenProps) => {
   const title = isSuccess ? "Guía creada con éxito" : "Error al crear la guía"
   const formattedPrice = formatNumberToCurrency((Number(guide?.price ?? 0)))
 
@@ -44,7 +45,12 @@ export const ResultGuideScreen = ({ guide, isSuccess, isError, closeModal }: Res
       )}
       { isError && !isSuccess && (
         <div className="flex flex-col gap-6">
-          <p className="text-red-600 text-center">Ocurrió un error al crear la guía. Por favor, intente nuevamente.</p>
+          <p className="text-red-600 text-center">
+            { errorMessage === 'No cuenta con saldo suficiente'
+              ? 'Saldo insuficiente en TONE. Por favor, recarga tu cuenta e intenta nuevamente.'
+              : 'Ocurrió un error al crear la guía. Por favor, intente nuevamente.'
+            }
+          </p>
           <Button color="red" onClick={closeModal} outline>
             Finalizar
           </Button>
