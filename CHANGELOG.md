@@ -1,3 +1,9 @@
+## v0.19.0 (2025-10-16)
+
+### Pull Requests
+[#38](https://github.com/RafaelMoro/kraft-envios-fe/pull/38) | Change quote card design
+
+
 ## v0.18.0 (2025-10-15)
 
 ### Pull Requests
