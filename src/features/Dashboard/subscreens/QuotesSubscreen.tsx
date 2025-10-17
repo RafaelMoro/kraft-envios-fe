@@ -20,6 +20,7 @@ import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
 import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
+import { TEMPORAL_ERROR_CREATION_GUIDE_SELECTION } from "@/shared/constants/quotes.constants"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -106,7 +107,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     }
     // TODO: Remove this validation when all couriers support guide creation
     if (selectedQuotes.some((q) => q.source !== 'Mn' && q.source !== 'TONE')) {
-      setErrorActionBar('La creación de guías solo es compatible con el tipo "Mn" o "TONE".')
+      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
       return;
     }
 
@@ -115,6 +116,20 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       return;
     }
 
+    toggleCreateGuideMn()
+  }
+
+  const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
+    if (quote.source !== 'Mn' && quote.source !== 'TONE') {
+      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
+      return;
+    }
+    setSelectedQuotes([quote])
+
+    if (quote.source === 'TONE') {
+      toggleCreateGuideTone()
+      return;
+    }
     toggleCreateGuideMn()
   }
 
@@ -180,7 +195,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
             <div data-testid="quotes-action-bar" className="w-full flex justify-end gap-2">
               <CopyQuotesButton isMobile={isMobile} handleCopyInfo={handleCopyInfo} successCopyActionBar={successCopyActionBar} />
               <SendInfoButton isMobile={isMobile} handleSendInfo={handleSendInfo} />
-              <Button className="inline-flex gap-2" onClick={handleClickCreateGuide}>
+              <Button data-testid="action-bar-create-guide-button" className="inline-flex gap-2" onClick={handleClickCreateGuide}>
                 <RiStickyNoteAddLine size={20} />
                 Crear guía
               </Button>
@@ -210,8 +225,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
                     <QuoteCard
                       key={`${qt.id}-${qt.service}`}
                       quote={qt}
+                      isMobile={isMobile}
                       addSelectedQuote={addSelectedQuote}
                       removeSelectedQuote={removeSelectedQuote}
+                      handleCreateGuide={handleCreateGuideQuoteCard}
                     />
                   )) }
                 </div>
@@ -229,8 +246,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
-      <CreateGuideModal open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} />
-      <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} />
+      <CreateGuideModal open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
+      <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
     </main>
   )
 }

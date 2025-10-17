@@ -75,9 +75,9 @@ export type CreateGuideMnPayload = {
 export type CreateGuideTonePayload = {
   quoteToken: string;
   notifyMe: boolean;
-  originAddress: CreateGuideAddressFormValuesTone;
-  destinationAddress: CreateGuideAddressFormValuesTone;
-  parcelInfo: {
+  origin: CreateGuideAddressFormValuesTone;
+  destination: CreateGuideAddressFormValuesTone;
+  parcel: {
     content: string;
   };
 }

@@ -20,9 +20,10 @@ interface CreateGuideModalToneProps {
   open: boolean;
   selectedQuotes: QuoteUI[]
   toggleModal: () => void;
+  resetSelectedQuotes: () => void
 }
 
-export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: CreateGuideModalToneProps) => {
+export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetSelectedQuotes }: CreateGuideModalToneProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
@@ -44,10 +45,11 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
   const closeModal = () => {
     resetFormData()
     resetSteps()
+    resetSelectedQuotes()
     toggleModal()
   }
 
-  const { mutate: createGuide, data, isError, isPending, isSuccess } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideTonePayload>({
+  const { mutate: createGuide, data, isError, isPending, isSuccess, error } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideTonePayload>({
     mutationFn: createGuideToneCb,
     onSuccess: () => {
       goNext()
@@ -56,6 +58,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
       goNext()
     }
   })
+  const errorMessage = error?.response?.data?.message
 
   return (
     <Modal show={open} onClose={closeModal}>
@@ -104,7 +107,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal }: Crea
           />
         )}
         { (isError || isSuccess) && step === 5 && (
-          <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
+          <ResultGuideScreen errorMessage={errorMessage} guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
         ) }
       </ModalBody>
     </Modal>

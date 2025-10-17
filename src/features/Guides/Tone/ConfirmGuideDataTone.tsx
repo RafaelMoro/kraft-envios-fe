@@ -3,6 +3,7 @@ import { Button, Spinner } from "flowbite-react"
 import { CreateGuideFormValuesTone, CreateGuideTonePayload } from "@/shared/types/guides.types"
 import { formatPhoneNumber } from "@/shared/utils/global.utils"
 import { QuoteUI } from "@/shared/types/quotes.types"
+import { verifyAndUpdateAddressTone } from "@/shared/utils/guides.utils"
 
 interface ConfirmGuideDataToneProps {
   formData: CreateGuideFormValuesTone
@@ -17,12 +18,16 @@ export const ConfirmGuideDataTone = ({ formData, selectedQuotes, isPending, goPr
 
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
+    // Verify and update addresses with default values for empty optional fields
+    const verifiedOriginAddress = verifyAndUpdateAddressTone(originAddress)
+    const verifiedDestinationAddress = verifyAndUpdateAddressTone(destinationAddress)
+
     const payload: CreateGuideTonePayload = {
       quoteToken: quoteId,
       notifyMe: parcelInfo.notifyMe,
-      originAddress,
-      destinationAddress,
-      parcelInfo: {
+      origin: verifiedOriginAddress,
+      destination: verifiedDestinationAddress,
+      parcel: {
         content: parcelInfo.content,
       }
     }

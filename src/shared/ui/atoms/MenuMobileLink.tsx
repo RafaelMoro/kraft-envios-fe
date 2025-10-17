@@ -9,9 +9,9 @@ interface MenuMobileLinkProps {
 
 export const MenuMobileLink = ({ children, onClickCb, isSelected }: MenuMobileLinkProps) => {
   const buttonCss = clsx(
-    "flex gap-1 rounded-lg p-2 text-base font-normal hover:bg-gray-200 dark:hover:bg-gray-700",
-    { "text-gray-900 dark:text-white": !isSelected },
-    { "text-indigo-600 dark:text-indigo-400": isSelected }
+    "w-full flex gap-1 rounded-lg p-2 text-base font-normal hover:bg-gray-200 dark:hover:bg-gray-700",
+    { "text-gray-300": !isSelected },
+    { "text-white bg-indigo-900 dark:bg-indigo-700": isSelected }
   )
 
   return (

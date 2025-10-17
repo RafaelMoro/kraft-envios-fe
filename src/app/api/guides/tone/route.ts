@@ -28,6 +28,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(res.data, { status: 201 })
 
   } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error?.response?.data?.error?.message || error.message
+      return NextResponse.json({ message }, { status: 400 })
+    }
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
     return NextResponse.json({ message }, { status: 400 })
   }

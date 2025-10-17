@@ -19,9 +19,9 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
   const isAdmin = Array.isArray(userInfo?.data?.user?.role) && userInfo?.data?.user?.role.includes('admin')
 
   return (
-    <aside className="w-72 border-r border-r-gray-600 p-4">
-      <div className='flex w-full justify-between'>
-        <Logo isMobile={false} />
+    <aside className="w-full bg-blue-800 dark:bg-blue-900 p-4">
+      <div className='flex w-full justify-between items-center'>
+        <Logo />
         <ToggleDarkMode />
       </div>
       <nav className="mt-10 flex flex-col mb-10">
@@ -40,7 +40,7 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
           </DashboardAsideLink>
         ) }
       </nav>
-      <Button color="red" outline onClick={handleSignOut}>Cerrar sesión</Button>
+      <Button color="dark" onClick={handleSignOut}>Cerrar sesión</Button>
     </aside>
   )
 }

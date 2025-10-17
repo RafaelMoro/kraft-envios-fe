@@ -52,4 +52,8 @@
   .grid-card-quote {
     grid-template-rows: min-content min-content;
   }
+
+  .grid-dashboard {
+    grid-template-columns: 20% 80%;
+  }
 }

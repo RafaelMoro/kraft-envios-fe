@@ -38,7 +38,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
     return (
       <div className='mt-3 flex flex-col gap-4"'>
         <header className="p-4 flex flex-row justify-between items-center">
-          <Logo isMobile={isMobileTablet} />
+          <Logo isLogoBlue />
           <HeaderMenuMobile screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} />
         </header>
         { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
@@ -49,7 +49,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
   }
 
   return (
-    <div className="w-full min-h-screen max-w-screen-2xl flex mx-auto my-0">
+    <div className="w-full min-h-screen grid grid-dashboard">
       <Aside screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} userInfo={userInfo} />
       { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
       { screen === 'overview' && (<Order userInfo={userInfo} />) }

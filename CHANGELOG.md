@@ -1,3 +1,21 @@
+## v0.19.1 (2025-10-17)
+
+### Pull Requests
+[#39](https://github.com/RafaelMoro/kraft-envios-fe/pull/39) | Fix creation of tone guide
+
+
+## v0.19.0 (2025-10-16)
+
+### Pull Requests
+[#38](https://github.com/RafaelMoro/kraft-envios-fe/pull/38) | Change quote card design
+
+
+## v0.18.0 (2025-10-15)
+
+### Pull Requests
+[#37](https://github.com/RafaelMoro/kraft-envios-fe/pull/37) | Change visual style of aside and Login - add white logo
+
+
 ## v0.17.0 (2025-10-13)
 
 ### Pull Requests
