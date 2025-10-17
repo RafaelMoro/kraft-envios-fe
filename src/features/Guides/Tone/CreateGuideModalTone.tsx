@@ -49,7 +49,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
     toggleModal()
   }
 
-  const { mutate: createGuide, data, isError, isPending, isSuccess } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideTonePayload>({
+  const { mutate: createGuide, data, isError, isPending, isSuccess, error } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideTonePayload>({
     mutationFn: createGuideToneCb,
     onSuccess: () => {
       goNext()
@@ -58,6 +58,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
       goNext()
     }
   })
+  const errorMessage = error?.response?.data?.message
 
   return (
     <Modal show={open} onClose={closeModal}>
@@ -106,7 +107,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           />
         )}
         { (isError || isSuccess) && step === 5 && (
-          <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
+          <ResultGuideScreen errorMessage={errorMessage} guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
         ) }
       </ModalBody>
     </Modal>
