@@ -21,6 +21,7 @@ import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
 import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
 import { TEMPORAL_ERROR_CREATION_GUIDE_SELECTION } from "@/shared/constants/quotes.constants"
+import { CreateGuidePkk } from "@/features/Guides/Pkk/CreateGuidePkk"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -34,6 +35,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const toggleCreateGuideMn = () => setOpenCreateGuideMn((prev) => !prev)
   const [openCreateGuideTone, setOpenCreateGuideTone] = useState<boolean>(false)
   const toggleCreateGuideTone = () => setOpenCreateGuideTone((prev) => !prev)
+  const [openCreateGuidePkk, setOpenCreateGuidePkk] = useState<boolean>(false)
+  const toggleCreateGuidePkk = () => setOpenCreateGuidePkk((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -248,6 +251,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
       <CreateGuideModal open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
       <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
+      <CreateGuidePkk open={openCreateGuidePkk} toggleModal={toggleCreateGuidePkk} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
     </main>
   )
 }
