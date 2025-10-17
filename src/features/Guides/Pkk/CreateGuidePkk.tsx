@@ -49,7 +49,7 @@ export const CreateGuidePkk = ({
         )}
         { step === 1 && (
           <CreateGuideAddressFormPkk
-            // addressData={formData.current.originAddress}
+            addressData={formData.current.originAddress}
             goNext={goNext}
             updateOriginAddress={updateOriginAddress}
             toggleModal={toggleModal}

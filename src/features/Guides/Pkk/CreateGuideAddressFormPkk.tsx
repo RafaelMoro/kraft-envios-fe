@@ -8,7 +8,7 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface CreateGuideAddressFormPkkProps {
   isDestination?: boolean
-  // addressData: CreateGuideAddressFormValuesTone
+  addressData: CreateGuideAddressValuesPkk;
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
@@ -16,9 +16,9 @@ interface CreateGuideAddressFormPkkProps {
 }
 
 export const CreateGuideAddressFormPkk = ({
-  isDestination, goNext, goPrev, toggleModal, updateOriginAddress,
+  isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
 }: CreateGuideAddressFormPkkProps) => {
-  const [isResidential, setIsResidential] = useState(false);
+  const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     register,
     handleSubmit,
@@ -59,7 +59,7 @@ export const CreateGuideAddressFormPkk = ({
           </div>
           <TextInput
             data-testid="name"
-            // defaultValue={addressData.name}
+            defaultValue={addressData.name}
             id="name"
             type="text"
             {...register("name")}
@@ -77,7 +77,7 @@ export const CreateGuideAddressFormPkk = ({
             id="phone"
             type="text"
             inputMode="numeric"
-            // defaultValue={addressData.phone}
+            defaultValue={addressData.phone}
             {...register("phone")}
           />
           { errors?.phone?.message && (
@@ -91,7 +91,7 @@ export const CreateGuideAddressFormPkk = ({
           <TextInput
             id="email"
             type="email"
-            // defaultValue={addressData.email ?? ''}
+            defaultValue={addressData.email ?? ''}
             {...register("email")}
           />
           { errors?.email?.message && (
@@ -104,7 +104,7 @@ export const CreateGuideAddressFormPkk = ({
           </div>
           <TextInput
             data-testid="street1"
-            // defaultValue={addressData.street1}
+            defaultValue={addressData.street1}
             id="street1"
             type="text"
             {...register("street1")}
@@ -119,7 +119,7 @@ export const CreateGuideAddressFormPkk = ({
           </div>
           <TextInput
             data-testid="neighborhood"
-            // defaultValue={addressData.neighborhood}
+            defaultValue={addressData.neighborhood}
             id="neighborhood"
             type="text"
             {...register("neighborhood")}
@@ -134,7 +134,7 @@ export const CreateGuideAddressFormPkk = ({
           </div>
           <TextInput
             data-testid="city"
-            // defaultValue={addressData.city}
+            defaultValue={addressData.city}
             id="city"
             type="text"
             {...register("city")}
@@ -149,7 +149,7 @@ export const CreateGuideAddressFormPkk = ({
           </div>
           <TextInput
             data-testid="state"
-            // defaultValue={addressData.state}
+            defaultValue={addressData.state}
             id="state"
             type="text"
             {...register("state")}
