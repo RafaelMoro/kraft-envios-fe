@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
@@ -5,6 +6,8 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
+import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk } from "@/shared/types/guides.types";
+import { initialStateFormPkk } from "@/shared/constants/guides.constants";
 
 interface CreateGuidePkkProps {
   open: boolean;
@@ -17,11 +20,19 @@ export const CreateGuidePkk = ({
   open, selectedQuotes, toggleModal, resetSelectedQuotes,
 }: CreateGuidePkkProps) => {
   const { isMobileTablet } = useMediaQuery()
-    const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
-    const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+  const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
+  const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+
+  const formData = useRef<CreateGuideFormValuesPkk>({...initialStateFormPkk})
+  const resetFormData = () => {
+    formData.current = {...initialStateFormPkk}
+  }
+  const updateOriginAddress = (data: CreateGuideAddressValuesPkk) => {
+    formData.current.originAddress = data
+  }
 
   const closeModal = () => {
-    // resetFormData()
+    resetFormData()
     resetSteps()
     resetSelectedQuotes()
     toggleModal()
@@ -40,7 +51,7 @@ export const CreateGuidePkk = ({
           <CreateGuideAddressFormPkk
             // addressData={formData.current.originAddress}
             goNext={goNext}
-            // updateAddress={updateOriginAddress}
+            updateOriginAddress={updateOriginAddress}
             toggleModal={toggleModal}
             goPrev={goPrev}
           />

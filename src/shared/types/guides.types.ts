@@ -17,6 +17,10 @@ export type CreateGuideFormValuesTone = {
   parcelInfo: ParcelInfoValuesTone;
 }
 
+export type CreateGuideFormValuesPkk = {
+  originAddress: CreateGuideAddressValuesPkk;
+}
+
 export type CreateGuideAddressFormValues = {
   name: string;
   street1: string;
@@ -52,6 +56,10 @@ export type CreateGuideAddressFormValuesPkk = {
   city: string;
   state: string;
   zipcode: string;
+}
+
+export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
+  isResidential: boolean;
 }
 
 

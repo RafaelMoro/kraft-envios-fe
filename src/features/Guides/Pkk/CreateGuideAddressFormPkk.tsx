@@ -3,7 +3,7 @@ import { Button, Label, TextInput, ToggleSwitch } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
-import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk } from "@/shared/types/guides.types"
+import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk, CreateGuideAddressValuesPkk } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface CreateGuideAddressFormPkkProps {
@@ -12,11 +12,11 @@ interface CreateGuideAddressFormPkkProps {
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  // updateAddress: (data: CreateGuideAddressFormValuesTone) => void
+  updateOriginAddress: (data: CreateGuideAddressValuesPkk) => void
 }
 
 export const CreateGuideAddressFormPkk = ({
-  isDestination, goNext, goPrev, toggleModal,
+  isDestination, goNext, goPrev, toggleModal, updateOriginAddress,
 }: CreateGuideAddressFormPkkProps) => {
   const [isResidential, setIsResidential] = useState(false);
   const {
@@ -30,7 +30,9 @@ export const CreateGuideAddressFormPkk = ({
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    // updateAddress(data)
+
+    const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
+    updateOriginAddress(updatedData)
     goNext()
   }
 

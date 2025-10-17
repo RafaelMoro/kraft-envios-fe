@@ -1,4 +1,4 @@
-import { CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideFormValues, CreateGuideFormValuesTone } from "../types/guides.types";
+import { CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressValuesPkk, CreateGuideFormValues, CreateGuideFormValuesPkk, CreateGuideFormValuesTone } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
 // TODO: Confirm the default email
@@ -42,6 +42,18 @@ export const initialStateAddressTone: CreateGuideAddressFormValuesTone = {
   reference: ""
 }
 
+export const initialStateAddressPkk: CreateGuideAddressValuesPkk = {
+  name: "",
+  email: "",
+  phone: "",
+  street1: "",
+  neighborhood: "",
+  city: "",
+  state: "",
+  zipcode: "",
+  isResidential: false
+}
+
 export const initialStateFormTone: CreateGuideFormValuesTone = {
   originAddress: initialStateAddressTone,
   destinationAddress: initialStateAddressTone,
@@ -49,6 +61,10 @@ export const initialStateFormTone: CreateGuideFormValuesTone = {
     content: "",
     notifyMe: false,
   }
+}
+
+export const initialStateFormPkk: CreateGuideFormValuesPkk = {
+  originAddress: initialStateAddressPkk,
 }
 
 export const GET_SAT_PRODUCT_ENDPOINT = '/api/product-sat'
