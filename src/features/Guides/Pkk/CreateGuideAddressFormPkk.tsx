@@ -1,4 +1,9 @@
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form"
+
+import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk } from "@/shared/types/guides.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface CreateGuideAddressFormPkkProps {
   isDestination?: boolean
@@ -12,20 +17,20 @@ interface CreateGuideAddressFormPkkProps {
 export const CreateGuideAddressFormPkk = ({
   isDestination, goNext, goPrev, toggleModal,
 }: CreateGuideAddressFormPkkProps) => {
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm<CreateGuideAddressFormValuesTone>({
-  //   resolver: yupResolver(CreateGuideAddressFormSchemaTone)
-  // })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateGuideAddressFormValuesPkk>({
+    resolver: yupResolver(CreateGuideAddressFormSchemaPkk)
+  })
 
-  // const onSubmit: SubmitHandler<CreateGuideAddressFormValuesTone> = (data, event) => {
-  //   event?.preventDefault()
-  //   event?.stopPropagation()
-  //   updateAddress(data)
-  //   goNext()
-  // }
+  const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    // updateAddress(data)
+    goNext()
+  }
 
   const handleCancel = () => {
     if (isDestination) {
@@ -41,7 +46,7 @@ export const CreateGuideAddressFormPkk = ({
 
   return (
     <form
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
@@ -53,11 +58,11 @@ export const CreateGuideAddressFormPkk = ({
             // defaultValue={addressData.name}
             id="name"
             type="text"
-            // {...register("name")}
+            {...register("name")}
           />
-          {/* { errors?.name?.message && (
+          { errors?.name?.message && (
             <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -69,11 +74,11 @@ export const CreateGuideAddressFormPkk = ({
             type="text"
             inputMode="numeric"
             // defaultValue={addressData.phone}
-            // {...register("phone")}
+            {...register("phone")}
           />
-          {/* { errors?.phone?.message && (
+          { errors?.phone?.message && (
             <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -83,11 +88,11 @@ export const CreateGuideAddressFormPkk = ({
             id="email"
             type="email"
             // defaultValue={addressData.email ?? ''}
-            // {...register("email")}
+            {...register("email")}
           />
-          {/* { errors?.email?.message && (
+          { errors?.email?.message && (
             <ErrorMessage>{errors.email?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -98,11 +103,11 @@ export const CreateGuideAddressFormPkk = ({
             // defaultValue={addressData.street1}
             id="street1"
             type="text"
-            // {...register("street1")}
+            {...register("street1")}
           />
-          {/* { errors?.street1?.message && (
+          { errors?.street1?.message && (
             <ErrorMessage>{errors.street1?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -113,11 +118,11 @@ export const CreateGuideAddressFormPkk = ({
             // defaultValue={addressData.neighborhood}
             id="neighborhood"
             type="text"
-            // {...register("neighborhood")}
+            {...register("neighborhood")}
           />
-          {/* { errors?.neighborhood?.message && (
+          { errors?.neighborhood?.message && (
             <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -128,11 +133,11 @@ export const CreateGuideAddressFormPkk = ({
             // defaultValue={addressData.city}
             id="city"
             type="text"
-            // {...register("city")}
+            {...register("city")}
           />
-          {/* { errors?.city?.message && (
+          { errors?.city?.message && (
             <ErrorMessage>{errors.city?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
           <div className="mb-2 block">
@@ -143,25 +148,25 @@ export const CreateGuideAddressFormPkk = ({
             // defaultValue={addressData.state}
             id="state"
             type="text"
-            // {...register("state")}
+            {...register("state")}
           />
-          {/* { errors?.state?.message && (
+          { errors?.state?.message && (
             <ErrorMessage>{errors.state?.message}</ErrorMessage>
-          )} */}
+          )}
         </div>
         <div>
       <div className="mb-2 block">
-        <Label htmlFor="postalCode">Código Postal</Label>
+        <Label htmlFor="zipcode">Código Postal</Label>
       </div>
       <TextInput
-        id="postalCode"
+        id="zipcode"
         type="text"
         inputMode="numeric"
-        // {...register("postalCode")}
+        {...register("zipcode")}
       />
-      {/* { errorMessage && (
-        <ErrorMessage>{errorMessage}</ErrorMessage>
-      )} */}
+      { errors?.zipcode?.message && (
+        <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
+      )}
     </div>
       </section>
       <div className="flex justify-between mt-4">

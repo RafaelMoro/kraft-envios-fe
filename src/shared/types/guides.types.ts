@@ -43,6 +43,17 @@ export type CreateGuideAddressFormValuesTone = {
   reference?: string | null | undefined
 }
 
+export type CreateGuideAddressFormValuesPkk = {
+  name: string;
+  email?: string | null | undefined
+  phone: string;
+  street1: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipcode: string;
+}
+
 
 export type ParcelInfoFormValues = {
   content: string;
@@ -213,3 +224,24 @@ export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFo
 export const ParcelInfoFormValuesFormtoneSchema: ObjectSchema<ParcelInfoFormValuesTone> = object({
   content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres')
 })
+
+export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFormValuesPkk> = object().shape({
+  name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  email: emailOptionalValidation,
+  phone: string()
+    .required('El teléfono es requerido')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+    .min(10, 'El teléfono debe tener 10 dígitos')
+    .max(10, 'El teléfono debe tener 10 dígitos'),
+  street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
+  neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
+  city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
+  state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
+  zipcode: string()
+    .required('La dirección postal es requerida')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
+    .min(5, 'La dirección postal debe tener 5 caracteres')
+    .max(5, 'La dirección postal debe tener 5 caracteres')
+}, [
+  ["email", "email"]
+])
