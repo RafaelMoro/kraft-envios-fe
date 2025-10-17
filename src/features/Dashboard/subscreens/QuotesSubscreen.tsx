@@ -109,13 +109,17 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       return;
     }
     // TODO: Remove this validation when all couriers support guide creation
-    if (selectedQuotes.some((q) => q.source !== 'Mn' && q.source !== 'TONE')) {
+    if (selectedQuotes.some((q) => q.source === 'GE')) {
       setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
       return;
     }
 
     if (selectedQuotes[0].source === 'TONE') {
       toggleCreateGuideTone()
+      return;
+    }
+    if (selectedQuotes[0].source === 'Pkk') {
+      toggleCreateGuidePkk()
       return;
     }
 
