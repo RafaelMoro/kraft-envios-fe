@@ -61,17 +61,32 @@ export const CreateGuideAddressFormPkk = ({
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="lastName">Apellido de la persona</Label>
+            <Label htmlFor="phone">Teléfono</Label>
           </div>
           <TextInput
-            data-testid="lastName"
-            // defaultValue={addressData.lastName}
-            id="lastName"
+            data-testid="phone"
+            id="phone"
             type="text"
-            // {...register("lastName")}
+            inputMode="numeric"
+            // defaultValue={addressData.phone}
+            // {...register("phone")}
           />
-          {/* { errors?.lastName?.message && (
-            <ErrorMessage>{errors.lastName?.message}</ErrorMessage>
+          {/* { errors?.phone?.message && (
+            <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
+          )} */}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
+          </div>
+          <TextInput
+            id="email"
+            type="email"
+            // defaultValue={addressData.email ?? ''}
+            // {...register("email")}
+          />
+          {/* { errors?.email?.message && (
+            <ErrorMessage>{errors.email?.message}</ErrorMessage>
           )} */}
         </div>
         <div>
@@ -106,33 +121,17 @@ export const CreateGuideAddressFormPkk = ({
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="external_number">Numero exterior</Label>
+            <Label htmlFor="town">Ciudad</Label>
           </div>
           <TextInput
-            data-testid="external_number"
-            // defaultValue={addressData.external_number}
-            id="external_number"
+            data-testid="city"
+            // defaultValue={addressData.city}
+            id="city"
             type="text"
-            inputMode="numeric"
-            // {...register("external_number")}
+            // {...register("city")}
           />
-          {/* { errors?.external_number?.message && (
-            <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
-          )} */}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="town">Municipio</Label>
-          </div>
-          <TextInput
-            data-testid="town"
-            // defaultValue={addressData.town}
-            id="town"
-            type="text"
-            // {...register("town")}
-          />
-          {/* { errors?.town?.message && (
-            <ErrorMessage>{errors.town?.message}</ErrorMessage>
+          {/* { errors?.city?.message && (
+            <ErrorMessage>{errors.city?.message}</ErrorMessage>
           )} */}
         </div>
         <div>
@@ -151,50 +150,19 @@ export const CreateGuideAddressFormPkk = ({
           )} */}
         </div>
         <div>
-          <div className="mb-2 block">
-            <Label htmlFor="phone">Teléfono</Label>
-          </div>
-          <TextInput
-            data-testid="phone"
-            id="phone"
-            type="text"
-            inputMode="numeric"
-            // defaultValue={addressData.phone}
-            // {...register("phone")}
-          />
-          {/* { errors?.phone?.message && (
-            <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )} */}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
-          </div>
-          <TextInput
-            id="email"
-            type="email"
-            // defaultValue={addressData.email ?? ''}
-            // {...register("email")}
-          />
-          {/* { errors?.email?.message && (
-            <ErrorMessage>{errors.email?.message}</ErrorMessage>
-          )} */}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
-          </div>
-          <TextInput
-            data-testid="reference"
-            // defaultValue={addressData.reference ?? ''}
-            id="reference"
-            type="text"
-            // {...register("reference")}
-          />
-          {/* { errors?.reference?.message && (
-            <ErrorMessage>{errors.reference?.message}</ErrorMessage>
-          )} */}
-        </div>
+      <div className="mb-2 block">
+        <Label htmlFor="postalCode">Código Postal</Label>
+      </div>
+      <TextInput
+        id="postalCode"
+        type="text"
+        inputMode="numeric"
+        // {...register("postalCode")}
+      />
+      {/* { errorMessage && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )} */}
+    </div>
       </section>
       <div className="flex justify-between mt-4">
         <Button
