@@ -1,6 +1,7 @@
-import { yupResolver } from "@hookform/resolvers/yup"
-import { Button, Label, TextInput } from "flowbite-react"
+import { useState } from "react"
+import { Button, Label, TextInput, ToggleSwitch } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 
 import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
@@ -17,6 +18,7 @@ interface CreateGuideAddressFormPkkProps {
 export const CreateGuideAddressFormPkk = ({
   isDestination, goNext, goPrev, toggleModal,
 }: CreateGuideAddressFormPkkProps) => {
+  const [isResidential, setIsResidential] = useState(false);
   const {
     register,
     handleSubmit,
@@ -155,19 +157,20 @@ export const CreateGuideAddressFormPkk = ({
           )}
         </div>
         <div>
-      <div className="mb-2 block">
-        <Label htmlFor="zipcode">Código Postal</Label>
-      </div>
-      <TextInput
-        id="zipcode"
-        type="text"
-        inputMode="numeric"
-        {...register("zipcode")}
-      />
-      { errors?.zipcode?.message && (
-        <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-      )}
-    </div>
+          <div className="mb-2 block">
+            <Label htmlFor="zipcode">Código Postal</Label>
+          </div>
+          <TextInput
+            id="zipcode"
+            type="text"
+            inputMode="numeric"
+            {...register("zipcode")}
+          />
+          { errors?.zipcode?.message && (
+            <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
+          )}
+        </div>
+        <ToggleSwitch checked={isResidential} label="Es residencial" onChange={setIsResidential} />
       </section>
       <div className="flex justify-between mt-4">
         <Button
