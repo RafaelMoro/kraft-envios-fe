@@ -1,3 +1,9 @@
+## v0.19.1 (2025-10-17)
+
+### Pull Requests
+[#39](https://github.com/RafaelMoro/kraft-envios-fe/pull/39) | Fix creation of tone guide
+
+
 ## v0.19.0 (2025-10-16)
 
 ### Pull Requests
