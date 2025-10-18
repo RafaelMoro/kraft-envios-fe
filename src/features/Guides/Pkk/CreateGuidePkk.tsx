@@ -30,6 +30,9 @@ export const CreateGuidePkk = ({
   const updateOriginAddress = (data: CreateGuideAddressValuesPkk) => {
     formData.current.originAddress = data
   }
+  const updateDestinationAddress = (data: CreateGuideAddressValuesPkk) => {
+    formData.current.destinationAddress = data
+  }
 
   const closeModal = () => {
     resetFormData()
@@ -54,6 +57,16 @@ export const CreateGuidePkk = ({
             updateOriginAddress={updateOriginAddress}
             toggleModal={toggleModal}
             goPrev={goPrev}
+          />
+        )}
+        { step === 2 && (
+          <CreateGuideAddressFormPkk
+            addressData={formData.current.destinationAddress}
+            goNext={goNext}
+            updateOriginAddress={updateDestinationAddress}
+            toggleModal={toggleModal}
+            goPrev={goPrev}
+            isDestination
           />
         )}
       </ModalBody>

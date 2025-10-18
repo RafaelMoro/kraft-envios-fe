@@ -19,6 +19,7 @@ export type CreateGuideFormValuesTone = {
 
 export type CreateGuideFormValuesPkk = {
   originAddress: CreateGuideAddressValuesPkk;
+  destinationAddress: CreateGuideAddressValuesPkk;
 }
 
 export type CreateGuideAddressFormValues = {
