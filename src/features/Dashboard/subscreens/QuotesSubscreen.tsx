@@ -134,7 +134,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }
 
   const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
-    if (quote.source !== 'Mn' && quote.source !== 'TONE') {
+    if (quote.source === 'GE') {
       setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
       return;
     }
@@ -144,6 +144,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       toggleCreateGuideTone()
       return;
     }
+
+    if (quote.source === 'Pkk') {
+      toggleCreateGuidePkk()
+      return;
+    }
+
     toggleCreateGuideMn()
   }
 
