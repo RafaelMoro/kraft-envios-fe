@@ -271,7 +271,6 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         open={openCreateGuidePkk}
         packageDimensions={packageDimensions.current}
         toggleModal={toggleCreateGuidePkk}
-        selectedQuotes={selectedQuotes}
         resetSelectedQuotes={resetSelectedQuotes}
       />
     </main>

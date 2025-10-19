@@ -1,18 +1,16 @@
 import { CreateGuideFormValuesPkk, CreateGuidePkkPayload } from "@/shared/types/guides.types"
-import { QuoteUI } from "@/shared/types/quotes.types"
 import { formatPhoneNumber } from "@/shared/utils/global.utils"
 import { verifyAndUpdateAddressPkk } from "@/shared/utils/guides.utils"
 import { Button, Spinner } from "flowbite-react"
 
 interface ConfirmGuidePkkProps {
   formData: CreateGuideFormValuesPkk
-  selectedQuotes: QuoteUI[]
   isPending: boolean;
   goPrev: () => void
   createGuide: (payload: CreateGuidePkkPayload) => void;
 }
 
-export const ConfirmGuidePkk = ({ formData, selectedQuotes, isPending, goPrev, createGuide }: ConfirmGuidePkkProps) => {
+export const ConfirmGuidePkk = ({ formData, isPending, goPrev, createGuide }: ConfirmGuidePkkProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
   const handleSubmit = () => {
