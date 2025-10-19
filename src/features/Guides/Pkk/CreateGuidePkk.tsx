@@ -9,6 +9,7 @@ import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
 import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
 import { initialStateFormPkk } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
+import { ConfirmGuidePkk } from "./ConfirmGuidePkk";
 
 interface CreateGuidePkkProps {
   open: boolean;
@@ -21,7 +22,6 @@ interface CreateGuidePkkProps {
 export const CreateGuidePkk = ({
   open, selectedQuotes, packageDimensions, toggleModal, resetSelectedQuotes,
 }: CreateGuidePkkProps) => {
-  console.log('packageDimensions', packageDimensions)
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
@@ -88,6 +88,15 @@ export const CreateGuidePkk = ({
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
+          />
+        )}
+        { step === 4 && (
+          <ConfirmGuidePkk
+            formData={formData.current}
+            goPrev={goPrev}
+            selectedQuotes={selectedQuotes}
+            isPending={false}
+            // createGuide={createGuide}
           />
         )}
       </ModalBody>
