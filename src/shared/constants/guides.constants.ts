@@ -66,6 +66,13 @@ export const initialStateFormTone: CreateGuideFormValuesTone = {
 export const initialStateFormPkk: CreateGuideFormValuesPkk = {
   originAddress: initialStateAddressPkk,
   destinationAddress: initialStateAddressPkk,
+  parcelInfo: {
+    content: "",
+    length: "",
+    width: "",
+    height: "",
+    weight: ""
+  }
 }
 
 export const GET_SAT_PRODUCT_ENDPOINT = '/api/product-sat'

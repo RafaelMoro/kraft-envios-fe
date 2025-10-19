@@ -6,8 +6,9 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
-import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk } from "@/shared/types/guides.types";
+import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, ParcelInfoValues } from "@/shared/types/guides.types";
 import { initialStateFormPkk } from "@/shared/constants/guides.constants";
+import { ParcelInfo } from "../ParcelInfo";
 
 interface CreateGuidePkkProps {
   open: boolean;
@@ -32,6 +33,13 @@ export const CreateGuidePkk = ({
   }
   const updateDestinationAddress = (data: CreateGuideAddressValuesPkk) => {
     formData.current.destinationAddress = data
+  }
+  const updateParcelInfo = (data: ParcelInfoValues) => {
+    const currentContentData = { ...formData.current.parcelInfo }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { content: oldContent, ...rest   } = currentContentData
+    const updatedData = { ...rest, content: data.content }
+    formData.current.parcelInfo = updatedData
   }
 
   const closeModal = () => {
@@ -67,6 +75,15 @@ export const CreateGuidePkk = ({
             toggleModal={toggleModal}
             goPrev={goPrev}
             isDestination
+          />
+        )}
+        { step === 3 && (
+          <ParcelInfo
+            parcelInfo={formData.current.parcelInfo}
+            isMobileTablet={isMobileTablet}
+            goNext={goNext}
+            goPrev={goPrev}
+            updateParcelInfo={updateParcelInfo}
           />
         )}
       </ModalBody>

@@ -20,6 +20,7 @@ export type CreateGuideFormValuesTone = {
 export type CreateGuideFormValuesPkk = {
   originAddress: CreateGuideAddressValuesPkk;
   destinationAddress: CreateGuideAddressValuesPkk;
+  parcelInfo: ParcelInfoValuesPkk;
 }
 
 export type CreateGuideAddressFormValues = {
@@ -80,9 +81,15 @@ export type ParcelInfoValues = {
 /**
  * This type represents the parcel information needed for the mutation
  */
-export type ParcelInfoValuesTone = {
-  content: string;
+export type ParcelInfoValuesTone = ParcelInfoValues & {
   notifyMe: boolean;
+}
+
+export type ParcelInfoValuesPkk = ParcelInfoValues & {
+  length: string;
+  width: string;
+  height: string;
+  weight: string;
 }
 
 export type CreateGuideMnPayload = {

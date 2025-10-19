@@ -1,15 +1,12 @@
+import { useState } from "react"
 import { Button, Label, TextInput, ToggleSwitch } from "flowbite-react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { SubmitHandler, useForm } from "react-hook-form"
+
 import { ParcelInfoFormValuesSchema, ParcelInfoValues, ParcelInfoValuesTone } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { useState } from "react"
 
-interface BaseParcelInfo {
-  content: string;
-}
-
-interface CreateGuideFormValuesTone<T extends BaseParcelInfo = ParcelInfoValuesTone> {
+interface CreateGuideFormValuesTone<T extends ParcelInfoValues = ParcelInfoValuesTone> {
   isMobileTablet: boolean
   parcelInfo: ParcelInfoValues
   goNext: () => void
