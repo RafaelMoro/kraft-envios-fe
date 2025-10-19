@@ -11,14 +11,16 @@ import { getQuoteMutationCb, calculateVolumetricWeight } from "@/shared/utils/qu
 import { QuoteInput } from "./QuoteInput"
 import { TypePackage } from "./TypePackage"
 import { DEFAULT_ENVELOPE_HEIGHT, DEFAULT_ENVELOPE_LENGTH, DEFAULT_ENVELOPE_WIDTH } from "@/shared/constants/quotes.constants"
+import { PackageDimensions } from "@/shared/types/guides.types"
 
 interface QuoteFormProps {
   updateQuotes: (quotesGotten: Quote[]) => void
   resetSelectedQuotes: () => void
   resetFiltersQuotes: () => void;
+  updatePackageDimensions: (dimensions: PackageDimensions) => void
 }
 
-export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuotes }: QuoteFormProps) => {
+export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuotes, updatePackageDimensions }: QuoteFormProps) => {
   const [volumetricWeight, setVolumetricWeight] = useState<number | null>(null)
 
   // State for type of package
@@ -52,6 +54,13 @@ export const QuoteForm = ({ updateQuotes, resetSelectedQuotes, resetFiltersQuote
   const quotesFetched = data?.data?.data?.data?.quotes
 
   const onSubmit: SubmitHandler<GetQuoteForm> = (data) => {
+    const packageDimensions: PackageDimensions = {
+      length: String(data.length),
+      height: String(data.height),
+      width: String(data.width),
+      weight: String(data.weight),
+    }
+    updatePackageDimensions(packageDimensions)
     getQuotes(data)
   }
 

@@ -6,20 +6,22 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
-import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, ParcelInfoValues } from "@/shared/types/guides.types";
+import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
 import { initialStateFormPkk } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
 
 interface CreateGuidePkkProps {
   open: boolean;
-  selectedQuotes: QuoteUI[]
+  selectedQuotes: QuoteUI[];
+  packageDimensions: PackageDimensions | null;
   toggleModal: () => void;
   resetSelectedQuotes: () => void
 }
 
 export const CreateGuidePkk = ({
-  open, selectedQuotes, toggleModal, resetSelectedQuotes,
+  open, selectedQuotes, packageDimensions, toggleModal, resetSelectedQuotes,
 }: CreateGuidePkkProps) => {
+  console.log('packageDimensions', packageDimensions)
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
@@ -35,11 +37,13 @@ export const CreateGuidePkk = ({
     formData.current.destinationAddress = data
   }
   const updateParcelInfo = (data: ParcelInfoValues) => {
-    const currentContentData = { ...formData.current.parcelInfo }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { content: oldContent, ...rest   } = currentContentData
-    const updatedData = { ...rest, content: data.content }
-    formData.current.parcelInfo = updatedData
+    if (packageDimensions) {
+      const currentContentData = { ...formData.current.parcelInfo }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { content: oldContent, ...rest   } = currentContentData
+      const updatedData = { ...packageDimensions, content: data.content }
+      formData.current.parcelInfo = updatedData
+    }
   }
 
   const closeModal = () => {

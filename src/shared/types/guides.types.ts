@@ -85,12 +85,14 @@ export type ParcelInfoValuesTone = ParcelInfoValues & {
   notifyMe: boolean;
 }
 
-export type ParcelInfoValuesPkk = ParcelInfoValues & {
+export type PackageDimensions = {
   length: string;
   width: string;
   height: string;
   weight: string;
 }
+
+export type ParcelInfoValuesPkk = ParcelInfoValues & PackageDimensions;
 
 export type CreateGuideMnPayload = {
   quoteId: string
