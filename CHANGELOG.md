@@ -1,3 +1,9 @@
+## v0.20.0 (2025-10-19)
+
+### Pull Requests
+[#41](https://github.com/RafaelMoro/kraft-envios-fe/pull/41) | Add create guide flow to Pkk
+
+
 ## v0.19.1 (2025-10-17)
 
 ### Pull Requests
