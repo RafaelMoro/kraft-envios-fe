@@ -1,6 +1,7 @@
-import { CreateGuideFormValuesPkk } from "@/shared/types/guides.types"
+import { CreateGuideFormValuesPkk, CreateGuidePkkPayload } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types"
 import { formatPhoneNumber } from "@/shared/utils/global.utils"
+import { verifyAndUpdateAddressPkk } from "@/shared/utils/guides.utils"
 import { Button, Spinner } from "flowbite-react"
 
 interface ConfirmGuidePkkProps {
@@ -8,12 +9,25 @@ interface ConfirmGuidePkkProps {
   selectedQuotes: QuoteUI[]
   isPending: boolean;
   goPrev: () => void
+  createGuide: (payload: CreateGuidePkkPayload) => void;
 }
 
-export const ConfirmGuidePkk = ({ formData, selectedQuotes, isPending, goPrev }: ConfirmGuidePkkProps) => {
+export const ConfirmGuidePkk = ({ formData, selectedQuotes, isPending, goPrev, createGuide }: ConfirmGuidePkkProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
-  const handleSubmit = () => {}
+  const handleSubmit = () => {
+    // Verify and update addresses with default values for empty optional fields
+    const verifiedOriginAddress = verifyAndUpdateAddressPkk(originAddress)
+    const verifiedDestinationAddress = verifyAndUpdateAddressPkk(destinationAddress)
+
+    const payload: CreateGuidePkkPayload = {
+      origin: verifiedOriginAddress,
+      destination: verifiedDestinationAddress,
+      parcel: parcelInfo
+    }
+
+    createGuide(payload)
+  }
 
   return (
     <section className="flex flex-col gap-10">

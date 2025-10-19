@@ -111,6 +111,12 @@ export type CreateGuideTonePayload = {
   };
 }
 
+export type CreateGuidePkkPayload = {
+  origin: CreateGuideAddressValuesPkk;
+  destination: CreateGuideAddressValuesPkk;
+  parcel: ParcelInfoValuesPkk;
+}
+
 //#region Responses
 
 /**
