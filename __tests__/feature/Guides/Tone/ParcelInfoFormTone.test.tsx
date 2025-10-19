@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react'
 
 import { ParcelInfoFormTone } from '@/features/Guides/ParcelInfo'
-import { ParcelInfoFormValuesTone } from '@/shared/types/guides.types'
+import { ParcelInfoValues } from '@/shared/types/guides.types'
 
 describe('ParcelInfoFormTone', () => {
   const defaultProps = {
     isMobileTablet: false,
     parcelInfo: {
       content: ''
-    } as ParcelInfoFormValuesTone,
+    } as ParcelInfoValues,
     goNext: jest.fn(),
     goPrev: jest.fn(),
     updateParcelInfo: jest.fn()

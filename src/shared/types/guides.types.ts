@@ -73,7 +73,7 @@ export type ParcelInfoFormValues = {
 /**
  * This type represents the parcel information for the form without the checkbox
  */
-export type ParcelInfoFormValuesTone = {
+export type ParcelInfoValues = {
   content: string;
 }
 
@@ -230,7 +230,7 @@ export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFo
   ["email", "email"]
 ])
 
-export const ParcelInfoFormValuesFormtoneSchema: ObjectSchema<ParcelInfoFormValuesTone> = object({
+export const ParcelInfoFormValuesSchema: ObjectSchema<ParcelInfoValues> = object({
   content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres')
 })
 
