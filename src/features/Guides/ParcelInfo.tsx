@@ -5,15 +5,19 @@ import { ParcelInfoFormValuesSchema, ParcelInfoValues, ParcelInfoValuesTone } fr
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { useState } from "react"
 
-interface CreateGuideFormValuesTone {
+interface BaseParcelInfo {
+  content: string;
+}
+
+interface CreateGuideFormValuesTone<T extends BaseParcelInfo = ParcelInfoValuesTone> {
   isMobileTablet: boolean
   parcelInfo: ParcelInfoValues
   goNext: () => void
   goPrev: () => void
-  updateParcelInfo: (data: ParcelInfoValuesTone) => void
+  updateParcelInfo: (data: T) => void
 }
 
-export const ParcelInfoFormTone = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone) => {
+export const ParcelInfoFormTone = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone<ParcelInfoValuesTone>) => {
   const [notifyMe, setNotifyMe] = useState(false);
 
   const {
