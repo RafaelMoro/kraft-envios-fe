@@ -13,7 +13,8 @@ describe('QuoteForm', () => {
   const defaultProps = {
     updateQuotes: jest.fn(),
     resetSelectedQuotes: jest.fn(),
-    resetFiltersQuotes: jest.fn()
+    resetFiltersQuotes: jest.fn(),
+    updatePackageDimensions: jest.fn()
   }
 
   beforeEach(() => {
@@ -420,9 +421,9 @@ describe('QuoteForm', () => {
       await user.type(originInput, '12345')
       await user.type(destinationInput, '12345')
       await user.type(weightInput, '10')
-      await user.type(lengthInput, '10')
-      await user.type(heightInput, '10')
-      await user.type(widthInput, '10')
+      await user.type(lengthInput, '20')
+      await user.type(heightInput, '15')
+      await user.type(widthInput, '25')
       await user.click(screen.getByRole('button', { name: /Cotizar/i }))
   
       await waitFor(() => {
@@ -437,6 +438,91 @@ describe('QuoteForm', () => {
           ]
         )
       })
+
+      // Verify that updatePackageDimensions is called with correct dimensions
+      expect(defaultProps.updatePackageDimensions).toHaveBeenCalledWith({
+        length: "20",
+        height: "15", 
+        width: "25",
+        weight: "10"
+      })
+    })
+
+    it('Given form is submitted, When updatePackageDimensions is called, Then it should convert all dimension values to strings', async () => {
+      mockedAxios.post.mockResolvedValue({
+        error: null,
+        message: null,
+        success: true,
+        version: "v1.2.0",
+        data: {
+          data: {
+            data: {
+              quotes: []
+            }
+          }
+        }
+      })
+      const user = userEvent.setup()
+  
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+  
+      const originInput = screen.getByLabelText(/Código Postal de Origen/i)
+      const destinationInput = screen.getByLabelText(/Código Postal de Destino/i)
+      const weightInput = screen.getByLabelText(/Peso/i)
+      const lengthInput = screen.getByLabelText(/Largo/i)
+      const heightInput = screen.getByLabelText(/Alto/i)
+      const widthInput = screen.getByLabelText(/Ancho/i)
+  
+      await user.type(originInput, '54321')
+      await user.type(destinationInput, '98765')
+      await user.type(weightInput, '1')
+      await user.type(lengthInput, '10')
+      await user.type(heightInput, '10')
+      await user.type(widthInput, '10')
+      
+      await user.click(screen.getByRole('button', { name: /Cotizar/i }))
+  
+      // Check that updatePackageDimensions was called with the correct arguments
+      expect(defaultProps.updatePackageDimensions).toHaveBeenCalledTimes(1)
+      expect(defaultProps.updatePackageDimensions).toHaveBeenCalledWith({
+        length: "10",
+        height: "10", 
+        width: "10",
+        weight: "1"
+      })
+    })
+
+    it('Given "Crear nueva cotización" button is clicked, When clearQuotes is called, Then all reset functions should be called', async () => {
+      const user = userEvent.setup()
+  
+      render(
+        <QueryProviderWrapper>
+          <QuoteForm {...defaultProps} />
+        </QueryProviderWrapper>
+      )
+
+      // Fill in some form data first
+      const originInput = screen.getByLabelText(/Código Postal de Origen/i)
+      const weightInput = screen.getByLabelText(/Peso/i)
+      
+      await user.type(originInput, '12345')
+      await user.type(weightInput, '5')
+      
+      // Click the "Crear nueva cotización" button
+      await user.click(screen.getByRole('button', { name: /Crear nueva cotización/i }))
+
+      // Verify all reset functions were called
+      expect(defaultProps.resetSelectedQuotes).toHaveBeenCalledTimes(1)
+      expect(defaultProps.resetFiltersQuotes).toHaveBeenCalledTimes(1)
+      expect(defaultProps.updateQuotes).toHaveBeenCalledWith([])
+
+      // Verify form was reset - the origin input should be empty
+      expect(originInput).toHaveValue('')
+      // Note: weight input might have null value after reset, which is acceptable
     })
   })
 })
