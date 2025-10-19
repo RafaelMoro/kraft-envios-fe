@@ -17,7 +17,7 @@ interface CreateGuideFormValuesTone<T extends BaseParcelInfo = ParcelInfoValuesT
   updateParcelInfo: (data: T) => void
 }
 
-export const ParcelInfoFormTone = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone<ParcelInfoValuesTone>) => {
+export const ParcelInfo = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone<ParcelInfoValuesTone>) => {
   const [notifyMe, setNotifyMe] = useState(false);
 
   const {
