@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 
-import { ParcelInfoFormTone } from '@/features/Guides/ParcelInfo'
-import { ParcelInfoValues } from '@/shared/types/guides.types'
+import { ParcelInfo } from '@/features/Guides/ParcelInfo'
+import { ParcelInfoValues, ParcelInfoValuesTone } from '@/shared/types/guides.types'
 
 describe('ParcelInfoFormTone', () => {
   const defaultProps = {
@@ -11,7 +11,8 @@ describe('ParcelInfoFormTone', () => {
     } as ParcelInfoValues,
     goNext: jest.fn(),
     goPrev: jest.fn(),
-    updateParcelInfo: jest.fn()
+    updateParcelInfo: jest.fn() as jest.MockedFunction<(data: ParcelInfoValuesTone) => void>,
+    isTone: true
   }
 
   beforeEach(() => {
@@ -21,7 +22,7 @@ describe('ParcelInfoFormTone', () => {
   describe('GIVEN ParcelInfoFormTone with basic props', () => {
     it('WHEN component renders THEN form elements should be visible (content input, toggle switch, buttons)', () => {
       render(
-        <ParcelInfoFormTone {...defaultProps} />
+        <ParcelInfo<ParcelInfoValuesTone> {...defaultProps} />
       )
 
       // Then content input should be visible

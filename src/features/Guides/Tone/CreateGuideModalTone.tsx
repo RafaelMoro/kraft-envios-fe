@@ -89,9 +89,10 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           />
         )}
         { step === 3 && (
-          <ParcelInfo
+          <ParcelInfo<ParcelInfoValuesTone>
             parcelInfo={formData.current.parcelInfo}
             isMobileTablet={isMobileTablet}
+            isTone
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}

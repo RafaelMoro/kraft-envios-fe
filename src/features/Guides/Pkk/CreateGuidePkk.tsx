@@ -78,7 +78,7 @@ export const CreateGuidePkk = ({
           />
         )}
         { step === 3 && (
-          <ParcelInfo
+          <ParcelInfo<ParcelInfoValues>
             parcelInfo={formData.current.parcelInfo}
             isMobileTablet={isMobileTablet}
             goNext={goNext}

@@ -6,15 +6,23 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { ParcelInfoFormValuesSchema, ParcelInfoValues, ParcelInfoValuesTone } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
-interface CreateGuideFormValuesTone<T extends ParcelInfoValues = ParcelInfoValuesTone> {
+interface ParcelInfoProps<T extends ParcelInfoValues = ParcelInfoValuesTone> {
   isMobileTablet: boolean
   parcelInfo: ParcelInfoValues
+  isTone?: boolean;
   goNext: () => void
   goPrev: () => void
   updateParcelInfo: (data: T) => void
 }
 
-export const ParcelInfo = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateParcelInfo }: CreateGuideFormValuesTone<ParcelInfoValuesTone>) => {
+export const ParcelInfo = <T extends ParcelInfoValues = ParcelInfoValuesTone>({ 
+  isMobileTablet, 
+  parcelInfo, 
+  isTone = false, 
+  goNext, 
+  goPrev, 
+  updateParcelInfo 
+}: ParcelInfoProps<T>) => {
   const [notifyMe, setNotifyMe] = useState(false);
 
   const {
@@ -28,8 +36,13 @@ export const ParcelInfo = ({ isMobileTablet, parcelInfo, goNext, goPrev, updateP
   const onSubmit: SubmitHandler<ParcelInfoValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    const updatedData: ParcelInfoValuesTone = { ...data, notifyMe }
-    updateParcelInfo(updatedData)
+
+    if (isTone) {
+      const updatedData = { ...data, notifyMe }
+      updateParcelInfo(updatedData as unknown as T)
+    } else {
+      updateParcelInfo(data as unknown as T)
+    }
     goNext()
   }
 
