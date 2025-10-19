@@ -12,6 +12,7 @@ import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuidePkk } from "./ConfirmGuidePkk";
 import { createGuidePkkCb } from "@/shared/utils/guides.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
+import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
 
 interface CreateGuidePkkProps {
   open: boolean;
@@ -63,6 +64,7 @@ export const CreateGuidePkk = ({
       goNext()
     }
   })
+  const errorMessage = error?.response?.data?.message
 
   return (
     <Modal show={open} onClose={closeModal}>
@@ -105,10 +107,13 @@ export const CreateGuidePkk = ({
           <ConfirmGuidePkk
             formData={formData.current}
             goPrev={goPrev}
-            isPending={false}
+            isPending={isPending}
             createGuide={createGuide}
           />
         )}
+        { (isError || isSuccess) && step === 5 && (
+          <ResultGuideScreen errorMessage={errorMessage} guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
+        ) }
       </ModalBody>
     </Modal>
   )
