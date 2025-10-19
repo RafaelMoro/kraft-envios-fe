@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { ParcelInfoFormTone } from '@/features/Guides/Tone/ParcelInfoFormTone'
+import { ParcelInfoFormTone } from '@/features/Guides/Tone/ParcelInfo'
 import { ParcelInfoFormValuesTone } from '@/shared/types/guides.types'
 
 describe('ParcelInfoFormTone', () => {

@@ -9,7 +9,7 @@ import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
 import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, CreateGuideTonePayload, GlobalCreateGuideResponse, ParcelInfoValuesTone } from "@/shared/types/guides.types";
 import { initialStateFormTone } from "@/shared/constants/guides.constants";
-import { ParcelInfoFormTone } from "./ParcelInfoFormTone";
+import { ParcelInfoFormTone } from "./ParcelInfo";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
 import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
