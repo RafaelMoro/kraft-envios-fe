@@ -67,7 +67,7 @@ export const ParcelInfo = <T extends ParcelInfoValues = ParcelInfoValuesTone>({
             <ErrorMessage>{errors.content?.message}</ErrorMessage>
           )}
         </div>
-        <ToggleSwitch checked={notifyMe} label="Notificame" onChange={setNotifyMe} />
+        { isTone && (<ToggleSwitch checked={notifyMe} label="Notificame" onChange={setNotifyMe} />)}
       </section>
       <div className="flex justify-between mt-4">
         <Button
