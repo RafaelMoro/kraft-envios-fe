@@ -21,6 +21,8 @@ import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
 import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
 import { TEMPORAL_ERROR_CREATION_GUIDE_SELECTION } from "@/shared/constants/quotes.constants"
+import { CreateGuidePkk } from "@/features/Guides/Pkk/CreateGuidePkk"
+import { PackageDimensions } from "@/shared/types/guides.types"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -29,11 +31,19 @@ interface QuotesProps {
 export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const { isMobile } = useMediaQuery()
 
+  // Reference to save package dimensions
+  const packageDimensions = useRef<PackageDimensions | null>(null)
+  const updatePackageDimensions = (dimensions: PackageDimensions) => {
+    packageDimensions.current = dimensions
+  }
+
   // Create Guide
   const [openCreateGuideMn, setOpenCreateGuideMn] = useState<boolean>(false)
   const toggleCreateGuideMn = () => setOpenCreateGuideMn((prev) => !prev)
   const [openCreateGuideTone, setOpenCreateGuideTone] = useState<boolean>(false)
   const toggleCreateGuideTone = () => setOpenCreateGuideTone((prev) => !prev)
+  const [openCreateGuidePkk, setOpenCreateGuidePkk] = useState<boolean>(false)
+  const toggleCreateGuidePkk = () => setOpenCreateGuidePkk((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -106,7 +116,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       return;
     }
     // TODO: Remove this validation when all couriers support guide creation
-    if (selectedQuotes.some((q) => q.source !== 'Mn' && q.source !== 'TONE')) {
+    if (selectedQuotes.some((q) => q.source === 'GE')) {
       setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
       return;
     }
@@ -115,12 +125,16 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       toggleCreateGuideTone()
       return;
     }
+    if (selectedQuotes[0].source === 'Pkk') {
+      toggleCreateGuidePkk()
+      return;
+    }
 
     toggleCreateGuideMn()
   }
 
   const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
-    if (quote.source !== 'Mn' && quote.source !== 'TONE') {
+    if (quote.source === 'GE') {
       setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
       return;
     }
@@ -130,6 +144,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       toggleCreateGuideTone()
       return;
     }
+
+    if (quote.source === 'Pkk') {
+      toggleCreateGuidePkk()
+      return;
+    }
+
     toggleCreateGuideMn()
   }
 
@@ -185,7 +205,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-center text-xl mb-5">Ingrese los siguientes datos para obtener una cotización</p>
       <IntersectionObserverWrapper setIntersecting={setIsIntersectingForm}>
-        <QuoteForm updateQuotes={updateAllQuotes} resetSelectedQuotes={resetSelectedQuotes} resetFiltersQuotes={resetFiltersQuotes} />
+        <QuoteForm
+          updateQuotes={updateAllQuotes}
+          resetSelectedQuotes={resetSelectedQuotes}
+          resetFiltersQuotes={resetFiltersQuotes}
+          updatePackageDimensions={updatePackageDimensions}
+        />
       </IntersectionObserverWrapper>
       { allQuotes.length > 0 && (
         <section ref={quotesSectionRef} className="flex flex-col gap-4 align-center justify-center mt-7">
@@ -248,6 +273,12 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
       <CreateGuideModal open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
       <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
+      <CreateGuidePkk
+        open={openCreateGuidePkk}
+        packageDimensions={packageDimensions.current}
+        toggleModal={toggleCreateGuidePkk}
+        resetSelectedQuotes={resetSelectedQuotes}
+      />
     </main>
   )
 }

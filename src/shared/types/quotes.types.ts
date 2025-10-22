@@ -109,8 +109,16 @@ export type GetQuoteForm = {
 
 //#region Schemas
 export const QuoteFormSchema: ObjectSchema<GetQuoteForm> = object().shape({
-  originPostalCode: string().required('La dirección postal de origen es requerida').min(5, 'La dirección postal de origen debe tener 5 caracteres').max(5, 'La dirección postal de origen debe tener 5 caracteres'),
-  destinationPostalCode: string().required('La dirección postal de destino es requerida').min(5, 'La dirección postal de destino debe tener 5 caracteres').max(5, 'La dirección postal de destino debe tener 5 caracteres'),
+  originPostalCode: string()
+    .required('La dirección postal de origen es requerida')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal de origen solo puede contener dígitos" })
+    .min(5, 'La dirección postal de origen debe tener 5 caracteres')
+    .max(5, 'La dirección postal de origen debe tener 5 caracteres'),
+  destinationPostalCode: string()
+    .required('La dirección postal de destino es requerida')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal de destino solo puede contener dígitos" })
+    .min(5, 'La dirección postal de destino debe tener 5 caracteres')
+    .max(5, 'La dirección postal de destino debe tener 5 caracteres'),
   weight: number()
     .transform((value, originalValue) => originalValue === '' ? undefined : value)
     .required('El peso del paquete es requerido')

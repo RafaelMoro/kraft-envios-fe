@@ -1,45 +1,51 @@
-"use client"
 import { useRef } from "react";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
+import { useMutation } from "@tanstack/react-query";
 
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
-import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
-import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, CreateGuideTonePayload, GlobalCreateGuideResponse, ParcelInfoValuesTone } from "@/shared/types/guides.types";
-import { initialStateFormTone } from "@/shared/constants/guides.constants";
+import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
+import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, CreateGuidePkkPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
+import { initialStateFormPkk } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
-import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
-import { useMutation } from "@tanstack/react-query";
+import { ConfirmGuidePkk } from "./ConfirmGuidePkk";
+import { createGuidePkkCb } from "@/shared/utils/guides.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
-import { createGuideToneCb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
 
-interface CreateGuideModalToneProps {
+interface CreateGuidePkkProps {
   open: boolean;
-  selectedQuotes: QuoteUI[]
+  packageDimensions: PackageDimensions | null;
   toggleModal: () => void;
   resetSelectedQuotes: () => void
 }
 
-export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetSelectedQuotes }: CreateGuideModalToneProps) => {
+export const CreateGuidePkk = ({
+  open, packageDimensions, toggleModal, resetSelectedQuotes,
+}: CreateGuidePkkProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
-  const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
+  const formData = useRef<CreateGuideFormValuesPkk>({...initialStateFormPkk})
   const resetFormData = () => {
-    formData.current = {...initialStateFormTone}
+    formData.current = {...initialStateFormPkk}
   }
-  const updateOriginAddress = (data: CreateGuideAddressFormValuesTone) => {
+  const updateOriginAddress = (data: CreateGuideAddressValuesPkk) => {
     formData.current.originAddress = data
   }
-  const updateDestinationAddress = (data: CreateGuideAddressFormValuesTone) => {
+  const updateDestinationAddress = (data: CreateGuideAddressValuesPkk) => {
     formData.current.destinationAddress = data
   }
-  const updateParcelInfo = (data: ParcelInfoValuesTone) => {
-    formData.current.parcelInfo = data
+  const updateParcelInfo = (data: ParcelInfoValues) => {
+    if (packageDimensions) {
+      const currentContentData = { ...formData.current.parcelInfo }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { content: oldContent, ...rest   } = currentContentData
+      const updatedData = { ...packageDimensions, content: data.content }
+      formData.current.parcelInfo = updatedData
+    }
   }
 
   const closeModal = () => {
@@ -49,8 +55,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
     toggleModal()
   }
 
-  const { mutate: createGuide, data, isError, isPending, isSuccess, error } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideTonePayload>({
-    mutationFn: createGuideToneCb,
+  const { mutate: createGuide, data, isError, isPending, isSuccess, error } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuidePkkPayload>({
+    mutationFn: createGuidePkkCb,
     onSuccess: () => {
       goNext()
     },
@@ -70,39 +76,37 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           </div>
         )}
         { step === 1 && (
-          <CreateGuideAddressFormTone
+          <CreateGuideAddressFormPkk
             addressData={formData.current.originAddress}
             goNext={goNext}
-            updateAddress={updateOriginAddress}
+            updateOriginAddress={updateOriginAddress}
             toggleModal={toggleModal}
             goPrev={goPrev}
           />
         )}
         { step === 2 && (
-          <CreateGuideAddressFormTone
+          <CreateGuideAddressFormPkk
             addressData={formData.current.destinationAddress}
             goNext={goNext}
-            updateAddress={updateDestinationAddress}
-            isDestination
+            updateOriginAddress={updateDestinationAddress}
             toggleModal={toggleModal}
             goPrev={goPrev}
+            isDestination
           />
         )}
         { step === 3 && (
-          <ParcelInfo<ParcelInfoValuesTone>
+          <ParcelInfo<ParcelInfoValues>
             parcelInfo={formData.current.parcelInfo}
             isMobileTablet={isMobileTablet}
-            isTone
             goNext={goNext}
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
           />
         )}
         { step === 4 && (
-          <ConfirmGuideDataTone
+          <ConfirmGuidePkk
             formData={formData.current}
             goPrev={goPrev}
-            selectedQuotes={selectedQuotes}
             isPending={isPending}
             createGuide={createGuide}
           />
