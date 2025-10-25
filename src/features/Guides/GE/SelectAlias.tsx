@@ -1,22 +1,18 @@
-import { useState } from "react"
+"use client"
 import { useQuery } from "@tanstack/react-query"
 import { RiArrowDownSLine } from "@remixicon/react"
-import { Button, Dropdown, DropdownItem } from "flowbite-react"
+import { Button, Dropdown, DropdownItem, Spinner } from "flowbite-react"
 import { getAliasAddressesCb } from "@/shared/utils/guides.utils"
 
 interface SelectAliasGEProps {
-  alias: string | null
   setAlias: (term: string) => void
 }
 
-export const SelectAliasGE = ({ alias, setAlias }: SelectAliasGEProps) => {
-  const [allAliases, setAllAliases] = useState<string[]>([])
-
+export const SelectAliasGE = ({ setAlias }: SelectAliasGEProps) => {
   const { data, isPending, isError } = useQuery({
     queryKey: ['aliasAddresses'],
     queryFn: getAliasAddressesCb
   })
-  console.log('data', data)
 
   return (
     <Dropdown
@@ -25,13 +21,16 @@ export const SelectAliasGE = ({ alias, setAlias }: SelectAliasGEProps) => {
         <Button
           className="hover:cursor-pointer flex justify-between"
           color="light"
+          disabled={isPending || isError || data?.length === 0}
         >
-          {alias ?? "Alias de domicilio"}
+          { isPending && (<Spinner />)}
+          { (isError && !isPending) && ("No se ha podido cargar los alias")}
+          { (!isPending && data) ?? "Alias de domicilio"}
           <RiArrowDownSLine />
         </Button>
       )}
     >
-      { allAliases.length > 0 && allAliases.map((alias) => (
+      { (data && data?.length > 0 )&& data.map((alias) => (
         <DropdownItem key={`alias-${alias}`} onClick={() => setAlias(alias)}>
           {alias}
         </DropdownItem>

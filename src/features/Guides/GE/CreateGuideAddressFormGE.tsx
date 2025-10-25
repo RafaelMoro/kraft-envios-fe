@@ -8,7 +8,7 @@ export const CreateGuideAddressFormGE = () => {
   return (
     <article>
       <div>
-        <SelectAliasGE alias={selectedAlias} setAlias={setSelectedAlias} />
+        <SelectAliasGE setAlias={setSelectedAlias} />
       </div>
       <form
         // onSubmit={handleSubmit(onSubmit)}
