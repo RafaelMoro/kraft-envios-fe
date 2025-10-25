@@ -7,13 +7,20 @@ import { CreateGuideAddressFormGE } from "./CreateGuideAddressFormGE";
 
 interface CreateGuideGEProps {
   open: boolean;
-  closeModal: () => void;
+  toggleModal: () => void;
 }
 
-export const CreateGuideGE = ({ open, closeModal }: CreateGuideGEProps) => {
+export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+
+  const closeModal = () => {
+    // resetFormData()
+    resetSteps()
+    // resetSelectedQuotes()
+    toggleModal()
+  }
 
   return (
     <Modal show={open} onClose={closeModal}>

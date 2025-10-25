@@ -23,6 +23,7 @@ import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTon
 import { TEMPORAL_ERROR_CREATION_GUIDE_SELECTION } from "@/shared/constants/quotes.constants"
 import { CreateGuidePkk } from "@/features/Guides/Pkk/CreateGuidePkk"
 import { PackageDimensions } from "@/shared/types/guides.types"
+import { CreateGuideGE } from "@/features/Guides/GE/CreateGuideGE"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -44,6 +45,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const toggleCreateGuideTone = () => setOpenCreateGuideTone((prev) => !prev)
   const [openCreateGuidePkk, setOpenCreateGuidePkk] = useState<boolean>(false)
   const toggleCreateGuidePkk = () => setOpenCreateGuidePkk((prev) => !prev)
+  const [openCreateGuideGE, setOpenCreateGuideGE] = useState<boolean>(false)
+  const toggleCreateGuideGE = () => setOpenCreateGuideGE((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -115,9 +118,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
       return;
     }
-    // TODO: Remove this validation when all couriers support guide creation
-    if (selectedQuotes.some((q) => q.source === 'GE')) {
-      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
+
+    if (selectedQuotes[0].source === 'GE') {
+      toggleCreateGuideGE()
       return;
     }
 
@@ -278,6 +281,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         packageDimensions={packageDimensions.current}
         toggleModal={toggleCreateGuidePkk}
         resetSelectedQuotes={resetSelectedQuotes}
+      />
+      <CreateGuideGE
+        open={openCreateGuideGE}
+        toggleModal={toggleCreateGuideGE}
       />
     </main>
   )
