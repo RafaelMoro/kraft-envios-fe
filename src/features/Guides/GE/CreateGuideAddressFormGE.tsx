@@ -6,15 +6,26 @@ import { SelectAliasGE } from "./SelectAlias"
 interface CreateGuideAddressFormGEProps {
   goNext: () => void
   goPrev: () => void
+  toggleModal: () => void
   typeAddress: 'origin' | 'destination';
 }
 
-export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext }: CreateGuideAddressFormGEProps) => {
+export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleModal }: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
   const [showForm, setShowForm] = useState<boolean>(false)
   const toggleShowForm = () => setShowForm((prev) => !prev)
 
   const typeAddressLabel = typeAddress === 'origin' ? 'origen' : 'destino'
+  const cancelButtonText = typeAddress === 'destination' ? 'Regresar' : 'Cancelar'
+
+  const handleCancel = () => {
+    if (typeAddress === 'destination') {
+      goPrev()
+      return;
+    }
+
+    toggleModal()
+  }
 
   const handleNextStep = () => {
     // save info
@@ -173,6 +184,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext }: Create
         <SelectAliasGE alias={selectedAlias} setAlias={setSelectedAlias} />
         <div className="flex flex-col gap-4">
           <Button color="light" onClick={toggleShowForm}>Agregar nueva dirección</Button>
+          <Button
+            outline
+            color="red"
+            onClick={handleCancel}
+          >{cancelButtonText}</Button>
           <Button disabled={!selectedAlias} onClick={handleNextStep}>Siguiente</Button>
         </div>
       </div>

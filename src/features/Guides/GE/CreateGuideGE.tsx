@@ -36,7 +36,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
           // addressData={formData.current.originAddress}
           goNext={goNext}
           // updateOriginAddress={updateOriginAddress}
-          // toggleModal={toggleModal}
+          toggleModal={toggleModal}
           goPrev={goPrev}
         />
       )}
@@ -46,7 +46,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
           // addressData={formData.current.originAddress}
           goNext={goNext}
           // updateOriginAddress={updateOriginAddress}
-          // toggleModal={toggleModal}
+          toggleModal={toggleModal}
           goPrev={goPrev}
         />
       )}
