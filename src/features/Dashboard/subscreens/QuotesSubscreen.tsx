@@ -20,7 +20,6 @@ import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
 import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
-import { TEMPORAL_ERROR_CREATION_GUIDE_SELECTION } from "@/shared/constants/quotes.constants"
 import { CreateGuidePkk } from "@/features/Guides/Pkk/CreateGuidePkk"
 import { PackageDimensions } from "@/shared/types/guides.types"
 import { CreateGuideGE } from "@/features/Guides/GE/CreateGuideGE"
@@ -137,11 +136,11 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }
 
   const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
+    setSelectedQuotes([quote])
     if (quote.source === 'GE') {
-      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
+      toggleCreateGuideGE()
       return;
     }
-    setSelectedQuotes([quote])
 
     if (quote.source === 'TONE') {
       toggleCreateGuideTone()
