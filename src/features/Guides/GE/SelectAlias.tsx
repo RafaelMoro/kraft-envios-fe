@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { RiArrowDownSLine } from "@remixicon/react"
 import { Button, Dropdown, DropdownItem, Spinner } from "flowbite-react"
+
 import { getAliasAddressesCb } from "@/shared/utils/guides.utils"
 
 interface SelectAliasGEProps {

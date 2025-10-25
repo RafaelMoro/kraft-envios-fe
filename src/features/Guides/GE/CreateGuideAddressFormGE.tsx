@@ -1,16 +1,21 @@
-import { Label, TextInput } from "flowbite-react"
-import { SelectAliasGE } from "./SelectAlias"
 import { useState } from "react"
+import { Button, Label, TextInput } from "flowbite-react"
 
-export const CreateGuideAddressFormGE = () => {
+import { SelectAliasGE } from "./SelectAlias"
+
+interface CreateGuideAddressFormGEProps {
+  typeAddress?: 'origin' | 'destination';
+}
+
+export const CreateGuideAddressFormGE = ({ typeAddress }: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
+  const [showForm, setShowForm] = useState<boolean>(false)
+  const toggleShowForm = () => setShowForm((prev) => !prev)
 
-  return (
-    <article>
-      <div>
-        <SelectAliasGE setAlias={setSelectedAlias} />
-      </div>
+  if (showForm) {
+    return (
       <form
+        className="p-4"
         // onSubmit={handleSubmit(onSubmit)}
       >
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -134,7 +139,32 @@ export const CreateGuideAddressFormGE = () => {
             )} */}
           </div>
         </section>
+        <div className="flex justify-between mt-4">
+        <Button
+          outline
+          color="red"
+          data-testid={`${typeAddress}-cancel-button`}
+          className="hover:cursor-pointer"
+          onClick={toggleShowForm}
+        >
+          Cancelar
+        </Button>
+        <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+          Guardar dirección
+        </Button>
+      </div>
       </form>
+    )
+  }
+
+  return (
+    <article className="p-4 flex flex-col gap-5">
+      <p className="text-lg">Selecciona un alias para la dirección de {typeAddress}. Si no existe el alias de su dirección, puede crear uno nuevo.</p>
+      <div className="flex flex-col gap-4">
+        <SelectAliasGE setAlias={setSelectedAlias} />
+        <Button color="light" onClick={toggleShowForm}>Agregar nueva dirección</Button>
+      </div>
+      
     </article>
   )
 }
