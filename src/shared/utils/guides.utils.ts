@@ -6,7 +6,8 @@ import {
   DEFAULT_COMPANY,
   DEFAULT_EMAIL,
   DEFAULT_REFERENCE,
-  CREATE_GUIDE_PKK_ENDPOINT
+  CREATE_GUIDE_PKK_ENDPOINT,
+  GET_ALIAS_ADDRESSES_GE_ENDPOINT
 } from '../constants/guides.constants'
 import {
   CreateGuideMnPayload,
@@ -44,6 +45,16 @@ export const createGuidePkkCb = async (data: CreateGuidePkkPayload) => {
   try {
     const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_PKK_ENDPOINT, data)
     return res?.data?.data?.guide
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getAliasAddressesCb = async () => {
+  try {
+    const res: AxiosResponse<unknown> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
+    console.log('res data', res?.data)
+    return res.data
   } catch (error) {
     throw error
   }

@@ -1,6 +1,8 @@
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { RiArrowDownSLine } from "@remixicon/react"
 import { Button, Dropdown, DropdownItem } from "flowbite-react"
-import { useState } from "react"
+import { getAliasAddressesCb } from "@/shared/utils/guides.utils"
 
 interface SelectAliasGEProps {
   alias: string | null
@@ -9,6 +11,12 @@ interface SelectAliasGEProps {
 
 export const SelectAliasGE = ({ alias, setAlias }: SelectAliasGEProps) => {
   const [allAliases, setAllAliases] = useState<string[]>([])
+
+  const { data, isPending, isError } = useQuery({
+    queryKey: ['aliasAddresses'],
+    queryFn: getAliasAddressesCb
+  })
+  console.log('data', data)
 
   return (
     <Dropdown
