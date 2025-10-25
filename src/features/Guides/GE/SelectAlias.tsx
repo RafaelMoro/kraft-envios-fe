@@ -6,10 +6,11 @@ import { Button, Dropdown, DropdownItem, Spinner } from "flowbite-react"
 import { getAliasAddressesCb } from "@/shared/utils/guides.utils"
 
 interface SelectAliasGEProps {
+  alias: string | null
   setAlias: (term: string) => void
 }
 
-export const SelectAliasGE = ({ setAlias }: SelectAliasGEProps) => {
+export const SelectAliasGE = ({ setAlias, alias }: SelectAliasGEProps) => {
   const { data, isPending, isError } = useQuery({
     queryKey: ['aliasAddresses'],
     queryFn: getAliasAddressesCb
@@ -26,7 +27,8 @@ export const SelectAliasGE = ({ setAlias }: SelectAliasGEProps) => {
         >
           { isPending && (<Spinner />)}
           { (isError && !isPending) && ("No se ha podido cargar los alias")}
-          { (!isPending && data) ?? "Alias de domicilio"}
+          { (!isPending && data && !alias) && "Alias de domicilio"}
+          { (!isPending && Boolean(data) && Boolean(alias)) && alias}
           <RiArrowDownSLine />
         </Button>
       )}

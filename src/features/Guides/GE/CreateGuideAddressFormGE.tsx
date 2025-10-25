@@ -163,7 +163,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress }: CreateGuideAddressForm
     <article className="p-4 flex flex-col gap-5">
       <p className="text-lg">Seleccione un alias para la dirección de {typeAddressLabel}. Si no existe el alias de su dirección, puede crear uno nuevo dando click en &quot;Agregar nueva dirección&quot;.</p>
       <div className="flex flex-col gap-4">
-        <SelectAliasGE setAlias={setSelectedAlias} />
+        <SelectAliasGE alias={selectedAlias} setAlias={setSelectedAlias} />
         <Button color="light" onClick={toggleShowForm}>Agregar nueva dirección</Button>
       </div>
       
