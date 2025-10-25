@@ -50,11 +50,11 @@ export const createGuidePkkCb = async (data: CreateGuidePkkPayload) => {
   }
 }
 
-export const getAliasAddressesCb = async () => {
+export const getAliasAddressesCb = async (): Promise<string[]> => {
   try {
-    const res: AxiosResponse<unknown> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
-    console.log('res data', res?.data)
-    return res.data
+    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
+    const aliases = res?.data?.aliases ?? []
+    return aliases
   } catch (error) {
     throw error
   }

@@ -18,8 +18,8 @@ export async function GET() {
         'Authorization': `Bearer ${accessToken}`
       }
     })
-
-    return NextResponse.json(res.data, { status: 200 })
+    const aliasAddresses = res?.data?.data?.aliases
+    return NextResponse.json({ aliases: aliasAddresses }, { status: 200 })
 
   } catch (error) {
     if (axios.isAxiosError(error)) {
