@@ -178,6 +178,17 @@ export interface CreateMnGuideResponse {
   version: string;
 }
 
+export interface GetAliasAddressesGEResponse {
+  data: {
+    aliases: string[]
+  }
+  error: null;
+  message: null;
+  messages: string[]
+  success: boolean;
+  version: string;
+}
+
 //#region Schemas
 
 export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValues> = object().shape({
