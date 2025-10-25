@@ -35,7 +35,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
   if (showForm) {
     return (
       <form
-        className="p-4"
+        className="p-4 overflow-y-auto"
         // onSubmit={handleSubmit(onSubmit)}
       >
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -86,6 +86,36 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
           </div>
           <div>
             <div className="mb-2 block">
+              <Label htmlFor="company">Nombre de la compañia (Opcional)</Label>
+            </div>
+            <TextInput
+              data-testid="company"
+              // defaultValue={addressData.company ?? ''}
+              id="company"
+              type="text"
+              // {...register("company")}
+            />
+            {/* { errors?.company?.message && (
+              <ErrorMessage>{errors.company?.message}</ErrorMessage>
+            )} */}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="rfc">RFC (Opcional)</Label>
+            </div>
+            <TextInput
+              data-testid="rfc"
+              // defaultValue={addressData.rfc ?? ''}
+              id="rfc"
+              type="text"
+              // {...register("rfc")}
+            />
+            {/* { errors?.rfc?.message && (
+              <ErrorMessage>{errors.rfc?.message}</ErrorMessage>
+            )} */}
+          </div>
+          <div>
+            <div className="mb-2 block">
               <Label htmlFor="street1">Calle</Label>
             </div>
             <TextInput
@@ -97,6 +127,20 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
             />
             {/* { errors?.street1?.message && (
               <ErrorMessage>{errors.street1?.message}</ErrorMessage>
+            )} */}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="number">Número de Calle</Label>
+            </div>
+            <TextInput
+              id="number"
+              type="text"
+              inputMode="numeric"
+              // {...register("number")}
+            />
+            {/* { errors?.number?.message && (
+              <ErrorMessage>{errors.number?.message}</ErrorMessage>
             )} */}
           </div>
           <div>
@@ -156,6 +200,21 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
             />
             {/* { errors?.zipcode?.message && (
               <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
+            )} */}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
+            </div>
+            <TextInput
+              data-testid="reference"
+              // defaultValue={addressData.reference ?? ''}
+              id="reference"
+              type="text"
+              // {...register("reference")}
+            />
+            {/* { errors?.reference?.message && (
+              <ErrorMessage>{errors.reference?.message}</ErrorMessage>
             )} */}
           </div>
         </section>
