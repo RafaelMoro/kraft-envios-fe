@@ -1,27 +1,33 @@
-import { Label, TextInput } from "flowbite-react"
-import { HiChevronDown } from "react-icons/hi"
+import { RiArrowDownSLine } from "@remixicon/react"
+import { Button, Dropdown, DropdownItem } from "flowbite-react"
+import { useState } from "react"
 
-export const SelectAliasGE = () => {
+interface SelectAliasGEProps {
+  alias: string | null
+  setAlias: (term: string) => void
+}
+
+export const SelectAliasGE = ({ alias, setAlias }: SelectAliasGEProps) => {
+  const [allAliases, setAllAliases] = useState<string[]>([])
+
   return (
-    <div className="relative">
-      <div className="mb-2 flex flex-col gap-2">
-        <Label htmlFor="alias-address-ge-autocomplete">Alias del domicilio:</Label>
-        {/* { errorProductSat && (
-          <ErrorMessage>{errorProductSat}</ErrorMessage>
-        )} */}
-      </div>
-      <TextInput
-        data-testid="alias-address-ge-autocomplete"
-        id="alias-address-ge-autocomplete"
-        type="text"
-        // value={searchProductSat}
-        // onChange={handleChangeTerm}
-        // onFocus={handleInputFocus}
-        // onBlur={handleInputBlur}
-        placeholder="Ropa"
-        rightIcon={HiChevronDown}
-        autoComplete="off"
-      />
-    </div>
+    <Dropdown
+      label=""
+      renderTrigger={() => (
+        <Button
+          className="hover:cursor-pointer flex justify-between"
+          color="light"
+        >
+          {alias ?? "Alias de domicilio"}
+          <RiArrowDownSLine />
+        </Button>
+      )}
+    >
+      { allAliases.length > 0 && allAliases.map((alias) => (
+        <DropdownItem key={`alias-${alias}`} onClick={() => setAlias(alias)}>
+          {alias}
+        </DropdownItem>
+      )) }
+    </Dropdown>
   )
 }

@@ -1,11 +1,14 @@
 import { Label, TextInput } from "flowbite-react"
 import { SelectAliasGE } from "./SelectAlias"
+import { useState } from "react"
 
 export const CreateGuideAddressFormGE = () => {
+  const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
+
   return (
     <article>
       <div>
-        <SelectAliasGE />
+        <SelectAliasGE alias={selectedAlias} setAlias={setSelectedAlias} />
       </div>
       <form
         // onSubmit={handleSubmit(onSubmit)}
