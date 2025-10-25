@@ -4,15 +4,22 @@ import { Button, Label, TextInput } from "flowbite-react"
 import { SelectAliasGE } from "./SelectAlias"
 
 interface CreateGuideAddressFormGEProps {
-  typeAddress?: 'origin' | 'destination';
+  goNext: () => void
+  goPrev: () => void
+  typeAddress: 'origin' | 'destination';
 }
 
-export const CreateGuideAddressFormGE = ({ typeAddress }: CreateGuideAddressFormGEProps) => {
+export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext }: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
   const [showForm, setShowForm] = useState<boolean>(false)
   const toggleShowForm = () => setShowForm((prev) => !prev)
 
   const typeAddressLabel = typeAddress === 'origin' ? 'origen' : 'destino'
+
+  const handleNextStep = () => {
+    // save info
+    goNext()
+  }
 
   if (showForm) {
     return (
@@ -162,9 +169,12 @@ export const CreateGuideAddressFormGE = ({ typeAddress }: CreateGuideAddressForm
   return (
     <article className="p-4 flex flex-col gap-5">
       <p className="text-lg">Seleccione un alias para la dirección de {typeAddressLabel}. Si no existe el alias de su dirección, puede crear uno nuevo dando click en &quot;Agregar nueva dirección&quot;.</p>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-16">
         <SelectAliasGE alias={selectedAlias} setAlias={setSelectedAlias} />
-        <Button color="light" onClick={toggleShowForm}>Agregar nueva dirección</Button>
+        <div className="flex flex-col gap-4">
+          <Button color="light" onClick={toggleShowForm}>Agregar nueva dirección</Button>
+          <Button disabled={!selectedAlias} onClick={handleNextStep}>Siguiente</Button>
+        </div>
       </div>
       
     </article>

@@ -34,20 +34,20 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
         <CreateGuideAddressFormGE
           typeAddress="origin"
           // addressData={formData.current.originAddress}
-          // goNext={goNext}
+          goNext={goNext}
           // updateOriginAddress={updateOriginAddress}
           // toggleModal={toggleModal}
-          // goPrev={goPrev}
+          goPrev={goPrev}
         />
       )}
       { step === 2 && (
         <CreateGuideAddressFormGE
           typeAddress="destination"
           // addressData={formData.current.originAddress}
-          // goNext={goNext}
+          goNext={goNext}
           // updateOriginAddress={updateOriginAddress}
           // toggleModal={toggleModal}
-          // goPrev={goPrev}
+          goPrev={goPrev}
         />
       )}
     </Modal>
