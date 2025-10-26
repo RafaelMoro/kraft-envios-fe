@@ -283,7 +283,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
         >
           Cancelar
         </Button>
-        <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+        <Button disabled={isPendingCreateAddress} data-testid="create-address-ge-button" type="submit" className="hover:cursor-pointer">
           { isPendingCreateAddress ? (<Spinner />) : 'Guardar dirección' }
         </Button>
       </div>
