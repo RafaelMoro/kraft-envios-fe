@@ -4,6 +4,7 @@ export const DEFAULT_COMPANY = 'Kraft Envios';
 // TODO: Confirm the default email
 export const DEFAULT_EMAIL = 'j.temix33@gmail.com'
 export const DEFAULT_REFERENCE = 'Sin referencia'
+export const DEFAULT_RFC = 'XAXX010101000'
 
 export const initialStateAddressForm: CreateGuideAddressFormValues = {
   name: "",
