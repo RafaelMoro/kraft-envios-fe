@@ -7,7 +7,8 @@ import {
   DEFAULT_EMAIL,
   DEFAULT_REFERENCE,
   CREATE_GUIDE_PKK_ENDPOINT,
-  GET_ALIAS_ADDRESSES_GE_ENDPOINT
+  GET_ALIAS_ADDRESSES_GE_ENDPOINT,
+  CREATE_ADDRESS_GE_ENDPOINT
 } from '../constants/guides.constants'
 import {
   CreateGuideMnPayload,
@@ -19,6 +20,8 @@ import {
   CreateGuideAddressFormValuesTone,
   CreateGuideAddressValuesPkk,
   CreateGuidePkkPayload,
+  CreateAddressGEResponse,
+  CreateAddressGEPayload,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -55,6 +58,16 @@ export const getAliasAddressesCb = async (): Promise<string[]> => {
     const res: AxiosResponse<{ aliases: string[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
     const aliases = res?.data?.aliases ?? []
     return aliases
+  } catch (error) {
+    throw error
+  }
+}
+
+export const createAddressGECb = async (payload: CreateAddressGEPayload) => {
+  try {
+    const res: AxiosResponse<CreateAddressGEResponse> = await axios.post(CREATE_ADDRESS_GE_ENDPOINT, payload)
+    const data = res?.data
+    return data
   } catch (error) {
     throw error
   }

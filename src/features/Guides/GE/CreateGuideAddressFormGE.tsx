@@ -4,8 +4,11 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
 import { SelectAliasGE } from "./SelectAlias"
-import { CreateAddressFormValuesGE, CreateAddressGESchema } from "@/shared/types/guides.types"
+import { CreateAddressFormValuesGE, CreateAddressGEPayload, CreateAddressGEResponse, CreateAddressGESchema } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { useMutation } from "@tanstack/react-query"
+import { GeneralApiError } from "@/shared/types/global.types"
+import { createAddressGECb } from "@/shared/utils/guides.utils"
 
 interface CreateGuideAddressFormGEProps {
   goNext: () => void
@@ -44,10 +47,22 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
     resolver: yupResolver(CreateAddressGESchema)
   })
 
+  const { mutate: createAddress, isPending } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
+    mutationFn: createAddressGECb,
+    onSuccess: () => {
+      toggleShowForm()
+      // refetch aliases
+    },
+    onError: () => {
+      toggleShowForm()
+    }
+  })
+
   const onSubmit: SubmitHandler<CreateAddressFormValuesGE> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    // do mutation
+    // format data
+    // createAddress(data)
   }
 
   if (showForm) {
