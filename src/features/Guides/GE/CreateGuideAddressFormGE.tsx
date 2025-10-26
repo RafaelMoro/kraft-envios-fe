@@ -217,6 +217,21 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               <ErrorMessage>{errors.reference?.message}</ErrorMessage>
             )} */}
           </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="alias">Alias del domicilio</Label>
+            </div>
+            <TextInput
+              data-testid="alias"
+              // defaultValue={addressData.alias ?? ''}
+              id="alias"
+              type="text"
+              // {...register("alias")}
+            />
+            {/* { errors?.alias?.message && (
+              <ErrorMessage>{errors.alias?.message}</ErrorMessage>
+            )} */}
+          </div>
         </section>
         <div className="flex justify-between mt-4">
         <Button
