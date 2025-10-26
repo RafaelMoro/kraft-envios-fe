@@ -1,7 +1,11 @@
 import { useState } from "react"
 import { Button, Label, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 
 import { SelectAliasGE } from "./SelectAlias"
+import { CreateAddressFormValuesGE, CreateAddressGESchema } from "@/shared/types/guides.types"
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface CreateGuideAddressFormGEProps {
   goNext: () => void
@@ -32,11 +36,25 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
     goNext()
   }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateAddressFormValuesGE>({
+    resolver: yupResolver(CreateAddressGESchema)
+  })
+
+  const onSubmit: SubmitHandler<CreateAddressFormValuesGE> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    // do mutation
+  }
+
   if (showForm) {
     return (
       <form
         className="p-4 overflow-y-auto"
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
@@ -48,11 +66,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.name}
               id="name"
               type="text"
-              // {...register("name")}
+              {...register("name")}
             />
-            {/* { errors?.name?.message && (
+            { errors?.name?.message && (
               <ErrorMessage>{errors.name?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -64,11 +82,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               type="text"
               inputMode="numeric"
               // defaultValue={addressData.phone}
-              // {...register("phone")}
+              {...register("phone")}
             />
-            {/* { errors?.phone?.message && (
+            { errors?.phone?.message && (
               <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -78,11 +96,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               id="email"
               type="email"
               // defaultValue={addressData.email ?? ''}
-              // {...register("email")}
+              {...register("email")}
             />
-            {/* { errors?.email?.message && (
+            { errors?.email?.message && (
               <ErrorMessage>{errors.email?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -93,11 +111,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.company ?? ''}
               id="company"
               type="text"
-              // {...register("company")}
+              {...register("company")}
             />
-            {/* { errors?.company?.message && (
+            { errors?.company?.message && (
               <ErrorMessage>{errors.company?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -108,11 +126,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.rfc ?? ''}
               id="rfc"
               type="text"
-              // {...register("rfc")}
+              {...register("rfc")}
             />
-            {/* { errors?.rfc?.message && (
+            { errors?.rfc?.message && (
               <ErrorMessage>{errors.rfc?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -123,11 +141,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.street1}
               id="street1"
               type="text"
-              // {...register("street1")}
+              {...register("street1")}
             />
-            {/* { errors?.street1?.message && (
+            { errors?.street1?.message && (
               <ErrorMessage>{errors.street1?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -137,11 +155,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               id="number"
               type="text"
               inputMode="numeric"
-              // {...register("number")}
+              {...register("external_number")}
             />
-            {/* { errors?.number?.message && (
-              <ErrorMessage>{errors.number?.message}</ErrorMessage>
-            )} */}
+            { errors?.external_number?.message && (
+              <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -152,11 +170,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.neighborhood}
               id="neighborhood"
               type="text"
-              // {...register("neighborhood")}
+              {...register("neighborhood")}
             />
-            {/* { errors?.neighborhood?.message && (
+            { errors?.neighborhood?.message && (
               <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -167,11 +185,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.city}
               id="city"
               type="text"
-              // {...register("city")}
+              {...register("city")}
             />
-            {/* { errors?.city?.message && (
+            { errors?.city?.message && (
               <ErrorMessage>{errors.city?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -182,11 +200,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.state}
               id="state"
               type="text"
-              // {...register("state")}
+              {...register("state")}
             />
-            {/* { errors?.state?.message && (
+            { errors?.state?.message && (
               <ErrorMessage>{errors.state?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -196,26 +214,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               id="zipcode"
               type="text"
               inputMode="numeric"
-              // {...register("zipcode")}
+              {...register("zipcode")}
             />
-            {/* { errors?.zipcode?.message && (
+            { errors?.zipcode?.message && (
               <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-            )} */}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
-            </div>
-            <TextInput
-              data-testid="reference"
-              // defaultValue={addressData.reference ?? ''}
-              id="reference"
-              type="text"
-              // {...register("reference")}
-            />
-            {/* { errors?.reference?.message && (
-              <ErrorMessage>{errors.reference?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -226,11 +229,26 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
               // defaultValue={addressData.alias ?? ''}
               id="alias"
               type="text"
-              // {...register("alias")}
+              {...register("alias")}
             />
-            {/* { errors?.alias?.message && (
+            { errors?.alias?.message && (
               <ErrorMessage>{errors.alias?.message}</ErrorMessage>
-            )} */}
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
+            </div>
+            <TextInput
+              data-testid="reference"
+              // defaultValue={addressData.reference ?? ''}
+              id="reference"
+              type="text"
+              {...register("reference")}
+            />
+            { errors?.reference?.message && (
+              <ErrorMessage>{errors.reference?.message}</ErrorMessage>
+            )}
           </div>
         </section>
         <div className="flex justify-between mt-4">

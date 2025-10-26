@@ -60,6 +60,22 @@ export type CreateGuideAddressFormValuesPkk = {
   zipcode: string;
 }
 
+export type CreateAddressFormValuesGE = {
+  name: string;
+  phone: string;
+  email?: string | null | undefined
+  company?: string | null | undefined
+  rfc?: string | null | undefined
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  reference?: string | null | undefined
+  alias: string;
+}
+
 export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
 }
@@ -279,4 +295,53 @@ export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFor
     .max(5, 'La dirección postal debe tener 5 caracteres')
 }, [
   ["email", "email"]
+])
+
+export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> = object().shape({
+  name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  phone: string()
+    .required('El teléfono es requerido')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
+    .min(10, 'El teléfono debe tener 10 dígitos')
+    .max(10, 'El teléfono debe tener 10 dígitos'),
+  email: emailOptionalValidation,
+  company: string()
+    .nullable()
+    .notRequired()
+    .when('company', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'El nombre de la compañía debe tener al menos 2 caracteres'),
+    }),
+  rfc: string()
+    .nullable()
+    .notRequired()
+    .when('rfc', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule
+        .min(13, 'El RFC debe tener 13 caracteres')
+        .max(13, 'El RFC debe tener 13 caracteres')
+    }),
+  street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
+  neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
+  external_number: string().required('Número exterior es requerido').matches(/^\d+$/, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" }).min(1, 'El número exterior debe tener al menos 1 carácter'),
+  city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
+  state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
+  zipcode: string()
+    .required('El código postal es requerido')
+    .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
+    .min(5, 'El código postal debe tener 5 caracteres')
+    .max(5, 'El código postal debe tener 5 caracteres'),
+  alias: string().required('El alias del domicilio es requerido').min(2, 'El alias del domicilio debe tener al menos 2 caracteres'),
+  reference: string()
+    .nullable()
+    .notRequired()
+    .when('reference', {
+      is: (value: string) => value?.length,
+      then: (rule) => rule.min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
+    }),
+}, [
+  ["email", "email"],
+  ["company", "company"],
+  ["rfc", "rfc"],
+  ["reference", "reference"],
 ])
