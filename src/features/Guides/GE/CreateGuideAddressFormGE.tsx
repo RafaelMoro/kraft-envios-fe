@@ -12,17 +12,18 @@ import { convertToCreateAddressGEPayload, createAddressGECb, getAliasAddressesCb
 import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner"
 
 interface CreateGuideAddressFormGEProps {
+  typeAddress: 'origin' | 'destination';
+  errorSelectAlias: string | null;
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  updateAddress: (data: CreateGuideAddressValuesGE) => void
-  typeAddress: 'origin' | 'destination';
+  updateAddress: (data: CreateGuideAddressValuesGE) => boolean
 }
 
-export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleModal, updateAddress }: CreateGuideAddressFormGEProps) => {
+export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev, goNext, toggleModal, updateAddress }: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
-  const [showError, setShowError] = useState<boolean>(false)
-  const toggleError = () => setShowError((prev) => !prev)
+  const [showErrorOnCreateAddr, setShowErrorOnCreateAddr] = useState<boolean>(false)
+  const toggleErrorOnCreateAddr = () => setShowErrorOnCreateAddr((prev) => !prev)
   const [showForm, setShowForm] = useState<boolean>(false)
   const toggleShowForm = () => setShowForm((prev) => !prev)
 
@@ -44,8 +45,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
       // show error
       return;
     }
-    updateAddress({ alias: selectedAlias })
-    goNext()
+
+    const canGoNext = updateAddress({ alias: selectedAlias })
+    if (canGoNext) {
+      goNext()
+    }
   }
 
   const {
@@ -69,7 +73,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
     },
     onError: () => {
       toggleShowForm()
-      toggleError()
+      toggleErrorOnCreateAddr()
     }
   })
 
@@ -302,21 +306,26 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
 
   return (
     <article className="p-4 flex flex-col gap-5">
-      { showError && (
+      { showErrorOnCreateAddr && (
         <ErrorBanner
           message="Hubo un error al crear la nueva dirección. Intente nuevamente más tarde."
-          toggleError={toggleError}
+          toggleError={toggleErrorOnCreateAddr}
         />
       )}
       <p className="text-lg">Seleccione un alias para la dirección de {typeAddressLabel}. Si no existe el alias de su dirección, puede crear uno nuevo dando click en &quot;Agregar nueva dirección&quot;.</p>
       <div className="flex flex-col gap-16">
-        <SelectAliasGE
-          data={data}
-          isPending={isPendingFetchAlias}
-          isError={isErrorFetchAlias}
-          alias={selectedAlias}
-          setAlias={setSelectedAlias}
-        />
+        <div className="flex flex-col gap-4">
+          <SelectAliasGE
+            data={data}
+            isPending={isPendingFetchAlias}
+            isError={isErrorFetchAlias}
+            alias={selectedAlias}
+            setAlias={setSelectedAlias}
+          />
+          { errorSelectAlias && (
+            <ErrorMessage>{errorSelectAlias}</ErrorMessage>
+          )}
+        </div>
         <div className="flex flex-col gap-4">
           <Button color="light" onClick={toggleShowForm}>Agregar nueva dirección</Button>
           <Button

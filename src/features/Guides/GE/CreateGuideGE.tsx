@@ -20,6 +20,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
 
+  const [errorSelectAlias, setErrorSelectAlias] = useState<string | null>(null)
   const [searchProductSat, setSearchProductSat] = useState<string>('')
   const [errorProductSat, setErrorProductSat] = useState<string>('')
 
@@ -34,15 +35,35 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
   }
   const updateOriginAddress = (data: CreateGuideAddressValuesGE) => {
     formData.current.originAddress = data
+    return true
   }
+
+  /**
+   * This function updates the destination address in the form data.
+   * If it's the same as the origin address, it sets an error and returns false.
+   * If not, it updates the address and returns true.
+   * @returns boolean
+   */
   const updateDestinationAddress = (data: CreateGuideAddressValuesGE) => {
+    if (data.alias === formData.current.originAddress.alias) {
+      setErrorSelectAlias('El alias de la dirección de destino no puede ser igual al de origen')
+      return false
+    }
+
+    // Reset error if exist
+    if (errorSelectAlias) {
+      setErrorSelectAlias(null)
+    }
+
     formData.current.destinationAddress = data
+    return true
   }
 
   const closeModal = () => {
     resetFormData()
     resetSteps()
     setSearchProductSat('')
+    setErrorSelectAlias(null)
     // resetSelectedQuotes()
     toggleModal()
   }
@@ -63,6 +84,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
           updateAddress={updateOriginAddress}
           toggleModal={toggleModal}
           goPrev={goPrev}
+          errorSelectAlias={errorSelectAlias}
         />
       )}
       { step === 2 && (
@@ -73,6 +95,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
           updateAddress={updateDestinationAddress}
           toggleModal={toggleModal}
           goPrev={goPrev}
+          errorSelectAlias={errorSelectAlias}
         />
       )}
       { step === 3 && (
