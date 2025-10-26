@@ -1,20 +1,16 @@
 "use client"
-import { useQuery } from "@tanstack/react-query"
 import { RiArrowDownSLine } from "@remixicon/react"
 import { Button, Dropdown, DropdownItem, Spinner } from "flowbite-react"
 
-import { getAliasAddressesCb } from "@/shared/utils/guides.utils"
-
 interface SelectAliasGEProps {
   alias: string | null
+  data: string[] | undefined
+  isPending: boolean
+  isError: boolean
   setAlias: (term: string) => void
 }
 
-export const SelectAliasGE = ({ setAlias, alias }: SelectAliasGEProps) => {
-  const { data, isPending, isError } = useQuery({
-    queryKey: ['aliasAddresses'],
-    queryFn: getAliasAddressesCb
-  })
+export const SelectAliasGE = ({ setAlias, alias, data, isPending, isError }: SelectAliasGEProps) => {
 
   return (
     <Dropdown

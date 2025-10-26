@@ -6,9 +6,9 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { SelectAliasGE } from "./SelectAlias"
 import { CreateAddressFormValuesGE, CreateAddressGEPayload, CreateAddressGEResponse, CreateAddressGESchema } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { createAddressGECb } from "@/shared/utils/guides.utils"
+import { createAddressGECb, getAliasAddressesCb } from "@/shared/utils/guides.utils"
 
 interface CreateGuideAddressFormGEProps {
   goNext: () => void
@@ -47,14 +47,20 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
     resolver: yupResolver(CreateAddressGESchema)
   })
 
+  const { data, refetch: refetchFetchAlias,  isPending: isPendingFetchAlias, isError: isErrorFetchAlias } = useQuery({
+    queryKey: ['aliasAddresses'],
+    queryFn: getAliasAddressesCb
+  })
+
   const { mutate: createAddress, isPending } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
     mutationFn: createAddressGECb,
     onSuccess: () => {
       toggleShowForm()
-      // refetch aliases
+      refetchFetchAlias()
     },
     onError: () => {
       toggleShowForm()
+      // Show error
     }
   })
 
@@ -288,7 +294,13 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
     <article className="p-4 flex flex-col gap-5">
       <p className="text-lg">Seleccione un alias para la dirección de {typeAddressLabel}. Si no existe el alias de su dirección, puede crear uno nuevo dando click en &quot;Agregar nueva dirección&quot;.</p>
       <div className="flex flex-col gap-16">
-        <SelectAliasGE alias={selectedAlias} setAlias={setSelectedAlias} />
+        <SelectAliasGE
+          data={data}
+          isPending={isPendingFetchAlias}
+          isError={isErrorFetchAlias}
+          alias={selectedAlias}
+          setAlias={setSelectedAlias}
+        />
         <div className="flex flex-col gap-4">
           <Button color="light" onClick={toggleShowForm}>Agregar nueva dirección</Button>
           <Button
