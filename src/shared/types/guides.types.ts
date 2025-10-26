@@ -133,6 +133,22 @@ export type CreateGuidePkkPayload = {
   parcel: ParcelInfoValuesPkk;
 }
 
+export type CreateAddressGEPayload = {
+  zipcode: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  rfc: string;
+  street: string;
+  number: string;
+  reference: string;
+  alias: string;
+}
+
 //#region Responses
 
 /**
@@ -203,6 +219,17 @@ export interface GetAliasAddressesGEResponse {
   messages: string[]
   success: boolean;
   version: string;
+}
+
+export interface CreateAddressGEResponse {
+  zipcode: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  street: string;
+  number: string;
+  reference: string;
+  alias: string;
 }
 
 //#region Schemas
