@@ -23,6 +23,11 @@ export type CreateGuideFormValuesPkk = {
   parcelInfo: ParcelInfoValuesPkk;
 }
 
+export type CreateGuideFormValuesGE = {
+  originAddress: CreateGuideAddressValuesGE;
+  destinationAddress: CreateGuideAddressValuesGE;
+}
+
 export type CreateGuideAddressFormValues = {
   name: string;
   street1: string;
@@ -80,6 +85,9 @@ export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
 }
 
+export type CreateGuideAddressValuesGE = {
+  alias: string;
+}
 
 export type ParcelInfoFormValues = {
   content: string;

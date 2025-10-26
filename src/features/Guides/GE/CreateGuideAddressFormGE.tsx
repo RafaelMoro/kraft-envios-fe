@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
 import { SelectAliasGE } from "./SelectAlias"
-import { CreateAddressFormValuesGE, CreateAddressGEPayload, CreateAddressGEResponse, CreateAddressGESchema } from "@/shared/types/guides.types"
+import { CreateAddressFormValuesGE, CreateAddressGEPayload, CreateAddressGEResponse, CreateAddressGESchema, CreateGuideAddressValuesGE } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { GeneralApiError } from "@/shared/types/global.types"
@@ -15,10 +15,11 @@ interface CreateGuideAddressFormGEProps {
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
+  updateAddress: (data: CreateGuideAddressValuesGE) => void
   typeAddress: 'origin' | 'destination';
 }
 
-export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleModal }: CreateGuideAddressFormGEProps) => {
+export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleModal, updateAddress }: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
   const [showError, setShowError] = useState<boolean>(false)
   const toggleError = () => setShowError((prev) => !prev)
@@ -39,6 +40,11 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
 
   const handleNextStep = () => {
     // save info
+    if (!selectedAlias) {
+      // show error
+      return;
+    }
+    updateAddress({ alias: selectedAlias })
     goNext()
   }
 

@@ -1,4 +1,4 @@
-import { CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressValuesPkk, CreateGuideFormValues, CreateGuideFormValuesPkk, CreateGuideFormValuesTone } from "../types/guides.types";
+import { CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressValuesPkk, CreateGuideFormValues, CreateGuideFormValuesGE, CreateGuideFormValuesPkk, CreateGuideFormValuesTone } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
 // TODO: Confirm the default email
@@ -53,6 +53,15 @@ export const initialStateAddressPkk: CreateGuideAddressValuesPkk = {
   state: "",
   zipcode: "",
   isResidential: false
+}
+
+export const initialStateCreateGuideGE: CreateGuideFormValuesGE = {
+  originAddress: {
+    alias: ''
+  },
+  destinationAddress: {
+    alias: ''
+  }
 }
 
 export const initialStateFormTone: CreateGuideFormValuesTone = {
