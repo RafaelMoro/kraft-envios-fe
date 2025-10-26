@@ -20,7 +20,7 @@ interface CreateGuideAddressFormGEProps {
 
 export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleModal }: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
-  const [showError, setShowError] = useState<boolean>(true)
+  const [showError, setShowError] = useState<boolean>(false)
   const toggleError = () => setShowError((prev) => !prev)
   const [showForm, setShowForm] = useState<boolean>(false)
   const toggleShowForm = () => setShowForm((prev) => !prev)
@@ -63,7 +63,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
     },
     onError: () => {
       toggleShowForm()
-      // Show error
+      toggleError()
     }
   })
 
@@ -296,7 +296,12 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
 
   return (
     <article className="p-4 flex flex-col gap-5">
-      { showError && (<ErrorBanner message="Hubo un error. Intente despues" toggleError={toggleError} />)}
+      { showError && (
+        <ErrorBanner
+          message="Hubo un error al crear la nueva dirección. Intente nuevamente más tarde."
+          toggleError={toggleError}
+        />
+      )}
       <p className="text-lg">Seleccione un alias para la dirección de {typeAddressLabel}. Si no existe el alias de su dirección, puede crear uno nuevo dando click en &quot;Agregar nueva dirección&quot;.</p>
       <div className="flex flex-col gap-16">
         <SelectAliasGE
