@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, Label, TextInput } from "flowbite-react"
+import { Button, Label, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
@@ -8,7 +8,7 @@ import { CreateAddressFormValuesGE, CreateAddressGEPayload, CreateAddressGERespo
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { createAddressGECb, getAliasAddressesCb } from "@/shared/utils/guides.utils"
+import { convertToCreateAddressGEPayload, createAddressGECb, getAliasAddressesCb } from "@/shared/utils/guides.utils"
 
 interface CreateGuideAddressFormGEProps {
   goNext: () => void
@@ -52,7 +52,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
     queryFn: getAliasAddressesCb
   })
 
-  const { mutate: createAddress, isPending } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
+  const { mutate: createAddress, isPending: isPendingCreateAddress } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
     mutationFn: createAddressGECb,
     onSuccess: () => {
       toggleShowForm()
@@ -67,8 +67,9 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
   const onSubmit: SubmitHandler<CreateAddressFormValuesGE> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    // format data
-    // createAddress(data)
+
+    const payload = convertToCreateAddressGEPayload(data)
+    createAddress(payload)
   }
 
   if (showForm) {
@@ -283,7 +284,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
           Cancelar
         </Button>
         <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
-          Guardar dirección
+          { isPendingCreateAddress ? (<Spinner />) : 'Guardar dirección' }
         </Button>
       </div>
       </form>
