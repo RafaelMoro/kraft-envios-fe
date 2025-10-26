@@ -9,6 +9,7 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { convertToCreateAddressGEPayload, createAddressGECb, getAliasAddressesCb } from "@/shared/utils/guides.utils"
+import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner"
 
 interface CreateGuideAddressFormGEProps {
   goNext: () => void
@@ -19,6 +20,8 @@ interface CreateGuideAddressFormGEProps {
 
 export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleModal }: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
+  const [showError, setShowError] = useState<boolean>(true)
+  const toggleError = () => setShowError((prev) => !prev)
   const [showForm, setShowForm] = useState<boolean>(false)
   const toggleShowForm = () => setShowForm((prev) => !prev)
 
@@ -293,6 +296,7 @@ export const CreateGuideAddressFormGE = ({ typeAddress, goPrev, goNext, toggleMo
 
   return (
     <article className="p-4 flex flex-col gap-5">
+      { showError && (<ErrorBanner message="Hubo un error. Intente despues" toggleError={toggleError} />)}
       <p className="text-lg">Seleccione un alias para la dirección de {typeAddressLabel}. Si no existe el alias de su dirección, puede crear uno nuevo dando click en &quot;Agregar nueva dirección&quot;.</p>
       <div className="flex flex-col gap-16">
         <SelectAliasGE
