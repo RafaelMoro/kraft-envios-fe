@@ -1,12 +1,14 @@
+import { useRef, useState } from "react";
 import { Modal, ModalHeader } from "flowbite-react"
 
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { CreateGuideAddressFormGE } from "./CreateGuideAddressFormGE";
-import { useRef } from "react";
-import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE } from "@/shared/types/guides.types";
+import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, SearchProduct } from "@/shared/types/guides.types";
 import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
+import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
+import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
 
 interface CreateGuideGEProps {
   open: boolean;
@@ -17,6 +19,14 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+
+  const [searchProductSat, setSearchProductSat] = useState<string>('')
+  const [errorProductSat, setErrorProductSat] = useState<string>('')
+
+  const selectedProduct = useRef<SearchProduct | null>(null)
+  const updateSelectedProduct = (option: SearchProduct) => {
+    selectedProduct.current = option
+  }
 
   const formData = useRef<CreateGuideFormValuesGE>({...initialStateCreateGuideGE})
   const resetFormData = () => {
@@ -32,6 +42,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
   const closeModal = () => {
     resetFormData()
     resetSteps()
+    setSearchProductSat('')
     // resetSelectedQuotes()
     toggleModal()
   }
@@ -63,6 +74,19 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
           toggleModal={toggleModal}
           goPrev={goPrev}
         />
+      )}
+      { step === 3 && (
+        <ParcelInfoFormGE
+          isMobileTablet={isMobileTablet}
+        >
+          <ProductSatDropdown
+            searchProductSat={searchProductSat}
+            errorProductSat={errorProductSat}
+            setSearchProductSat={setSearchProductSat}
+            updateSelectedOption={updateSelectedProduct}
+            updateErrorProductSat={setErrorProductSat}
+          />
+        </ParcelInfoFormGE>
       )}
     </Modal>
   )
