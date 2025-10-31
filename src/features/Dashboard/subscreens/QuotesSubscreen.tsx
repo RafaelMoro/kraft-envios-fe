@@ -20,9 +20,9 @@ import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
 import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
 import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
-import { TEMPORAL_ERROR_CREATION_GUIDE_SELECTION } from "@/shared/constants/quotes.constants"
 import { CreateGuidePkk } from "@/features/Guides/Pkk/CreateGuidePkk"
 import { PackageDimensions } from "@/shared/types/guides.types"
+import { CreateGuideGE } from "@/features/Guides/GE/CreateGuideGE"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -44,6 +44,8 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const toggleCreateGuideTone = () => setOpenCreateGuideTone((prev) => !prev)
   const [openCreateGuidePkk, setOpenCreateGuidePkk] = useState<boolean>(false)
   const toggleCreateGuidePkk = () => setOpenCreateGuidePkk((prev) => !prev)
+  const [openCreateGuideGE, setOpenCreateGuideGE] = useState<boolean>(false)
+  const toggleCreateGuideGE = () => setOpenCreateGuideGE((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -115,9 +117,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
       return;
     }
-    // TODO: Remove this validation when all couriers support guide creation
-    if (selectedQuotes.some((q) => q.source === 'GE')) {
-      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
+
+    if (selectedQuotes[0].source === 'GE') {
+      toggleCreateGuideGE()
       return;
     }
 
@@ -134,11 +136,11 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   }
 
   const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
+    setSelectedQuotes([quote])
     if (quote.source === 'GE') {
-      setErrorActionBar(TEMPORAL_ERROR_CREATION_GUIDE_SELECTION)
+      toggleCreateGuideGE()
       return;
     }
-    setSelectedQuotes([quote])
 
     if (quote.source === 'TONE') {
       toggleCreateGuideTone()
@@ -277,6 +279,13 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         open={openCreateGuidePkk}
         packageDimensions={packageDimensions.current}
         toggleModal={toggleCreateGuidePkk}
+        resetSelectedQuotes={resetSelectedQuotes}
+      />
+      <CreateGuideGE
+        open={openCreateGuideGE}
+        packageDimensions={packageDimensions.current}
+        selectedQuotes={selectedQuotes}
+        toggleModal={toggleCreateGuideGE}
         resetSelectedQuotes={resetSelectedQuotes}
       />
     </main>
