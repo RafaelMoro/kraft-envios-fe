@@ -1,10 +1,11 @@
-import { CreateGuideFormValuesGE } from "@/shared/types/guides.types"
+import { CreateGuideFormValuesGE, SearchProduct } from "@/shared/types/guides.types"
 
 interface ConfirmGuideGEProps {
-  formData: CreateGuideFormValuesGE
+  formData: CreateGuideFormValuesGE;
+  selectedProduct: SearchProduct | null;
 }
 
-export const ConfirmGuideGE = ({ formData }: ConfirmGuideGEProps) => {
+export const ConfirmGuideGE = ({ formData, selectedProduct }: ConfirmGuideGEProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
   return (
@@ -26,6 +27,11 @@ export const ConfirmGuideGE = ({ formData }: ConfirmGuideGEProps) => {
         <h5 className="text-lg font-bold">Información del paquete</h5>
         <ul className="grid grid-cols-1 gap-2 list-disc">
           <li className="ml-6">Descripción del contenido del paquete: {parcelInfo.content}</li>
+          <li className="ml-6">Tipo de producto: {selectedProduct?.description}</li>
+          <li className="ml-6">Largo del paquete: {parcelInfo.length} cm</li>
+          <li className="ml-6">Alto del paquete: {parcelInfo.height} cm</li>
+          <li className="ml-6">Ancho del paquete: {parcelInfo.width} cm</li>
+          <li className="ml-6">Peso del paquete: {parcelInfo.weight} kg</li>
         </ul>
       </article>
     </section>
