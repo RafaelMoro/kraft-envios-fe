@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ParcelInfoForm } from '@/features/Guides/Mn/ParcelInfoForm'
-import { ParcelInfoFormValues } from '@/shared/types/guides.types'
+import { ParcelInfoFormValues, SearchProduct } from '@/shared/types/guides.types'
 
 // Mock functions for props
 const mockGoNext = jest.fn()
@@ -15,11 +15,17 @@ const defaultParcelInfo: ParcelInfoFormValues = {
   quantity: 0
 }
 
+const mockSelectedProduct: SearchProduct = {
+  code: '12345',
+  description: 'Ropa deportiva'
+}
+
 const defaultProps = {
   children: null,
   isMobileTablet: false,
   parcelInfo: defaultParcelInfo,
   searchProductSat: 'Ropa deportiva',
+  selectedProduct: mockSelectedProduct,
   goNext: mockGoNext,
   goPrev: mockGoPrev,
   updateParcelInfo: mockUpdateParcelInfo,
@@ -72,6 +78,14 @@ describe('ParcelInfoForm', () => {
 
       // Then mobile title should not be displayed
       expect(screen.queryByText('Información del paquete')).not.toBeInTheDocument()
+    })
+
+    it('should display mobile title when isMobileTablet is true', () => {
+      // Given the ParcelInfoForm is rendered with isMobileTablet true
+      renderComponent({ isMobileTablet: true })
+
+      // Then mobile title should be displayed
+      expect(screen.getByText('Información del paquete')).toBeInTheDocument()
     })
 
     it('should have correct input types for form fields', () => {
@@ -208,9 +222,12 @@ describe('ParcelInfoForm', () => {
     })
 
     it('should not display validation errors when all fields are valid', async () => {
-      // Given the ParcelInfoForm is rendered
+      // Given the ParcelInfoForm is rendered with valid product data
       const user = userEvent.setup()
-      renderComponent()
+      renderComponent({ 
+        searchProductSat: 'Ropa deportiva', 
+        selectedProduct: mockSelectedProduct 
+      })
 
       // When user enters valid data in all fields
       const contentInput = screen.getByTestId('content')
@@ -271,11 +288,103 @@ describe('ParcelInfoForm', () => {
     })
   })
 
-  describe('Valid form submission', () => {
-    it('should call updateParcelInfo and goNext when form is submitted with valid data and searchProductSat exists', async () => {
-      // Given the ParcelInfoForm is rendered with valid searchProductSat
+  describe('Product SAT validation errors', () => {
+    it('should display error when searchProductSat is empty and form is submitted with valid data', async () => {
+      // Given the ParcelInfoForm is rendered without searchProductSat
       const user = userEvent.setup()
-      renderComponent({ searchProductSat: 'Ropa deportiva' })
+      renderComponent({ searchProductSat: '', selectedProduct: null })
+
+      // When user enters valid data but no product is searched
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Valid content')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '100')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '2')
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then error should be called with appropriate message
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('Debes de buscar un producto para categorizarlo')
+      
+      // And form submission should not proceed
+      expect(mockUpdateParcelInfo).not.toHaveBeenCalled()
+      expect(mockGoNext).not.toHaveBeenCalled()
+    })
+
+    it('should display error when selectedProduct is null and form is submitted with valid data', async () => {
+      // Given the ParcelInfoForm is rendered with searchProductSat but no selectedProduct
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: 'Ropa deportiva', selectedProduct: null })
+
+      // When user enters valid data but no product is selected
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Valid content')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '100')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '2')
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then error should be called with appropriate message
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('Debes de seleccionar un producto válido de la lista')
+      
+      // And form submission should not proceed
+      expect(mockUpdateParcelInfo).not.toHaveBeenCalled()
+      expect(mockGoNext).not.toHaveBeenCalled()
+    })
+
+    it('should display error when both searchProductSat and selectedProduct are invalid', async () => {
+      // Given the ParcelInfoForm is rendered without valid product data
+      const user = userEvent.setup()
+      renderComponent({ searchProductSat: '', selectedProduct: null })
+
+      // When user enters valid form data but no product is searched or selected
+      const contentInput = screen.getByTestId('content')
+      await user.clear(contentInput)
+      await user.type(contentInput, 'Valid content')
+      
+      const valueInput = screen.getByTestId('value')
+      await user.clear(valueInput)
+      await user.type(valueInput, '100')
+      
+      const quantityInput = screen.getByTestId('quantity')
+      await user.clear(quantityInput)
+      await user.type(quantityInput, '2')
+      
+      const submitButton = screen.getByTestId('parcel-info-form-next-button')
+      await user.click(submitButton)
+
+      // Then error should be called for missing search (first condition checked)
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith('Debes de buscar un producto para categorizarlo')
+      
+      // And form submission should not proceed
+      expect(mockUpdateParcelInfo).not.toHaveBeenCalled()
+      expect(mockGoNext).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Valid form submission', () => {
+    it('should call updateParcelInfo and goNext when form is submitted with valid data and valid product data', async () => {
+      // Given the ParcelInfoForm is rendered with valid searchProductSat and selectedProduct
+      const user = userEvent.setup()
+      renderComponent({ 
+        searchProductSat: 'Ropa deportiva', 
+        selectedProduct: mockSelectedProduct 
+      })
 
       // When user enters valid data in all fields
       const contentInput = screen.getByTestId('content')
@@ -311,9 +420,12 @@ describe('ParcelInfoForm', () => {
     })
 
     it('should handle form submission with minimum valid values', async () => {
-      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      // Given the ParcelInfoForm is rendered with valid product data
       const user = userEvent.setup()
-      renderComponent({ searchProductSat: 'Producto válido' })
+      renderComponent({ 
+        searchProductSat: 'Producto válido', 
+        selectedProduct: { code: '67890', description: 'Producto válido' }
+      })
 
       // When user enters minimum valid data
       const contentInput = screen.getByTestId('content')
@@ -346,9 +458,12 @@ describe('ParcelInfoForm', () => {
     })
 
     it('should handle form submission with large numeric values', async () => {
-      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      // Given the ParcelInfoForm is rendered with valid product data
       const user = userEvent.setup()
-      renderComponent({ searchProductSat: 'Producto caro' })
+      renderComponent({ 
+        searchProductSat: 'Producto caro', 
+        selectedProduct: { code: '99999', description: 'Producto caro' }
+      })
 
       // When user enters large numeric values
       const contentInput = screen.getByTestId('content')
@@ -381,9 +496,12 @@ describe('ParcelInfoForm', () => {
     })
 
     it('should handle form submission with long content text', async () => {
-      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      // Given the ParcelInfoForm is rendered with valid product data
       const user = userEvent.setup()
-      renderComponent({ searchProductSat: 'Producto con descripción larga' })
+      renderComponent({ 
+        searchProductSat: 'Producto con descripción larga', 
+        selectedProduct: { code: '11111', description: 'Producto con descripción larga' }
+      })
 
       // When user enters long content text
       const longContent = 'Este es un contenido muy largo que describe detalladamente el producto que se está enviando, incluyendo todas sus características y especificaciones técnicas importantes'
@@ -418,9 +536,12 @@ describe('ParcelInfoForm', () => {
     })
 
     it('should prevent default form submission behavior', async () => {
-      // Given the ParcelInfoForm is rendered with valid searchProductSat
+      // Given the ParcelInfoForm is rendered with valid product data
       const user = userEvent.setup()
-      renderComponent({ searchProductSat: 'Producto válido' })
+      renderComponent({ 
+        searchProductSat: 'Producto válido', 
+        selectedProduct: { code: '22222', description: 'Producto válido' }
+      })
 
       // When user enters valid data and submits
       const contentInput = screen.getByTestId('content')

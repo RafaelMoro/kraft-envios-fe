@@ -4,21 +4,32 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 
-import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema } from "@/shared/types/guides.types"
+import { ParcelInfoFormValues, ParcelInfoFormValuesFormSchema, SearchProduct } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface ParcelInfoFormProps {
   children: ReactNode
   isMobileTablet: boolean
   parcelInfo: ParcelInfoFormValues
-  searchProductSat: string
+  searchProductSat: string;
+  selectedProduct: SearchProduct | null;
   goNext: () => void
   goPrev: () => void
   updateParcelInfo: (data: ParcelInfoFormValues) => void
   updateErrorProductSat: (message: string) => void
 }
 
-export const ParcelInfoForm = ({ children, searchProductSat, parcelInfo, isMobileTablet, goNext, goPrev, updateParcelInfo, updateErrorProductSat }: ParcelInfoFormProps) => {
+export const ParcelInfoForm = ({
+  children,
+  searchProductSat,
+  parcelInfo,
+  isMobileTablet,
+  selectedProduct,
+  goNext,
+  goPrev,
+  updateParcelInfo,
+  updateErrorProductSat
+}: ParcelInfoFormProps) => {
   const {
     register,
     handleSubmit,
@@ -33,6 +44,10 @@ export const ParcelInfoForm = ({ children, searchProductSat, parcelInfo, isMobil
     if (!searchProductSat) {
       // show error
       updateErrorProductSat('Debes de buscar un producto para categorizarlo')
+      return;
+    }
+    if (!selectedProduct) {
+      updateErrorProductSat('Debes de seleccionar un producto válido de la lista')
       return;
     }
     updateParcelInfo(data)

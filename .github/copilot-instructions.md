@@ -26,6 +26,8 @@ For the unit tests, consider the following instructions:
 
 - Do not test CSS classes directly using toHaveClass() unless absolutely necessary for critical functionality. CSS classes are implementation details that can change frequently and make tests brittle. Instead, focus on testing user-visible behavior, accessibility, and component functionality. If you need to verify styling, consider testing the visual outcome or behavior rather than the specific CSS classes applied.
 
+- Do not write tests that assert on styling, visual appearance, or layout properties. Avoid testing CSS properties, colors, fonts, positioning, or any visual styling aspects. These are implementation details that should be handled by visual regression testing or manual testing. Focus tests on functionality, user interactions, accessibility, and component behavior instead of how things look.
+
 - Avoid writing redundant tests with identical expectations when using Gherkin syntax. If multiple test scenarios have the same assertions and expected behavior, consolidate them into a single meaningful test or ensure each test validates genuinely different behavior. For example, testing "primary styling" and "alternative styling" separately is unnecessary if both only verify the same text display without testing actual styling differences. Focus on testing distinct behaviors rather than different prop combinations that produce identical outcomes.
 
 ## Mocks

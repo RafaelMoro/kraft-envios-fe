@@ -1,9 +1,10 @@
-import { CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressValuesPkk, CreateGuideFormValues, CreateGuideFormValuesPkk, CreateGuideFormValuesTone } from "../types/guides.types";
+import { CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressValuesPkk, CreateGuideFormValues, CreateGuideFormValuesGE, CreateGuideFormValuesPkk, CreateGuideFormValuesTone } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
 // TODO: Confirm the default email
 export const DEFAULT_EMAIL = 'j.temix33@gmail.com'
 export const DEFAULT_REFERENCE = 'Sin referencia'
+export const DEFAULT_RFC = 'XAXX010101000'
 
 export const initialStateAddressForm: CreateGuideAddressFormValues = {
   name: "",
@@ -54,6 +55,23 @@ export const initialStateAddressPkk: CreateGuideAddressValuesPkk = {
   isResidential: false
 }
 
+export const initialStateCreateGuideGE: CreateGuideFormValuesGE = {
+  originAddress: {
+    alias: ''
+  },
+  destinationAddress: {
+    alias: ''
+  },
+  parcelInfo: {
+    content: "",
+    length: "",
+    width: "",
+    height: "",
+    weight: "",
+    satProductId: ""
+  }
+}
+
 export const initialStateFormTone: CreateGuideFormValuesTone = {
   originAddress: initialStateAddressTone,
   destinationAddress: initialStateAddressTone,
@@ -79,3 +97,6 @@ export const GET_SAT_PRODUCT_ENDPOINT = '/api/product-sat'
 export const CREATE_GUIDE_MN_ENDPOINT = '/api/guides/mn'
 export const CREATE_GUIDE_TONE_ENDPOINT = '/api/guides/tone'
 export const CREATE_GUIDE_PKK_ENDPOINT = '/api/guides/pkk'
+export const CREATE_GUIDE_GE_ENDPOINT = '/api/guides/ge'
+export const GET_ALIAS_ADDRESSES_GE_ENDPOINT = '/api/alias-address'
+export const CREATE_ADDRESS_GE_ENDPOINT = '/api/create-address-ge'

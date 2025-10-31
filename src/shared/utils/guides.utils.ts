@@ -6,7 +6,11 @@ import {
   DEFAULT_COMPANY,
   DEFAULT_EMAIL,
   DEFAULT_REFERENCE,
-  CREATE_GUIDE_PKK_ENDPOINT
+  CREATE_GUIDE_PKK_ENDPOINT,
+  GET_ALIAS_ADDRESSES_GE_ENDPOINT,
+  CREATE_ADDRESS_GE_ENDPOINT,
+  DEFAULT_RFC,
+  CREATE_GUIDE_GE_ENDPOINT
 } from '../constants/guides.constants'
 import {
   CreateGuideMnPayload,
@@ -18,6 +22,10 @@ import {
   CreateGuideAddressFormValuesTone,
   CreateGuideAddressValuesPkk,
   CreateGuidePkkPayload,
+  CreateAddressGEResponse,
+  CreateAddressGEPayload,
+  CreateAddressFormValuesGE,
+  CreateGuideGEPayload,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -44,6 +52,35 @@ export const createGuidePkkCb = async (data: CreateGuidePkkPayload) => {
   try {
     const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_PKK_ENDPOINT, data)
     return res?.data?.data?.guide
+  } catch (error) {
+    throw error
+  }
+}
+
+export const createGuideGECb = async (data: CreateGuideGEPayload) => {
+  try {
+    const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_GE_ENDPOINT, data)
+    return res?.data?.data?.guide
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getAliasAddressesCb = async (): Promise<string[]> => {
+  try {
+    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
+    const aliases = res?.data?.aliases ?? []
+    return aliases
+  } catch (error) {
+    throw error
+  }
+}
+
+export const createAddressGECb = async (payload: CreateAddressGEPayload) => {
+  try {
+    const res: AxiosResponse<CreateAddressGEResponse> = await axios.post(CREATE_ADDRESS_GE_ENDPOINT, payload)
+    const data = res?.data
+    return data
   } catch (error) {
     throw error
   }
@@ -96,5 +133,29 @@ export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk):
   return {
     ...address,
     email: address.email?.trim() || DEFAULT_EMAIL,
+  }
+}
+
+/**
+ * Converts CreateAddressFormValuesGE to CreateAddressGEPayload
+ * Maps form field names to API payload field names and ensures required fields
+ * @param formValues - The form values object to convert
+ * @returns Converted payload object for the API
+ */
+export const convertToCreateAddressGEPayload = (formValues: CreateAddressFormValuesGE): CreateAddressGEPayload => {
+  return {
+    zipcode: formValues.zipcode,
+    neighborhood: formValues.neighborhood,
+    city: formValues.city,
+    state: formValues.state,
+    name: formValues.name,
+    email: formValues.email?.trim() || DEFAULT_EMAIL,
+    phone: formValues.phone,
+    company: formValues.company?.trim() || DEFAULT_COMPANY,
+    rfc: formValues.rfc?.trim() || DEFAULT_RFC,
+    street: formValues.street1,
+    number: formValues.external_number,
+    reference: formValues.reference?.trim() || DEFAULT_REFERENCE,
+    alias: formValues.alias,
   }
 }
