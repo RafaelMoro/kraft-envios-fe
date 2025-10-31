@@ -7,13 +7,15 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 interface ParcelInfoFormGEProps {
-  isMobileTablet: boolean;
   children: ReactNode;
+  isMobileTablet: boolean;
+  searchProductSat: string
   goPrev: () => void;
   goNext: () => void;
+  updateErrorProductSat: (message: string) => void
 }
 
-export const ParcelInfoFormGE = ({ isMobileTablet, children, goNext, goPrev }: ParcelInfoFormGEProps) => {
+export const ParcelInfoFormGE = ({ isMobileTablet, searchProductSat, children, goNext, goPrev, updateErrorProductSat }: ParcelInfoFormGEProps) => {
   const {
     register,
     handleSubmit,
@@ -25,6 +27,11 @@ export const ParcelInfoFormGE = ({ isMobileTablet, children, goNext, goPrev }: P
   const onSubmit: SubmitHandler<ParcelInfoValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+
+    if (!searchProductSat) {
+      updateErrorProductSat('Debes de buscar un producto para categorizarlo')
+      return;
+    }
 
     // TODO: update data
     goNext()
