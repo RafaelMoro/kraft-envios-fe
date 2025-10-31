@@ -9,6 +9,7 @@ import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, PackageDimensions,
 import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
+import { ConfirmGuideGE } from "./ConfirmGuideGE";
 
 interface CreateGuideGEProps {
   open: boolean;
@@ -133,6 +134,14 @@ export const CreateGuideGE = ({ open, toggleModal, packageDimensions }: CreateGu
             updateErrorProductSat={setErrorProductSat}
           />
         </ParcelInfoFormGE>
+      )}
+      { step === 4 && (
+        <ConfirmGuideGE
+          formData={formData.current}
+          // goPrev={goPrev}
+          // isPending={isPending}
+          // createGuide={createGuide}
+        />
       )}
     </Modal>
   )
