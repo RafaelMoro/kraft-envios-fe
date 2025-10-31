@@ -45,7 +45,9 @@ export const CreateGuidePkk = ({
       const { content: oldContent, ...rest   } = currentContentData
       const updatedData = { ...packageDimensions, content: data.content }
       formData.current.parcelInfo = updatedData
+      return;
     }
+    console.warn('No package dimensions available to update parcel info')
   }
 
   const closeModal = () => {
