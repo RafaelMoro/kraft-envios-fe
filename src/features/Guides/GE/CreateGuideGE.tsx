@@ -5,7 +5,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { CreateGuideAddressFormGE } from "./CreateGuideAddressFormGE";
-import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, SearchProduct } from "@/shared/types/guides.types";
+import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
 import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
@@ -65,6 +65,10 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
     return true
   }
 
+  const updateParcelInfo = (data: ParcelInfoValuesGE) => {
+    formData.current.parcelInfo = data
+  }
+
   const closeModal = () => {
     resetFormData()
     resetSteps()
@@ -108,10 +112,12 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
         <ParcelInfoFormGE
           isMobileTablet={isMobileTablet}
           searchProductSat={searchProductSat}
+          selectedProduct={selectedProduct.current}
+          parcelInfo={formData.current.parcelInfo}
           goNext={goNext}
           goPrev={goPrev}
           updateErrorProductSat={setErrorProductSat}
-          selectedProduct={selectedProduct.current}
+          updateParcelInfo={updateParcelInfo}
         >
           <ProductSatDropdown
             searchProductSat={searchProductSat}

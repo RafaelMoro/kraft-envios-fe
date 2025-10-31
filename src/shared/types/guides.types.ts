@@ -26,6 +26,7 @@ export type CreateGuideFormValuesPkk = {
 export type CreateGuideFormValuesGE = {
   originAddress: CreateGuideAddressValuesGE;
   destinationAddress: CreateGuideAddressValuesGE;
+  parcelInfo: ParcelInfoValuesGE;
 }
 
 export type CreateGuideAddressFormValues = {
@@ -117,6 +118,10 @@ export type PackageDimensions = {
 }
 
 export type ParcelInfoValuesPkk = ParcelInfoValues & PackageDimensions;
+
+export type ParcelInfoValuesGE = ParcelInfoValues & PackageDimensions & {
+  satProductId: string;
+}
 
 export type CreateGuideMnPayload = {
   quoteId: string

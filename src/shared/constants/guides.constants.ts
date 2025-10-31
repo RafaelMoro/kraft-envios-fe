@@ -61,6 +61,14 @@ export const initialStateCreateGuideGE: CreateGuideFormValuesGE = {
   },
   destinationAddress: {
     alias: ''
+  },
+  parcelInfo: {
+    content: "",
+    length: "",
+    width: "",
+    height: "",
+    weight: "",
+    satProductId: ""
   }
 }
 

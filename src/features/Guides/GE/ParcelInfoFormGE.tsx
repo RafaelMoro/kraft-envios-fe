@@ -2,22 +2,32 @@ import { ReactNode } from "react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import { ParcelInfoFormValuesSchema, ParcelInfoValues, SearchProduct } from "@/shared/types/guides.types";
+import { ParcelInfoFormValuesSchema, ParcelInfoValues, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 interface ParcelInfoFormGEProps {
   children: ReactNode;
   isMobileTablet: boolean;
+  parcelInfo: ParcelInfoValuesGE;
   searchProductSat: string;
   selectedProduct: SearchProduct | null;
   goPrev: () => void;
   goNext: () => void;
+  updateParcelInfo: (data: ParcelInfoValuesGE) => void;
   updateErrorProductSat: (message: string) => void;
 }
 
 export const ParcelInfoFormGE = ({
-  isMobileTablet, searchProductSat, selectedProduct, children, goNext, goPrev, updateErrorProductSat,
+  isMobileTablet,
+  searchProductSat,
+  selectedProduct,
+  parcelInfo,
+  children,
+  goNext,
+  goPrev,
+  updateErrorProductSat,
+  updateParcelInfo,
 }: ParcelInfoFormGEProps) => {
   const {
     register,
@@ -40,7 +50,15 @@ export const ParcelInfoFormGE = ({
       return;
     }
 
-    // TODO: update data
+    const newData: ParcelInfoValuesGE = {
+      content: data.content,
+      satProductId: selectedProduct.code,
+      length: '',
+      width: '',
+      height: '',
+      weight: ''
+    }
+    updateParcelInfo(newData)
     goNext()
   }
 
@@ -58,7 +76,7 @@ export const ParcelInfoFormGE = ({
           </div>
           <TextInput 
             data-testid="content"
-            // defaultValue={parcelInfo.content}
+            defaultValue={parcelInfo.content}
             id="content"
             type="text"
             {...register("content")}
