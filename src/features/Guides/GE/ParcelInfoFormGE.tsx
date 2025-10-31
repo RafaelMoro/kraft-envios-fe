@@ -2,20 +2,23 @@ import { ReactNode } from "react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import { ParcelInfoFormValuesSchema, ParcelInfoValues } from "@/shared/types/guides.types";
+import { ParcelInfoFormValuesSchema, ParcelInfoValues, SearchProduct } from "@/shared/types/guides.types";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 interface ParcelInfoFormGEProps {
   children: ReactNode;
   isMobileTablet: boolean;
-  searchProductSat: string
+  searchProductSat: string;
+  selectedProduct: SearchProduct | null;
   goPrev: () => void;
   goNext: () => void;
-  updateErrorProductSat: (message: string) => void
+  updateErrorProductSat: (message: string) => void;
 }
 
-export const ParcelInfoFormGE = ({ isMobileTablet, searchProductSat, children, goNext, goPrev, updateErrorProductSat }: ParcelInfoFormGEProps) => {
+export const ParcelInfoFormGE = ({
+  isMobileTablet, searchProductSat, selectedProduct, children, goNext, goPrev, updateErrorProductSat,
+}: ParcelInfoFormGEProps) => {
   const {
     register,
     handleSubmit,
@@ -30,6 +33,10 @@ export const ParcelInfoFormGE = ({ isMobileTablet, searchProductSat, children, g
 
     if (!searchProductSat) {
       updateErrorProductSat('Debes de buscar un producto para categorizarlo')
+      return;
+    }
+    if (!selectedProduct) {
+      updateErrorProductSat('Debes de seleccionar un producto válido de la lista')
       return;
     }
 

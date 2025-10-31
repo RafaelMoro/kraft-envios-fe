@@ -105,6 +105,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
           goNext={goNext}
           goPrev={goPrev}
           updateErrorProductSat={setErrorProductSat}
+          selectedProduct={selectedProduct.current}
         >
           <ProductSatDropdown
             searchProductSat={searchProductSat}
