@@ -5,17 +5,18 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { CreateGuideAddressFormGE } from "./CreateGuideAddressFormGE";
-import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
+import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
 import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
 
 interface CreateGuideGEProps {
   open: boolean;
+  packageDimensions: PackageDimensions | null;
   toggleModal: () => void;
 }
 
-export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
+export const CreateGuideGE = ({ open, toggleModal, packageDimensions }: CreateGuideGEProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
@@ -66,7 +67,12 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
   }
 
   const updateParcelInfo = (data: ParcelInfoValuesGE) => {
-    formData.current.parcelInfo = data
+    if (packageDimensions) {
+      const updatedData = { ...packageDimensions, content: data.content, satProductId: data.satProductId }
+      formData.current.parcelInfo = updatedData
+      return;
+    }
+    console.warn('No package dimensions available to update parcel info')
   }
 
   const closeModal = () => {
