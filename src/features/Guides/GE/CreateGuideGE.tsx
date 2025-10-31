@@ -101,6 +101,8 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
       { step === 3 && (
         <ParcelInfoFormGE
           isMobileTablet={isMobileTablet}
+          goNext={goNext}
+          goPrev={goPrev}
         >
           <ProductSatDropdown
             searchProductSat={searchProductSat}
