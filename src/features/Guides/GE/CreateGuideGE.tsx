@@ -33,6 +33,12 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
   const resetFormData = () => {
     formData.current = {...initialStateCreateGuideGE}
   }
+
+  /**
+   * This function updates the origin address in the form data.
+   * It always returns true as the boolean that is returned indicates if there was an error, to catch same alias error.
+   * @returns true
+   */
   const updateOriginAddress = (data: CreateGuideAddressValuesGE) => {
     formData.current.originAddress = data
     return true
@@ -79,7 +85,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
       { step === 1 && (
         <CreateGuideAddressFormGE
           typeAddress="origin"
-          // addressData={formData.current.originAddress}
+          addressData={formData.current.originAddress}
           goNext={goNext}
           updateAddress={updateOriginAddress}
           toggleModal={toggleModal}
@@ -90,7 +96,7 @@ export const CreateGuideGE = ({ open, toggleModal }: CreateGuideGEProps) => {
       { step === 2 && (
         <CreateGuideAddressFormGE
           typeAddress="destination"
-          // addressData={formData.current.originAddress}
+          addressData={formData.current.destinationAddress}
           goNext={goNext}
           updateAddress={updateDestinationAddress}
           toggleModal={toggleModal}

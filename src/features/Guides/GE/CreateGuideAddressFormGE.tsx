@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button, Label, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -14,13 +14,16 @@ import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner"
 interface CreateGuideAddressFormGEProps {
   typeAddress: 'origin' | 'destination';
   errorSelectAlias: string | null;
+  addressData: CreateGuideAddressValuesGE;
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressValuesGE) => boolean
 }
 
-export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev, goNext, toggleModal, updateAddress }: CreateGuideAddressFormGEProps) => {
+export const CreateGuideAddressFormGE = ({
+  typeAddress, errorSelectAlias, addressData, goPrev, goNext, toggleModal, updateAddress
+}: CreateGuideAddressFormGEProps) => {
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
   const [showErrorOnCreateAddr, setShowErrorOnCreateAddr] = useState<boolean>(false)
   const toggleErrorOnCreateAddr = () => setShowErrorOnCreateAddr((prev) => !prev)
@@ -29,6 +32,12 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
 
   const typeAddressLabel = typeAddress === 'origin' ? 'origen' : 'destino'
   const cancelButtonText = typeAddress === 'destination' ? 'Regresar' : 'Cancelar'
+
+  useEffect(() => {
+    if (addressData.alias) {
+      setSelectedAlias(addressData.alias)
+    }
+  }, [addressData.alias])
 
   const handleCancel = () => {
     if (typeAddress === 'destination') {
@@ -98,7 +107,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="name"
-              // defaultValue={addressData.name}
               id="name"
               type="text"
               {...register("name")}
@@ -116,7 +124,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
               id="phone"
               type="text"
               inputMode="numeric"
-              // defaultValue={addressData.phone}
               {...register("phone")}
             />
             { errors?.phone?.message && (
@@ -130,7 +137,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             <TextInput
               id="email"
               type="email"
-              // defaultValue={addressData.email ?? ''}
               {...register("email")}
             />
             { errors?.email?.message && (
@@ -143,7 +149,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="company"
-              // defaultValue={addressData.company ?? ''}
               id="company"
               type="text"
               {...register("company")}
@@ -158,7 +163,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="rfc"
-              // defaultValue={addressData.rfc ?? ''}
               id="rfc"
               type="text"
               {...register("rfc")}
@@ -173,7 +177,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="street1"
-              // defaultValue={addressData.street1}
               id="street1"
               type="text"
               {...register("street1")}
@@ -202,7 +205,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="neighborhood"
-              // defaultValue={addressData.neighborhood}
               id="neighborhood"
               type="text"
               {...register("neighborhood")}
@@ -217,7 +219,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="city"
-              // defaultValue={addressData.city}
               id="city"
               type="text"
               {...register("city")}
@@ -232,7 +233,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="state"
-              // defaultValue={addressData.state}
               id="state"
               type="text"
               {...register("state")}
@@ -261,7 +261,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="alias"
-              // defaultValue={addressData.alias ?? ''}
               id="alias"
               type="text"
               {...register("alias")}
@@ -276,7 +275,6 @@ export const CreateGuideAddressFormGE = ({ typeAddress, errorSelectAlias, goPrev
             </div>
             <TextInput
               data-testid="reference"
-              // defaultValue={addressData.reference ?? ''}
               id="reference"
               type="text"
               {...register("reference")}
