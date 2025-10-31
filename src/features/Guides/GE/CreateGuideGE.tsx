@@ -5,12 +5,15 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { CreateGuideAddressFormGE } from "./CreateGuideAddressFormGE";
-import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
+import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, CreateGuideGEPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
 import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
 import { ConfirmGuideGE } from "./ConfirmGuideGE";
 import { QuoteUI } from "@/shared/types/quotes.types";
+import { useMutation } from "@tanstack/react-query";
+import { GeneralApiError } from "@/shared/types/global.types";
+import { createGuideGECb } from "@/shared/utils/guides.utils";
 
 interface CreateGuideGEProps {
   open: boolean;
@@ -83,9 +86,20 @@ export const CreateGuideGE = ({ open, toggleModal, packageDimensions, selectedQu
     resetSteps()
     setSearchProductSat('')
     setErrorSelectAlias(null)
+    // TODO: Change this
     // resetSelectedQuotes()
     toggleModal()
   }
+
+  const { mutate: createGuide, data, isError, isPending, isSuccess } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideGEPayload>({
+    mutationFn: createGuideGECb,
+    onSuccess: () => {
+      goNext()
+    },
+    onError: () => {
+      goNext()
+    }
+  })
 
   return (
     <Modal show={open} onClose={closeModal}>
