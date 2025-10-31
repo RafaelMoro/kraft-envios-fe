@@ -1,12 +1,29 @@
 import { CreateGuideFormValuesGE, SearchProduct } from "@/shared/types/guides.types"
+import { Button, Spinner } from "flowbite-react";
 
 interface ConfirmGuideGEProps {
   formData: CreateGuideFormValuesGE;
   selectedProduct: SearchProduct | null;
+  isPending: boolean;
+  goPrev: () => void
 }
 
-export const ConfirmGuideGE = ({ formData, selectedProduct }: ConfirmGuideGEProps) => {
+export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, goPrev }: ConfirmGuideGEProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
+
+  const handleSubmit = () => {
+    // Verify and update addresses with default values for empty optional fields
+    // const verifiedOriginAddress = verifyAndUpdateAddressPkk(originAddress)
+    // const verifiedDestinationAddress = verifyAndUpdateAddressPkk(destinationAddress)
+
+    // const payload: CreateGuidePkkPayload = {
+    //   origin: verifiedOriginAddress,
+    //   destination: verifiedDestinationAddress,
+    //   parcel: parcelInfo
+    // }
+
+    // createGuide(payload)
+  }
 
   return (
     <section className=" p-4 flex flex-col gap-10">
@@ -34,6 +51,18 @@ export const ConfirmGuideGE = ({ formData, selectedProduct }: ConfirmGuideGEProp
           <li className="ml-6">Peso del paquete: {parcelInfo.weight} kg</li>
         </ul>
       </article>
+      <footer className="flex justify-between">
+        <Button color="light" data-testid="confirm-guide-cancel-button" className="hover:cursor-pointer" onClick={goPrev}>
+          Regresar
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          data-testid="confirm-guide-send-button"
+          className="hover:cursor-pointer"
+        >
+          { isPending ? (<Spinner aria-label="loading create guide Kraft" />) : "Crear guia" }
+        </Button>
+      </footer>
     </section>
   )
 }

@@ -139,8 +139,8 @@ export const CreateGuideGE = ({ open, toggleModal, packageDimensions }: CreateGu
         <ConfirmGuideGE
           formData={formData.current}
           selectedProduct={selectedProduct.current}
-          // goPrev={goPrev}
-          // isPending={isPending}
+          goPrev={goPrev}
+          isPending={false}
           // createGuide={createGuide}
         />
       )}
