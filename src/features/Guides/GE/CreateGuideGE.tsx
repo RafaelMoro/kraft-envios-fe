@@ -10,14 +10,16 @@ import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
 import { ConfirmGuideGE } from "./ConfirmGuideGE";
+import { QuoteUI } from "@/shared/types/quotes.types";
 
 interface CreateGuideGEProps {
   open: boolean;
   packageDimensions: PackageDimensions | null;
+  selectedQuotes: QuoteUI[]
   toggleModal: () => void;
 }
 
-export const CreateGuideGE = ({ open, toggleModal, packageDimensions }: CreateGuideGEProps) => {
+export const CreateGuideGE = ({ open, toggleModal, packageDimensions, selectedQuotes }: CreateGuideGEProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
@@ -139,6 +141,7 @@ export const CreateGuideGE = ({ open, toggleModal, packageDimensions }: CreateGu
         <ConfirmGuideGE
           formData={formData.current}
           selectedProduct={selectedProduct.current}
+          selectedQuotes={selectedQuotes}
           goPrev={goPrev}
           isPending={false}
           // createGuide={createGuide}

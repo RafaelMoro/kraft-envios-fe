@@ -1,26 +1,27 @@
-import { CreateGuideFormValuesGE, SearchProduct } from "@/shared/types/guides.types"
+import { CreateGuideFormValuesGE, CreateGuideGEPayload, SearchProduct } from "@/shared/types/guides.types"
+import { QuoteUI } from "@/shared/types/quotes.types";
 import { Button, Spinner } from "flowbite-react";
 
 interface ConfirmGuideGEProps {
   formData: CreateGuideFormValuesGE;
   selectedProduct: SearchProduct | null;
+  selectedQuotes: QuoteUI[]
   isPending: boolean;
   goPrev: () => void
 }
 
-export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, goPrev }: ConfirmGuideGEProps) => {
+export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQuotes, goPrev }: ConfirmGuideGEProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
   const handleSubmit = () => {
-    // Verify and update addresses with default values for empty optional fields
-    // const verifiedOriginAddress = verifyAndUpdateAddressPkk(originAddress)
-    // const verifiedDestinationAddress = verifyAndUpdateAddressPkk(destinationAddress)
+    const quoteId = selectedQuotes?.[0]?.id
 
-    // const payload: CreateGuidePkkPayload = {
-    //   origin: verifiedOriginAddress,
-    //   destination: verifiedDestinationAddress,
-    //   parcel: parcelInfo
-    // }
+    const payload: CreateGuideGEPayload = {
+      quoteId,
+      origin: originAddress,
+      destination: destinationAddress,
+      parcel: parcelInfo
+    }
 
     // createGuide(payload)
   }

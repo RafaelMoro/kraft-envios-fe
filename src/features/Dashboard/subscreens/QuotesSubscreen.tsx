@@ -284,6 +284,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       <CreateGuideGE
         open={openCreateGuideGE}
         packageDimensions={packageDimensions.current}
+        selectedQuotes={selectedQuotes}
         toggleModal={toggleCreateGuideGE}
       />
     </main>
