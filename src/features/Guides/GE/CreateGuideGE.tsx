@@ -14,6 +14,7 @@ import { QuoteUI } from "@/shared/types/quotes.types";
 import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideGECb } from "@/shared/utils/guides.utils";
+import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
 
 interface CreateGuideGEProps {
   open: boolean;
@@ -161,6 +162,9 @@ export const CreateGuideGE = ({ open, toggleModal, packageDimensions, selectedQu
           createGuide={createGuide}
         />
       )}
+      { (isError || isSuccess) && step === 5 && (
+        <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
+      ) }
     </Modal>
   )
 }
