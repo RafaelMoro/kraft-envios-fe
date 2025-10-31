@@ -8,9 +8,10 @@ interface ConfirmGuideGEProps {
   selectedQuotes: QuoteUI[]
   isPending: boolean;
   goPrev: () => void
+  createGuide: (payload: CreateGuideGEPayload) => void;
 }
 
-export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQuotes, goPrev }: ConfirmGuideGEProps) => {
+export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQuotes, goPrev, createGuide }: ConfirmGuideGEProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
 
   const handleSubmit = () => {
@@ -23,7 +24,7 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
       parcel: parcelInfo
     }
 
-    // createGuide(payload)
+    createGuide(payload)
   }
 
   return (

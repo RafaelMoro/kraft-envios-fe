@@ -157,8 +157,8 @@ export const CreateGuideGE = ({ open, toggleModal, packageDimensions, selectedQu
           selectedProduct={selectedProduct.current}
           selectedQuotes={selectedQuotes}
           goPrev={goPrev}
-          isPending={false}
-          // createGuide={createGuide}
+          isPending={isPending}
+          createGuide={createGuide}
         />
       )}
     </Modal>
