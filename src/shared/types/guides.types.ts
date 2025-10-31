@@ -146,6 +146,13 @@ export type CreateGuidePkkPayload = {
   parcel: ParcelInfoValuesPkk;
 }
 
+export type CreateGuideGEPayload = {
+  quoteId: string;
+  origin: CreateGuideAddressValuesGE;
+  destination: CreateGuideAddressValuesGE;
+  parcel: ParcelInfoValuesGE;
+}
+
 export type CreateAddressGEPayload = {
   zipcode: string;
   neighborhood: string;
