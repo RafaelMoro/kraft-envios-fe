@@ -121,6 +121,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
             goPrev={goPrev}
             updateParcelInfo={updateParcelInfo}
             updateErrorProductSat={setErrorProductSat}
+            selectedProduct={selectedProduct.current}
           >
             <ProductSatDropdown
               searchProductSat={searchProductSat}
