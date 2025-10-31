@@ -1,3 +1,9 @@
+## v0.21.0 (2025-10-31)
+
+### Pull Requests
+[#43](https://github.com/RafaelMoro/kraft-envios-fe/pull/43) | Add GE create guide
+
+
 ## v0.20.0 (2025-10-19)
 
 ### Pull Requests
