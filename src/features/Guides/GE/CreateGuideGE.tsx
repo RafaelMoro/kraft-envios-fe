@@ -21,9 +21,10 @@ interface CreateGuideGEProps {
   packageDimensions: PackageDimensions | null;
   selectedQuotes: QuoteUI[]
   toggleModal: () => void;
+  resetSelectedQuotes: () => void
 }
 
-export const CreateGuideGE = ({ open, toggleModal, packageDimensions, selectedQuotes }: CreateGuideGEProps) => {
+export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageDimensions, selectedQuotes }: CreateGuideGEProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
@@ -87,8 +88,7 @@ export const CreateGuideGE = ({ open, toggleModal, packageDimensions, selectedQu
     resetSteps()
     setSearchProductSat('')
     setErrorSelectAlias(null)
-    // TODO: Change this
-    // resetSelectedQuotes()
+    resetSelectedQuotes()
     toggleModal()
   }
 

@@ -286,6 +286,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         packageDimensions={packageDimensions.current}
         selectedQuotes={selectedQuotes}
         toggleModal={toggleCreateGuideGE}
+        resetSelectedQuotes={resetSelectedQuotes}
       />
     </main>
   )
