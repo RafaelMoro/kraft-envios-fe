@@ -26,7 +26,7 @@ interface CreateGuideModalToneProps {
 export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetSelectedQuotes }: CreateGuideModalToneProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
-  const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+  const steps = new Set(["Remitente", "Destinatario", "Paquete", "Confirmar"])
 
   const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
   const resetFormData = () => {
@@ -66,7 +66,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
       <ModalBody>
         { !isMobileTablet && (
           <div className="py-6">
-            <Stepper steps={steps} currentStep={step} />
+            <Stepper steps={steps} currentStep={step} showNewStepper />
           </div>
         )}
         { step === 1 && (
