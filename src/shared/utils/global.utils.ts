@@ -56,5 +56,5 @@ export const formatPhoneNumber = (phone: string): string => {
   const part1 = digits.substring(0, 3)
   const part2 = digits.substring(3, 6)
   const part3 = digits.substring(6, 10)
-  return `${part1} ${part2} ${part3}`
+  return `${part1}-${part2}-${part3}`
 }
