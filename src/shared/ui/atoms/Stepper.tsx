@@ -37,10 +37,7 @@ export const Stepper = ({ steps, currentStep, showNewStepper }: StepperProps) =>
   if (showNewStepper) {
     return (
       <ul className="flex gap-2">
-        { stepsArray.map((item, index) => {
-          // console.log('currentStep', currentStep)
-          // console.log('index + 1', index + 1)
-          return (
+        { stepsArray.map((item, index) => (
           <div key={`step-${item}-${index}`} className="flex gap-2 items-center">
             <li className="flex gap-2 items-center">
               <div
@@ -59,7 +56,7 @@ export const Stepper = ({ steps, currentStep, showNewStepper }: StepperProps) =>
               </div>
             ) }
           </div>
-        )})}
+        ))}
       </ul>
     )
   }
