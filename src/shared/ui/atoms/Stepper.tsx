@@ -1,10 +1,68 @@
+import clsx from "clsx"
+
 interface StepperProps {
   steps: Set<string>
   currentStep: number
+  showNewStepper?: boolean
 }
 
-export const Stepper = ({ steps, currentStep }: StepperProps) => {
+const CheckSVG = () => (
+  <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-white">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+  </svg>
+)
+
+const ArrowRightIcon = () => (
+  <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mx-auto text-gray-500">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+  </svg>
+)
+
+export const Stepper = ({ steps, currentStep, showNewStepper }: StepperProps) => {
   const stepsArray = Array.from(steps)
+
+  const circleClass = (index: number) => clsx(
+    'w-8 h-8 rounded-full border flex items-center justify-center',
+    {'bg-blue-800 dark:bg-blue-900 border-indigo-800 dark:border-blue-900': currentStep > index + 1},
+    {'border-blue-800 dark:border-blue-900': currentStep === index + 1}
+  )
+  const spanNumberClass = (index: number) => clsx(
+    {'text-blue-800 dark:text-blue-900': currentStep === index + 1}
+  )
+  const h3Class = (index: number) => clsx(
+    'text-sm',
+    {'text-blue-800 dark:text-blue-900': currentStep === index + 1}
+  )
+
+  if (showNewStepper) {
+    return (
+      <ul className="flex gap-2">
+        { stepsArray.map((item, index) => {
+          // console.log('currentStep', currentStep)
+          // console.log('index + 1', index + 1)
+          return (
+          <div key={`step-${item}-${index}`} className="flex gap-2 items-center">
+            <li className="flex gap-2 items-center">
+              <div
+                id={`step-number-circle-${index + 1}`}
+                className={circleClass(index)}
+              >
+                { currentStep > index + 1 ? (<CheckSVG />) : (<span className={spanNumberClass(index)}>{index + 1}</span>)}
+              </div>
+              <h3 className={h3Class(index)}>
+                {item}
+              </h3>
+            </li>
+            { (index + 1 !== stepsArray.length) && (
+              <div className="block">
+                <ArrowRightIcon />
+              </div>
+            ) }
+          </div>
+        )})}
+      </ul>
+    )
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 md:px-0">
