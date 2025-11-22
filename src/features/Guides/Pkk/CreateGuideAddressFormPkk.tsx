@@ -178,7 +178,9 @@ export const CreateGuideAddressFormPkk = ({
               <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
             )}
           </div>
-          <ToggleSwitch checked={isResidential} label="Es residencial" onChange={setIsResidential} />
+          <div className="justify-self-start self-center">
+            <ToggleSwitch checked={isResidential} label="Es residencial" onChange={setIsResidential} />
+          </div>
         </section>
       </div>
       <div className="flex justify-between mt-4">
