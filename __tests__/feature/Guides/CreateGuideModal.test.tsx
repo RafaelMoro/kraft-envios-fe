@@ -2,9 +2,11 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CreateGuideModal } from '@/features/Guides/Mn/CreateGuideModal'
 import { QuoteUI } from '@/shared/types/quotes.types'
+import { mockMatchMedia, QueryMatchMedia } from '../../utils-test/mockWatchMedia'
 
 // Mock functions for props
 const mockToggleModal = jest.fn()
+const mockResetSelectedQuotes = jest.fn()
 
 // Mock data for testing
 const mockSelectedQuotes: QuoteUI[] = [
@@ -28,7 +30,8 @@ const mockSelectedQuotes: QuoteUI[] = [
 const defaultProps = {
   open: true,
   selectedQuotes: mockSelectedQuotes,
-  toggleModal: mockToggleModal
+  toggleModal: mockToggleModal,
+  resetSelectedQuotes: mockResetSelectedQuotes
 }
 
 // Setup QueryClient for TanStack Query
@@ -57,6 +60,8 @@ const renderWithProviders = (props = {}) => {
 describe('CreateGuideModal', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Mock desktop viewport by default
+    mockMatchMedia({ [QueryMatchMedia.isDesktop]: true })
   })
 
   describe('Modal initial rendering and step 1', () => {
@@ -68,8 +73,8 @@ describe('CreateGuideModal', () => {
       expect(screen.getByText('Crear guía')).toBeInTheDocument()
 
       // Then stepper should be displayed on desktop
-      expect(screen.getByLabelText('Steps')).toBeInTheDocument()
-      expect(screen.getByText('Domicilio origen')).toBeInTheDocument()
+      expect(screen.getByText('Remitente')).toBeInTheDocument()
+      expect(screen.getByText('Destinatario')).toBeInTheDocument()
 
       // Then first step (CreateGuideAddressForm for origin) should be rendered
       expect(screen.getByText('Nombre de la persona')).toBeInTheDocument()
@@ -85,15 +90,14 @@ describe('CreateGuideModal', () => {
       renderWithProviders()
 
       // Then stepper should show step 1 as current
-      const stepsList = screen.getByLabelText('Steps')
-      expect(stepsList).toBeInTheDocument()
+      const stepNumberCircle = document.getElementById('step-number-circle-1')
+      expect(stepNumberCircle).toBeInTheDocument()
       
       // Then first step should be active
-      expect(screen.getByText('Domicilio origen')).toBeInTheDocument()
+      expect(screen.getByText('Remitente')).toBeInTheDocument()
       
-      // Check that step 1 is marked as current
-      const currentStepItem = screen.getByLabelText('Steps').querySelector('[aria-current="step"]')
-      expect(currentStepItem).toBeInTheDocument()
+      // Then step 1 circle should have active styling (blue background)
+      expect(stepNumberCircle).toHaveClass('bg-blue-800')
     })
   })
 
