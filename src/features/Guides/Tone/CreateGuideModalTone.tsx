@@ -65,7 +65,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
       <ModalHeader>Crear guía</ModalHeader>
       <ModalBody>
         { !isMobileTablet && (
-          <div className="py-6">
+          <div className="py-6 flex justify-center">
             <Stepper steps={steps} currentStep={step} />
           </div>
         )}
