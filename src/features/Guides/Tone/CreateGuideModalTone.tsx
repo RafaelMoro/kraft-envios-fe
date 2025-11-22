@@ -8,7 +8,7 @@ import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
 import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, CreateGuideTonePayload, GlobalCreateGuideResponse, ParcelInfoValuesTone } from "@/shared/types/guides.types";
-import { initialStateFormTone } from "@/shared/constants/guides.constants";
+import { CREATE_GUIDE_STEPS, initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
 import { useMutation } from "@tanstack/react-query";
@@ -26,7 +26,7 @@ interface CreateGuideModalToneProps {
 export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetSelectedQuotes }: CreateGuideModalToneProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
-  const steps = new Set(["Remitente", "Destinatario", "Paquete", "Confirmar"])
+  const steps = new Set(CREATE_GUIDE_STEPS)
 
   const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
   const resetFormData = () => {
