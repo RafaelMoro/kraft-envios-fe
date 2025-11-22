@@ -66,7 +66,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
       <ModalBody>
         { !isMobileTablet && (
           <div className="py-6">
-            <Stepper steps={steps} currentStep={step} showNewStepper />
+            <Stepper steps={steps} currentStep={step} />
           </div>
         )}
         { step === 1 && (
