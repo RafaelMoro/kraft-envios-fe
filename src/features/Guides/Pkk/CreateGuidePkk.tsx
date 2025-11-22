@@ -7,7 +7,7 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
 import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, CreateGuidePkkPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
-import { initialStateFormPkk } from "@/shared/constants/guides.constants";
+import { CREATE_GUIDE_STEPS, initialStateFormPkk } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuidePkk } from "./ConfirmGuidePkk";
 import { createGuidePkkCb } from "@/shared/utils/guides.utils";
@@ -26,7 +26,7 @@ export const CreateGuidePkk = ({
 }: CreateGuidePkkProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
-  const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+  const steps = new Set(CREATE_GUIDE_STEPS)
 
   const formData = useRef<CreateGuideFormValuesPkk>({...initialStateFormPkk})
   const resetFormData = () => {
@@ -70,7 +70,7 @@ export const CreateGuidePkk = ({
       <ModalHeader>Crear guía</ModalHeader>
       <ModalBody>
         { !isMobileTablet && (
-          <div className="py-6">
+          <div className="py-6 flex justify-center">
             <Stepper steps={steps} currentStep={step} />
           </div>
         )}
