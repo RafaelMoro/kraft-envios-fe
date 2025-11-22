@@ -1,3 +1,9 @@
+## v0.21.1 (2025-11-22)
+
+### Pull Requests
+[#45](https://github.com/RafaelMoro/kraft-envios-fe/pull/45) | Improve stepper design
+
+
 ## v0.21.0 (2025-10-31)
 
 ### Pull Requests
