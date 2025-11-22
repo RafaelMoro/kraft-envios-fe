@@ -88,7 +88,7 @@ export const Register = () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col">
-      <div className="pt-7">
+      <div className="pt-7 flex justify-center">
         <Stepper steps={steps} currentStep={step} />
       </div>
       <div className="flex-1 flex justify-center items-center">
