@@ -13,6 +13,8 @@ interface LadaPhoneStateDropdownProps {
 
 export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState, updateLadaStateError }: LadaPhoneStateDropdownProps) => {
   const options = [...LADAS_MEXICO]
+  const [filteredOptions, setFilteredOptions] = useState<typeof LADAS_MEXICO>(options)
+
   // Dropdown visibility state
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
   const handleInputFocus = () => {
@@ -28,8 +30,8 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
   const handleChangeTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
     
-    // Validate that input only contains letters, and spaces
-    const hasSpecialChars = /[^a-zA-Z\s]/.test(inputValue)
+    // Validate that input only contains letters, numbers, spaces, and plus sign
+    const hasSpecialChars = /[^a-zA-Z0-9\s+]/.test(inputValue)
     
     if (hasSpecialChars) {
       updateLadaStateError('No se permiten caracteres especiales')
@@ -37,6 +39,30 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
 
     if (errorLadaState) updateLadaStateError('')
     setLadaState(inputValue)
+
+    // Filter options based on input
+    if (inputValue.trim() === '') {
+      // Show all options when input is empty
+      setFilteredOptions(options)
+    } else {
+      // Detect if input contains numbers or plus sign (filter by lada) or only letters (filter by state)
+      const hasNumericInput = /[0-9+]/.test(inputValue)
+      
+      if (hasNumericInput) {
+        // Filter by lada code
+        const numericInput = inputValue.replace(/[^0-9]/g, '') // Remove plus sign and spaces
+        const filtered = options.filter((opt) =>
+          opt.lada.some((l) => l.startsWith(numericInput))
+        )
+        setFilteredOptions(filtered)
+      } else {
+        // Filter by state name
+        const filtered = options.filter((opt) =>
+          opt.state.toLowerCase().includes(inputValue.toLowerCase())
+        )
+        setFilteredOptions(filtered)
+      }
+    }
   }
 
   return (
@@ -63,14 +89,10 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
       />
       { showDropdown && (
         <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
-          {/* { (isPending && searchProductSat.length > 0) && (<Spinner aria-label="loading suggestions sat product" />) }
-          { (options.length === 0 && searchProductSat.length === 0 && !isPending)&& (
-            <li className="p-2 rounded-lg">Escribe para buscar productos</li>
+          { (filteredOptions.length === 0 && ladaState.length > 0) && (
+            <li className="p-2 rounded-lg">No se encontraron resultados</li>
           )}
-          { (options.length === 0 && searchProductSat.length > 0 && !isPending) && (
-            <li className="p-2 rounded-lg">No se encontraron productos</li>
-          )} */}
-          { (options.length > 0) && options.map((opt) => (
+          { (filteredOptions.length > 0) && filteredOptions.map((opt) => (
             <li
               key={opt.state}
               // onClick={() => handleSelectOption(opt)}
