@@ -78,9 +78,13 @@ describe('CreateGuideModalTone', () => {
       expect(screen.getByText('Paquete')).toBeInTheDocument()
       expect(screen.getByText('Confirmar')).toBeInTheDocument()
 
+      // Then section headings should be displayed
+      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      expect(screen.getByText('Domicilio')).toBeInTheDocument()
+
       // Then first step (CreateGuideAddressFormTone for origin) should be rendered
-      expect(screen.getByText('Nombre de la persona')).toBeInTheDocument()
-      expect(screen.getByText('Apellido de la persona')).toBeInTheDocument()
+      expect(screen.getByText('Nombre')).toBeInTheDocument()
+      expect(screen.getByText('Apellido')).toBeInTheDocument()
       expect(screen.getByText('Teléfono')).toBeInTheDocument()
       expect(screen.getByText('Correo electrónico (Opcional)')).toBeInTheDocument()
       
@@ -113,7 +117,7 @@ describe('CreateGuideModalTone', () => {
 
       // Then modal content should not be visible
       expect(screen.queryByText('Crear guía')).not.toBeInTheDocument()
-      expect(screen.queryByText('Nombre de la persona')).not.toBeInTheDocument()
+      expect(screen.queryByText('Nombre')).not.toBeInTheDocument()
       expect(screen.queryByText('Remitente')).not.toBeInTheDocument()
     })
   })
