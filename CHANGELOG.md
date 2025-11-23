@@ -1,3 +1,9 @@
+## v0.21.2 (2025-11-23)
+
+### Pull Requests
+[#46](https://github.com/RafaelMoro/kraft-envios-fe/pull/46) | Improve stepper address layout
+
+
 ## v0.21.1 (2025-11-22)
 
 ### Pull Requests
