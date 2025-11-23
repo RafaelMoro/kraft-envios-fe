@@ -66,33 +66,25 @@ describe('ConfirmGuideDataTone', () => {
       // Then it should display the main heading
       expect(screen.getByText('Confirmar datos')).toBeInTheDocument()
 
-      // Then it should display sender data section
-      expect(screen.getByText('Datos del remitente')).toBeInTheDocument()
-      expect(screen.getByText('Nombre de la persona: Juan Pérez')).toBeInTheDocument()
-      expect(screen.getByText('Teléfono de contacto: 555 123 4567')).toBeInTheDocument()
-      expect(screen.getByText('Correo electrónico: juan@example.com')).toBeInTheDocument()
-      expect(screen.getByText('Domicilio: Av. Principal 123')).toBeInTheDocument()
-      expect(screen.getByText('Colonia: Centro')).toBeInTheDocument()
-      expect(screen.getByText('Numero exterior: 123')).toBeInTheDocument()
-      expect(screen.getByText('Ciudad: Guadalajara')).toBeInTheDocument()
-      expect(screen.getByText('Estado: Jalisco')).toBeInTheDocument()
-      expect(screen.getByText('Referencia del domicilio: Entre calle A y B')).toBeInTheDocument()
+      // Then it should display sender data section with correct header
+      expect(screen.getByText('Remitente')).toBeInTheDocument()
+      expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
+      expect(screen.getByText('555-123-4567')).toBeInTheDocument()
+      expect(screen.getByText('juan@example.com')).toBeInTheDocument()
+      expect(screen.getByText(/Av\. Principal 123.*123.*Centro.*Guadalajara.*Jalisco/)).toBeInTheDocument()
+      expect(screen.getByText('Entre calle A y B')).toBeInTheDocument()
 
-      // Then it should display recipient data section
-      expect(screen.getByText('Datos del destinatario')).toBeInTheDocument()
-      expect(screen.getByText('Nombre de la persona: María López')).toBeInTheDocument()
-      expect(screen.getByText('Teléfono de contacto: 555 987 6543')).toBeInTheDocument()
-      expect(screen.getByText('Correo electrónico: maria@example.com')).toBeInTheDocument()
-      expect(screen.getByText('Domicilio: Calle Secundaria 456')).toBeInTheDocument()
-      expect(screen.getByText('Colonia: Roma Norte')).toBeInTheDocument()
-      expect(screen.getByText('Numero exterior: 456')).toBeInTheDocument()
-      expect(screen.getByText('Ciudad: Ciudad de México')).toBeInTheDocument()
-      expect(screen.getByText('Estado: CDMX')).toBeInTheDocument()
-      expect(screen.getByText('Referencia del domicilio: Edificio azul')).toBeInTheDocument()
+      // Then it should display recipient data section with correct header
+      expect(screen.getByText('Destinatario')).toBeInTheDocument()
+      expect(screen.getByText('María López')).toBeInTheDocument()
+      expect(screen.getByText('555-987-6543')).toBeInTheDocument()
+      expect(screen.getByText('maria@example.com')).toBeInTheDocument()
+      expect(screen.getByText(/Calle Secundaria 456.*456.*Roma Norte.*Ciudad de México.*CDMX/)).toBeInTheDocument()
+      expect(screen.getByText('Edificio azul')).toBeInTheDocument()
 
-      // Then it should display package information section
-      expect(screen.getByText('Información del paquete')).toBeInTheDocument()
-      expect(screen.getByText('Descripción del contenido del paquete: Documentos importantes')).toBeInTheDocument()
+      // Then it should display package information section with correct header
+      expect(screen.getByText('Paquete')).toBeInTheDocument()
+      expect(screen.getByText('Documentos importantes')).toBeInTheDocument()
 
       // Then it should display action buttons
       expect(screen.getByRole('button', { name: 'Regresar' })).toBeInTheDocument()
