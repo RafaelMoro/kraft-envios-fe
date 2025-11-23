@@ -102,37 +102,29 @@ describe('ConfirmGuideData', () => {
       expect(screen.getByText('Confirmar datos')).toBeInTheDocument()
 
       // Then all section headers should be displayed
-      expect(screen.getByText('Datos del remitente')).toBeInTheDocument()
-      expect(screen.getByText('Datos del destinatario')).toBeInTheDocument()
-      expect(screen.getByText('Información del paquete')).toBeInTheDocument()
+      expect(screen.getByText('Remitente')).toBeInTheDocument()
+      expect(screen.getByText('Destinatario')).toBeInTheDocument()
+      expect(screen.getByText('Paquete')).toBeInTheDocument()
 
       // Then origin address data should be displayed
-      expect(screen.getByText('Nombre de la persona: Juan Pérez')).toBeInTheDocument()
-      expect(screen.getByText('Teléfono de contacto: 555 123 4567')).toBeInTheDocument()
-      expect(screen.getByText('Correo electrónico: juan.perez@email.com')).toBeInTheDocument()
-      expect(screen.getByText('Nombre de la compañia: Empresa Origen')).toBeInTheDocument()
-      expect(screen.getByText('Domicilio: Calle Principal 123')).toBeInTheDocument()
-      expect(screen.getByText('Colonia: Centro')).toBeInTheDocument()
-      expect(screen.getByText('Numero exterior: 123')).toBeInTheDocument()
-      expect(screen.getByText('Ciudad: Ciudad de México')).toBeInTheDocument()
-      expect(screen.getByText('Estado: CDMX')).toBeInTheDocument()
-      expect(screen.getByText('Referencia del domicilio: Entre Av. Reforma y Insurgentes')).toBeInTheDocument()
+      expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
+      expect(screen.getByText('555-123-4567')).toBeInTheDocument()
+      expect(screen.getByText('juan.perez@email.com')).toBeInTheDocument()
+      expect(screen.getByText('Empresa Origen')).toBeInTheDocument()
+      expect(screen.getByText(/Calle Principal 123.*123.*Centro.*Ciudad de México.*CDMX/)).toBeInTheDocument()
+      expect(screen.getByText('Entre Av. Reforma y Insurgentes')).toBeInTheDocument()
 
       // Then destination address data should be displayed
-      expect(screen.getByText('Nombre de la persona: María González')).toBeInTheDocument()
-      expect(screen.getByText('Teléfono de contacto: 555 987 6543')).toBeInTheDocument()
-      expect(screen.getByText('Correo electrónico: maria.gonzalez@email.com')).toBeInTheDocument()
-      expect(screen.getByText('Nombre de la compañia: Empresa Destino')).toBeInTheDocument()
-      expect(screen.getByText('Domicilio: Avenida Secundaria 456')).toBeInTheDocument()
-      expect(screen.getByText('Colonia: Roma Norte')).toBeInTheDocument()
-      expect(screen.getByText('Numero exterior: 456')).toBeInTheDocument()
-      expect(screen.getByText('Ciudad: Guadalajara')).toBeInTheDocument()
-      expect(screen.getByText('Estado: Jalisco')).toBeInTheDocument()
-      expect(screen.getByText('Referencia del domicilio: Frente al parque')).toBeInTheDocument()
+      expect(screen.getByText('María González')).toBeInTheDocument()
+      expect(screen.getByText('555-987-6543')).toBeInTheDocument()
+      expect(screen.getByText('maria.gonzalez@email.com')).toBeInTheDocument()
+      expect(screen.getByText('Empresa Destino')).toBeInTheDocument()
+      expect(screen.getByText(/Avenida Secundaria 456.*456.*Roma Norte.*Guadalajara.*Jalisco/)).toBeInTheDocument()
+      expect(screen.getByText('Frente al parque')).toBeInTheDocument()
 
       // Then parcel information should be displayed with proper formatting
-      expect(screen.getByText('Descripción del contenido del paquete: Documentos importantes')).toBeInTheDocument()
-      expect(screen.getByText('Valor del paquete: $1,500.00')).toBeInTheDocument()
+      expect(screen.getByText('Descripción: Documentos importantes')).toBeInTheDocument()
+      expect(screen.getByText('Valor: $1,500.00')).toBeInTheDocument()
       expect(screen.getByText('Cantidad: 2')).toBeInTheDocument()
 
       // Then buttons should be present with correct test IDs
