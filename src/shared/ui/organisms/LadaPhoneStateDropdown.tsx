@@ -65,6 +65,11 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
     }
   }
 
+  const handleSelectOption = (option: typeof LADAS_MEXICO[0]) => {
+    setLadaState(option.state)
+    setShowDropdown(false)
+  }
+
   return (
     <div className="relative">
       <div className="mb-2 flex flex-col gap-2">
@@ -95,8 +100,8 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
           { (filteredOptions.length > 0) && filteredOptions.map((opt) => (
             <li
               key={opt.state}
-              // onClick={() => handleSelectOption(opt)}
-              className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg inline-flex gap-2"
+              onClick={() => handleSelectOption(opt)}
+              className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg inline-flex gap-2 cursor-pointer"
             >
               {opt.state} {opt.lada.map(lada => `+${lada}`).join(' | ')}
               <HiChevronRight />
