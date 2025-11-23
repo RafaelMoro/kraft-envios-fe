@@ -35,8 +35,12 @@ describe('CreateGuideAddressForm', () => {
       // Given the CreateGuideAddressForm is rendered with origin address props (isDestination=false)
       renderComponent({ isDestination: false })
 
+      // Then section headings should be displayed
+      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      expect(screen.getByText('Domicilio')).toBeInTheDocument()
+
       // Then all form fields should be displayed with correct labels
-      expect(screen.getByLabelText(/nombre de la persona/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/^nombre$/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/calle/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/colonia/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/numero exterior/i)).toBeInTheDocument()
