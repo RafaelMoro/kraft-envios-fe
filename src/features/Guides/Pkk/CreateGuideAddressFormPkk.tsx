@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 
 import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk, CreateGuideAddressValuesPkk } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { LadaPhoneStateDropdown } from "@/shared/ui/organisms/LadaPhoneStateDropdown"
 
 interface CreateGuideAddressFormPkkProps {
   isDestination?: boolean
@@ -18,6 +19,8 @@ interface CreateGuideAddressFormPkkProps {
 export const CreateGuideAddressFormPkk = ({
   isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
 }: CreateGuideAddressFormPkkProps) => {
+  const [ladaState, setLadaState] = useState<string>('');
+  const [errorLadaState, setErrorLadaState] = useState<string>('');
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     register,
@@ -86,6 +89,12 @@ export const CreateGuideAddressFormPkk = ({
             <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
           )}
         </div>
+        <LadaPhoneStateDropdown
+          ladaState={ladaState}
+          errorLadaState={errorLadaState}
+          setLadaState={setLadaState}
+          updateLadaStateError={setErrorLadaState}
+        />
         <div>
           <div className="mb-2 block">
             <Label htmlFor="email">Correo electrónico (Opcional)</Label>
