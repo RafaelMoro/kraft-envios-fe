@@ -1,4 +1,6 @@
-export const LADAS_MEXICO = [
+import { LadaStates } from "../types/global.types";
+
+export const LADAS_MEXICO: LadaStates[] = [
   { state: 'Ciudad de México', lada: ['55'] },
   { state: 'Puebla, Puebla', lada: ['220', '221', '222']},
   { state: 'Guadalajara, Jalisco', lada: ['33'] },
