@@ -4,6 +4,7 @@ import { CreateGuideFormValuesTone, CreateGuideTonePayload } from "@/shared/type
 import { formatPhoneNumber } from "@/shared/utils/global.utils"
 import { QuoteUI } from "@/shared/types/quotes.types"
 import { verifyAndUpdateAddressTone } from "@/shared/utils/guides.utils"
+import { RiEditBoxLine, RiMailLine, RiMapPin3Line, RiMapPinLine, RiPhoneLine, RiUserLine } from "@remixicon/react"
 
 interface ConfirmGuideDataToneProps {
   formData: CreateGuideFormValuesTone
@@ -38,37 +39,70 @@ export const ConfirmGuideDataTone = ({ formData, selectedQuotes, isPending, goPr
     <section className="flex flex-col gap-10">
       <h4 className="text-xl font-bold text-center">Confirmar datos</h4>
       <article className="flex flex-col gap-4">
-        <h5 className="text-lg font-bold">Datos del remitente</h5>
-        <ul className="grid grid-cols-1 lg:grid-cols-2 gap-2 list-disc">
-          <li className="ml-6">Nombre de la persona: {originAddress.name}</li>
-          <li className="ml-6 text-base">Teléfono de contacto: {formatPhoneNumber(originAddress.phone)}</li>
-          <li className="ml-6 text-base">Correo electrónico: {originAddress.email}</li>
-          <li className="ml-6 text-base">Domicilio: {originAddress.street1}</li>
-          <li className="ml-6 text-base">Colonia: {originAddress.neighborhood}</li>
-          <li className="ml-6 text-base">Numero exterior: {originAddress.external_number}</li>
-          <li className="ml-6 text-base">Ciudad: {originAddress.town}</li>
-          <li className="ml-6 text-base">Estado: {originAddress.state}</li>
-          <li className="ml-6 text-base">Referencia del domicilio: {originAddress.reference}</li>
+        <h5 className="text-lg font-bold">Remitente</h5>
+        <ul className="grid grid-cols-1 gap-2">
+          <li className="ml-6 inline-flex gap-2">
+            <RiUserLine size={18} />
+            {originAddress.name}
+          </li>
+          <li className="ml-6 text-base inline-flex gap-2">
+            <RiPhoneLine size={18} />
+            {formatPhoneNumber(originAddress.phone)}
+          </li>
+          { originAddress.email && (
+            <li className="ml-6 text-base inline-flex gap-2">
+              <RiMailLine size={18} />
+              {originAddress.email}
+            </li>
+          )}
+          <li className="ml-6 text-base inline-flex gap-2">
+            <RiMapPinLine />
+            {originAddress.street1} {originAddress.external_number}, {originAddress.neighborhood}, {originAddress.town} {originAddress.state}
+          </li>
+          { originAddress.reference && (
+            <li className="ml-6 text-base">
+              <RiMapPin3Line size={18} />
+              {originAddress.reference}
+            </li>
+          )}
         </ul>
       </article>
       <article className="flex flex-col gap-4">
-        <h5 className="text-lg font-bold">Datos del destinatario</h5>
-        <ul className="grid grid-cols-1 lg:grid-cols-2 gap-2 list-disc">
-          <li className="ml-6">Nombre de la persona: {destinationAddress.name}</li>
-          <li className="ml-6 text-base">Teléfono de contacto: {formatPhoneNumber(destinationAddress.phone)}</li>
-          <li className="ml-6 text-base">Correo electrónico: {destinationAddress.email}</li>
-          <li className="ml-6 text-base">Domicilio: {destinationAddress.street1}</li>
-          <li className="ml-6 text-base">Colonia: {destinationAddress.neighborhood}</li>
-          <li className="ml-6 text-base">Numero exterior: {destinationAddress.external_number}</li>
-          <li className="ml-6 text-base">Ciudad: {destinationAddress.town}</li>
-          <li className="ml-6 text-base">Estado: {destinationAddress.state}</li>
-          <li className="ml-6 text-base">Referencia del domicilio: {destinationAddress.reference}</li>
+        <h5 className="text-lg font-bold">Destinatario</h5>
+        <ul className="grid grid-cols-1 gap-2">
+          <li className="ml-6 inline-flex gap-2">
+            <RiUserLine size={18} />
+            {destinationAddress.name}
+          </li>
+          <li className="ml-6 text-base inline-flex gap-2">
+            <RiPhoneLine size={18} />
+            {formatPhoneNumber(destinationAddress.phone)}
+          </li>
+          { destinationAddress.email && (
+            <li className="ml-6 text-base inline-flex gap-2">
+              <RiMailLine size={18} />
+              {destinationAddress.email}
+            </li>
+          )}
+          <li className="ml-6 text-base inline-flex gap-2">
+            <RiMapPinLine />
+            {destinationAddress.street1} {destinationAddress.external_number}, {destinationAddress.neighborhood}, {destinationAddress.town} {destinationAddress.state}
+          </li>
+          { originAddress.reference && (
+            <li className="ml-6 text-base">
+              <RiMapPin3Line size={18} />
+              {destinationAddress.reference}
+            </li>
+          )}
         </ul>
       </article>
       <article className="flex flex-col gap-4">
-        <h5 className="text-lg font-bold">Información del paquete</h5>
-        <ul className="grid grid-cols-1 gap-2 list-disc">
-          <li className="ml-6">Descripción del contenido del paquete: {parcelInfo.content}</li>
+        <h5 className="text-lg font-bold">Paquete</h5>
+        <ul className="grid grid-cols-1 gap-2">
+          <li className="ml-6 inline-flex gap-2">
+            <RiEditBoxLine size={18} />
+            {parcelInfo.content}
+          </li>
         </ul>
       </article>
       <footer className="flex justify-between">

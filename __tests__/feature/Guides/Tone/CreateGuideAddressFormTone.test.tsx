@@ -46,9 +46,13 @@ describe('CreateGuideAddressFormTone', () => {
       // Given CreateGuideAddressFormTone is rendered with address data
       renderComponent()
 
+      // Then section headings should be present
+      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      expect(screen.getByText('Domicilio')).toBeInTheDocument()
+
       // Then all form fields should be present with correct labels
-      expect(screen.getByLabelText('Nombre de la persona')).toBeInTheDocument()
-      expect(screen.getByLabelText('Apellido de la persona')).toBeInTheDocument()
+      expect(screen.getByLabelText('Nombre')).toBeInTheDocument()
+      expect(screen.getByLabelText('Apellido')).toBeInTheDocument()
       expect(screen.getByLabelText('Calle')).toBeInTheDocument()
       expect(screen.getByLabelText('Colonia')).toBeInTheDocument()
       expect(screen.getByLabelText('Numero exterior')).toBeInTheDocument()

@@ -2,9 +2,11 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CreateGuideModalTone } from '@/features/Guides/Tone/CreateGuideModalTone'
 import { QuoteUI } from '@/shared/types/quotes.types'
+import { mockMatchMedia, QueryMatchMedia } from '../../../utils-test/mockWatchMedia'
 
 // Mock functions for props
 const mockToggleModal = jest.fn()
+const mockResetSelectedQuotes = jest.fn()
 
 // Mock data for testing
 const mockSelectedQuotes: QuoteUI[] = [
@@ -28,7 +30,8 @@ const mockSelectedQuotes: QuoteUI[] = [
 const defaultProps = {
   open: true,
   selectedQuotes: mockSelectedQuotes,
-  toggleModal: mockToggleModal
+  toggleModal: mockToggleModal,
+  resetSelectedQuotes: mockResetSelectedQuotes
 }
 
 // Setup QueryClient for TanStack Query
@@ -57,6 +60,8 @@ const renderWithProviders = (props = {}) => {
 describe('CreateGuideModalTone', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Mock desktop viewport by default
+    mockMatchMedia({ [QueryMatchMedia.isDesktop]: true })
   })
 
   describe('Modal initial rendering and step 1', () => {
@@ -67,18 +72,21 @@ describe('CreateGuideModalTone', () => {
       // Then modal should be visible with correct header
       expect(screen.getByText('Crear guía')).toBeInTheDocument()
 
-      // Then stepper should be displayed on desktop
-      const stepper = screen.getByRole('list', { name: 'Steps' })
-      expect(stepper).toBeInTheDocument()
+      // Then stepper should be displayed on desktop with step labels
+      expect(screen.getByText('Remitente')).toBeInTheDocument()
+      expect(screen.getByText('Destinatario')).toBeInTheDocument()
+      expect(screen.getByText('Paquete')).toBeInTheDocument()
+      expect(screen.getByText('Confirmar')).toBeInTheDocument()
+
+      // Then section headings should be displayed
+      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      expect(screen.getByText('Domicilio')).toBeInTheDocument()
 
       // Then first step (CreateGuideAddressFormTone for origin) should be rendered
-      expect(screen.getByText('Nombre de la persona')).toBeInTheDocument()
-      expect(screen.getByText('Apellido de la persona')).toBeInTheDocument()
+      expect(screen.getByText('Nombre')).toBeInTheDocument()
+      expect(screen.getByText('Apellido')).toBeInTheDocument()
       expect(screen.getByText('Teléfono')).toBeInTheDocument()
       expect(screen.getByText('Correo electrónico (Opcional)')).toBeInTheDocument()
-
-      // Then current step should be highlighted (step 1)
-      expect(screen.getByText('Domicilio origen')).toBeInTheDocument()
       
       // Then action buttons should be present
       expect(screen.getByRole('button', { name: 'Cancelar' })).toBeInTheDocument()
@@ -90,14 +98,15 @@ describe('CreateGuideModalTone', () => {
       renderWithProviders()
 
       // Then stepper should show all steps
-      expect(screen.getByText('Domicilio origen')).toBeInTheDocument()
-      expect(screen.getByText('Domicilio destino')).toBeInTheDocument()
-      expect(screen.getByText('Información del paquete')).toBeInTheDocument()
-      expect(screen.getByText('Confirmar datos')).toBeInTheDocument()
+      expect(screen.getByText('Remitente')).toBeInTheDocument()
+      expect(screen.getByText('Destinatario')).toBeInTheDocument()
+      expect(screen.getByText('Paquete')).toBeInTheDocument()
+      expect(screen.getByText('Confirmar')).toBeInTheDocument()
 
-      // Then step 1 should be active
-      const stepperList = screen.getByRole('list', { name: 'Steps' })
-      expect(stepperList).toBeInTheDocument()
+      // Then step 1 circle should have active styling (blue background)
+      const stepNumberCircle = document.getElementById('step-number-circle-1')
+      expect(stepNumberCircle).toBeInTheDocument()
+      expect(stepNumberCircle).toHaveClass('bg-blue-800')
     })
   })
 
@@ -108,8 +117,8 @@ describe('CreateGuideModalTone', () => {
 
       // Then modal content should not be visible
       expect(screen.queryByText('Crear guía')).not.toBeInTheDocument()
-      expect(screen.queryByText('Nombre de la persona')).not.toBeInTheDocument()
-      expect(screen.queryByText('Domicilio origen')).not.toBeInTheDocument()
+      expect(screen.queryByText('Nombre')).not.toBeInTheDocument()
+      expect(screen.queryByText('Remitente')).not.toBeInTheDocument()
     })
   })
 })

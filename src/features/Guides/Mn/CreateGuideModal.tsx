@@ -14,7 +14,7 @@ import {
   CreateGuideMnPayload,
   GlobalCreateGuideResponse,
 } from "@/shared/types/guides.types";
-import { initialStateForm } from "@/shared/constants/guides.constants";
+import { CREATE_GUIDE_STEPS, initialStateForm } from "@/shared/constants/guides.constants";
 import { ParcelInfoForm } from "./ParcelInfoForm";
 import { ConfirmGuideData } from "./ConfirmGuideData";
 import { ProductSatDropdown } from "./ProductSatDropdown";
@@ -34,7 +34,7 @@ interface CreateGuideProps {
 export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelectedQuotes }: CreateGuideProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
-  const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+  const steps = new Set(CREATE_GUIDE_STEPS)
 
   // Reference to save the selected product
   const selectedProduct = useRef<SearchProduct | null>(null)
@@ -85,7 +85,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
       <ModalHeader>Crear guía</ModalHeader>
       <ModalBody>
         { !isMobileTablet && (
-          <div className="py-6">
+          <div className="py-6 flex justify-center">
             <Stepper steps={steps} currentStep={step} />
           </div>
         )}

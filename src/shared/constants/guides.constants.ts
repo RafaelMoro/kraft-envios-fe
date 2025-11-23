@@ -6,6 +6,8 @@ export const DEFAULT_EMAIL = 'j.temix33@gmail.com'
 export const DEFAULT_REFERENCE = 'Sin referencia'
 export const DEFAULT_RFC = 'XAXX010101000'
 
+export const CREATE_GUIDE_STEPS = ["Remitente", "Destinatario", "Paquete", "Confirmar"]
+
 export const initialStateAddressForm: CreateGuideAddressFormValues = {
   name: "",
   street1: "",

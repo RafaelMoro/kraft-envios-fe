@@ -6,7 +6,7 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
 import { CreateGuideAddressFormGE } from "./CreateGuideAddressFormGE";
 import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, CreateGuideGEPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
-import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
+import { CREATE_GUIDE_STEPS, initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
 import { ConfirmGuideGE } from "./ConfirmGuideGE";
@@ -27,7 +27,7 @@ interface CreateGuideGEProps {
 export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageDimensions, selectedQuotes }: CreateGuideGEProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
-  const steps = new Set(["Domicilio origen", "Domicilio destino", "Información del paquete", "Confirmar datos"])
+  const steps = new Set(CREATE_GUIDE_STEPS)
 
   const [errorSelectAlias, setErrorSelectAlias] = useState<string | null>(null)
   const [searchProductSat, setSearchProductSat] = useState<string>('')
@@ -106,7 +106,7 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
     <Modal show={open} onClose={closeModal}>
       <ModalHeader>Crear guía GE</ModalHeader>
       { !isMobileTablet && (
-        <div className="py-6">
+        <div className="py-6 flex justify-center">
           <Stepper steps={steps} currentStep={step} />
         </div>
       )}
