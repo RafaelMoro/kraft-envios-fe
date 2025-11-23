@@ -77,7 +77,9 @@ describe('CreateGuideModal', () => {
       expect(screen.getByText('Destinatario')).toBeInTheDocument()
 
       // Then first step (CreateGuideAddressForm for origin) should be rendered
-      expect(screen.getByText('Nombre de la persona')).toBeInTheDocument()
+      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      expect(screen.getByText('Domicilio')).toBeInTheDocument()
+      expect(screen.getByText('Nombre')).toBeInTheDocument()
       expect(screen.getByText('Teléfono')).toBeInTheDocument()
       expect(screen.getByText('Correo electrónico (Opcional)')).toBeInTheDocument()
 
@@ -108,8 +110,7 @@ describe('CreateGuideModal', () => {
 
       // Then modal should not be visible
       expect(screen.queryByText('Crear guía')).not.toBeInTheDocument()
-      expect(screen.queryByLabelText('Steps')).not.toBeInTheDocument()
-      expect(screen.queryByText('Nombre de la persona')).not.toBeInTheDocument()
+      expect(screen.queryByText('Nombre')).not.toBeInTheDocument()
     })
   })
 })
