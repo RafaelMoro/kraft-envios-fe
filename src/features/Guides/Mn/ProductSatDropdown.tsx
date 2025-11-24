@@ -60,6 +60,7 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
   } = useMutation<AxiosResponse<FetchSatProductsResponse>, GeneralApiError, GetProductSatIdPayload>({
     mutationFn: getProductSatInfo,
   })
+  console.log('data', data)
 
   // Debounce searchTerm and trigger getProducts after 2 seconds
   useEffect(() => {

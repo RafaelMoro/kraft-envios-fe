@@ -4,7 +4,7 @@ import { FetchSatProductsResponse, GetProductId, GetProductSatIdPayload, SatProd
 import { GeneralError } from "@/shared/types/global.types";
 import { replaceSpacesWithPlus } from "@/shared/utils/guides.utils";
 
-export async function POST(request: NextRequest): Promise<NextResponse<FetchSatProductsResponse>> {
+export async function POST(request: NextRequest): Promise<NextResponse<unknown>> {
   try {
     const satUri = process.env.GET_SAT_PRODUCT_URI
     if (!satUri) {
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchSatP
       description: prod.description
     }))
 
-    return NextResponse.json({ message: null, products: formattedProducts }, { status: 201 })
+    return NextResponse.json({ message: { uri, data: res.data }, products: formattedProducts }, { status: 201 })
   } catch (error) {
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
     return NextResponse.json({ message, products: [] }, { status: 400 })
