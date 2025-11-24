@@ -13,7 +13,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchSatP
 
     const payload: GetProductSatIdPayload = await request.json()
     const uri = `${satUri}?search=${replaceSpacesWithPlus(payload.search)}`
+    console.log('uri', uri)
     const res: AxiosResponse<GetProductId> = await axios.get(uri)
+    console.log('data', res.data)
 
     // Slicing products to 100
     const products: SatProduct[] = res?.data?.data?.slice(0, 100) || []
