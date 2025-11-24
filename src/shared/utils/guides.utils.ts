@@ -2,7 +2,6 @@ import axios, { AxiosResponse } from 'axios'
 import {
   CREATE_GUIDE_MN_ENDPOINT,
   CREATE_GUIDE_TONE_ENDPOINT,
-  GET_SAT_PRODUCT_ENDPOINT,
   DEFAULT_COMPANY,
   DEFAULT_EMAIL,
   DEFAULT_REFERENCE,
@@ -16,7 +15,7 @@ import {
   CreateGuideMnPayload,
   CreateGuideTonePayload,
   CreateMnGuideResponse,
-  FetchSatProductsResponse,
+  // FetchSatProductsResponse,
   GetProductSatIdPayload,
   CreateGuideAddressFormValues,
   CreateGuideAddressFormValuesTone,
@@ -26,11 +25,31 @@ import {
   CreateAddressGEPayload,
   CreateAddressFormValuesGE,
   CreateGuideGEPayload,
+  GetProductId,
+  SatProduct,
+  SearchProduct,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
-  const res: AxiosResponse<FetchSatProductsResponse> = await axios.post(GET_SAT_PRODUCT_ENDPOINT, data)
-  return res
+  try {
+    const uri = `https://sat.api.hydraship.app/api/products?search=${replaceSpacesWithPlus(data.search)}`
+    const res: AxiosResponse<GetProductId>  = await axios.get(uri)
+    const products: SatProduct[] = res?.data?.data?.slice(0, 100) || []
+    const formattedProducts: SearchProduct[] = products.map((prod) => ({
+      code: prod.code,
+      description: prod.description
+    }))
+    return {
+      message: null,
+      products: formattedProducts
+    }
+  } catch (error) {
+    console.log('error sat product id', error)
+    return {
+      message: { error },
+      products: [] as SearchProduct[]
+    }
+  }
 }
 
 export const createGuideMnCb = async (data: CreateGuideMnPayload) => {

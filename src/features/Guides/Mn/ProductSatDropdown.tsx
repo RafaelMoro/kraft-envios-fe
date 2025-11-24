@@ -8,7 +8,6 @@ import { getProductSatInfo } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { FetchSatProductsResponse, GetProductSatIdPayload, SearchProduct } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { AxiosResponse } from "axios"
 
 interface ProductSatDropdownProps {
   searchProductSat: string
@@ -56,8 +55,8 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
   const {
     mutate: getProducts,
     isPending,
-    data
-  } = useMutation<AxiosResponse<FetchSatProductsResponse>, GeneralApiError, GetProductSatIdPayload>({
+    data,
+  } = useMutation<FetchSatProductsResponse, GeneralApiError, GetProductSatIdPayload>({
     mutationFn: getProductSatInfo,
   })
 
@@ -76,7 +75,7 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
   // Update options based on the data received
   useEffect(() => {
     if (data) {
-      const products = data?.data?.products || []
+      const products = data?.products || []
       setOptions(products)
     }
   }, [data])
