@@ -1,3 +1,9 @@
+## v0.21.3 (2025-11-24)
+
+### Pull Requests
+[#48](https://github.com/RafaelMoro/kraft-envios-fe/pull/48) | Fix error SAT Product API
+
+
 ## v0.21.2 (2025-11-23)
 
 ### Pull Requests
