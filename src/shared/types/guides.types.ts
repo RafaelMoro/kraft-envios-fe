@@ -206,7 +206,7 @@ export interface GetProductId {
  * This interface represents the structure of the response from our API when fetching SAT products.
  */
 export interface FetchSatProductsResponse {
-  message: string | null
+  message: { error: unknown } | null
   products: SearchProduct[]
 }
 

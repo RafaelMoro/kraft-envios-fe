@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import axios, { AxiosResponse } from "axios";
-import { FetchSatProductsResponse, GetProductId, GetProductSatIdPayload, SatProduct, SearchProduct } from "@/shared/types/guides.types";
+import { GetProductId, GetProductSatIdPayload, SatProduct, SearchProduct } from "@/shared/types/guides.types";
 import { GeneralError } from "@/shared/types/global.types";
 import { replaceSpacesWithPlus } from "@/shared/utils/guides.utils";
 
-export async function POST(request: NextRequest): Promise<NextResponse<FetchSatProductsResponse>> {
+export async function POST(request: NextRequest): Promise<NextResponse<unknown>> {
   try {
     const satUri = process.env.GET_SAT_PRODUCT_URI
     if (!satUri) {
@@ -13,7 +13,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchSatP
 
     const payload: GetProductSatIdPayload = await request.json()
     const uri = `${satUri}?search=${replaceSpacesWithPlus(payload.search)}`
+    console.warn('uri', uri)
     const res: AxiosResponse<GetProductId> = await axios.get(uri)
+    console.warn('data', res.data)
 
     // Slicing products to 100
     const products: SatProduct[] = res?.data?.data?.slice(0, 100) || []
@@ -22,9 +24,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchSatP
       description: prod.description
     }))
 
-    return NextResponse.json({ message: null, products: formattedProducts }, { status: 201 })
+    return NextResponse.json({ message: { uri, data: res.data }, products: formattedProducts }, { status: 201 })
   } catch (error) {
+    console.error('Error fetching SAT products:', error)
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
-    return NextResponse.json({ message, products: [] }, { status: 400 })
+    return NextResponse.json({ message: { error, message }, products: [] }, { status: 404 })
   }
 }

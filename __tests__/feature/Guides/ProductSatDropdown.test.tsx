@@ -2,7 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
-import { AxiosResponse } from 'axios'
 import { ProductSatDropdown } from '@/features/Guides/Mn/ProductSatDropdown'
 import { FetchSatProductsResponse } from '@/shared/types/guides.types'
 
@@ -426,7 +425,7 @@ describe('ProductSatDropdown', () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       
       // Mock getProductSatInfo to return a pending promise (never resolves during test)
-      const pendingPromise = new Promise<AxiosResponse<FetchSatProductsResponse>>(() => {
+      const pendingPromise = new Promise<FetchSatProductsResponse>(() => {
         // Never resolves - this keeps the mutation in pending state
       })
       mockGetProductSatInfo.mockReturnValue(pendingPromise)
@@ -499,12 +498,9 @@ describe('ProductSatDropdown', () => {
         { code: 'PROD003', description: 'Ropa formal' }
       ]
       
-      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
-        data: { message: null, products: mockProducts },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as unknown as never
+      const mockResponse: FetchSatProductsResponse = {
+        message: null,
+        products: mockProducts
       }
       
       mockGetProductSatInfo.mockResolvedValue(mockResponse)
@@ -574,12 +570,9 @@ describe('ProductSatDropdown', () => {
         { code: 'PROD001', description: 'Ropa deportiva' }
       ]
       
-      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
-        data: { message: null, products: mockProducts },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as unknown as never
+      const mockResponse: FetchSatProductsResponse = {
+        message: null,
+        products: mockProducts
       }
       
       mockGetProductSatInfo.mockResolvedValue(mockResponse)
@@ -652,12 +645,9 @@ describe('ProductSatDropdown', () => {
         { code: 'PROD003', description: 'Ropa formal' }
       ]
       
-      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
-        data: { message: null, products: mockProducts },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as unknown as never
+      const mockResponse: FetchSatProductsResponse = {
+        message: null,
+        products: mockProducts
       }
       
       mockGetProductSatInfo.mockResolvedValue(mockResponse)
@@ -726,12 +716,9 @@ describe('ProductSatDropdown', () => {
         { code: 'PROD001', description: 'Ropa deportiva' }
       ]
       
-      const mockResponse: AxiosResponse<FetchSatProductsResponse> = {
-        data: { message: null, products: mockProducts },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as unknown as never
+      const mockResponse: FetchSatProductsResponse = {
+        message: null,
+        products: mockProducts
       }
       
       mockGetProductSatInfo.mockResolvedValue(mockResponse)
