@@ -26,7 +26,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<unknown>>
 
     return NextResponse.json({ message: { uri, data: res.data }, products: formattedProducts }, { status: 201 })
   } catch (error) {
+    console.error('Error fetching SAT products:', error)
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
-    return NextResponse.json({ message: { error, message }, products: [] }, { status: 400 })
+    return NextResponse.json({ message: { error, message }, products: [] }, { status: 404 })
   }
 }
