@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import axios, { AxiosResponse } from "axios";
-import { FetchSatProductsResponse, GetProductId, GetProductSatIdPayload, SatProduct, SearchProduct } from "@/shared/types/guides.types";
+import { GetProductId, GetProductSatIdPayload, SatProduct, SearchProduct } from "@/shared/types/guides.types";
 import { GeneralError } from "@/shared/types/global.types";
 import { replaceSpacesWithPlus } from "@/shared/utils/guides.utils";
 
