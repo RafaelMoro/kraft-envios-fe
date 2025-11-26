@@ -3,8 +3,15 @@ import { Button, Label, TextInput, ToggleSwitch } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
-import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk, CreateGuideAddressValuesPkk } from "@/shared/types/guides.types"
+import {
+  CreateGuideAddressFormSchemaPkk,
+  CreateGuideAddressFormValuesPkk,
+  CreateGuideAddressValuesPkk,
+  CreateGuideAddressValuesWithLada
+} from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { LadaPhoneStateDropdown } from "@/shared/ui/organisms/LadaPhoneStateDropdown"
+import { useLadaPhoneStateDropdown } from "@/shared/hooks/useLadaPhoneStateDropdown"
 
 interface CreateGuideAddressFormPkkProps {
   isDestination?: boolean
@@ -12,12 +19,13 @@ interface CreateGuideAddressFormPkkProps {
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  updateOriginAddress: (data: CreateGuideAddressValuesPkk) => void
+  updateOriginAddress: (data: CreateGuideAddressValuesWithLada) => void
 }
 
 export const CreateGuideAddressFormPkk = ({
   isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
 }: CreateGuideAddressFormPkkProps) => {
+  const { ladaState, setLadaState, errorLadaState, setErrorLadaState, validateLadaStateEmpty } = useLadaPhoneStateDropdown()
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     register,
@@ -30,8 +38,10 @@ export const CreateGuideAddressFormPkk = ({
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+    const isValid = validateLadaStateEmpty()
+    if (!isValid) return;
 
-    const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
+    const updatedData: CreateGuideAddressValuesWithLada = { ...data, isResidential, ladaState }
     updateOriginAddress(updatedData)
     goNext()
   }
@@ -72,6 +82,26 @@ export const CreateGuideAddressFormPkk = ({
         </div>
         <div>
           <div className="mb-2 block">
+            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
+          </div>
+          <TextInput
+            id="email"
+            type="email"
+            defaultValue={addressData.email ?? ''}
+            {...register("email")}
+          />
+          { errors?.email?.message && (
+            <ErrorMessage>{errors.email?.message}</ErrorMessage>
+          )}
+        </div>
+        <LadaPhoneStateDropdown
+          ladaState={ladaState}
+          errorLadaState={errorLadaState}
+          setLadaState={setLadaState}
+          updateLadaStateError={setErrorLadaState}
+        />
+        <div>
+          <div className="mb-2 block">
             <Label htmlFor="phone">Teléfono</Label>
           </div>
           <TextInput
@@ -84,20 +114,6 @@ export const CreateGuideAddressFormPkk = ({
           />
           { errors?.phone?.message && (
             <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
-          </div>
-          <TextInput
-            id="email"
-            type="email"
-            defaultValue={addressData.email ?? ''}
-            {...register("email")}
-          />
-          { errors?.email?.message && (
-            <ErrorMessage>{errors.email?.message}</ErrorMessage>
           )}
         </div>
       </section>

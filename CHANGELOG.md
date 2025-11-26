@@ -1,3 +1,15 @@
+## v0.22.1 (2025-11-26)
+
+### Pull Requests
+[#51](https://github.com/RafaelMoro/kraft-envios-fe/pull/51) | Adapt create guide payload for Pkk to include lada state
+
+
+## v0.22.0 (2025-11-26)
+
+### Pull Requests
+[#50](https://github.com/RafaelMoro/kraft-envios-fe/pull/50) | Add lada phone dropdown
+
+
 ## v0.21.3 (2025-11-24)
 
 ### Pull Requests

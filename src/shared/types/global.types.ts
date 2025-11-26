@@ -31,3 +31,8 @@ export type CookieObject = {
 };
 
 export type UserRoles = 'user' | 'admin'
+
+export interface LadaStates {
+  state: string;
+  lada: string[];
+}
