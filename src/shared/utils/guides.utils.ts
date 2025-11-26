@@ -149,8 +149,11 @@ export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValues
  * @returns Updated address object with default values for empty optional fields
  */
 export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk): CreateGuideAddressValuesPkk => {
+  const { phone, ladaState } = address
+  const newPhone = `+52${ladaState.lada}${phone}`
   return {
     ...address,
+    phone: newPhone,
     email: address.email?.trim() || DEFAULT_EMAIL,
   }
 }
