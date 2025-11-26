@@ -77,12 +77,13 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
       return
     }
     const hasMultipleLadas = optionFound.lada.length > 1
-    console.log('hasMultipleLadas', hasMultipleLadas)
     if (!hasMultipleLadas) {
       setLadaState(option)
+      setState(`${option.state} +${option.lada[0]}`)
       setShowDropdown(false)
       return
     }
+
     stateSelected.current = option.state
     setFilteredLadas(optionFound.lada)
   }
@@ -93,8 +94,8 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
       lada: [lada]
     })
     setFilteredLadas([])
+    setState(`${stateSelected.current} +${lada}`)
     stateSelected.current = ''
-    setState('')
     setShowDropdown(false)
   }
 
