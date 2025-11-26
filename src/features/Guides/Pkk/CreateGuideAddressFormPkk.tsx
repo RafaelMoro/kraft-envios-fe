@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk, CreateGuideAddressValuesPkk } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { LadaPhoneStateDropdown } from "@/shared/ui/organisms/LadaPhoneStateDropdown"
+import { LadaStates } from "@/shared/types/global.types"
 
 interface CreateGuideAddressFormPkkProps {
   isDestination?: boolean
@@ -19,7 +20,7 @@ interface CreateGuideAddressFormPkkProps {
 export const CreateGuideAddressFormPkk = ({
   isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
 }: CreateGuideAddressFormPkkProps) => {
-  const [ladaState, setLadaState] = useState<string>('');
+  const [ladaState, setLadaState] = useState<LadaStates>({ state: '', lada: [] });
   const [errorLadaState, setErrorLadaState] = useState<string>('');
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
