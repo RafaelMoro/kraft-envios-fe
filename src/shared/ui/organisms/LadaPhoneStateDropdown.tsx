@@ -4,6 +4,7 @@ import { Label, TextInput } from "flowbite-react"
 import { HiChevronDown, HiChevronRight } from "react-icons/hi";
 import { LADAS_MEXICO } from "@/shared/constants/lada-states.constants";
 import { LadaStates } from "@/shared/types/global.types";
+import { ErrorMessage } from "../atoms/ErrorMessage";
 
 interface LadaPhoneStateDropdownProps {
   ladaState: LadaStates;
@@ -39,9 +40,10 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
     
     if (hasSpecialChars) {
       updateLadaStateError('No se permiten caracteres especiales')
+      return;
     }
     if (errorLadaState) updateLadaStateError('')
-      setState(inputValue)
+    setState(inputValue)
 
     // Filter options based on input
     if (inputValue.trim() === '') {
@@ -105,9 +107,9 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
     <div className="relative">
       <div className="mb-2 flex flex-col gap-2">
         <Label htmlFor="content">Lada Estado de la República:</Label>
-        {/* { errorLadaState && (
+        { errorLadaState && (
           <ErrorMessage>{errorLadaState}</ErrorMessage>
-        )} */}
+        )}
       </div>
       <TextInput
         data-testid="lada-phone-autocomplete"
