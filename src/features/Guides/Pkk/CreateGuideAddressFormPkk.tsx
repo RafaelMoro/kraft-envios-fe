@@ -34,6 +34,10 @@ export const CreateGuideAddressFormPkk = ({
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+    if (!ladaState.state || ladaState.lada.length !== 1) {
+      setErrorLadaState('Seleccione un estado válido');
+      return;
+    }
 
     const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
     updateOriginAddress(updatedData)
