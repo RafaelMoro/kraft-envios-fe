@@ -1,5 +1,6 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
+import { LadaStates } from "./global.types";
 
 export type GetProductSatIdPayload = {
   search: string
@@ -84,6 +85,7 @@ export type CreateAddressFormValuesGE = {
 
 export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
+  ladaState: LadaStates
 }
 
 export type CreateGuideAddressValuesGE = {

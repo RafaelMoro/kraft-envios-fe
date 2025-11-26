@@ -36,7 +36,7 @@ export const CreateGuideAddressFormPkk = ({
     const isValid = validateLadaStateEmpty()
     if (!isValid) return;
 
-    const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
+    const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential, ladaState }
     updateOriginAddress(updatedData)
     goNext()
   }
