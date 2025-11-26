@@ -87,6 +87,7 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
     if (!hasMultipleLadas) {
       setLadaState(option)
       setState(`${option.state} +${option.lada[0]}`)
+      if (errorLadaState) updateLadaStateError('')
       setShowDropdown(false)
       return
     }
@@ -105,6 +106,7 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
     setFilteredLadas([])
     setState(`${stateSelected.current} +${lada}`)
     stateSelected.current = ''
+    if (errorLadaState) updateLadaStateError('')
     setShowDropdown(false)
   }
 
@@ -112,9 +114,6 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
     <div className="relative">
       <div className="mb-2 flex flex-col gap-2">
         <Label htmlFor="content">Lada Estado de la República:</Label>
-        { errorLadaState && (
-          <ErrorMessage>{errorLadaState}</ErrorMessage>
-        )}
       </div>
       <TextInput
         data-testid="lada-phone-autocomplete"
@@ -130,6 +129,9 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
         // Setting this way the autocomplete to avoid Chrome to autocomplete addresses even with "off" value
         autoComplete="lada-phone-autocomplete"
       />
+      { errorLadaState && (
+          <ErrorMessage>{errorLadaState}</ErrorMessage>
+        )}
       { showDropdown && (
         <ul 
           className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto flex flex-col gap-2"
