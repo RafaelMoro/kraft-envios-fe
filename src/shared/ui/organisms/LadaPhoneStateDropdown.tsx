@@ -125,7 +125,7 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
       />
       { showDropdown && (
         <ul 
-          className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto"
+          className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto flex flex-col gap-2"
           onMouseDown={(e) => e.preventDefault()} // Prevent input blur when clicking dropdown
         >
           { (filteredOptions.length === 0 && ladaState.state.length > 0) && (
@@ -147,7 +147,7 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
               onClick={() => handleSelectLada(lada)}
               className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg inline-flex gap-2 cursor-pointer"
             >
-              {lada}
+              +{lada}
               <HiChevronRight />
             </li>
           ))}
