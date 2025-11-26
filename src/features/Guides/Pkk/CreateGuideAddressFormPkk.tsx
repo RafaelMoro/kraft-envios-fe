@@ -77,6 +77,26 @@ export const CreateGuideAddressFormPkk = ({
         </div>
         <div>
           <div className="mb-2 block">
+            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
+          </div>
+          <TextInput
+            id="email"
+            type="email"
+            defaultValue={addressData.email ?? ''}
+            {...register("email")}
+          />
+          { errors?.email?.message && (
+            <ErrorMessage>{errors.email?.message}</ErrorMessage>
+          )}
+        </div>
+        <LadaPhoneStateDropdown
+          ladaState={ladaState}
+          errorLadaState={errorLadaState}
+          setLadaState={setLadaState}
+          updateLadaStateError={setErrorLadaState}
+        />
+        <div>
+          <div className="mb-2 block">
             <Label htmlFor="phone">Teléfono</Label>
           </div>
           <TextInput
@@ -89,26 +109,6 @@ export const CreateGuideAddressFormPkk = ({
           />
           { errors?.phone?.message && (
             <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )}
-        </div>
-        <LadaPhoneStateDropdown
-          ladaState={ladaState}
-          errorLadaState={errorLadaState}
-          setLadaState={setLadaState}
-          updateLadaStateError={setErrorLadaState}
-        />
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
-          </div>
-          <TextInput
-            id="email"
-            type="email"
-            defaultValue={addressData.email ?? ''}
-            {...register("email")}
-          />
-          { errors?.email?.message && (
-            <ErrorMessage>{errors.email?.message}</ErrorMessage>
           )}
         </div>
       </section>
