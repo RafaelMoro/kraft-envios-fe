@@ -84,8 +84,10 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
       return
     }
 
+    // State has multiple ladas - show lada selection and keep dropdown open
     stateSelected.current = option.state
     setFilteredLadas(optionFound.lada)
+    setShowDropdown(true) // Explicitly keep dropdown open
   }
 
   const handleSelectLada = (lada: string) => {
@@ -122,7 +124,10 @@ export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState
         autoComplete="lada-phone-autocomplete"
       />
       { showDropdown && (
-        <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
+        <ul 
+          className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto"
+          onMouseDown={(e) => e.preventDefault()} // Prevent input blur when clicking dropdown
+        >
           { (filteredOptions.length === 0 && ladaState.state.length > 0) && (
             <li className="p-2 rounded-lg">No se encontraron resultados</li>
           )}
