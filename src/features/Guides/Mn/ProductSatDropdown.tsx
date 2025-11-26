@@ -91,8 +91,8 @@ export const ProductSatDropdown = ({ searchProductSat, errorProductSat, setSearc
       <div className="mb-2 flex flex-col gap-2">
         <Label htmlFor="content">Tipo de producto:</Label>
         { errorProductSat && (
-            <ErrorMessage>{errorProductSat}</ErrorMessage>
-          )}
+          <ErrorMessage>{errorProductSat}</ErrorMessage>
+        )}
       </div>
       <TextInput
         data-testid="product-autocomplete"
