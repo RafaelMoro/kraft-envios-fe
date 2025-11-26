@@ -13,6 +13,11 @@ interface LadaPhoneStateDropdownProps {
   updateLadaStateError: (message: string) => void;
 }
 
+/**
+ * This component provides a dropdown to select Mexican state lada code.
+ * If the state selected has multiple lada codes, it allows selecting one of them.
+ * The hook useLadaPhoneStateDropdown is meanth to be used in the parent component where this component is called
+ */
 export const LadaPhoneStateDropdown = ({ ladaState, errorLadaState, setLadaState, updateLadaStateError }: LadaPhoneStateDropdownProps) => {
   const options = [...LADAS_MEXICO];
   const stateSelected = useRef('')

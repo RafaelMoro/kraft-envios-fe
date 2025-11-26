@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk, CreateGuideAddressValuesPkk } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { LadaPhoneStateDropdown } from "@/shared/ui/organisms/LadaPhoneStateDropdown"
-import { LadaStates } from "@/shared/types/global.types"
+import { useLadaPhoneStateDropdown } from "@/shared/hooks/useLadaPhoneStateDropdown"
 
 interface CreateGuideAddressFormPkkProps {
   isDestination?: boolean
@@ -20,8 +20,7 @@ interface CreateGuideAddressFormPkkProps {
 export const CreateGuideAddressFormPkk = ({
   isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
 }: CreateGuideAddressFormPkkProps) => {
-  const [ladaState, setLadaState] = useState<LadaStates>({ state: '', lada: [] });
-  const [errorLadaState, setErrorLadaState] = useState<string>('');
+  const { ladaState, setLadaState, errorLadaState, setErrorLadaState, validateLadaStateEmpty } = useLadaPhoneStateDropdown()
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     register,
@@ -34,10 +33,8 @@ export const CreateGuideAddressFormPkk = ({
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    if (!ladaState.state || ladaState.lada.length !== 1) {
-      setErrorLadaState('Seleccione un estado válido');
-      return;
-    }
+    const isValid = validateLadaStateEmpty()
+    if (!isValid) return;
 
     const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
     updateOriginAddress(updatedData)
