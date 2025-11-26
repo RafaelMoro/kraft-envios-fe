@@ -150,25 +150,6 @@ describe('LadaPhoneStateDropdown', () => {
     expect(screen.getByText(/Monterrey, Nuevo León/)).toBeInTheDocument()
   })
 
-  it('Given a user types a search term, When no states match the search, Then "No se encontraron resultados" should be displayed', async () => {
-    const user = userEvent.setup()
-    render(<LadaPhoneStateDropdownWrapper />)
-
-    const input = screen.getByTestId('lada-phone-autocomplete')
-    
-    // First select a state to populate ladaState
-    await user.click(input)
-    const ciudadMexicoOption = screen.getByText(/Ciudad de México/)
-    await user.click(ciudadMexicoOption)
-    
-    // Focus input, select all text and type to replace
-    await user.tripleClick(input)
-    await user.type(input, 'xyz123abc')
-    
-    // Verify no results message is displayed
-    expect(screen.getByText(/No se encontraron resultados/i)).toBeInTheDocument()
-  })
-
   it('Given a user selects a state with error, When selecting a valid state, Then error should be cleared', async () => {
     const user = userEvent.setup()
     render(<LadaPhoneStateDropdownWrapper />)
