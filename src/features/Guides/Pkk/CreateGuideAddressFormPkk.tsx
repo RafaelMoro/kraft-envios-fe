@@ -3,7 +3,12 @@ import { Button, Label, TextInput, ToggleSwitch } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
-import { CreateGuideAddressFormSchemaPkk, CreateGuideAddressFormValuesPkk, CreateGuideAddressValuesPkk } from "@/shared/types/guides.types"
+import {
+  CreateGuideAddressFormSchemaPkk,
+  CreateGuideAddressFormValuesPkk,
+  CreateGuideAddressValuesPkk,
+  CreateGuideAddressValuesWithLada
+} from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { LadaPhoneStateDropdown } from "@/shared/ui/organisms/LadaPhoneStateDropdown"
 import { useLadaPhoneStateDropdown } from "@/shared/hooks/useLadaPhoneStateDropdown"
@@ -14,7 +19,7 @@ interface CreateGuideAddressFormPkkProps {
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  updateOriginAddress: (data: CreateGuideAddressValuesPkk) => void
+  updateOriginAddress: (data: CreateGuideAddressValuesWithLada) => void
 }
 
 export const CreateGuideAddressFormPkk = ({
@@ -36,7 +41,7 @@ export const CreateGuideAddressFormPkk = ({
     const isValid = validateLadaStateEmpty()
     if (!isValid) return;
 
-    const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
+    const updatedData: CreateGuideAddressValuesWithLada = { ...data, isResidential, ladaState }
     updateOriginAddress(updatedData)
     goNext()
   }
