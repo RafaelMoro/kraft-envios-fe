@@ -7,7 +7,7 @@ import { RiAddLine, RiArchiveLine, RiArrowDownSLine, RiErrorWarningLine } from "
 import { CourierForm, MarginProfitSubscreens, ProfitMargin, ProfitMarginTypeOption, ProviderGlobalConfig, UpdateMarginProfitPayload } from "@/shared/types/margin-profit.types"
 import { hasDuplicateCouriersFn, updateMarginProfitCb } from "@/shared/utils/margin-profit.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
-import { QUOTE_SOURCES, QuoteCourier, QuoteSource } from "@/shared/types/quotes.types"
+import { QUOTE_SOURCES, QuoteCourier, ProviderSource } from "@/shared/types/quotes.types"
 import { CourierProfitMarginForm } from "./CourierProfitMarginForm"
 import { createUniqueId } from "@/shared/utils/global.utils"
 
@@ -22,9 +22,9 @@ export const ProfitMarginForm = ({ refetchMarginProfit, updateSubscreen, data }:
   const [courierError, setCourierError] = useState<string | null>(null)
   const courierFormsData = useRef<CourierForm[]>([])
   const [courierFormsDataLoaded, setCourierFormsDataLoaded] = useState<CourierForm[]>([])
-  const [selectedProvider, setSelectedProvider] = useState<QuoteSource | null>('GE')
+  const [selectedProvider, setSelectedProvider] = useState<ProviderSource | null>('GE')
 
-  const updateProvider = (newProv: QuoteSource) => setSelectedProvider(newProv)
+  const updateProvider = (newProv: ProviderSource) => setSelectedProvider(newProv)
   const addCourierForm = () => {
     if (courierError) setCourierError(null)
     const newId = createUniqueId()
@@ -147,7 +147,7 @@ export const ProfitMarginForm = ({ refetchMarginProfit, updateSubscreen, data }:
     if (courierError) setCourierError(null)
 
     const formattedProvider: ProviderGlobalConfig = {
-      name: selectedProvider as QuoteSource,
+      name: selectedProvider as ProviderSource,
       couriers: courierFormsData.current.map((courier) => ({
         name: courier.courier,
         profitMargin: {

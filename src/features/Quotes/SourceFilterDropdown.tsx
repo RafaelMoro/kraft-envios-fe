@@ -1,19 +1,19 @@
 "use client"
 import { Dropdown, DropdownItem } from "flowbite-react"
 
-import { QUOTE_SOURCES, QuoteSource } from "@/shared/types/quotes.types"
+import { QUOTE_SOURCES, ProviderSource } from "@/shared/types/quotes.types"
 
 interface SourceFilterDropdownProps {
-  selectedSource: QuoteSource | null
-  setSelectedSource: (source: QuoteSource | null) => void
-  filterQuotesBySource: (source: QuoteSource) => void
+  selectedSource: ProviderSource | null
+  setSelectedSource: (source: ProviderSource | null) => void
+  filterQuotesBySource: (source: ProviderSource) => void
   resetFiltersQuotes: () => void
 }
 
 export const SourceFilterDropdown = ({ selectedSource, setSelectedSource, filterQuotesBySource, resetFiltersQuotes }: SourceFilterDropdownProps) => {
-  const allSources: QuoteSource[] = [...QUOTE_SOURCES]
+  const allSources: ProviderSource[] = [...QUOTE_SOURCES]
 
-  const handleClick = (source: QuoteSource) => {
+  const handleClick = (source: ProviderSource) => {
     setSelectedSource(source)
     filterQuotesBySource(source)
   }

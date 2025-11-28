@@ -1,4 +1,4 @@
-import { QuoteCourier, QuoteSource } from "./quotes.types";
+import { QuoteCourier, ProviderSource } from "./quotes.types";
 
 export type ProfitMarginType = 'percentage' | 'absolute'
 
@@ -23,7 +23,7 @@ export interface CourierGlobalConfig {
 }
 
 export interface ProviderGlobalConfig {
-  name: QuoteSource;
+  name: ProviderSource;
   couriers: CourierGlobalConfig[];
 }
 

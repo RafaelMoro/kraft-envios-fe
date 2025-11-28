@@ -1,6 +1,7 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
 import { LadaStates } from "./global.types";
+import { ProviderSource } from "./quotes.types";
 
 export type GetProductSatIdPayload = {
   search: string
@@ -220,6 +221,7 @@ export interface FetchSatProductsResponse {
 export interface GlobalCreateGuideResponse {
   trackingNumber: string;
   carrier: string;
+  source: ProviderSource;
   price: string;
   guideLink: string | null;
   labelUrl: string | null;
