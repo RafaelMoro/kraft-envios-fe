@@ -6,7 +6,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
-import { CreateGuideAddressValuesWithLada, CreateGuideFormValuesPkk, CreateGuidePkkPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
+import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, CreateGuidePkkPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateFormPkk } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuidePkk } from "./ConfirmGuidePkk";
@@ -32,10 +32,10 @@ export const CreateGuidePkk = ({
   const resetFormData = () => {
     formData.current = {...initialStateFormPkk}
   }
-  const updateOriginAddress = (data: CreateGuideAddressValuesWithLada) => {
+  const updateOriginAddress = (data: CreateGuideAddressValuesPkk) => {
     formData.current.originAddress = data
   }
-  const updateDestinationAddress = (data: CreateGuideAddressValuesWithLada) => {
+  const updateDestinationAddress = (data: CreateGuideAddressValuesPkk) => {
     formData.current.destinationAddress = data
   }
   const updateParcelInfo = (data: ParcelInfoValues) => {

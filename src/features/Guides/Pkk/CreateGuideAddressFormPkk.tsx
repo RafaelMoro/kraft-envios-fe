@@ -7,11 +7,8 @@ import {
   CreateGuideAddressFormSchemaPkk,
   CreateGuideAddressFormValuesPkk,
   CreateGuideAddressValuesPkk,
-  CreateGuideAddressValuesWithLada
 } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { LadaPhoneStateDropdown } from "@/shared/ui/organisms/LadaPhoneStateDropdown"
-import { useLadaPhoneStateDropdown } from "@/shared/hooks/useLadaPhoneStateDropdown"
 
 interface CreateGuideAddressFormPkkProps {
   isDestination?: boolean
@@ -19,13 +16,12 @@ interface CreateGuideAddressFormPkkProps {
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  updateOriginAddress: (data: CreateGuideAddressValuesWithLada) => void
+  updateOriginAddress: (data: CreateGuideAddressValuesPkk) => void
 }
 
 export const CreateGuideAddressFormPkk = ({
   isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
 }: CreateGuideAddressFormPkkProps) => {
-  const { ladaState, setLadaState, errorLadaState, setErrorLadaState, validateLadaStateEmpty } = useLadaPhoneStateDropdown()
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     register,
@@ -38,10 +34,8 @@ export const CreateGuideAddressFormPkk = ({
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    const isValid = validateLadaStateEmpty()
-    if (!isValid) return;
 
-    const updatedData: CreateGuideAddressValuesWithLada = { ...data, isResidential, ladaState }
+    const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
     updateOriginAddress(updatedData)
     goNext()
   }
@@ -94,12 +88,6 @@ export const CreateGuideAddressFormPkk = ({
             <ErrorMessage>{errors.email?.message}</ErrorMessage>
           )}
         </div>
-        <LadaPhoneStateDropdown
-          ladaState={ladaState}
-          errorLadaState={errorLadaState}
-          setLadaState={setLadaState}
-          updateLadaStateError={setErrorLadaState}
-        />
         <div>
           <div className="mb-2 block">
             <Label htmlFor="phone">Teléfono</Label>

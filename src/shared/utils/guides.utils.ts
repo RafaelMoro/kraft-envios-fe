@@ -28,7 +28,6 @@ import {
   GetProductId,
   SatProduct,
   SearchProduct,
-  CreateGuideAddressValuesWithLada,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -149,9 +148,9 @@ export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValues
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesWithLada): CreateGuideAddressValuesPkk => {
-  const { phone, ladaState, ...rest } = address
-  const newPhone = `+52${ladaState.lada}${phone}`
+export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk): CreateGuideAddressValuesPkk => {
+  const { phone, ...rest } = address
+  const newPhone = `+52${phone}`
   return {
     ...rest,
     phone: newPhone,

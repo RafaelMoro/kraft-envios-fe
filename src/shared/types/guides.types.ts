@@ -19,8 +19,8 @@ export type CreateGuideFormValuesTone = {
 }
 
 export type CreateGuideFormValuesPkk = {
-  originAddress: CreateGuideAddressValuesWithLada;
-  destinationAddress: CreateGuideAddressValuesWithLada;
+  originAddress: CreateGuideAddressValuesPkk;
+  destinationAddress: CreateGuideAddressValuesPkk;
   parcelInfo: ParcelInfoValuesPkk;
 }
 
@@ -86,6 +86,9 @@ export type CreateAddressFormValuesGE = {
 export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
 }
+/**
+ * Not needed as usually the users uses phone numbers and those already has lada states
+ */
 export type CreateGuideAddressValuesWithLada = CreateGuideAddressValuesPkk & {
   ladaState: LadaStates
 }
