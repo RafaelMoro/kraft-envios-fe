@@ -1,3 +1,9 @@
+## v0.22.2 (2025-11-29)
+
+### Pull Requests
+[#53](https://github.com/RafaelMoro/kraft-envios-fe/pull/53) | Change Pkk payload and transform B64 file
+
+
 ## v0.22.1 (2025-11-26)
 
 ### Pull Requests

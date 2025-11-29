@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
+import { Button } from "flowbite-react";
+import { RiAttachmentLine, RiFileList3Line, RiMoneyDollarCircleLine, RiTruckLine } from "@remixicon/react";
+
 import { GlobalCreateGuideResponse } from "@/shared/types/guides.types";
 import { formatNumberToCurrency } from "@/shared/utils/global.utils";
-import { RiAttachmentLine, RiFileList3Line, RiMoneyDollarCircleLine, RiTruckLine } from "@remixicon/react";
-import { Button } from "flowbite-react";
+import { b64toBlob } from "@/shared/utils/guides.utils";
 
 interface ResultGuideScreenProps {
   guide: GlobalCreateGuideResponse | undefined;
@@ -12,8 +15,18 @@ interface ResultGuideScreenProps {
 }
 
 export const ResultGuideScreen = ({ guide, isSuccess, isError, errorMessage, closeModal }: ResultGuideScreenProps) => {
+  const [urlFile, setUrlFile] = useState<string | null>(null);
   const title = isSuccess ? "Guía creada con éxito" : "Error al crear la guía"
   const formattedPrice = formatNumberToCurrency((Number(guide?.price ?? 0)))
+
+  useEffect(() => {
+    // Only Pkk returns the file in base64 format
+    if (guide?.source === 'Pkk' && (guide?.file)) {
+      const blob = b64toBlob(guide.file, 'application/pdf');
+      const url = window.URL.createObjectURL(blob);
+      setUrlFile(url);
+    }
+  }, [guide?.file, guide?.source])
 
   return (
     <section className="flex flex-col gap-6">
@@ -35,7 +48,7 @@ export const ResultGuideScreen = ({ guide, isSuccess, isError, errorMessage, clo
             </div>
             <div className="inline-flex gap-2">
               <RiAttachmentLine />
-              <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer">Ver etiqueta</a>
+              <a href={guide?.source === 'Pkk' ? (urlFile ?? '') : (guide?.labelUrl ?? '')} target="_blank" rel="noopener noreferrer">Ver etiqueta</a>
             </div>
           </article>
           <Button onClick={closeModal} outline>

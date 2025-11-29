@@ -31,7 +31,7 @@ export const TYPE_PACKAGE = ['box', 'envelope'] as const
 
 // Derive the type from the runtime constant so changing one source keeps both in sync.
 export type QuoteCourier = typeof QUOTE_COURIERS[number]
-export type QuoteSource = typeof QUOTE_SOURCES[number]
+export type ProviderSource = typeof QUOTE_SOURCES[number]
 export type QuoteTypeService = typeof QUOTE_SERVICE_TYPES[number]
 
 export type PackageType = typeof TYPE_PACKAGE[number]
@@ -43,7 +43,7 @@ export interface Quote {
   total: number
   typeService: QuoteTypeService | null;
   courier: QuoteCourier | null;
-  source: QuoteSource
+  source: ProviderSource
 }
 
 export interface QuoteUI extends Quote {
