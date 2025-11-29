@@ -12,7 +12,7 @@ export type Address = {
   city: string[]
   town: string[]
   alias: string;
-  // neighborhood: string;
+  neighborhood: string;
 }
 
 export type CreateAddressFormValues = {
