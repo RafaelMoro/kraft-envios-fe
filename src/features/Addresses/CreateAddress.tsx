@@ -1,11 +1,13 @@
 "use client"
-import { Button, Label, Modal, ModalBody, ModalHeader, TextInput } from "flowbite-react"
+import { Button, CheckIcon, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
 
-import { CreateAddressFormSchema, CreateAddressFormValues } from "@/shared/types/addresses.types";
+import { CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse } from "@/shared/types/addresses.types";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
-import { formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
+import { createAddressCb, formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
+import { GeneralApiError } from "@/shared/types/global.types";
 
 interface CreateAddressProps {
   open: boolean;
@@ -21,11 +23,23 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
     resolver: yupResolver(CreateAddressFormSchema)
   })
 
+  const { mutate: createAddressMutation, isError, isPending, isSuccess, isIdle } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
+    mutationFn: createAddressCb,
+    onSuccess: () => {
+      setTimeout(() => {
+        toggleModal()
+      }, 1000)
+    },
+    onError: () => {
+      // goNext()
+    }
+  })
+
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
       event?.preventDefault()
   
       const formattedPayload = formatPayloadCreateAddress(data)
-      // updateOriginAddress(updatedData)
+      createAddressMutation(formattedPayload)
     }
 
   return (
@@ -42,7 +56,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="street1"
-              // defaultValue={addressData.street1}
               id="street1"
               type="text"
               {...register("street1")}
@@ -57,7 +70,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="externalNumber"
-              // defaultValue={addressData.externalNumber}
               id="externalNumber"
               type="text"
               inputMode="numeric"
@@ -73,7 +85,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="internalNumber"
-              // defaultValue={addressData.internalNumber}
               id="internalNumber"
               type="text"
               inputMode="numeric"
@@ -89,7 +100,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="neighborhood"
-              // defaultValue={addressData.neighborhood}
               id="neighborhood"
               type="text"
               {...register("neighborhood")}
@@ -118,7 +128,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="city"
-              // defaultValue={addressData.city}
               id="city"
               type="text"
               {...register("city")}
@@ -133,7 +142,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="town"
-              // defaultValue={addressData.town}
               id="town"
               type="text"
               {...register("town")}
@@ -148,7 +156,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="state"
-              // defaultValue={addressData.state}
               id="state"
               type="text"
               {...register("state")}
@@ -163,7 +170,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="reference"
-              // defaultValue={addressData.reference}
               id="reference"
               type="text"
               {...register("reference")}
@@ -178,7 +184,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
             </div>
             <TextInput
               data-testid="alias"
-              // defaultValue={addressData.alias}
               id="alias"
               type="text"
               {...register("alias")}
@@ -189,16 +194,25 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
           </div>
           <div className="lg:col-span-2 flex justify-between mt-4">
             <Button
-              // {...(!isDestination && { outline: true })}
               color="red"
+              outline
               data-testid="origin-address-cancel-button"
               className="hover:cursor-pointer"
-              // onClick={handleCancel}
+              disabled={isPending || isSuccess}
+              onClick={toggleModal}
             >
               Cancelar
             </Button>
-            <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
-              Crear dirección
+            <Button
+              data-testid="origin-address-next-button"
+              type="submit"
+              className="hover:cursor-pointer"
+              disabled={isPending || isSuccess}
+            >
+              { (isIdle || isError) && 'Crear dirección'}
+              { isPending && (<Spinner aria-label="loading login kraft envios" />) }
+              { isSuccess && (<CheckIcon />)}
+              
             </Button>
           </div>
         </form>
