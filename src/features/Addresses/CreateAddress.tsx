@@ -12,7 +12,7 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
       <ModalHeader>Crear dirección</ModalHeader>
       <ModalBody>
         <form
-          className="flex flex-col gap-5"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-5"
           // onSubmit={handleSubmit(onSubmit)}
         >
           <div>
@@ -79,6 +79,20 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
           </div>
           <div>
             <div className="mb-2 block">
+              <Label htmlFor="zipcode">Código Postal</Label>
+            </div>
+            <TextInput
+              id="zipcode"
+              type="text"
+              inputMode="numeric"
+              // {...register("zipcode")}
+            />
+            {/* { errors?.zipcode?.message && (
+              <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
+            )} */}
+          </div>
+          <div>
+            <div className="mb-2 block">
               <Label htmlFor="town">Ciudad</Label>
             </div>
             <TextInput
@@ -124,20 +138,6 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
           </div>
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="zipcode">Código Postal</Label>
-            </div>
-            <TextInput
-              id="zipcode"
-              type="text"
-              inputMode="numeric"
-              // {...register("zipcode")}
-            />
-            {/* { errors?.zipcode?.message && (
-              <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-            )} */}
-          </div>
-          <div>
-            <div className="mb-2 block">
               <Label htmlFor="reference">Referencia</Label>
             </div>
             <TextInput
@@ -166,7 +166,7 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               <ErrorMessage>{errors.alias?.message}</ErrorMessage>
             )} */}
           </div>
-          <div className="flex justify-between mt-4">
+          <div className="lg:col-span-2 flex justify-between mt-4">
             <Button
               // {...(!isDestination && { outline: true })}
               color="red"
