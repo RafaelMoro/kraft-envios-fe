@@ -2,6 +2,19 @@ import { object, ObjectSchema, string } from "yup";
 
 const onlyNumberRegex = /^\d+$/;
 
+export type Address = {
+  addressName: string;
+  externalNumber: string;
+  internalNumber: string;
+  reference: string;
+  postalCode: string;
+  state: string;
+  city: string[]
+  town: string[]
+  alias: string;
+  // neighborhood: string;
+}
+
 export type CreateAddressFormValues = {
   street1: string;
   externalNumber: string;
@@ -13,6 +26,21 @@ export type CreateAddressFormValues = {
   state: string;
   reference?: string | null | undefined;
   alias: string;
+}
+
+export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber' | 'reference'> & {
+  internalNumber: string;
+  reference: string;
+}
+
+export interface CreateAddressResponse {
+  data: {
+    address: Address
+  }
+  error: null;
+  message: null;
+  success: boolean;
+  version: string;
 }
 
 export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> = object().shape({

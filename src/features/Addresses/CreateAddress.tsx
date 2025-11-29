@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import { CreateAddressFormSchema, CreateAddressFormValues } from "@/shared/types/addresses.types";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
+import { formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
 
 interface CreateAddressProps {
   open: boolean;
@@ -22,9 +23,8 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
 
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
       event?.preventDefault()
-      event?.stopPropagation()
   
-      // const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
+      const formattedPayload = formatPayloadCreateAddress(data)
       // updateOriginAddress(updatedData)
     }
 
