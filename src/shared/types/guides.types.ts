@@ -225,7 +225,7 @@ export interface GlobalCreateGuideResponse {
   price: string;
   guideLink: string | null;
   labelUrl: string | null;
-  file: string | null;
+  file: Base64URLString | null;
 }
 
 export interface CreateMnGuideResponse {
