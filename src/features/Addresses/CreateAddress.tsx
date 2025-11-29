@@ -1,5 +1,10 @@
 "use client"
 import { Button, Label, Modal, ModalBody, ModalHeader, TextInput } from "flowbite-react"
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { CreateAddressFormSchema, CreateAddressFormValues } from "@/shared/types/addresses.types";
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 
 interface CreateAddressProps {
   open: boolean;
@@ -7,13 +12,29 @@ interface CreateAddressProps {
 }
 
 export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateAddressFormValues>({
+    resolver: yupResolver(CreateAddressFormSchema)
+  })
+
+  const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
+      event?.preventDefault()
+      event?.stopPropagation()
+  
+      // const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
+      // updateOriginAddress(updatedData)
+    }
+
   return (
     <Modal show={open} onClose={toggleModal}>
       <ModalHeader>Crear dirección</ModalHeader>
       <ModalBody>
         <form
           className="grid grid-cols-1 lg:grid-cols-2 gap-5"
-          // onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit)}
         >
           <div>
             <div className="mb-2 block">
@@ -24,43 +45,43 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               // defaultValue={addressData.street1}
               id="street1"
               type="text"
-              // {...register("street1")}
+              {...register("street1")}
             />
-            {/* { errors?.street1?.message && (
+            { errors?.street1?.message && (
               <ErrorMessage>{errors.street1?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="external_number">Numero exterior</Label>
+              <Label htmlFor="externalNumber">Numero exterior</Label>
             </div>
             <TextInput
-              data-testid="external_number"
-              // defaultValue={addressData.external_number}
-              id="external_number"
+              data-testid="externalNumber"
+              // defaultValue={addressData.externalNumber}
+              id="externalNumber"
               type="text"
               inputMode="numeric"
-              // {...register("external_number")}
+              {...register("externalNumber")}
             />
-            {/* { errors?.external_number?.message && (
-              <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
-            )} */}
+            { errors?.externalNumber?.message && (
+              <ErrorMessage>{errors.externalNumber?.message}</ErrorMessage>
+            )}
           </div>
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="internal_number">Numero interior (Opcional)</Label>
+              <Label htmlFor="internalNumber">Numero interior (Opcional)</Label>
             </div>
             <TextInput
-              data-testid="internal_number"
-              // defaultValue={addressData.internal_number}
-              id="internal_number"
+              data-testid="internalNumber"
+              // defaultValue={addressData.internalNumber}
+              id="internalNumber"
               type="text"
               inputMode="numeric"
-              // {...register("internal_number")}
+              {...register("internalNumber")}
             />
-            {/* { errors?.internal_number?.message && (
-              <ErrorMessage>{errors.internal_number?.message}</ErrorMessage>
-            )} */}
+            { errors?.internalNumber?.message && (
+              <ErrorMessage>{errors.internalNumber?.message}</ErrorMessage>
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -71,11 +92,11 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               // defaultValue={addressData.neighborhood}
               id="neighborhood"
               type="text"
-              // {...register("neighborhood")}
+              {...register("neighborhood")}
             />
-            {/* { errors?.neighborhood?.message && (
+            { errors?.neighborhood?.message && (
               <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -85,11 +106,11 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               id="zipcode"
               type="text"
               inputMode="numeric"
-              // {...register("zipcode")}
+              {...register("zipcode")}
             />
-            {/* { errors?.zipcode?.message && (
+            { errors?.zipcode?.message && (
               <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -100,11 +121,11 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               // defaultValue={addressData.city}
               id="city"
               type="text"
-              // {...register("city")}
+              {...register("city")}
             />
-            {/* { errors?.city?.message && (
+            { errors?.city?.message && (
               <ErrorMessage>{errors.city?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -115,11 +136,11 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               // defaultValue={addressData.town}
               id="town"
               type="text"
-              // {...register("town")}
+              {...register("town")}
             />
-            {/* { errors?.town?.message && (
+            { errors?.town?.message && (
               <ErrorMessage>{errors.town?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -130,11 +151,11 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               // defaultValue={addressData.state}
               id="state"
               type="text"
-              // {...register("state")}
+              {...register("state")}
             />
-            {/* { errors?.state?.message && (
+            { errors?.state?.message && (
               <ErrorMessage>{errors.state?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -145,11 +166,11 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               // defaultValue={addressData.reference}
               id="reference"
               type="text"
-              // {...register("reference")}
+              {...register("reference")}
             />
-            {/* { errors?.reference?.message && (
+            { errors?.reference?.message && (
               <ErrorMessage>{errors.reference?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div>
             <div className="mb-2 block">
@@ -160,11 +181,11 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
               // defaultValue={addressData.alias}
               id="alias"
               type="text"
-              // {...register("alias")}
+              {...register("alias")}
             />
-            {/* { errors?.alias?.message && (
+            { errors?.alias?.message && (
               <ErrorMessage>{errors.alias?.message}</ErrorMessage>
-            )} */}
+            )}
           </div>
           <div className="lg:col-span-2 flex justify-between mt-4">
             <Button
