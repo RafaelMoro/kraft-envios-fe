@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "flowbite-react"
-import { RiArticleLine, RiLineChartLine, RiMoneyDollarBoxLine } from "@remixicon/react"
+import { RiArticleLine, RiContactsBookLine, RiLineChartLine, RiMoneyDollarBoxLine } from "@remixicon/react"
 
 import { DashboardAsideLink } from "@/features/Dashboard/DashboardAsideLink"
 import { Logo } from "../atoms/Logo"
@@ -32,6 +32,10 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
         <DashboardAsideLink isSelected={screen === 'overview'} onClickCb={() => updateScreen('overview')}>
           <RiArticleLine />
           Ver guias
+        </DashboardAsideLink>
+        <DashboardAsideLink isSelected={screen === 'addresses'} onClickCb={() => updateScreen('addresses')}>
+          <RiContactsBookLine />
+          Direcciones
         </DashboardAsideLink>
         { isAdmin && (
           <DashboardAsideLink isSelected={screen === 'marginProfit'} onClickCb={() => updateScreen('marginProfit')}>
