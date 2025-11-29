@@ -13,6 +13,7 @@ import { Aside } from '@/shared/ui/organisms/Aside'
 import { Logo } from '@/shared/ui/atoms/Logo'
 import { HeaderMenuMobile } from '@/shared/ui/organisms/HeaderMenuDrawer'
 import { MarginProfitSubscreen } from './subscreens/MarginProfitSubscreen'
+import { AddressesSubscreen } from './subscreens/AddressesSubscreen'
 
 export interface DashboardProps {
   userInfo: LoginData | null
@@ -44,6 +45,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
         { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
         { screen === 'overview' && (<Order userInfo={userInfo} />) }
         { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
+        { screen === 'addresses' && (<AddressesSubscreen userInfo={userInfo} />) }
       </div>
     )
   }
@@ -54,6 +56,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
       { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
       { screen === 'overview' && (<Order userInfo={userInfo} />) }
       { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
+      { screen === 'addresses' && (<AddressesSubscreen userInfo={userInfo} />) }
     </div>
   )
 }
