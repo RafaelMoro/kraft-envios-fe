@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { QuoteCourier, QuoteSource, QuoteTypeService, QuoteUI } from "../types/quotes.types"
+import { QuoteCourier, ProviderSource, QuoteTypeService, QuoteUI } from "../types/quotes.types"
 import { filterQuotesByCourierUtil, filterQuotesBySourceUtil, filterQuotesByTimeTypeUtil } from "../utils/quotes.utils"
 
 interface UseQuotesFiltersProps {
@@ -10,13 +10,13 @@ interface UseQuotesFiltersProps {
 export const useQuoteFilters = ({ allQuotes, setAllFilteredQuotes }: UseQuotesFiltersProps) => {
   // Track currently selected filters so they can be applied cumulatively
   const [selectedCourier, setSelectedCourier] = useState<QuoteCourier | null>(null)
-  const [selectedSource, setSelectedSource] = useState<QuoteSource | null>(null)
+  const [selectedSource, setSelectedSource] = useState<ProviderSource | null>(null)
   const [selectedTimeType, setSelectedTimeType] = useState<QuoteTypeService | null>(null)
 
   // Apply all currently selected filters to `allQuotes` in sequence.
   const applyActiveFilters = (opts?: {
     courier?: QuoteCourier | null
-    source?: QuoteSource | null
+    source?: ProviderSource | null
     timeType?: QuoteTypeService | null
   }): QuoteUI[] => {
     const courier = opts?.courier !== undefined ? opts.courier : selectedCourier
@@ -44,7 +44,7 @@ export const useQuoteFilters = ({ allQuotes, setAllFilteredQuotes }: UseQuotesFi
     setAllFilteredQuotes(filtered)
   }
 
-  const filterQuotesBySource = (newSource: QuoteSource) => {
+  const filterQuotesBySource = (newSource: ProviderSource) => {
     setSelectedSource(newSource)
     const filtered = applyActiveFilters({ source: newSource })
     setAllFilteredQuotes(filtered)

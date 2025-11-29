@@ -1,6 +1,7 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
 import { LadaStates } from "./global.types";
+import { ProviderSource } from "./quotes.types";
 
 export type GetProductSatIdPayload = {
   search: string
@@ -19,8 +20,8 @@ export type CreateGuideFormValuesTone = {
 }
 
 export type CreateGuideFormValuesPkk = {
-  originAddress: CreateGuideAddressValuesWithLada;
-  destinationAddress: CreateGuideAddressValuesWithLada;
+  originAddress: CreateGuideAddressValuesPkk;
+  destinationAddress: CreateGuideAddressValuesPkk;
   parcelInfo: ParcelInfoValuesPkk;
 }
 
@@ -86,6 +87,9 @@ export type CreateAddressFormValuesGE = {
 export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
 }
+/**
+ * Not needed as usually the users uses phone numbers and those already has lada states
+ */
 export type CreateGuideAddressValuesWithLada = CreateGuideAddressValuesPkk & {
   ladaState: LadaStates
 }
@@ -217,10 +221,11 @@ export interface FetchSatProductsResponse {
 export interface GlobalCreateGuideResponse {
   trackingNumber: string;
   carrier: string;
+  source: ProviderSource;
   price: string;
   guideLink: string | null;
   labelUrl: string | null;
-  file: string | null;
+  file: Base64URLString | null;
 }
 
 export interface CreateMnGuideResponse {
