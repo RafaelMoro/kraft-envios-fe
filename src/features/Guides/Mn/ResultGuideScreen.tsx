@@ -20,6 +20,7 @@ export const ResultGuideScreen = ({ guide, isSuccess, isError, errorMessage, clo
   const formattedPrice = formatNumberToCurrency((Number(guide?.price ?? 0)))
 
   useEffect(() => {
+    // Only Pkk returns the file in base64 format
     if (guide?.source === 'Pkk' && (guide?.file)) {
       const blob = b64toBlob(guide.file, 'application/pdf');
       const url = window.URL.createObjectURL(blob);
