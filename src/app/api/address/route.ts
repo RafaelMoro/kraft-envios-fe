@@ -84,7 +84,7 @@ export async function PUT(request: NextRequest) {
   
     const payload: CreateAddressPayload = await request.json()
     const uri = `${process.env.BACKEND_URI}/addresses`
-    const res: AxiosResponse<CreateAddressResponse> = await axios.put(uri, payload, {
+    const res: AxiosResponse<AddressAliasResponse> = await axios.put(uri, payload, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
