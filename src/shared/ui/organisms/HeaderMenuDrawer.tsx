@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 
-import { RiArticleLine, RiLineChartLine, RiMenuLine, RiMoneyDollarBoxLine } from "@remixicon/react"
+import { RiArticleLine, RiContactsBookLine, RiLineChartLine, RiMenuLine, RiMoneyDollarBoxLine } from "@remixicon/react"
 import { Button, Drawer, DrawerHeader, DrawerItems, Sidebar, SidebarItemGroup, SidebarItems } from "flowbite-react"
 import { MenuMobileLink } from "../atoms/MenuMobileLink"
 import { ToggleDarkMode } from "../atoms/ToggleDarkMode"
@@ -45,6 +45,10 @@ export const HeaderMenuMobile = ({ screen, updateScreen, handleSignOut }: Header
                     <MenuMobileLink isSelected={screen === 'overview'} onClickCb={() => handleClick(updateScreen,'overview')}>
                       <RiArticleLine />
                       Ver guias
+                    </MenuMobileLink>
+                    <MenuMobileLink isSelected={screen === 'addresses'} onClickCb={() => handleClick(updateScreen,'addresses')}>
+                      <RiContactsBookLine />
+                      Direcciones
                     </MenuMobileLink>
                     <MenuMobileLink isSelected={screen === 'marginProfit'} onClickCb={() => handleClick(updateScreen,'marginProfit')}>
                       <RiLineChartLine />
