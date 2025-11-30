@@ -74,7 +74,7 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
         return
       }
   
-      const formattedPayload = formatPayloadCreateAddress(data)
+      const formattedPayload = formatPayloadCreateAddress({payload: data, cities, towns})
       createAddressMutation(formattedPayload)
     }
 

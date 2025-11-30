@@ -2,15 +2,17 @@ import axios, { AxiosResponse } from "axios";
 import { Address, AddressAliasResponse, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse, DeleteAddressPayload, GetAddressesResponse } from "../types/addresses.types";
 import { ADDRESS_API_ENDPOINT } from "../constants/global.constants";
 
-export const formatPayloadCreateAddress = (payload: CreateAddressFormValues): CreateAddressPayload => {
+export const formatPayloadCreateAddress = ({
+  payload, cities, towns
+}: { payload: CreateAddressFormValues, cities: string[], towns: string[]}): CreateAddressPayload => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { street1, ...rest } = payload
   return {
     ...rest,
     internalNumber: payload.internalNumber ?? '',
     reference: payload.reference ?? '',
-    city: [payload.city],
-    town: [payload.town],
+    city: cities,
+    town: towns,
     addressName: payload.street1
   }
 }
