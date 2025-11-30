@@ -19,7 +19,7 @@ interface CreateAddressProps {
   refetchAddresses: () => Promise<void>;
 }
 
-export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
+export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
   const {
     tags: towns,
     addTag: addTown,

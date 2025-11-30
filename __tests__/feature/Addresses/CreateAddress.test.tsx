@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import axios from 'axios';
 
 import { QueryProviderWrapper } from "@/features/QueryProviderWrapper";
-import { CreateAddress } from "@/features/Addresses/CreateAddress"
+import { CreateAddress } from "@/features/Addresses/ManageAddressForm"
 
 const mockRefetchAddresses = jest.fn()
 

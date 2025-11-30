@@ -3,7 +3,7 @@ import { useState } from "react"
 import { Button } from "flowbite-react"
 
 import { LoginData } from "@/shared/types/login.types"
-import { CreateAddress } from "@/features/Addresses/CreateAddress"
+import { ManageAddressForm } from "@/features/Addresses/ManageAddressForm"
 import { useNotification } from "@/shared/hooks/useNotification"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { useQuery } from "@tanstack/react-query"
@@ -78,7 +78,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
         )}
       </section>
       { openCreateAddress && (
-        <CreateAddress
+        <ManageAddressForm
           open={openCreateAddress}
           toggleModal={toggleModalCreateAddress}
           toggleNotification={toggleNotification}
