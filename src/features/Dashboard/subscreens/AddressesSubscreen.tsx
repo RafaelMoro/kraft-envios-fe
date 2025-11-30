@@ -30,7 +30,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage
   } = useNotification()
 
-  const { data: addressesData, isPending, isError } = useQuery({
+  const { data: addressesData, refetch, isPending, isError } = useQuery({
     queryKey: ['addresses'],
     queryFn: getAddressesCb
   })
@@ -38,6 +38,10 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
   const handleDeleteAddress = (addressAlias: string) => {
     setSelectedAddressAlias(addressAlias)
     toggleModalDeleteAddress()
+  }
+
+  const refetchAddresses = async () => {
+    await refetch()
   }
 
   return (
@@ -72,8 +76,9 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       />
       <DeleteAddressModal
         open={openDeleteAddress}
-        toggleModal={toggleModalDeleteAddress}
         addressAlias={selectedAddressAlias}
+        toggleModal={toggleModalDeleteAddress}
+        refetchAddresses={refetchAddresses}
       />
     </main>
   )

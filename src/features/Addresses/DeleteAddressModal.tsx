@@ -7,14 +7,16 @@ import { Button, CheckIcon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner 
 
 interface DeleteAddressModalProps {
   open: boolean;
-  toggleModal: () => void;
   addressAlias: string;
+  toggleModal: () => void;
+  refetchAddresses: () => Promise<void>;
 }
 
-export const DeleteAddressModal = ({ open, toggleModal, addressAlias }: DeleteAddressModalProps) => {
+export const DeleteAddressModal = ({ open, toggleModal, addressAlias, refetchAddresses }: DeleteAddressModalProps) => {
   const { mutate: deleteAddress, isError, isPending, isSuccess, isIdle } = useMutation<AddressAliasResponse, GeneralApiError, DeleteAddressPayload>({
     mutationFn: deleteAddressCb,
     onSuccess: () => {
+      refetchAddresses()
       setTimeout(() => {
         toggleModal()
       }, 1000)
