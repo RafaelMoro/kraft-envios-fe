@@ -24,6 +24,9 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
   const addTown = (town: string) => {
     setTowns((prevTowns) => [...prevTowns, town]);
   }
+  const removeTown = (town: string) => {
+    setTowns((prevTowns) => prevTowns.filter((t) => t !== town));
+  }
   const {
     register,
     handleSubmit,
@@ -171,6 +174,7 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
             text="Municipios"
             tags={towns}
             addTag={addTown}
+            removeTag={removeTown}
             placeholder="Presiona enter para agregar municipios"
           />
           <div>

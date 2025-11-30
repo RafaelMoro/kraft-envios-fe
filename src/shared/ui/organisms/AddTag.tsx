@@ -1,5 +1,6 @@
 "use client"
 
+import { RiCloseCircleLine } from "@remixicon/react";
 import { Badge, Label, TextInput } from "flowbite-react"
 import { useState } from "react";
 
@@ -8,10 +9,11 @@ interface AddTagProps {
   text: string;
   tags: string[];
   addTag: (tag: string) => void
+  removeTag: (tag: string) => void
   placeholder?: string
 }
 
-export const AddTag = ({ label, text, tags, addTag, placeholder = "Presiona Enter para agregar" }: AddTagProps) => {
+export const AddTag = ({ label, text, tags, addTag, removeTag, placeholder = "Presiona Enter para agregar" }: AddTagProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleAddTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -43,7 +45,14 @@ export const AddTag = ({ label, text, tags, addTag, placeholder = "Presiona Ente
       </div>
       <div className="flex gap-3 flex-wrap mt-3">
         { tags.length > 0 && tags.map((tag) => (
-          <Badge color="info" size="xs" key={tag}>{tag}</Badge>
+          <Badge color="info" size="xs" key={tag}>
+            <div className="inline-flex gap-1">
+              <button onClick={() => removeTag(tag)}>
+                <RiCloseCircleLine size={18} />
+              </button>
+              {tag}
+            </div>
+          </Badge>
         ))}
       </div>
     </div>
