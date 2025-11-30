@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
   
     const payload: CreateAddressPayload = await request.json()
-    const uri = `${process.env.BACKEND_URI}/quotes`
+    const uri = `${process.env.BACKEND_URI}/addresses`
     const res: AxiosResponse<CreateAddressResponse> = await axios.post(uri, payload, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
