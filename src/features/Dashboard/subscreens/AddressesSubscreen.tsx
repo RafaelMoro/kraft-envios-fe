@@ -9,6 +9,7 @@ import { Notification } from "@/shared/ui/atoms/Notification"
 import { useQuery } from "@tanstack/react-query"
 import { getAddressesCb } from "@/shared/utils/addresses.utils"
 import { AddressCard } from "@/features/Addresses/AddressCard"
+import { AddressCardSkeleton } from "@/features/Addresses/AddressCardSkeleton"
 
 interface AddressesSubscreenProps {
   userInfo: LoginData | null
@@ -44,7 +45,10 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
         updateNotificationMessage={updateNotificationMessage}
       />
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        { (addressesData && addressesData.length > 0) && addressesData.map((addr) => (
+        { (isPending && !addressesData) && Array.from({ length: 3 }).map((_, index) => (
+          <AddressCardSkeleton key={index} />
+        ))}
+        { (addressesData && addressesData.length > 0 && !isPending) && addressesData.map((addr) => (
           <AddressCard key={addr.alias} address={addr} />
         )) }
       </section>
