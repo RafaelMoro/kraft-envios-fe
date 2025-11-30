@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({ data: res.data }, { status: 201 })
+    return NextResponse.json(res.data, { status: 201 })
 
   } catch (error) {
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
@@ -40,7 +40,7 @@ export async function GET() {
         'Authorization': `Bearer ${accessToken}`
       }
     })
-    return NextResponse.json({ data: res.data }, { status: 200 })
+    return NextResponse.json(res.data, { status: 200 })
   } catch (error) {
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
     return NextResponse.json({ message }, { status: 400 })
