@@ -138,7 +138,7 @@ describe('Feature: Create Address Modal', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByText(/nombre es requerido/i)).toBeInTheDocument()
+        expect(screen.getByText(/la calle es requerida/i)).toBeInTheDocument()
       })
       expect(screen.getByText(/el número exterior es requerido/i)).toBeInTheDocument()
       expect(screen.getByText(/colonia es requerida/i)).toBeInTheDocument()
@@ -248,16 +248,13 @@ describe('Feature: Create Address Modal', () => {
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalled()
-      }, { timeout: 2000 })
-
-      await waitFor(() => {
         expect(toggleModal).toHaveBeenCalled()
       }, { timeout: 2000 })
     })
   })
 
   describe('Scenario: Failed address creation shows error notification', () => {
-    it.only('Given valid form data, When the API returns an error, Then the error notification should be displayed', async () => {
+    it('Given valid form data, When the API returns an error, Then the error notification should be displayed', async () => {
       const user = userEvent.setup()
       const toggleModal = jest.fn()
       const toggleNotification = jest.fn()
@@ -295,7 +292,6 @@ describe('Feature: Create Address Modal', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        // screen.debug(undefined, 1000000000000000)
         expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
       }, { timeout: 3000 })
       expect(toggleNotification).toHaveBeenCalled()
