@@ -1,5 +1,4 @@
 "use client"
-import { useState } from "react";
 import { Button, CheckIcon, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,6 +9,7 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { createAddressCb, formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { AddTag } from "@/shared/ui/organisms/AddTag";
+import { useAddTag } from "@/shared/hooks/useAddTag";
 
 interface CreateAddressProps {
   open: boolean;
@@ -20,13 +20,7 @@ interface CreateAddressProps {
 }
 
 export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
-  const [towns, setTowns] = useState<string[]>([]);
-  const addTown = (town: string) => {
-    setTowns((prevTowns) => [...prevTowns, town]);
-  }
-  const removeTown = (town: string) => {
-    setTowns((prevTowns) => prevTowns.filter((t) => t !== town));
-  }
+  const { tags: towns, addTag: addTown, removeTag: removeTown } = useAddTag()
   const {
     register,
     handleSubmit,
