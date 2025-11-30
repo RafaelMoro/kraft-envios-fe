@@ -12,7 +12,7 @@ import { getAddressesCb } from "@/shared/utils/addresses.utils"
 import { AddressCard } from "@/features/Addresses/AddressCard"
 import { AddressCardSkeleton } from "@/features/Addresses/AddressCardSkeleton"
 import { DeleteAddressModal } from "@/features/Addresses/DeleteAddressModal"
-import { CreateAddressPayload } from "@/shared/types/addresses.types"
+import { Address, CreateAddressPayload } from "@/shared/types/addresses.types"
 import { initialStateAddressForm } from "@/shared/constants/addresses.constants"
 
 interface AddressesSubscreenProps {
@@ -30,6 +30,22 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
   const toggleModalDeleteAddress = () => setOpenDeleteAddress((prev) => !prev)
 
   const formData = useRef<CreateAddressPayload>({...initialStateAddressForm})
+
+  const handleEditAddress = (addressToEdit: Address) => {
+    formData.current = {
+      addressName: addressToEdit.addressName,
+      alias: addressToEdit.alias,
+      city: addressToEdit.city,
+      externalNumber: addressToEdit.externalNumber,
+      internalNumber: addressToEdit.internalNumber || "",
+      neighborhood: addressToEdit.neighborhood,
+      reference: addressToEdit.reference || "",
+      state: addressToEdit.state,
+      zipcode: addressToEdit.postalCode,
+      town: addressToEdit.town,
+    }
+    toggleModalCreateAddress()
+  }
 
   const {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage
@@ -70,7 +86,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
           </>
         )}
         { (addressesData && addressesData.length > 0 && !isPending) && addressesData.map((addr) => (
-          <AddressCard key={addr.alias} address={addr} handleDeleteAddress={handleDeleteAddress} />
+          <AddressCard key={addr.alias} address={addr} handleDeleteAddress={handleDeleteAddress} handleEditAddress={handleEditAddress} />
         )) }
         { (addressesData && addressesData.length === 0 && !isPending && !isError) && (
           <div className="w-full md:col-span-2 lg:col-span-3 flex flex-col justify-center items-center gap-5">
