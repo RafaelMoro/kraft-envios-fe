@@ -10,9 +10,11 @@ interface DeleteAddressModalProps {
   addressAlias: string;
   toggleModal: () => void;
   refetchAddresses: () => Promise<void>;
+  toggleNotification: () => void;
+  updateNotificationMessage: (message: string) => void;
 }
 
-export const DeleteAddressModal = ({ open, toggleModal, addressAlias, refetchAddresses }: DeleteAddressModalProps) => {
+export const DeleteAddressModal = ({ open, toggleModal, addressAlias, refetchAddresses, toggleNotification, updateNotificationMessage }: DeleteAddressModalProps) => {
   const { mutate: deleteAddress, isError, isPending, isSuccess, isIdle } = useMutation<AddressAliasResponse, GeneralApiError, DeleteAddressPayload>({
     mutationFn: deleteAddressCb,
     onSuccess: () => {
@@ -22,10 +24,9 @@ export const DeleteAddressModal = ({ open, toggleModal, addressAlias, refetchAdd
       }, 1000)
     },
     onError: () => {
-      // updateNotificationMessage('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
-      // toggleNotification()
-      // reset()
-      // toggleModal()
+      updateNotificationMessage('Ocurrió un error al eliminar la dirección. Por favor, intenta de nuevo.')
+      toggleNotification()
+      toggleModal()
     }
   })
 

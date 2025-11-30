@@ -83,6 +83,8 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
           addressAlias={selectedAddressAlias}
           toggleModal={toggleModalDeleteAddress}
           refetchAddresses={refetchAddresses}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
         />
       )}
     </main>
