@@ -1,9 +1,11 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from '@testing-library/user-event'
 import axios from 'axios';
 
 import { QueryProviderWrapper } from "@/features/QueryProviderWrapper";
 import { CreateAddress } from "@/features/Addresses/CreateAddress"
+
+const mockRefetchAddresses = jest.fn()
 
 const CreateAddressWrapper = ({
   open,
@@ -23,6 +25,7 @@ const CreateAddressWrapper = ({
         toggleModal={toggleModal}
         toggleNotification={toggleNotification}
         updateNotificationMessage={updateNotificationMessage}
+        refetchAddresses={mockRefetchAddresses}
       />
     </QueryProviderWrapper>
   )
@@ -37,8 +40,8 @@ const validFormData = {
   internalNumber: '4',
   neighborhood: 'Centro',
   zipcode: '12345',
-  city: 'Ciudad de México',
-  town: 'Cuauhtémoc',
+  cities: ['Ciudad de México', 'Guadalajara'],
+  towns: ['Cuauhtémoc', 'Miguel Hidalgo'],
   state: 'CDMX',
   reference: 'Cerca del parque',
   alias: 'Casa'
@@ -65,10 +68,10 @@ describe('Feature: Create Address Modal', () => {
       expect(screen.getByLabelText(/numero exterior/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/numero interior/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/colonia/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/código postal/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/ciudad/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/municipio/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/ciudades/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/municipios/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/estado de la república/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/código postal/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/referencia/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/alias/i)).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument()
@@ -143,10 +146,41 @@ describe('Feature: Create Address Modal', () => {
       expect(screen.getByText(/el número exterior es requerido/i)).toBeInTheDocument()
       expect(screen.getByText(/colonia es requerida/i)).toBeInTheDocument()
       expect(screen.getByText(/el código postal es requerido/i)).toBeInTheDocument()
-      expect(screen.getByText(/ciudad es requerida/i)).toBeInTheDocument()
-      expect(screen.getByText(/municipio es requerido/i)).toBeInTheDocument()
       expect(screen.getByText(/estado es requerido/i)).toBeInTheDocument()
       expect(screen.getByText(/alias es requerido/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('Scenario: Form validation shows error for empty cities and towns', () => {
+    it('Given the form has all fields except cities and towns, When the form is submitted, Then validation errors should be shown', async () => {
+      const user = userEvent.setup({ delay: null })
+      const toggleModal = jest.fn()
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+
+      render(
+        <CreateAddressWrapper
+          open={true}
+          toggleModal={toggleModal}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      await user.type(screen.getByTestId('street1'), validFormData.street1)
+      await user.type(screen.getByTestId('externalNumber'), validFormData.externalNumber)
+      await user.type(screen.getByTestId('neighborhood'), validFormData.neighborhood)
+      await user.type(screen.getByTestId('zipcode'), validFormData.zipcode)
+      await user.type(screen.getByTestId('state'), validFormData.state)
+      await user.type(screen.getByTestId('alias'), validFormData.alias)
+
+      const submitButton = screen.getByRole('button', { name: /crear dirección/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/debe agregar al menos una ciudad/i)).toBeInTheDocument()
+      })
+      expect(screen.getByText(/debe agregar al menos un municipio/i)).toBeInTheDocument()
     })
   })
 
@@ -170,8 +204,6 @@ describe('Feature: Create Address Modal', () => {
       await user.type(screen.getByLabelText(/numero exterior/i), validFormData.externalNumber)
       await user.type(screen.getByLabelText(/colonia/i), validFormData.neighborhood)
       await user.type(screen.getByLabelText(/código postal/i), '123')
-      await user.type(screen.getByLabelText(/ciudad/i), validFormData.city)
-      await user.type(screen.getByLabelText(/municipio/i), validFormData.town)
       await user.type(screen.getByLabelText(/estado de la república/i), validFormData.state)
       await user.type(screen.getByLabelText(/alias/i), validFormData.alias)
 
@@ -194,6 +226,7 @@ describe('Feature: Create Address Modal', () => {
     })
 
     it('Given valid form data, When the form is submitted, Then the address should be created successfully', async () => {
+      jest.useFakeTimers()
       const toggleModal = jest.fn()
       const toggleNotification = jest.fn()
       const updateNotificationMessage = jest.fn()
@@ -208,8 +241,8 @@ describe('Feature: Create Address Modal', () => {
               reference: validFormData.reference,
               postalCode: validFormData.zipcode,
               state: validFormData.state,
-              city: [validFormData.city],
-              town: [validFormData.town],
+              city: validFormData.cities,
+              town: validFormData.towns,
               alias: validFormData.alias,
               neighborhood: validFormData.neighborhood
             }
@@ -230,43 +263,51 @@ describe('Feature: Create Address Modal', () => {
         />
       )
 
-      const user = userEvent.setup()
+      const user = userEvent.setup({ delay: null })
 
-      const street1Input = screen.getByTestId('street1')
-      const externalNumberInput = screen.getByTestId('externalNumber')
-      const internalNumberInput = screen.getByTestId('internalNumber')
-      const neighborhoodInput = screen.getByTestId('neighborhood')
-      const zipcodeInput = screen.getByTestId('zipcode')
-      const cityInput = screen.getByTestId('city')
-      const townInput = screen.getByTestId('town')
-      const stateInput = screen.getByTestId('state')
-      const referenceInput = screen.getByTestId('reference')
-      const aliasInput = screen.getByTestId('alias')
+      await user.type(screen.getByTestId('street1'), validFormData.street1)
+      await user.type(screen.getByTestId('externalNumber'), validFormData.externalNumber)
+      await user.type(screen.getByTestId('internalNumber'), validFormData.internalNumber)
+      await user.type(screen.getByTestId('neighborhood'), validFormData.neighborhood)
+      await user.type(screen.getByTestId('state'), validFormData.state)
+      await user.type(screen.getByTestId('zipcode'), validFormData.zipcode)
+      await user.type(screen.getByTestId('reference'), validFormData.reference)
+      await user.type(screen.getByTestId('alias'), validFormData.alias)
 
-      fireEvent.change(street1Input, { target: { value: validFormData.street1 } })
-      fireEvent.change(externalNumberInput, { target: { value: validFormData.externalNumber } })
-      fireEvent.change(internalNumberInput, { target: { value: validFormData.internalNumber } })
-      fireEvent.change(neighborhoodInput, { target: { value: validFormData.neighborhood } })
-      fireEvent.change(zipcodeInput, { target: { value: validFormData.zipcode } })
-      fireEvent.change(cityInput, { target: { value: validFormData.city } })
-      fireEvent.change(townInput, { target: { value: validFormData.town } })
-      fireEvent.change(stateInput, { target: { value: validFormData.state } })
-      fireEvent.change(referenceInput, { target: { value: validFormData.reference } })
-      fireEvent.change(aliasInput, { target: { value: validFormData.alias } })
+      const citiesInput = screen.getByTestId('cities')
+      const townsInput = screen.getByTestId('towns')
+
+      for (const city of validFormData.cities) {
+        await user.type(citiesInput, city)
+        await user.keyboard('{Enter}')
+      }
+
+      for (const town of validFormData.towns) {
+        await user.type(townsInput, town)
+        await user.keyboard('{Enter}')
+      }
 
       const submitButton = screen.getByRole('button', { name: /crear dirección/i })
       await user.click(submitButton)
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalled()
+      })
+
+      jest.advanceTimersByTime(1000)
+
+      await waitFor(() => {
+        expect(mockRefetchAddresses).toHaveBeenCalled()
         expect(toggleModal).toHaveBeenCalled()
-      }, { timeout: 2000 })
+      })
+
+      jest.useRealTimers()
     })
   })
 
   describe('Scenario: Failed address creation shows error notification', () => {
     it('Given valid form data, When the API returns an error, Then the error notification should be displayed', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ delay: null })
       const toggleModal = jest.fn()
       const toggleNotification = jest.fn()
       const updateNotificationMessage = jest.fn()
@@ -290,23 +331,20 @@ describe('Feature: Create Address Modal', () => {
         />
       )
 
-      const street1Input = screen.getByTestId('street1')
-      const externalNumberInput = screen.getByTestId('externalNumber')
-      const neighborhoodInput = screen.getByTestId('neighborhood')
-      const zipcodeInput = screen.getByTestId('zipcode')
-      const cityInput = screen.getByTestId('city')
-      const townInput = screen.getByTestId('town')
-      const stateInput = screen.getByTestId('state')
-      const aliasInput = screen.getByTestId('alias')
+      await user.type(screen.getByTestId('street1'), validFormData.street1)
+      await user.type(screen.getByTestId('externalNumber'), validFormData.externalNumber)
+      await user.type(screen.getByTestId('neighborhood'), validFormData.neighborhood)
+      await user.type(screen.getByTestId('zipcode'), validFormData.zipcode)
+      await user.type(screen.getByTestId('state'), validFormData.state)
+      await user.type(screen.getByTestId('alias'), validFormData.alias)
 
-      fireEvent.change(street1Input, { target: { value: validFormData.street1 } })
-      fireEvent.change(externalNumberInput, { target: { value: validFormData.externalNumber } })
-      fireEvent.change(neighborhoodInput, { target: { value: validFormData.neighborhood } })
-      fireEvent.change(zipcodeInput, { target: { value: validFormData.zipcode } })
-      fireEvent.change(cityInput, { target: { value: validFormData.city } })
-      fireEvent.change(townInput, { target: { value: validFormData.town } })
-      fireEvent.change(stateInput, { target: { value: validFormData.state } })
-      fireEvent.change(aliasInput, { target: { value: validFormData.alias } })
+      const citiesInput = screen.getByTestId('cities')
+      const townsInput = screen.getByTestId('towns')
+
+      await user.type(citiesInput, validFormData.cities[0])
+      await user.keyboard('{Enter}')
+      await user.type(townsInput, validFormData.towns[0])
+      await user.keyboard('{Enter}')
 
       const submitButton = screen.getByRole('button', { name: /crear dirección/i })
       await user.click(submitButton)
@@ -339,8 +377,6 @@ describe('Feature: Create Address Modal', () => {
       await user.type(screen.getByLabelText(/numero exterior/i), 'abc')
       await user.type(screen.getByLabelText(/colonia/i), validFormData.neighborhood)
       await user.type(screen.getByLabelText(/código postal/i), validFormData.zipcode)
-      await user.type(screen.getByLabelText(/ciudad/i), validFormData.city)
-      await user.type(screen.getByLabelText(/municipio/i), validFormData.town)
       await user.type(screen.getByLabelText(/estado de la república/i), validFormData.state)
       await user.type(screen.getByLabelText(/alias/i), validFormData.alias)
 

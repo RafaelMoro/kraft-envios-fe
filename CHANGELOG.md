@@ -1,3 +1,9 @@
+## v0.26.0 (2025-11-30)
+
+### Pull Requests
+[#60](https://github.com/RafaelMoro/kraft-envios-fe/pull/60) | Add multiples cities and towns on create address
+
+
 ## v0.25.0 (2025-11-30)
 
 ### Pull Requests
