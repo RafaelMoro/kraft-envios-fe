@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { render, screen, waitFor, fireEvent } from "@testing-library/react"
 import userEvent from '@testing-library/user-event'
 import axios from 'axios';
 
@@ -232,16 +232,27 @@ describe('Feature: Create Address Modal', () => {
 
       const user = userEvent.setup()
 
-      await user.type(screen.getByLabelText(/calle/i), validFormData.street1)
-      await user.type(screen.getByLabelText(/numero exterior/i), validFormData.externalNumber)
-      await user.type(screen.getByLabelText(/numero interior/i), validFormData.internalNumber)
-      await user.type(screen.getByLabelText(/colonia/i), validFormData.neighborhood)
-      await user.type(screen.getByLabelText(/código postal/i), validFormData.zipcode)
-      await user.type(screen.getByLabelText(/ciudad/i), validFormData.city)
-      await user.type(screen.getByLabelText(/municipio/i), validFormData.town)
-      await user.type(screen.getByLabelText(/estado de la república/i), validFormData.state)
-      await user.type(screen.getByLabelText(/referencia/i), validFormData.reference)
-      await user.type(screen.getByLabelText(/alias/i), validFormData.alias)
+      const street1Input = screen.getByTestId('street1')
+      const externalNumberInput = screen.getByTestId('externalNumber')
+      const internalNumberInput = screen.getByTestId('internalNumber')
+      const neighborhoodInput = screen.getByTestId('neighborhood')
+      const zipcodeInput = screen.getByTestId('zipcode')
+      const cityInput = screen.getByTestId('city')
+      const townInput = screen.getByTestId('town')
+      const stateInput = screen.getByTestId('state')
+      const referenceInput = screen.getByTestId('reference')
+      const aliasInput = screen.getByTestId('alias')
+
+      fireEvent.change(street1Input, { target: { value: validFormData.street1 } })
+      fireEvent.change(externalNumberInput, { target: { value: validFormData.externalNumber } })
+      fireEvent.change(internalNumberInput, { target: { value: validFormData.internalNumber } })
+      fireEvent.change(neighborhoodInput, { target: { value: validFormData.neighborhood } })
+      fireEvent.change(zipcodeInput, { target: { value: validFormData.zipcode } })
+      fireEvent.change(cityInput, { target: { value: validFormData.city } })
+      fireEvent.change(townInput, { target: { value: validFormData.town } })
+      fireEvent.change(stateInput, { target: { value: validFormData.state } })
+      fireEvent.change(referenceInput, { target: { value: validFormData.reference } })
+      fireEvent.change(aliasInput, { target: { value: validFormData.alias } })
 
       const submitButton = screen.getByRole('button', { name: /crear dirección/i })
       await user.click(submitButton)
