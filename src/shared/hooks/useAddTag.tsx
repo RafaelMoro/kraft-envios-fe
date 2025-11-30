@@ -6,6 +6,7 @@ import { useState } from "react";
  */
 export const useAddTag = () => {
   const [tags, setTags] = useState<string[]>([]);
+  const [error, setError] = useState<string>("");
   const addTag = (town: string) => {
     setTags((prevTowns) => [...prevTowns, town]);
   }
@@ -13,9 +14,16 @@ export const useAddTag = () => {
     setTags((prevTowns) => prevTowns.filter((t) => t !== town));
   }
 
+  const validateTagsEmpty = () => {
+    return tags.length === 0;
+  }
+
   return {
     tags,
+    error,
     addTag,
-    removeTag
+    removeTag,
+    validateTagsEmpty,
+    setError,
   }
 }

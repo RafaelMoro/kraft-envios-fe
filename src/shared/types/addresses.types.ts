@@ -21,14 +21,12 @@ export type CreateAddressFormValues = {
   internalNumber?: string | null | undefined;
   neighborhood: string;
   zipcode: string;
-  city: string;
-  town: string;
   state: string;
   reference?: string | null | undefined;
   alias: string;
 }
 
-export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber' | 'reference' | 'city' | 'town' | 'street1'> & {
+export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber' | 'reference' | 'street1'> & {
   internalNumber: string;
   reference: string;
   city: string[];
@@ -93,8 +91,6 @@ export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> = ob
       .matches(onlyNumberRegex, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
       .min(5, 'El código postal debe tener 5 caracteres')
       .max(5, 'El código postal debe tener 5 caracteres'),
-  city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
-  town: string().required('Municipio es requerido').min(2, 'El municipio debe tener al menos 2 caracteres'),
   state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
   reference: string()
     .nullable()

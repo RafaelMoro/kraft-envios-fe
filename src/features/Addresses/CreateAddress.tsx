@@ -20,7 +20,23 @@ interface CreateAddressProps {
 }
 
 export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
-  const { tags: towns, addTag: addTown, removeTag: removeTown } = useAddTag()
+  const {
+    tags: towns,
+    addTag: addTown,
+    removeTag: removeTown,
+    validateTagsEmpty: validateTownsEmpty,
+    error: townsError,
+    setError: setTownsError
+  } = useAddTag()
+  const {
+    tags: cities,
+    addTag: addCity,
+    removeTag: removeCity,
+    validateTagsEmpty: validateCitiesEmpty,
+    error: citiesError,
+    setError: setCitiesError
+  } = useAddTag()
+
   const {
     register,
     handleSubmit,
@@ -49,6 +65,14 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
 
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
       event?.preventDefault()
+
+      const townsEmpty = validateTownsEmpty()
+      const citiesEmpty = validateCitiesEmpty()
+      if (townsEmpty || citiesEmpty) {
+        if (townsEmpty) setTownsError('Debe agregar al menos un municipio')
+        if (citiesEmpty) setCitiesError('Debe agregar al menos una ciudad')
+        return
+      }
   
       const formattedPayload = formatPayloadCreateAddress(data)
       createAddressMutation(formattedPayload)
@@ -120,56 +144,25 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
               <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
             )}
           </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="zipcode">Código Postal</Label>
-            </div>
-            <TextInput
-              data-testid="zipcode"
-              id="zipcode"
-              type="text"
-              inputMode="numeric"
-              {...register("zipcode")}
-            />
-            { errors?.zipcode?.message && (
-              <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="town">Ciudad</Label>
-            </div>
-            <TextInput
-              data-testid="city"
-              id="city"
-              type="text"
-              {...register("city")}
-            />
-            { errors?.city?.message && (
-              <ErrorMessage>{errors.city?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="town">Municipio</Label>
-            </div>
-            <TextInput
-              data-testid="town"
-              id="town"
-              type="text"
-              {...register("town")}
-            />
-            { errors?.town?.message && (
-              <ErrorMessage>{errors.town?.message}</ErrorMessage>
-            )}
-          </div>
           <AddTag
-            label="town"
+            label="cities"
+            text="Ciudades"
+            tags={cities}
+            addTag={addCity}
+            removeTag={removeCity}
+            placeholder="Presiona enter para agregar ciudades"
+            errorMessage={citiesError}
+            setError={setCitiesError}
+          />
+          <AddTag
+            label="towns"
             text="Municipios"
             tags={towns}
             addTag={addTown}
             removeTag={removeTown}
             placeholder="Presiona enter para agregar municipios"
+            errorMessage={townsError}
+            setError={setTownsError}
           />
           <div>
             <div className="mb-2 block">
@@ -183,6 +176,21 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
             />
             { errors?.state?.message && (
               <ErrorMessage>{errors.state?.message}</ErrorMessage>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="zipcode">Código Postal</Label>
+            </div>
+            <TextInput
+              data-testid="zipcode"
+              id="zipcode"
+              type="text"
+              inputMode="numeric"
+              {...register("zipcode")}
+            />
+            { errors?.zipcode?.message && (
+              <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
             )}
           </div>
           <div>

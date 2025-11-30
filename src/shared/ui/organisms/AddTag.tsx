@@ -3,11 +3,14 @@
 import { RiCloseCircleLine } from "@remixicon/react";
 import { Badge, Label, TextInput } from "flowbite-react"
 import { useState } from "react";
+import { ErrorMessage } from "../atoms/ErrorMessage";
 
 interface AddTagProps {
   label: string;
   text: string;
   tags: string[];
+  errorMessage: string;
+  setError: (error: string) => void
   addTag: (tag: string) => void
   removeTag: (tag: string) => void
   placeholder?: string
@@ -16,12 +19,17 @@ interface AddTagProps {
 /**
  * This component allows users to add and remove tags (strings) dynamically. It's meant to be used with the hook useAddTag.
  */
-export const AddTag = ({ label, text, tags, addTag, removeTag, placeholder = "Presiona Enter para agregar" }: AddTagProps) => {
+export const AddTag = ({ label, text, tags, errorMessage, setError, addTag, removeTag, placeholder = "Presiona Enter para agregar" }: AddTagProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleAddTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && inputValue.trim()) {
       event.preventDefault();
+
+      if (errorMessage) {
+        setError("");
+      }
+
       addTag(inputValue.trim());
       setInputValue("");
     }
@@ -42,9 +50,9 @@ export const AddTag = ({ label, text, tags, addTag, removeTag, placeholder = "Pr
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleAddTag}
         />
-        {/* { errors?.city?.message && (
-          <ErrorMessage>{errors.city?.message}</ErrorMessage>
-        )} */}
+        { errorMessage && (
+          <ErrorMessage>{errorMessage}</ErrorMessage>
+        )}
       </div>
       <div className="flex gap-3 flex-wrap mt-3">
         { tags.length > 0 && tags.map((tag) => (
