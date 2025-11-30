@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Button } from "flowbite-react"
 
 import { LoginData } from "@/shared/types/login.types"
@@ -12,6 +12,8 @@ import { AddressCard } from "@/features/Addresses/AddressCard"
 import { AddressCardSkeleton } from "@/features/Addresses/AddressCardSkeleton"
 import { DeleteAddressModal } from "@/features/Addresses/DeleteAddressModal"
 import Image from "next/image"
+import { CreateAddressFormValues } from "@/shared/types/addresses.types"
+import { initialStateAddressForm } from "@/shared/constants/addresses.constants"
 
 interface AddressesSubscreenProps {
   userInfo: LoginData | null
@@ -26,6 +28,8 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
   const [selectedAddressAlias, setSelectedAddressAlias] = useState<string>("")
   const [openDeleteAddress, setOpenDeleteAddress] = useState(false)
   const toggleModalDeleteAddress = () => setOpenDeleteAddress((prev) => !prev)
+
+  const formData = useRef<CreateAddressFormValues>({...initialStateAddressForm})
 
   const {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage
@@ -80,6 +84,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       { openCreateAddress && (
         <ManageAddressForm
           open={openCreateAddress}
+          formData={formData.current}
           toggleModal={toggleModalCreateAddress}
           toggleNotification={toggleNotification}
           updateNotificationMessage={updateNotificationMessage}

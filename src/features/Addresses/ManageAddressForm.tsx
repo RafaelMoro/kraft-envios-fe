@@ -13,13 +13,14 @@ import { useAddTag } from "@/shared/hooks/useAddTag";
 
 interface CreateAddressProps {
   open: boolean;
+  formData: CreateAddressFormValues
   toggleModal: () => void;
   toggleNotification: () => void;
   updateNotificationMessage: (message: string) => void;
   refetchAddresses: () => Promise<void>;
 }
 
-export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
+export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
   const {
     tags: towns,
     addTag: addTown,
@@ -92,6 +93,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
             </div>
             <TextInput
               data-testid="street1"
+              defaultValue={formData.street1}
               id="street1"
               type="text"
               {...register("street1")}
@@ -108,6 +110,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
               data-testid="externalNumber"
               id="externalNumber"
               type="text"
+              defaultValue={formData.externalNumber}
               inputMode="numeric"
               {...register("externalNumber")}
             />
@@ -121,6 +124,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
             </div>
             <TextInput
               data-testid="internalNumber"
+              defaultValue={formData.internalNumber as string}
               id="internalNumber"
               type="text"
               inputMode="numeric"
@@ -137,6 +141,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
             <TextInput
               data-testid="neighborhood"
               id="neighborhood"
+              defaultValue={formData.neighborhood}
               type="text"
               {...register("neighborhood")}
             />
@@ -171,6 +176,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
             <TextInput
               data-testid="state"
               id="state"
+              defaultValue={formData.state}
               type="text"
               {...register("state")}
             />
@@ -184,6 +190,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
             </div>
             <TextInput
               data-testid="zipcode"
+              defaultValue={formData.zipcode}
               id="zipcode"
               type="text"
               inputMode="numeric"
@@ -199,6 +206,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
             </div>
             <TextInput
               data-testid="reference"
+              defaultValue={formData.reference as string}
               id="reference"
               type="text"
               {...register("reference")}
@@ -213,6 +221,7 @@ export const ManageAddressForm = ({ open, toggleModal, toggleNotification, updat
             </div>
             <TextInput
               data-testid="alias"
+              defaultValue={formData.alias}
               id="alias"
               type="text"
               {...register("alias")}
