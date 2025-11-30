@@ -1,3 +1,9 @@
+## v0.23.0 (2025-11-30)
+
+### Pull Requests
+[#55](https://github.com/RafaelMoro/kraft-envios-fe/pull/55) | Add address subscreen and create address modal
+
+
 ## v0.22.2 (2025-11-29)
 
 ### Pull Requests
