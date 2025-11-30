@@ -1,5 +1,5 @@
-import { Badge, Card } from "flowbite-react"
-import { RiBuildingLine, RiMap2Line } from "@remixicon/react"
+import { Badge, Button, Card } from "flowbite-react"
+import { RiBuildingLine, RiDeleteBinLine, RiMap2Line, RiMapPin2Line, RiPencilLine } from "@remixicon/react"
 
 import { Address } from "@/shared/types/addresses.types"
 
@@ -11,9 +11,12 @@ export const AddressCard = ({ address }: AddressCardProps) => {
   return (
     <Card className="max-w-sm">
       <div className="flex flex-col gap-5">
-        <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {address.alias}
-        </h5>
+        <div className="inline-flex gap-2">
+          <RiMapPin2Line />
+          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            {address.alias}
+          </h5>
+        </div>
         { address.city.length === 1 && address.town.length === 1 && (
           <p className="text-gray-600 dark:text-gray-400">
             {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.city?.[0]} {address.town?.[0]}, {address.state}, C.P. {address.postalCode}
@@ -40,6 +43,16 @@ export const AddressCard = ({ address }: AddressCardProps) => {
             </div>
           </>
         )}
+        <div className="flex justify-between gap-3">
+          <Button className="border-0 inline-flex gap-2" outline>
+            <RiPencilLine size={18} />
+            Editar
+          </Button>
+          <Button className="border-0 inline-flex gap-2" outline>
+            <RiDeleteBinLine size={18} />
+            Eliminar
+          </Button>
+        </div>
       </div>
     </Card>
   )
