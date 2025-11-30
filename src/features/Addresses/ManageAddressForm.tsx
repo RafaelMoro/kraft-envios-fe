@@ -44,6 +44,7 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
     handleSubmit,
     reset,
     formState: { errors },
+    setError,
   } = useForm<CreateAddressFormValues>({
     resolver: yupResolver(CreateAddressFormSchema)
   })
@@ -89,24 +90,33 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
   })
 
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
-      event?.preventDefault()
+    event?.preventDefault()
 
-      const townsEmpty = validateTownsEmpty()
-      const citiesEmpty = validateCitiesEmpty()
-      if (townsEmpty || citiesEmpty) {
-        if (townsEmpty) setTownsError('Debe agregar al menos un municipio')
-        if (citiesEmpty) setCitiesError('Debe agregar al menos una ciudad')
-        return
-      }
-  
-      const formattedPayload = formatPayloadCreateAddress({payload: data, cities, towns})
-      if (isEdit) {
-        editAddressMutation(formattedPayload)
-        return
-      }
-
-      createAddressMutation(formattedPayload)
+    // Check if alias has been modified in edit mode
+    if (isEdit && formData?.alias && data?.alias !== formData.alias) {
+      setError('alias', {
+        type: 'manual',
+        message: 'El alias no puede ser editado'
+      })
+      return
     }
+
+    const townsEmpty = validateTownsEmpty()
+    const citiesEmpty = validateCitiesEmpty()
+    if (townsEmpty || citiesEmpty) {
+      if (townsEmpty) setTownsError('Debe agregar al menos un municipio')
+      if (citiesEmpty) setCitiesError('Debe agregar al menos una ciudad')
+      return
+    }
+
+    const formattedPayload = formatPayloadCreateAddress({payload: data, cities, towns})
+    if (isEdit) {
+      editAddressMutation(formattedPayload)
+      return
+    }
+
+    createAddressMutation(formattedPayload)
+  }
 
   return (
     <Modal show={open} onClose={toggleModal}>
