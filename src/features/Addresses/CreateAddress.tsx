@@ -12,9 +12,11 @@ import { GeneralApiError } from "@/shared/types/global.types";
 interface CreateAddressProps {
   open: boolean;
   toggleModal: () => void;
+  toggleNotification: () => void;
+  updateNotificationMessage: (message: string) => void;
 }
 
-export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
+export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNotificationMessage }: CreateAddressProps) => {
   const {
     register,
     handleSubmit,
@@ -31,7 +33,9 @@ export const CreateAddress = ({ open, toggleModal }: CreateAddressProps) => {
       }, 1000)
     },
     onError: () => {
-      // goNext()
+      updateNotificationMessage('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
+      toggleNotification()
+      toggleModal()
     }
   })
 
