@@ -49,20 +49,28 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
   })
   const actionText = isEdit ? 'Editar' : 'Crear'
 
-  const { mutate: createAddressMutation, isError, isPending, isSuccess, isIdle } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
-    mutationFn: createAddressCb,
-    onSuccess: () => {
-      refetchAddresses()
-      setTimeout(() => {
-        reset()
-        toggleModal()
-      }, 1000)
-    },
-    onError: () => {
-      updateNotificationMessage('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
-      toggleNotification()
+  const onSuccess = async () => {
+    await refetchAddresses()
+    setTimeout(() => {
       reset()
       toggleModal()
+    }, 1000)
+  }
+
+  const onError = () => {
+    updateNotificationMessage(`Ocurrió un error al ${actionText} la dirección. Por favor, intenta de nuevo.`)
+    toggleNotification()
+    reset()
+    toggleModal()
+  }
+
+  const { mutate: createAddressMutation, isError, isPending, isSuccess, isIdle } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
+    mutationFn: createAddressCb,
+    onSuccess: async () => {
+      await onSuccess()
+    },
+    onError: () => {
+      onError()
     }
   })
 
