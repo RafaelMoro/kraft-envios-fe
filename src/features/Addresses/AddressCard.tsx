@@ -17,30 +17,22 @@ export const AddressCard = ({ address }: AddressCardProps) => {
             {address.alias}
           </h5>
         </div>
-        { address.city.length === 1 && address.town.length === 1 && (
+        <div className="flex flex-col gap-1">
+          <p className="text-gray-500 dark:text-gray-400">Dirección</p>
+          <p>
+            {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, { address.city?.length === 1 && address.city?.[0]} { address.town?.length === 1 && address.town?.[0]}, {address.state}, C.P. {address.postalCode}
+          </p>
+        </div>
+        { address?.reference && (
           <div className="flex flex-col gap-1">
-            <p className="text-gray-500 dark:text-gray-400">Dirección</p>
+            <p className="text-gray-500 dark:text-gray-400">Referencia</p>
             <p>
-              {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.city?.[0]} {address.town?.[0]}, {address.state}, C.P. {address.postalCode}
+              {address.reference}
             </p>
-          </div>
-        ) }
+        </div>
+        )}
         { (address.city.length > 1 || address.town.length > 1) && (
           <>
-            <div className="flex flex-col gap-1">
-              <p className="text-gray-500 dark:text-gray-400">Dirección</p>
-              <p>
-                {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.state}, C.P. {address.postalCode}
-              </p>
-            </div>
-            { address?.reference && (
-              <div className="flex flex-col gap-1">
-                <p className="text-gray-500 dark:text-gray-400">Referencia</p>
-                <p>
-                  {address.reference}
-                </p>
-            </div>
-            )}
             <div className="flex flex-col gap-1">
               <p className="text-gray-500 dark:text-gray-400">Ciudades</p>
               <div className="flex gap-3 flex-wrap">
