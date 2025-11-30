@@ -18,15 +18,29 @@ export const AddressCard = ({ address }: AddressCardProps) => {
           </h5>
         </div>
         { address.city.length === 1 && address.town.length === 1 && (
-          <p className="text-gray-600 dark:text-gray-400">
-            {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.city?.[0]} {address.town?.[0]}, {address.state}, C.P. {address.postalCode}
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className="text-gray-500 dark:text-gray-400">Dirección</p>
+            <p>
+              {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.city?.[0]} {address.town?.[0]}, {address.state}, C.P. {address.postalCode}
+            </p>
+          </div>
         ) }
         { (address.city.length > 1 || address.town.length > 1) && (
           <>
-            <p className="text-gray-600 dark:text-gray-400">
-              {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.state}, C.P. {address.postalCode}
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="text-gray-500 dark:text-gray-400">Dirección</p>
+              <p>
+                {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.state}, C.P. {address.postalCode}
+              </p>
+            </div>
+            { address?.reference && (
+              <div className="flex flex-col gap-1">
+                <p className="text-gray-500 dark:text-gray-400">Referencia</p>
+                <p>
+                  {address.reference}
+                </p>
+            </div>
+            )}
             <div className="flex gap-3 flex-wrap">
               <RiBuildingLine size={18} />
               <span className="text-sm">Ciudades:</span>
