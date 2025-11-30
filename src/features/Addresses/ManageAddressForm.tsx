@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { AddressAliasResponse, CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse } from "@/shared/types/addresses.types";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
-import { createAddressCb, formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
+import { createAddressCb, editAddressCb, formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { AddTag } from "@/shared/ui/organisms/AddTag";
 import { useAddTag } from "@/shared/hooks/useAddTag";
@@ -79,7 +79,7 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
   const {
     mutate: editAddressMutation, isError: isErrorEdit, isPending: isPendingEdit, isSuccess: isSuccessEdit, isIdle: isIdleEdit
   } = useMutation<AddressAliasResponse, GeneralApiError, CreateAddressPayload>({
-    mutationFn: createAddressCb,
+    mutationFn: editAddressCb,
     onSuccess: async () => {
       await onSuccess()
     },
