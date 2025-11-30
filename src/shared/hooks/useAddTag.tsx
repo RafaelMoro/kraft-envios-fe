@@ -1,6 +1,9 @@
 "use client"
 import { useState } from "react";
 
+/**
+ * This hook manages a list of tags (strings) with functions to add and remove tags. It's used with AddTag component.
+ */
 export const useAddTag = () => {
   const [tags, setTags] = useState<string[]>([]);
   const addTag = (town: string) => {

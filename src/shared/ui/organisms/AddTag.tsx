@@ -13,6 +13,9 @@ interface AddTagProps {
   placeholder?: string
 }
 
+/**
+ * This component allows users to add and remove tags (strings) dynamically. It's meant to be used with the hook useAddTag.
+ */
 export const AddTag = ({ label, text, tags, addTag, removeTag, placeholder = "Presiona Enter para agregar" }: AddTagProps) => {
   const [inputValue, setInputValue] = useState("");
 
