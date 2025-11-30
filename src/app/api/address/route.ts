@@ -74,3 +74,25 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ message }, { status: 400 })
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const accessToken = await getAccessToken()
+    if (!accessToken) {
+      return NextResponse.json({ message: 'missing access token' }, { status: 400 })
+    }
+  
+    const payload: CreateAddressPayload = await request.json()
+    const uri = `${process.env.BACKEND_URI}/addresses`
+    const res: AxiosResponse<CreateAddressResponse> = await axios.put(uri, payload, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+
+    return NextResponse.json(res.data, { status: 201 })
+  } catch (error) {
+    const message = (error as unknown as GeneralError)?.response?.data?.error?.message
+    return NextResponse.json({ message }, { status: 400 })
+  }
+}
