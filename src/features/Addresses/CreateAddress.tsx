@@ -8,6 +8,7 @@ import { CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload,
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { createAddressCb, formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
+import { AddTag } from "@/shared/ui/organisms/AddTag";
 
 interface CreateAddressProps {
   open: boolean;
@@ -160,6 +161,7 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
               <ErrorMessage>{errors.town?.message}</ErrorMessage>
             )}
           </div>
+          <AddTag label="town" text="Municipios" placeholder="Presiona enter para agregar municipios" />
           <div>
             <div className="mb-2 block">
               <Label htmlFor="state">Estado de la República</Label>
