@@ -1,18 +1,18 @@
 "use client"
+import Image from "next/image"
 import { useRef, useState } from "react"
 import { Button } from "flowbite-react"
+import { useQuery } from "@tanstack/react-query"
 
 import { LoginData } from "@/shared/types/login.types"
 import { ManageAddressForm } from "@/features/Addresses/ManageAddressForm"
 import { useNotification } from "@/shared/hooks/useNotification"
 import { Notification } from "@/shared/ui/atoms/Notification"
-import { useQuery } from "@tanstack/react-query"
 import { getAddressesCb } from "@/shared/utils/addresses.utils"
 import { AddressCard } from "@/features/Addresses/AddressCard"
 import { AddressCardSkeleton } from "@/features/Addresses/AddressCardSkeleton"
 import { DeleteAddressModal } from "@/features/Addresses/DeleteAddressModal"
-import Image from "next/image"
-import { CreateAddressFormValues } from "@/shared/types/addresses.types"
+import { CreateAddressPayload } from "@/shared/types/addresses.types"
 import { initialStateAddressForm } from "@/shared/constants/addresses.constants"
 
 interface AddressesSubscreenProps {
@@ -29,7 +29,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
   const [openDeleteAddress, setOpenDeleteAddress] = useState(false)
   const toggleModalDeleteAddress = () => setOpenDeleteAddress((prev) => !prev)
 
-  const formData = useRef<CreateAddressFormValues>({...initialStateAddressForm})
+  const formData = useRef<CreateAddressPayload>({...initialStateAddressForm})
 
   const {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage

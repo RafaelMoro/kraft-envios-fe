@@ -1,12 +1,14 @@
-import { CreateAddressFormValues } from "../types/addresses.types";
+import { CreateAddressPayload } from "../types/addresses.types";
 
-export const initialStateAddressForm: CreateAddressFormValues = {
-  street1: '',
+export const initialStateAddressForm: CreateAddressPayload = {
+  addressName: '',
   externalNumber: '',
   internalNumber: '',
   neighborhood: '',
   zipcode: '',
   state: '',
+  city: [],
+  town: [],
   reference: '',
   alias: '',
 }

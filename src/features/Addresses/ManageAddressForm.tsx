@@ -13,7 +13,7 @@ import { useAddTag } from "@/shared/hooks/useAddTag";
 
 interface CreateAddressProps {
   open: boolean;
-  formData: CreateAddressFormValues
+  formData: CreateAddressPayload
   toggleModal: () => void;
   toggleNotification: () => void;
   updateNotificationMessage: (message: string) => void;
@@ -28,7 +28,7 @@ export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotificat
     validateTagsEmpty: validateTownsEmpty,
     error: townsError,
     setError: setTownsError
-  } = useAddTag()
+  } = useAddTag({ tagsInitState: (formData?.town ?? []) })
   const {
     tags: cities,
     addTag: addCity,
@@ -36,7 +36,7 @@ export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotificat
     validateTagsEmpty: validateCitiesEmpty,
     error: citiesError,
     setError: setCitiesError
-  } = useAddTag()
+  } = useAddTag({ tagsInitState: (formData?.city ?? []) })
 
   const {
     register,
@@ -93,7 +93,7 @@ export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotificat
             </div>
             <TextInput
               data-testid="street1"
-              defaultValue={formData.street1}
+              defaultValue={formData.addressName}
               id="street1"
               type="text"
               {...register("street1")}
