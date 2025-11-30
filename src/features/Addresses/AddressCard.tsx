@@ -4,10 +4,11 @@ import { RiDeleteBinLine, RiMapPin2Line, RiPencilLine } from "@remixicon/react"
 import { Address } from "@/shared/types/addresses.types"
 
 interface AddressCardProps {
-  address: Address
+  address: Address;
+  handleDeleteAddress: (addressAlias: string) => void
 }
 
-export const AddressCard = ({ address }: AddressCardProps) => {
+export const AddressCard = ({ address, handleDeleteAddress }: AddressCardProps) => {
   return (
     <article className="rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 max-w-sm p-4">
       <div className="h-full flex flex-col justify-between gap-5">
@@ -58,7 +59,7 @@ export const AddressCard = ({ address }: AddressCardProps) => {
             <RiPencilLine size={18} />
             Editar
           </Button>
-          <Button className="border-0 inline-flex gap-2" color="red" outline>
+          <Button className="border-0 inline-flex gap-2" color="red" outline onClick={() => handleDeleteAddress(address?.alias)}>
             <RiDeleteBinLine size={18} />
             Eliminar
           </Button>

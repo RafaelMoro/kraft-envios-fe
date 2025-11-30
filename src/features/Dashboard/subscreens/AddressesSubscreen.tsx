@@ -10,14 +10,21 @@ import { useQuery } from "@tanstack/react-query"
 import { getAddressesCb } from "@/shared/utils/addresses.utils"
 import { AddressCard } from "@/features/Addresses/AddressCard"
 import { AddressCardSkeleton } from "@/features/Addresses/AddressCardSkeleton"
+import { DeleteAddressModal } from "@/features/Addresses/DeleteAddressModal"
 
 interface AddressesSubscreenProps {
   userInfo: LoginData | null
 }
 
 export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
+  // Create address states
   const [openCreateAddress, setOpenCreateAddress] = useState(false)
   const toggleModalCreateAddress = () => setOpenCreateAddress((prev) => !prev)
+
+  // Delete address states
+  const [selectedAddressAlias, setSelectedAddressAlias] = useState<string>("")
+  const [openDeleteAddress, setOpenDeleteAddress] = useState(false)
+  const toggleModalDeleteAddress = () => setOpenDeleteAddress((prev) => !prev)
 
   const {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage
@@ -27,6 +34,11 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
     queryKey: ['addresses'],
     queryFn: getAddressesCb
   })
+
+  const handleDeleteAddress = (addressAlias: string) => {
+    setSelectedAddressAlias(addressAlias)
+    toggleModalDeleteAddress()
+  }
 
   return (
     <main className='w-full p-4 flex flex-col gap-4'>
@@ -38,12 +50,6 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       <div className="w-full flex justify-end">
         <Button onClick={toggleModalCreateAddress}>Crear dirección</Button>
       </div>
-      <CreateAddress
-        open={openCreateAddress}
-        toggleModal={toggleModalCreateAddress}
-        toggleNotification={toggleNotification}
-        updateNotificationMessage={updateNotificationMessage}
-      />
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         { (isPending && !addressesData) && Array.from({ length: 3 }).map((_, index) => (
           <AddressCardSkeleton key={index} />
@@ -55,9 +61,20 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
           </>
         )}
         { (addressesData && addressesData.length > 0 && !isPending) && addressesData.map((addr) => (
-          <AddressCard key={addr.alias} address={addr} />
+          <AddressCard key={addr.alias} address={addr} handleDeleteAddress={handleDeleteAddress} />
         )) }
       </section>
+      <CreateAddress
+        open={openCreateAddress}
+        toggleModal={toggleModalCreateAddress}
+        toggleNotification={toggleNotification}
+        updateNotificationMessage={updateNotificationMessage}
+      />
+      <DeleteAddressModal
+        open={openDeleteAddress}
+        toggleModal={toggleModalDeleteAddress}
+        addressAlias={selectedAddressAlias}
+      />
     </main>
   )
 }
