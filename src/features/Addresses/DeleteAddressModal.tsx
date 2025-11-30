@@ -11,10 +11,11 @@ export const DeleteAddressModal = ({ open, toggleModal, addressAlias }: DeleteAd
     <Modal show={open} onClose={toggleModal}>
       <ModalHeader>Eliminar dirección</ModalHeader>
       <ModalBody>
-        <p>¿Estás seguro que deseas eliminar la dirección &quot;{addressAlias}&quot;? Esta acción no se puede deshacer.</p>
+        <p className="font-semibold text-center mb-2">¿Estás seguro que deseas eliminar la dirección &quot;{addressAlias}&quot;?</p>
+        <p className="text-red-600 dark:text-red-400 text-center">Esta acción no se puede deshacer.</p>
       </ModalBody>
       <ModalFooter>
-        <div>
+        <div className="w-full flex justify-between">
           <Button outline onClick={toggleModal}>Cancelar</Button>
           <Button color="red">Eliminar</Button>
         </div>
