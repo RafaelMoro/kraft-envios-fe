@@ -282,20 +282,20 @@ describe('Feature: Create Address Modal', () => {
         />
       )
 
-      await user.type(screen.getByLabelText(/calle/i), validFormData.street1)
-      await user.type(screen.getByLabelText(/numero exterior/i), validFormData.externalNumber)
-      await user.type(screen.getByLabelText(/colonia/i), validFormData.neighborhood)
-      await user.type(screen.getByLabelText(/código postal/i), validFormData.zipcode)
-      await user.type(screen.getByLabelText(/ciudad/i), validFormData.city)
-      await user.type(screen.getByLabelText(/municipio/i), validFormData.town)
-      await user.type(screen.getByLabelText(/estado de la república/i), validFormData.state)
-      await user.type(screen.getByLabelText(/alias/i), validFormData.alias)
+      await user.type(screen.getByTestId('street1'), validFormData.street1)
+      await user.type(screen.getByTestId('externalNumber'), validFormData.externalNumber)
+      await user.type(screen.getByTestId('neighborhood'), validFormData.neighborhood)
+      await user.type(screen.getByTestId('zipcode'), validFormData.zipcode)
+      await user.type(screen.getByTestId('city'), validFormData.city)
+      await user.type(screen.getByTestId('town'), validFormData.town)
+      await user.type(screen.getByTestId('state'), validFormData.state)
+      await user.type(screen.getByTestId('alias'), validFormData.alias)
 
       const submitButton = screen.getByRole('button', { name: /crear dirección/i })
       await user.click(submitButton)
 
       await waitFor(() => {
-        screen.debug(undefined, 1000000000000000)
+        // screen.debug(undefined, 1000000000000000)
         expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
       }, { timeout: 3000 })
       expect(toggleNotification).toHaveBeenCalled()

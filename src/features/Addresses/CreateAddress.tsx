@@ -20,6 +20,7 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<CreateAddressFormValues>({
     resolver: yupResolver(CreateAddressFormSchema)
@@ -29,12 +30,14 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
     mutationFn: createAddressCb,
     onSuccess: () => {
       setTimeout(() => {
+        reset()
         toggleModal()
       }, 1000)
     },
     onError: () => {
       updateNotificationMessage('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
       toggleNotification()
+      reset()
       toggleModal()
     }
   })
@@ -117,6 +120,7 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
               <Label htmlFor="zipcode">Código Postal</Label>
             </div>
             <TextInput
+              data-testid="zipcode"
               id="zipcode"
               type="text"
               inputMode="numeric"

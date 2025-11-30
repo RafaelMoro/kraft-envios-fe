@@ -47,7 +47,7 @@ export interface CreateAddressResponse {
 }
 
 export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> = object().shape({
-  street1: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  street1: string().required('La calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
   externalNumber: string()
     .required('El número exterior es requerido')
     .matches(onlyNumberRegex, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" })
