@@ -36,6 +36,10 @@ export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber
   addressName: string;
 }
 
+export type DeleteAddressPayload = {
+  alias: string;
+}
+
 export interface CreateAddressResponse {
   data: {
     address: Address
@@ -49,6 +53,18 @@ export interface CreateAddressResponse {
 export interface GetAddressesResponse {
   data: {
     addresses: Address[]
+  }
+  error: null;
+  message: null;
+  success: boolean;
+  version: string;
+}
+
+export interface AddressAliasResponse {
+  data: {
+    address: {
+      alias: string;
+    }
   }
   error: null;
   message: null;

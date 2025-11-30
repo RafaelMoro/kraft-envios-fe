@@ -14,9 +14,10 @@ interface CreateAddressProps {
   toggleModal: () => void;
   toggleNotification: () => void;
   updateNotificationMessage: (message: string) => void;
+  refetchAddresses: () => Promise<void>;
 }
 
-export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNotificationMessage }: CreateAddressProps) => {
+export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
   const {
     register,
     handleSubmit,
@@ -29,6 +30,7 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
   const { mutate: createAddressMutation, isError, isPending, isSuccess, isIdle } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
     mutationFn: createAddressCb,
     onSuccess: () => {
+      refetchAddresses()
       setTimeout(() => {
         reset()
         toggleModal()

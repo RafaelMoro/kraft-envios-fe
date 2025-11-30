@@ -1,3 +1,9 @@
+## v0.25.0 (2025-11-30)
+
+### Pull Requests
+[#58](https://github.com/RafaelMoro/kraft-envios-fe/pull/58) | Add delete address and improvedesign address card
+
+
 ## v0.24.0 (2025-11-30)
 
 ### Pull Requests
