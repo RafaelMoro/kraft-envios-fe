@@ -13,14 +13,15 @@ import { useAddTag } from "@/shared/hooks/useAddTag";
 
 interface CreateAddressProps {
   open: boolean;
-  formData: CreateAddressPayload
+  formData: CreateAddressPayload;
+  isEdit: boolean;
   toggleModal: () => void;
   toggleNotification: () => void;
   updateNotificationMessage: (message: string) => void;
   refetchAddresses: () => Promise<void>;
 }
 
-export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
+export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
   const {
     tags: towns,
     addTag: addTown,
@@ -46,6 +47,7 @@ export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotificat
   } = useForm<CreateAddressFormValues>({
     resolver: yupResolver(CreateAddressFormSchema)
   })
+  const actionText = isEdit ? 'Editar' : 'Crear'
 
   const { mutate: createAddressMutation, isError, isPending, isSuccess, isIdle } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
     mutationFn: createAddressCb,
@@ -81,7 +83,7 @@ export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotificat
 
   return (
     <Modal show={open} onClose={toggleModal}>
-      <ModalHeader>Crear dirección</ModalHeader>
+      <ModalHeader>{actionText} dirección</ModalHeader>
       <ModalBody>
         <form
           className="grid grid-cols-1 lg:grid-cols-2 gap-5"
@@ -247,8 +249,8 @@ export const ManageAddressForm = ({ open, formData, toggleModal, toggleNotificat
               className="hover:cursor-pointer"
               disabled={isPending || isSuccess}
             >
-              { (isIdle || isError) && 'Crear dirección'}
-              { isPending && (<Spinner aria-label="loading login kraft envios" />) }
+              { (isIdle || isError) && `${actionText} dirección`}
+              { isPending && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
               { isSuccess && (<CheckIcon />)}
               
             </Button>

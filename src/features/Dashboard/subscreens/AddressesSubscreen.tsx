@@ -21,8 +21,15 @@ interface AddressesSubscreenProps {
 
 export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
   // Create address states
-  const [openCreateAddress, setOpenCreateAddress] = useState(false)
-  const toggleModalCreateAddress = () => setOpenCreateAddress((prev) => !prev)
+  const [openManageAddress, setOpenManageAddress] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
+  const toggleModalManageAddress = () => {
+    if (isEdit) {
+      setIsEdit(false)
+      formData.current = {...initialStateAddressForm}
+    }
+    setOpenManageAddress((prev) => !prev)
+  }
 
   // Delete address states
   const [selectedAddressAlias, setSelectedAddressAlias] = useState<string>("")
@@ -44,7 +51,8 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       zipcode: addressToEdit.postalCode,
       town: addressToEdit.town,
     }
-    toggleModalCreateAddress()
+    setIsEdit(true)
+    toggleModalManageAddress()
   }
 
   const {
@@ -73,7 +81,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       <p className="text-gray-600 dark:text-gray-400 text-center">Aquí puedes gestionar las direcciones que uses posteriormente para crear guías.</p>
       <div className="w-full flex justify-end">
-        <Button onClick={toggleModalCreateAddress}>Crear dirección</Button>
+        <Button onClick={toggleModalManageAddress}>Crear dirección</Button>
       </div>
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         { (isPending && !addressesData) && Array.from({ length: 3 }).map((_, index) => (
@@ -93,15 +101,16 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
             <Image alt="No addresses available" src="/empty-kraft-truck.webp" width={1021} height={597} className="object-cover w-56 h-56" />
             <h2 className="text-2xl font-bold text-center tracking-tight">No hay direcciones disponibles</h2>
             <p>Crea una nueva dirección para comenzar.</p>
-            <Button onClick={toggleModalCreateAddress}>Crear dirección</Button>
+            <Button onClick={toggleModalManageAddress}>Crear dirección</Button>
           </div>
         )}
       </section>
-      { openCreateAddress && (
+      { openManageAddress && (
         <ManageAddressForm
-          open={openCreateAddress}
+          open={openManageAddress}
           formData={formData.current}
-          toggleModal={toggleModalCreateAddress}
+          isEdit={isEdit}
+          toggleModal={toggleModalManageAddress}
           toggleNotification={toggleNotification}
           updateNotificationMessage={updateNotificationMessage}
           refetchAddresses={refetchAddresses}
