@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react";
 import { Button, CheckIcon, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,6 +20,10 @@ interface CreateAddressProps {
 }
 
 export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
+  const [towns, setTowns] = useState<string[]>([]);
+  const addTown = (town: string) => {
+    setTowns((prevTowns) => [...prevTowns, town]);
+  }
   const {
     register,
     handleSubmit,
@@ -161,7 +166,13 @@ export const CreateAddress = ({ open, toggleModal, toggleNotification, updateNot
               <ErrorMessage>{errors.town?.message}</ErrorMessage>
             )}
           </div>
-          <AddTag label="town" text="Municipios" placeholder="Presiona enter para agregar municipios" />
+          <AddTag
+            label="town"
+            text="Municipios"
+            tags={towns}
+            addTag={addTown}
+            placeholder="Presiona enter para agregar municipios"
+          />
           <div>
             <div className="mb-2 block">
               <Label htmlFor="state">Estado de la República</Label>

@@ -6,17 +6,18 @@ import { useState } from "react";
 interface AddTagProps {
   label: string;
   text: string;
+  tags: string[];
+  addTag: (tag: string) => void
   placeholder?: string
 }
 
-export const AddTag = ({ label, text, placeholder = "Presiona Enter para agregar" }: AddTagProps) => {
-  const [tags, setTags] = useState<string[]>([]);
+export const AddTag = ({ label, text, tags, addTag, placeholder = "Presiona Enter para agregar" }: AddTagProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleAddTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && inputValue.trim()) {
       event.preventDefault();
-      setTags((prevTags) => [...prevTags, inputValue.trim()]);
+      addTag(inputValue.trim());
       setInputValue("");
     }
   }
