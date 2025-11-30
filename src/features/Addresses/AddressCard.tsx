@@ -24,14 +24,14 @@ export const AddressCard = ({ address }: AddressCardProps) => {
             <p className="text-gray-600 dark:text-gray-400">
               {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, {address.state}, C.P. {address.postalCode}
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <RiBuildingLine size={18} />
               <span className="text-sm">Ciudades:</span>
               { address.city.map((city) => (
                 <Badge color="info" size="xs" key={city}>{city}</Badge>
               ))}
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <RiMap2Line size={18} />
               <span className="text-sm">Municipios:</span>
               { address.town.map((town) => (

@@ -22,7 +22,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage
   } = useNotification()
 
-  const { data: addressesData, refetch, isPending, isError } = useQuery({
+  const { data: addressesData, isPending, isError } = useQuery({
     queryKey: ['addresses'],
     queryFn: getAddressesCb
   })
@@ -43,7 +43,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
         toggleNotification={toggleNotification}
         updateNotificationMessage={updateNotificationMessage}
       />
-      <section>
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         { (addressesData && addressesData.length > 0) && addressesData.map((addr) => (
           <AddressCard key={addr.alias} address={addr} />
         )) }
