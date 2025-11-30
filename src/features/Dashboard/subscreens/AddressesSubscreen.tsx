@@ -48,7 +48,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       neighborhood: addressToEdit.neighborhood,
       reference: addressToEdit.reference || "",
       state: addressToEdit.state,
-      zipcode: addressToEdit.postalCode,
+      zipcode: addressToEdit.zipcode,
       town: addressToEdit.town,
     }
     setIsEdit(true)

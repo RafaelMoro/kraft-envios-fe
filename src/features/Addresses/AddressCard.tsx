@@ -23,7 +23,7 @@ export const AddressCard = ({ address, handleDeleteAddress, handleEditAddress }:
           <div className="flex flex-col gap-1">
             <p className="text-gray-500 dark:text-gray-400">Dirección</p>
             <p>
-              {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, { address.city?.length === 1 && address.city?.[0]} { address.town?.length === 1 && address.town?.[0]}, {address.state}, C.P. {address.postalCode}
+              {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, { address.city?.length === 1 && address.city?.[0]} { address.town?.length === 1 && address.town?.[0]}, {address.state}, C.P. {address.zipcode}
             </p>
           </div>
           { address?.reference && (

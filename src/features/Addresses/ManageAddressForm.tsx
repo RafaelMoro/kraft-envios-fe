@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 
-import { CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse } from "@/shared/types/addresses.types";
+import { AddressAliasResponse, CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse } from "@/shared/types/addresses.types";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { createAddressCb, formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
@@ -64,7 +64,21 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
     toggleModal()
   }
 
-  const { mutate: createAddressMutation, isError, isPending, isSuccess, isIdle } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
+  const {
+    mutate: createAddressMutation, isError, isPending, isSuccess, isIdle
+  } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
+    mutationFn: createAddressCb,
+    onSuccess: async () => {
+      await onSuccess()
+    },
+    onError: () => {
+      onError()
+    }
+  })
+
+  const {
+    mutate: editAddressMutation, isError: isErrorEdit, isPending: isPendingEdit, isSuccess: isSuccessEdit, isIdle: isIdleEdit
+  } = useMutation<AddressAliasResponse, GeneralApiError, CreateAddressPayload>({
     mutationFn: createAddressCb,
     onSuccess: async () => {
       await onSuccess()
@@ -86,6 +100,11 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
       }
   
       const formattedPayload = formatPayloadCreateAddress({payload: data, cities, towns})
+      if (isEdit) {
+        editAddressMutation(formattedPayload)
+        return
+      }
+
       createAddressMutation(formattedPayload)
     }
 
@@ -246,7 +265,7 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
               outline
               data-testid="origin-address-cancel-button"
               className="hover:cursor-pointer"
-              disabled={isPending || isSuccess}
+              disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
               onClick={toggleModal}
             >
               Cancelar
@@ -255,11 +274,11 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
               data-testid="origin-address-next-button"
               type="submit"
               className="hover:cursor-pointer"
-              disabled={isPending || isSuccess}
+              disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
             >
-              { (isIdle || isError) && `${actionText} dirección`}
-              { isPending && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
-              { isSuccess && (<CheckIcon />)}
+              { (isIdle || isError || isIdleEdit || isErrorEdit) && `${actionText} dirección`}
+              { (isPending || isPendingEdit) && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
+              { (isSuccess || isSuccessEdit) && (<CheckIcon />)}
               
             </Button>
           </div>
