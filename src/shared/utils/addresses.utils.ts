@@ -3,10 +3,15 @@ import { CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse } 
 import { ADDRESS_API_ENDPOINT } from "../constants/global.constants";
 
 export const formatPayloadCreateAddress = (payload: CreateAddressFormValues): CreateAddressPayload => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { street1, ...rest } = payload
   return {
-    ...payload,
+    ...rest,
     internalNumber: payload.internalNumber ?? '',
     reference: payload.reference ?? '',
+    city: [payload.city],
+    town: [payload.town],
+    addressName: payload.street1
   }
 }
 

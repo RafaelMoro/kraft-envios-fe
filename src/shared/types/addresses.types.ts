@@ -28,9 +28,12 @@ export type CreateAddressFormValues = {
   alias: string;
 }
 
-export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber' | 'reference'> & {
+export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber' | 'reference' | 'city' | 'town' | 'street1'> & {
   internalNumber: string;
   reference: string;
+  city: string[];
+  town: string[];
+  addressName: string;
 }
 
 export interface CreateAddressResponse {
