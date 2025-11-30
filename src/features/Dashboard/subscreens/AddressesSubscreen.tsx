@@ -6,6 +6,8 @@ import { LoginData } from "@/shared/types/login.types"
 import { CreateAddress } from "@/features/Addresses/CreateAddress"
 import { useNotification } from "@/shared/hooks/useNotification"
 import { Notification } from "@/shared/ui/atoms/Notification"
+import { useQuery } from "@tanstack/react-query"
+import { getAddressesCb } from "@/shared/utils/addresses.utils"
 
 interface AddressesSubscreenProps {
   userInfo: LoginData | null
@@ -18,6 +20,12 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
   const {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage
   } = useNotification()
+
+  const { data, refetch, isPending, isError } = useQuery({
+    queryKey: ['addresses'],
+    queryFn: getAddressesCb
+  })
+  console.log('data', data)
 
   return (
     <main className='w-full p-4 flex flex-col gap-4'>
