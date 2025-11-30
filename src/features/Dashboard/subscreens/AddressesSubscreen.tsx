@@ -48,6 +48,12 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
         { (isPending && !addressesData) && Array.from({ length: 3 }).map((_, index) => (
           <AddressCardSkeleton key={index} />
         ))}
+        { (!isPending && isError) && (
+          <>
+            <h2 className="text-2xl font-bold text-center tracking-tight md:col-span-2 lg:col-span-3">Oops!</h2>
+            <p className="text-center text-gray-600 dark:text-gray-400 md:col-span-2 lg:col-span-3">Ha sucedido un error. Intentelo nuevamente</p>
+          </>
+        )}
         { (addressesData && addressesData.length > 0 && !isPending) && addressesData.map((addr) => (
           <AddressCard key={addr.alias} address={addr} />
         )) }
