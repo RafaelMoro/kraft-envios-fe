@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 import { GeneralError } from "@/shared/types/global.types";
 import { getAccessToken } from "@/shared/lib/auth.lib";
-import { CreateAddressPayload, CreateAddressResponse } from "@/shared/types/addresses.types";
+import { CreateAddressPayload, CreateAddressResponse, GetAddressesResponse } from "@/shared/types/addresses.types";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,8 +20,27 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({ data: res.data }, { status: 201 })
+    return NextResponse.json(res.data, { status: 201 })
 
+  } catch (error) {
+    const message = (error as unknown as GeneralError)?.response?.data?.error?.message
+    return NextResponse.json({ message }, { status: 400 })
+  }
+}
+
+export async function GET() {
+  try {
+    const accessToken = await getAccessToken()
+    if (!accessToken) {
+      return NextResponse.json({ message: 'missing access token' }, { status: 400 })
+    }
+    const uri = `${process.env.BACKEND_URI}/addresses`
+    const res: AxiosResponse<GetAddressesResponse> = await axios.get(uri, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+    return NextResponse.json(res.data, { status: 200 })
   } catch (error) {
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
     return NextResponse.json({ message }, { status: 400 })

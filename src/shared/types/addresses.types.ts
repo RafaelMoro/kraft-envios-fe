@@ -46,6 +46,16 @@ export interface CreateAddressResponse {
   version: string;
 }
 
+export interface GetAddressesResponse {
+  data: {
+    addresses: Address[]
+  }
+  error: null;
+  message: null;
+  success: boolean;
+  version: string;
+}
+
 export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> = object().shape({
   street1: string().required('La calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
   externalNumber: string()
