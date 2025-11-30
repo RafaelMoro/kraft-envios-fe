@@ -1,4 +1,9 @@
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
+"use client"
+import { AddressAliasResponse, DeleteAddressPayload } from "@/shared/types/addresses.types";
+import { GeneralApiError } from "@/shared/types/global.types";
+import { deleteAddressCb } from "@/shared/utils/addresses.utils";
+import { useMutation } from "@tanstack/react-query";
+import { Button, CheckIcon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
 
 interface DeleteAddressModalProps {
   open: boolean;
@@ -7,6 +12,25 @@ interface DeleteAddressModalProps {
 }
 
 export const DeleteAddressModal = ({ open, toggleModal, addressAlias }: DeleteAddressModalProps) => {
+  const { mutate: deleteAddress, isError, isPending, isSuccess, isIdle } = useMutation<AddressAliasResponse, GeneralApiError, DeleteAddressPayload>({
+    mutationFn: deleteAddressCb,
+    onSuccess: () => {
+      setTimeout(() => {
+        toggleModal()
+      }, 1000)
+    },
+    onError: () => {
+      // updateNotificationMessage('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
+      // toggleNotification()
+      // reset()
+      // toggleModal()
+    }
+  })
+
+  const handleDelete = () => {
+    deleteAddress({ alias: addressAlias })
+  }
+
   return (
     <Modal show={open} onClose={toggleModal}>
       <ModalHeader>Eliminar dirección</ModalHeader>
@@ -16,8 +40,12 @@ export const DeleteAddressModal = ({ open, toggleModal, addressAlias }: DeleteAd
       </ModalBody>
       <ModalFooter>
         <div className="w-full flex justify-between">
-          <Button outline onClick={toggleModal}>Cancelar</Button>
-          <Button color="red">Eliminar</Button>
+          <Button disabled={isPending || isSuccess} outline onClick={toggleModal}>Cancelar</Button>
+          <Button disabled={isPending || isSuccess} onClick={handleDelete} color="red">
+            { (isIdle || isError) && 'Eliminar'}
+            { isPending && (<Spinner aria-label="loading delete address" />) }
+            { isSuccess && (<CheckIcon />)}
+          </Button>
         </div>
       </ModalFooter>
     </Modal>
