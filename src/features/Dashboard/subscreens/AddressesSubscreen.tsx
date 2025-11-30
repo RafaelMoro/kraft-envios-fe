@@ -8,6 +8,7 @@ import { useNotification } from "@/shared/hooks/useNotification"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { useQuery } from "@tanstack/react-query"
 import { getAddressesCb } from "@/shared/utils/addresses.utils"
+import { AddressCard } from "@/features/Addresses/AddressCard"
 
 interface AddressesSubscreenProps {
   userInfo: LoginData | null
@@ -21,11 +22,10 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
     notificationMessage, openNotification, toggleNotification, updateNotificationMessage
   } = useNotification()
 
-  const { data, refetch, isPending, isError } = useQuery({
+  const { data: addressesData, refetch, isPending, isError } = useQuery({
     queryKey: ['addresses'],
     queryFn: getAddressesCb
   })
-  console.log('data', data)
 
   return (
     <main className='w-full p-4 flex flex-col gap-4'>
@@ -43,6 +43,11 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
         toggleNotification={toggleNotification}
         updateNotificationMessage={updateNotificationMessage}
       />
+      <section>
+        { (addressesData && addressesData.length > 0) && addressesData.map((addr) => (
+          <AddressCard key={addr.alias} address={addr} />
+        )) }
+      </section>
     </main>
   )
 }
