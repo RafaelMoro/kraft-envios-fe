@@ -65,7 +65,7 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
   }
 
   const {
-    mutate: createAddressMutation, isError, isPending, isSuccess, isIdle
+    mutate: createAddressMutation, isPending, isSuccess
   } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
     mutationFn: createAddressCb,
     onSuccess: async () => {
@@ -77,7 +77,7 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
   })
 
   const {
-    mutate: editAddressMutation, isError: isErrorEdit, isPending: isPendingEdit, isSuccess: isSuccessEdit, isIdle: isIdleEdit
+    mutate: editAddressMutation, isPending: isPendingEdit, isSuccess: isSuccessEdit,
   } = useMutation<AddressAliasResponse, GeneralApiError, CreateAddressPayload>({
     mutationFn: editAddressCb,
     onSuccess: async () => {
@@ -276,10 +276,9 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
               className="hover:cursor-pointer"
               disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
             >
-              { (isIdle || isError || isIdleEdit || isErrorEdit) && `${actionText} dirección`}
-              { (isPending || isPendingEdit) && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
               { (isSuccess || isSuccessEdit) && (<CheckIcon />)}
-              
+              { (isPending || isPendingEdit) && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
+              { !isSuccess && !isSuccessEdit && !isPending && !isPendingEdit && `${actionText} dirección`}
             </Button>
           </div>
         </form>
