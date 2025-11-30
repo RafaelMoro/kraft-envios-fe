@@ -11,6 +11,7 @@ import { getAddressesCb } from "@/shared/utils/addresses.utils"
 import { AddressCard } from "@/features/Addresses/AddressCard"
 import { AddressCardSkeleton } from "@/features/Addresses/AddressCardSkeleton"
 import { DeleteAddressModal } from "@/features/Addresses/DeleteAddressModal"
+import Image from "next/image"
 
 interface AddressesSubscreenProps {
   userInfo: LoginData | null
@@ -67,6 +68,14 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
         { (addressesData && addressesData.length > 0 && !isPending) && addressesData.map((addr) => (
           <AddressCard key={addr.alias} address={addr} handleDeleteAddress={handleDeleteAddress} />
         )) }
+        { (addressesData && addressesData.length === 0 && !isPending && !isError) && (
+          <div className="w-full md:col-span-2 lg:col-span-3 flex flex-col justify-center items-center gap-5">
+            <Image alt="No addresses available" src="/empty-kraft-truck.webp" width={1021} height={597} className="object-cover w-56 h-56" />
+            <h2 className="text-2xl font-bold text-center tracking-tight">No hay direcciones disponibles</h2>
+            <p>Crea una nueva dirección para comenzar.</p>
+            <Button onClick={toggleModalCreateAddress}>Crear dirección</Button>
+          </div>
+        )}
       </section>
       { openCreateAddress && (
         <CreateAddress
