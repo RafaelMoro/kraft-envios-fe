@@ -1,3 +1,9 @@
+## v0.24.0 (2025-11-30)
+
+### Pull Requests
+[#56](https://github.com/RafaelMoro/kraft-envios-fe/pull/56) | Add view addresses and fetch them
+
+
 ## v0.23.0 (2025-11-30)
 
 ### Pull Requests
