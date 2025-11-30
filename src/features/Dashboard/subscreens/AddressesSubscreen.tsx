@@ -68,18 +68,23 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
           <AddressCard key={addr.alias} address={addr} handleDeleteAddress={handleDeleteAddress} />
         )) }
       </section>
-      <CreateAddress
-        open={openCreateAddress}
-        toggleModal={toggleModalCreateAddress}
-        toggleNotification={toggleNotification}
-        updateNotificationMessage={updateNotificationMessage}
-      />
-      <DeleteAddressModal
-        open={openDeleteAddress}
-        addressAlias={selectedAddressAlias}
-        toggleModal={toggleModalDeleteAddress}
-        refetchAddresses={refetchAddresses}
-      />
+      { openCreateAddress && (
+        <CreateAddress
+          open={openCreateAddress}
+          toggleModal={toggleModalCreateAddress}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+          refetchAddresses={refetchAddresses}
+        />
+      )}
+      { openDeleteAddress && (
+        <DeleteAddressModal
+          open={openDeleteAddress}
+          addressAlias={selectedAddressAlias}
+          toggleModal={toggleModalDeleteAddress}
+          refetchAddresses={refetchAddresses}
+        />
+      )}
     </main>
   )
 }
