@@ -1,3 +1,9 @@
+## v0.27.0 (2025-12-01)
+
+### Pull Requests
+[#62](https://github.com/RafaelMoro/kraft-envios-fe/pull/62) | Add feature to edit addresses
+
+
 ## v0.26.0 (2025-11-30)
 
 ### Pull Requests
