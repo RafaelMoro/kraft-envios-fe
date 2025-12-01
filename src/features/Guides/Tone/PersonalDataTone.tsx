@@ -1,15 +1,26 @@
-import { CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { Label, TextInput } from "flowbite-react"
-import { FieldErrors, UseFormRegister } from "react-hook-form"
+import { FieldErrors, UseFormRegister, FieldError, Path } from "react-hook-form"
 
-interface PersonalDataToneProps {
-  addressData: CreateGuideAddressFormValuesTone;
-  errors: FieldErrors<CreateGuideAddressFormValuesTone>;
-  register: UseFormRegister<CreateGuideAddressFormValuesTone>
+type PersonalData = {
+  name: string;
+  phone: string;
+  lastName: string;
+  email?: string | null | undefined;
 }
 
-export const PersonalDataTone = ({ addressData, errors, register }: PersonalDataToneProps) => {
+interface PersonalDataToneProps<T extends PersonalData> {
+  addressData: T;
+  errors: FieldErrors<T>;
+  register: UseFormRegister<T>
+}
+
+export const PersonalDataTone = <T extends PersonalData>({ addressData, errors, register }: PersonalDataToneProps<T>) => {
+  const nameError = errors?.name as FieldError | undefined;
+  const lastNameError = errors?.lastName as FieldError | undefined;
+  const phoneError = errors?.phone as FieldError | undefined;
+  const emailError = errors?.email as FieldError | undefined;
+
   return (
     <section>
       <h4 className="text-xl">Datos personales</h4>
@@ -23,27 +34,27 @@ export const PersonalDataTone = ({ addressData, errors, register }: PersonalData
             defaultValue={addressData.name}
             id="name"
             type="text"
-            {...register("name")}
+            {...register("name" as Path<T>)}
           />
-          { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
+          { nameError?.message && (
+            <ErrorMessage>{nameError.message}</ErrorMessage>
           )}
         </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="lastName">Apellido</Label>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="lastName">Apellido</Label>
+            </div>
+            <TextInput
+              data-testid="lastName"
+              defaultValue={addressData.lastName}
+              id="lastName"
+              type="text"
+              {...register("lastName" as Path<T>)}
+            />
+            { lastNameError?.message && (
+              <ErrorMessage>{lastNameError.message}</ErrorMessage>
+            )}
           </div>
-          <TextInput
-            data-testid="lastName"
-            defaultValue={addressData.lastName}
-            id="lastName"
-            type="text"
-            {...register("lastName")}
-          />
-          { errors?.lastName?.message && (
-            <ErrorMessage>{errors.lastName?.message}</ErrorMessage>
-          )}
-        </div>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="phone">Teléfono</Label>
@@ -54,10 +65,10 @@ export const PersonalDataTone = ({ addressData, errors, register }: PersonalData
             type="text"
             inputMode="numeric"
             defaultValue={addressData.phone}
-            {...register("phone")}
+            {...register("phone" as Path<T>)}
           />
-          { errors?.phone?.message && (
-            <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
+          { phoneError?.message && (
+            <ErrorMessage>{phoneError.message}</ErrorMessage>
           )}
         </div>
         <div>
@@ -68,10 +79,10 @@ export const PersonalDataTone = ({ addressData, errors, register }: PersonalData
             id="email"
             type="email"
             defaultValue={addressData.email ?? ''}
-            {...register("email")}
+            {...register("email" as Path<T>)}
           />
-          { errors?.email?.message && (
-            <ErrorMessage>{errors.email?.message}</ErrorMessage>
+          { emailError?.message && (
+            <ErrorMessage>{emailError.message}</ErrorMessage>
           )}
         </div>
       </div>
