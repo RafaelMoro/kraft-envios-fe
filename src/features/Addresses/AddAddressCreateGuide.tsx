@@ -2,8 +2,9 @@ import React from "react";
 import { SelectAddressDropdown } from "./SelectAddressDropdown";
 
 interface AddAddressCreateGuideProps {
-  PersonalDataUI: React.FC;
-  CreateTempAddressButton: React.FC;
+  // TODO: Check this typing
+  PersonalDataUI: React.ElementType;
+  CreateTempAddressButton: JSX.Element;
 }
 
 export const AddAddressCreateGuide = ({ PersonalDataUI, CreateTempAddressButton }: AddAddressCreateGuideProps) => {
@@ -15,7 +16,7 @@ export const AddAddressCreateGuide = ({ PersonalDataUI, CreateTempAddressButton 
         <p>Selecciona una dirección</p>
         <SelectAddressDropdown />
       </div>
-      <CreateTempAddressButton />
+      {CreateTempAddressButton}
     </div>
   )
 }
