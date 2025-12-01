@@ -1,4 +1,5 @@
 import React from "react";
+import { SelectAddressDropdown } from "./SelectAddressDropdown";
 
 interface AddAddressCreateGuideProps {
   PersonalDataUI: React.FC;
@@ -9,9 +10,11 @@ export const AddAddressCreateGuide = ({ PersonalDataUI, CreateTempAddressButton 
   return (
     <div>
       <PersonalDataUI />
-      <select>
-        <option value="tempAddress">Selecciona una direccion</option>
-      </select>
+      <div className="flex flex-col gap-4">
+        <h4 className="text-xl">Domicilio</h4>
+        <p>Selecciona una dirección</p>
+        <SelectAddressDropdown />
+      </div>
       <CreateTempAddressButton />
     </div>
   )
