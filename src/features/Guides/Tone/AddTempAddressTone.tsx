@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
-interface CreateGuideAddressFormToneProps {
+interface AddTempAddressToneProps {
   isDestination?: boolean
   addressData: CreateGuideAddressFormValuesTone
   goNext: () => void
@@ -13,9 +13,9 @@ interface CreateGuideAddressFormToneProps {
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
 }
 
-export const CreateGuideAddressFormTone = ({
+export const AddTempAddressTone = ({
   isDestination, addressData, goNext, goPrev, toggleModal, updateAddress,
-}: CreateGuideAddressFormToneProps) => {
+}: AddTempAddressToneProps) => {
   const {
     register,
     handleSubmit,

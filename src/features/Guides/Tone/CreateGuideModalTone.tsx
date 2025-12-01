@@ -6,7 +6,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
+import { AddTempAddressTone } from "./AddTempAddressTone";
 import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, CreateGuideTonePayload, GlobalCreateGuideResponse, ParcelInfoValuesTone } from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
@@ -70,7 +70,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           </div>
         )}
         { step === 1 && (
-          <CreateGuideAddressFormTone
+          <AddTempAddressTone
             addressData={formData.current.originAddress}
             goNext={goNext}
             updateAddress={updateOriginAddress}
@@ -79,7 +79,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           />
         )}
         { step === 2 && (
-          <CreateGuideAddressFormTone
+          <AddTempAddressTone
             addressData={formData.current.destinationAddress}
             goNext={goNext}
             updateAddress={updateDestinationAddress}

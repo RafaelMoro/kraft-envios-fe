@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { CreateGuideAddressFormTone } from '@/features/Guides/Tone/CreateGuideAddressFormTone'
+import { AddTempAddressTone } from '@/features/Guides/Tone/AddTempAddressTone'
 import { CreateGuideAddressFormValuesTone } from '@/shared/types/guides.types'
 
 // Mock functions for props
@@ -33,10 +33,10 @@ const defaultProps = {
 
 const renderComponent = (props = {}) => {
   const mergedProps = { ...defaultProps, ...props }
-  return render(<CreateGuideAddressFormTone {...mergedProps} />)
+  return render(<AddTempAddressTone {...mergedProps} />)
 }
 
-describe('CreateGuideAddressFormTone', () => {
+describe('AddTempAddressTone', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
