@@ -383,7 +383,7 @@ describe('Feature: Manage Address Modal', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
+        expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al Crear la dirección. Por favor, intenta de nuevo.')
       }, { timeout: 3000 })
       expect(toggleNotification).toHaveBeenCalled()
       expect(toggleModal).toHaveBeenCalled()
