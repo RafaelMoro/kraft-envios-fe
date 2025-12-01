@@ -3,25 +3,45 @@ import userEvent from '@testing-library/user-event'
 import axios from 'axios';
 
 import { QueryProviderWrapper } from "@/features/QueryProviderWrapper";
-import { CreateAddress } from "@/features/Addresses/CreateAddress"
+import { ManageAddressForm } from "@/features/Addresses/ManageAddressForm"
+import { CreateAddressPayload } from "@/shared/types/addresses.types";
 
 const mockRefetchAddresses = jest.fn()
 
-const CreateAddressWrapper = ({
+const emptyFormData: CreateAddressPayload = {
+  addressName: '',
+  externalNumber: '',
+  internalNumber: '',
+  neighborhood: '',
+  zipcode: '',
+  city: [],
+  town: [],
+  state: '',
+  reference: '',
+  alias: ''
+}
+
+const ManageAddressWrapper = ({
   open,
+  formData = emptyFormData,
+  isEdit = false,
   toggleModal,
   toggleNotification,
   updateNotificationMessage
 }: {
   open: boolean
+  formData?: CreateAddressPayload
+  isEdit?: boolean
   toggleModal: () => void
   toggleNotification: () => void
   updateNotificationMessage: (message: string) => void
 }) => {
   return (
     <QueryProviderWrapper>
-      <CreateAddress
+      <ManageAddressForm
         open={open}
+        formData={formData}
+        isEdit={isEdit}
         toggleModal={toggleModal}
         toggleNotification={toggleNotification}
         updateNotificationMessage={updateNotificationMessage}
@@ -47,7 +67,20 @@ const validFormData = {
   alias: 'Casa'
 }
 
-describe('Feature: Create Address Modal', () => {
+const existingAddressData: CreateAddressPayload = {
+  addressName: 'Calle Vieja',
+  externalNumber: '456',
+  internalNumber: '2',
+  neighborhood: 'Norte',
+  zipcode: '54321',
+  city: ['Monterrey'],
+  town: ['San Pedro'],
+  state: 'Nuevo León',
+  reference: 'Frente al parque',
+  alias: 'Oficina'
+}
+
+describe('Feature: Manage Address Modal', () => {
   describe('Scenario: Modal is displayed when open prop is true', () => {
     it('Given the modal is open, When the component renders, Then it should display all form fields', () => {
       const toggleModal = jest.fn()
@@ -55,7 +88,7 @@ describe('Feature: Create Address Modal', () => {
       const updateNotificationMessage = jest.fn()
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -86,7 +119,7 @@ describe('Feature: Create Address Modal', () => {
       const updateNotificationMessage = jest.fn()
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={false}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -106,7 +139,7 @@ describe('Feature: Create Address Modal', () => {
       const updateNotificationMessage = jest.fn()
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -129,7 +162,7 @@ describe('Feature: Create Address Modal', () => {
       const updateNotificationMessage = jest.fn()
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -159,7 +192,7 @@ describe('Feature: Create Address Modal', () => {
       const updateNotificationMessage = jest.fn()
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -192,7 +225,7 @@ describe('Feature: Create Address Modal', () => {
       const updateNotificationMessage = jest.fn()
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -255,7 +288,7 @@ describe('Feature: Create Address Modal', () => {
       })
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -323,7 +356,7 @@ describe('Feature: Create Address Modal', () => {
       })
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -350,7 +383,7 @@ describe('Feature: Create Address Modal', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al crear la dirección. Por favor, intenta de nuevo.')
+        expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al Crear la dirección. Por favor, intenta de nuevo.')
       }, { timeout: 3000 })
       expect(toggleNotification).toHaveBeenCalled()
       expect(toggleModal).toHaveBeenCalled()
@@ -365,7 +398,7 @@ describe('Feature: Create Address Modal', () => {
       const updateNotificationMessage = jest.fn()
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
@@ -388,4 +421,247 @@ describe('Feature: Create Address Modal', () => {
       })
     })
   })
+
+  describe('Scenario: Edit mode displays correct heading and pre-filled data', () => {
+    it('Given the form is in edit mode, When the component renders, Then it should show "Editar dirección" and pre-filled values', () => {
+      const toggleModal = jest.fn()
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+
+      render(
+        <ManageAddressWrapper
+          open={true}
+          formData={existingAddressData}
+          isEdit={true}
+          toggleModal={toggleModal}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      expect(screen.getByRole('heading', { name: /editar dirección/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /editar dirección/i })).toBeInTheDocument()
+      expect(screen.getByDisplayValue(existingAddressData.addressName)).toBeInTheDocument()
+      expect(screen.getByDisplayValue(existingAddressData.externalNumber)).toBeInTheDocument()
+      expect(screen.getByDisplayValue(existingAddressData.alias)).toBeInTheDocument()
+    })
+  })
+
+  describe('Scenario: Successful address edit', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
+    })
+
+    it('Given valid form data in edit mode, When the form is submitted, Then the address should be updated successfully', async () => {
+      jest.useFakeTimers()
+      const toggleModal = jest.fn()
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+
+      mockedAxios.put.mockResolvedValueOnce({
+        data: {
+          data: {
+            address: {
+              alias: existingAddressData.alias
+            }
+          },
+          error: null,
+          message: null,
+          success: true,
+          version: '1.0.0'
+        }
+      })
+
+      render(
+        <ManageAddressWrapper
+          open={true}
+          formData={existingAddressData}
+          isEdit={true}
+          toggleModal={toggleModal}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      const user = userEvent.setup({ delay: null })
+
+      // Clear and update the street field
+      const streetInput = screen.getByTestId('street1')
+      await user.clear(streetInput)
+      await user.type(streetInput, 'Calle Nueva')
+
+      const submitButton = screen.getByRole('button', { name: /editar dirección/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(mockedAxios.put).toHaveBeenCalled()
+      })
+
+      jest.advanceTimersByTime(1000)
+
+      await waitFor(() => {
+        expect(mockRefetchAddresses).toHaveBeenCalled()
+        expect(toggleModal).toHaveBeenCalled()
+      })
+
+      jest.useRealTimers()
+    })
+  })
+
+  describe('Scenario: Failed address edit shows error notification', () => {
+    it('Given valid form data in edit mode, When the API returns an error, Then the error notification should be displayed', async () => {
+      const user = userEvent.setup({ delay: null })
+      const toggleModal = jest.fn()
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+
+      mockedAxios.put.mockRejectedValueOnce({
+        code: 'ERR_BAD_REQUEST',
+        message: 'Request failed with status code 500',
+        response: {
+          data: {
+            message: 'Internal server error'
+          }
+        }
+      })
+
+      render(
+        <ManageAddressWrapper
+          open={true}
+          formData={existingAddressData}
+          isEdit={true}
+          toggleModal={toggleModal}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      const streetInput = screen.getByTestId('street1')
+      await user.clear(streetInput)
+      await user.type(streetInput, 'Calle Actualizada')
+
+      const submitButton = screen.getByRole('button', { name: /editar dirección/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al Editar la dirección. Por favor, intenta de nuevo.')
+      }, { timeout: 3000 })
+      expect(toggleNotification).toHaveBeenCalled()
+      expect(toggleModal).toHaveBeenCalled()
+    })
+  })
+
+  describe('Scenario: Alias cannot be edited in edit mode', () => {
+    it('Given the form is in edit mode, When the user changes the alias and submits, Then an error message should be shown', async () => {
+      const user = userEvent.setup({ delay: null })
+      const toggleModal = jest.fn()
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+
+      render(
+        <ManageAddressWrapper
+          open={true}
+          formData={existingAddressData}
+          isEdit={true}
+          toggleModal={toggleModal}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      const aliasInput = screen.getByTestId('alias')
+      await user.clear(aliasInput)
+      await user.type(aliasInput, 'NuevoAlias')
+
+      const submitButton = screen.getByRole('button', { name: /editar dirección/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/el alias no puede ser editado/i)).toBeInTheDocument()
+      })
+
+      // Ensure mutation was not called
+      expect(mockedAxios.put).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Scenario: Alias can be set in create mode', () => {
+    it('Given the form is in create mode, When the user sets an alias and submits, Then no error should be shown', async () => {
+      jest.useFakeTimers()
+      const user = userEvent.setup({ delay: null })
+      const toggleModal = jest.fn()
+      const toggleNotification = jest.fn()
+      const updateNotificationMessage = jest.fn()
+
+      mockedAxios.post.mockResolvedValueOnce({
+        data: {
+          data: {
+            address: {
+              addressName: validFormData.street1,
+              externalNumber: validFormData.externalNumber,
+              internalNumber: validFormData.internalNumber,
+              reference: validFormData.reference,
+              postalCode: validFormData.zipcode,
+              state: validFormData.state,
+              city: validFormData.cities,
+              town: validFormData.towns,
+              alias: validFormData.alias,
+              neighborhood: validFormData.neighborhood
+            }
+          },
+          error: null,
+          message: null,
+          success: true,
+          version: '1.0.0'
+        }
+      })
+
+      render(
+        <ManageAddressWrapper
+          open={true}
+          toggleModal={toggleModal}
+          toggleNotification={toggleNotification}
+          updateNotificationMessage={updateNotificationMessage}
+        />
+      )
+
+      await user.type(screen.getByTestId('street1'), validFormData.street1)
+      await user.type(screen.getByTestId('externalNumber'), validFormData.externalNumber)
+      await user.type(screen.getByTestId('neighborhood'), validFormData.neighborhood)
+      await user.type(screen.getByTestId('zipcode'), validFormData.zipcode)
+      await user.type(screen.getByTestId('state'), validFormData.state)
+      await user.type(screen.getByTestId('alias'), validFormData.alias)
+
+      const citiesInput = screen.getByTestId('cities')
+      const townsInput = screen.getByTestId('towns')
+
+      await user.type(citiesInput, validFormData.cities[0])
+      await user.keyboard('{Enter}')
+      await user.type(townsInput, validFormData.towns[0])
+      await user.keyboard('{Enter}')
+
+      const submitButton = screen.getByRole('button', { name: /crear dirección/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(mockedAxios.post).toHaveBeenCalled()
+      })
+
+      // Should not show alias error
+      expect(screen.queryByText(/el alias no puede ser editado/i)).not.toBeInTheDocument()
+
+      jest.advanceTimersByTime(1000)
+
+      await waitFor(() => {
+        expect(mockRefetchAddresses).toHaveBeenCalled()
+      })
+
+      jest.useRealTimers()
+    })
+  })
 })
+
