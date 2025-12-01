@@ -356,7 +356,7 @@ describe('Feature: Manage Address Modal', () => {
       })
 
       render(
-        <CreateAddressWrapper
+        <ManageAddressWrapper
           open={true}
           toggleModal={toggleModal}
           toggleNotification={toggleNotification}
