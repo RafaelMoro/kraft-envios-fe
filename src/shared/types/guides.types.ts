@@ -44,16 +44,19 @@ export type CreateGuideAddressFormValues = {
   reference?: string | null | undefined
 }
 
-export type CreateGuideAddressFormValuesTone = {
+export type AddressTonePersonalDataFormValues = {
   name: string;
   lastName: string;
+  phone: string;
+  email?: string | null | undefined
+}
+
+export type CreateGuideAddressFormValuesTone = AddressTonePersonalDataFormValues & {
   street1: string;
   neighborhood: string;
   town: string;
   external_number: string;
   state: string;
-  phone: string;
-  email?: string | null | undefined
   reference?: string | null | undefined
 }
 
