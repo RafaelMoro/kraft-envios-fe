@@ -49,7 +49,7 @@ export const AddTempAddressTone = ({
       className="flex flex-col gap-5"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <PersonalDataTone
+      <PersonalDataTone<CreateGuideAddressFormValuesTone>
         addressData={addressData}
         errors={errors}
         register={register}
