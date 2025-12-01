@@ -6,9 +6,10 @@ import { Address } from "@/shared/types/addresses.types"
 interface AddressCardProps {
   address: Address;
   handleDeleteAddress: (addressAlias: string) => void
+  handleEditAddress: (addressToEdit: Address) => void
 }
 
-export const AddressCard = ({ address, handleDeleteAddress }: AddressCardProps) => {
+export const AddressCard = ({ address, handleDeleteAddress, handleEditAddress }: AddressCardProps) => {
   return (
     <article className="rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 max-w-sm p-4">
       <div className="h-full flex flex-col justify-between gap-5">
@@ -22,7 +23,7 @@ export const AddressCard = ({ address, handleDeleteAddress }: AddressCardProps) 
           <div className="flex flex-col gap-1">
             <p className="text-gray-500 dark:text-gray-400">Dirección</p>
             <p>
-              {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, { address.city?.length === 1 && address.city?.[0]} { address.town?.length === 1 && address.town?.[0]}, {address.state}, C.P. {address.postalCode}
+              {address.addressName}, {address.externalNumber}{address.internalNumber ? `, Int. ${address.internalNumber}` : ''}, {address.neighborhood}, { address.city?.length === 1 && address.city?.[0]} { address.town?.length === 1 && address.town?.[0]}, {address.state}, C.P. {address.zipcode}
             </p>
           </div>
           { address?.reference && (
@@ -55,7 +56,7 @@ export const AddressCard = ({ address, handleDeleteAddress }: AddressCardProps) 
           )}
         </div>
         <div className="flex justify-between gap-3">
-          <Button className="border-0 inline-flex gap-2" outline>
+          <Button onClick={() => handleEditAddress(address)} className="border-0 inline-flex gap-2" outline>
             <RiPencilLine size={18} />
             Editar
           </Button>

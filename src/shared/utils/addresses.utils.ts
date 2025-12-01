@@ -26,6 +26,15 @@ export const createAddressCb = async (data: CreateAddressPayload) => {
   }
 }
 
+export const editAddressCb = async (data: CreateAddressPayload) => {
+  try {
+    const res: AxiosResponse<AddressAliasResponse>  = await axios.put(ADDRESS_API_ENDPOINT, data)
+    return res?.data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const getAddressesCb = async (): Promise<Address[] | null> => {
   try {
     const res: AxiosResponse<GetAddressesResponse> = await axios.get(ADDRESS_API_ENDPOINT)

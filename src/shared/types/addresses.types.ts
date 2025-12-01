@@ -7,7 +7,7 @@ export type Address = {
   externalNumber: string;
   internalNumber: string;
   reference: string;
-  postalCode: string;
+  zipcode: string;
   state: string;
   city: string[]
   town: string[]
