@@ -1,7 +1,11 @@
+import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { RiArrowDownSLine } from "@remixicon/react"
 import { Button, Dropdown, DropdownItem } from "flowbite-react"
 
 export const SelectAddressDropdown = () => {
+  const { aliases, isPending, isError } = useGetAddress()
+  console.log({ aliases })
+
   return (
     <Dropdown
       label=""
@@ -9,7 +13,7 @@ export const SelectAddressDropdown = () => {
         <Button
           className="hover:cursor-pointer flex justify-between"
           color="light"
-          // disabled={isPending || isError || data?.length === 0}
+          disabled={isPending || isError || aliases.length === 0}
         >
           {/* { isPending && (<Spinner />)}
           { (isError && !isPending) && ("No se ha podido cargar los alias")}
