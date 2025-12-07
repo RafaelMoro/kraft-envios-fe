@@ -7,16 +7,14 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataTone } from "./PersonalDataTone"
 
 interface AddTempAddressToneProps {
-  isDestination?: boolean
   addressData: CreateGuideAddressFormValuesTone
   goNext: () => void
-  goPrev: () => void
-  toggleModal: () => void
+  toggleTempAddressModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
 }
 
 export const AddTempAddressTone = ({
-  isDestination, addressData, goNext, goPrev, toggleModal, updateAddress,
+  addressData, goNext, toggleTempAddressModal, updateAddress,
 }: AddTempAddressToneProps) => {
   const {
     register,
@@ -33,13 +31,9 @@ export const AddTempAddressTone = ({
     goNext()
   }
 
-  // TODO: Doublecheck this function behavior
   const handleCancel = () => {
-    goPrev()
+    toggleTempAddressModal()
   }
-
-  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
-  const cancelColorButton = isDestination ? "light" : "red"
 
   return (
     <form
@@ -149,13 +143,12 @@ export const AddTempAddressTone = ({
       </section>
       <div className="flex justify-between mt-4">
         <Button
-          {...(!isDestination && { outline: true })}
-          color={cancelColorButton}
+          color="light"
           data-testid="origin-address-cancel-button"
           className="hover:cursor-pointer"
           onClick={handleCancel}
         >
-          {cancelButtonText}
+          Volver
         </Button>
         <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
           Siguiente

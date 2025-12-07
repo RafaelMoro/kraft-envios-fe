@@ -90,9 +90,7 @@ export const AddAddressTone = ({
         addressData={addressData}
         goNext={goNext}
         updateAddress={updateAddress}
-        isDestination={isDestination}
-        toggleModal={toggleModal}
-        goPrev={toggleTempAddress}
+        toggleTempAddressModal={toggleTempAddress}
       />
     )
   }
