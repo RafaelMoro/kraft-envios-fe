@@ -5,7 +5,9 @@ import { Button } from "flowbite-react"
 
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
 import { PersonalDataTone } from "./PersonalDataTone"
-import { AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressDataToneFormValues } from "@/shared/types/guides.types"
+import {
+  AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressDataToneFormValues
+} from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
@@ -56,10 +58,18 @@ export const AddAddressTone = ({
       setAddressError("Por favor selecciona un alias de dirección");
       return;
     }
+    if (!addressSelectedTone.current) {
+      setAddressError("La dirección seleccionada no es válida");
+      console.warn("Address selected is null");
+      return;
+    }
 
-    // updateAddress(data)
-    console.log('data', data)
-    // goNext()
+    const allData: CreateGuideAddressFormValuesTone = {
+      ...data,
+      ...addressSelectedTone.current
+    }
+    updateAddress(allData)
+    goNext()
   }
 
   const updateAddressInfo = (newAddress: Address) => {
