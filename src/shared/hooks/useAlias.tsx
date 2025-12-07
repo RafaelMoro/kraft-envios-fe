@@ -1,6 +1,7 @@
 "use client"
 import { useRef, useState } from "react";
-import { CreateGuideAddressDataToneFormValues } from "../types/guides.types";
+import { AliasesSaved, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
+import { initialAliases } from "../constants/guides.constants";
 
 export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
   const [aliasSelected, setAliasSelected] = useState(aliasSaved);
@@ -17,5 +18,25 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
     setAddressError,
     addressSelectedTone: addressSelectedTone.current,
     updateAddressSelectedTone
+  }
+}
+
+export const useSaveAlias = () => {
+  const aliases = useRef<AliasesSaved>({...initialAliases})
+  const updateOriginAlias = (alias: string) => {
+    aliases.current.origin = alias
+  }
+  const updateDestinationAlias = (alias: string) => {
+    aliases.current.destination = alias
+  }
+  const resetAliases = () => {
+    aliases.current = {...initialAliases}
+  }
+  
+  return {
+    aliases: aliases.current,
+    updateOriginAlias,
+    updateDestinationAlias,
+    resetAliases
   }
 }
