@@ -5,7 +5,7 @@ import { Button } from "flowbite-react"
 
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
 import { PersonalDataTone } from "./PersonalDataTone"
-import { AddAddressToneFormSchema, AddressTonePersonalDataFormValues, CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone } from "@/shared/types/guides.types"
+import { AddAddressToneFormSchema, AddressTonePersonalDataFormValues, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
@@ -26,6 +26,17 @@ export const AddAddressTone = ({
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
 
   const [aliasSelected, setAliasSelected] = useState("");
+
+  const cancelColorButton = isDestination ? "light" : "red"
+  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
+  const handleCancel = () => {
+    if (isDestination) {
+      goPrev()
+      return
+    }
+
+    toggleModal()
+  }
 
   const {
     register,
@@ -71,6 +82,22 @@ export const AddAddressTone = ({
           errors={errors}
           register={register}
         />
+      }
+      SubmitFormUI={
+        <div className="flex justify-between mt-8">
+          <Button
+            {...(!isDestination && { outline: true })}
+            color={cancelColorButton}
+            data-testid="origin-address-cancel-button"
+            className="hover:cursor-pointer"
+            onClick={handleCancel}
+          >
+            {cancelButtonText}
+          </Button>
+          <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+            Siguiente
+          </Button>
+        </div>
       }
       CreateTempAddressButton={
         <div className="my-4 w-full flex justify-end">

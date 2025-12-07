@@ -22,7 +22,7 @@ export const PersonalDataTone = <T extends PersonalData>({ addressData, errors, 
   const emailError = errors?.email as FieldError | undefined;
 
   return (
-    <section>
+    <section className="flex flex-col gap-4">
       <h4 className="text-xl">Datos personales</h4>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
