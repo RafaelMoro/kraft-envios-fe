@@ -1,15 +1,15 @@
 "use client"
 import { useRef, useState } from "react";
-import { AliasesSaved, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
+import { AllAliasesSavedTone, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
 import { initialAliases } from "../constants/guides.constants";
 
 /**
  * Hook to manage a selected alias and handle select alias error with component `SelectAddressDropdown`
  */
-export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
+export const useSelectAlias = ({  aliasSaved, address }: { aliasSaved: string, address: CreateGuideAddressDataToneFormValues | null }) => {
   const [aliasSelected, setAliasSelected] = useState(aliasSaved);
   const [addressError, setAddressError] = useState<string>("");
-  const addressSelectedTone = useRef<CreateGuideAddressDataToneFormValues | null>(null);
+  const addressSelectedTone = useRef<CreateGuideAddressDataToneFormValues | null>(address);
 
   const updateAddressSelectedTone = (address: CreateGuideAddressDataToneFormValues) => {
     addressSelectedTone.current = address;
@@ -28,12 +28,14 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
  * Hook to save Alias selected for Origin and Destination addresses
  */
 export const useSaveAlias = () => {
-  const aliases = useRef<AliasesSaved>({...initialAliases})
-  const updateOriginAlias = (alias: string) => {
-    aliases.current.origin = alias
+  const aliases = useRef<AllAliasesSavedTone>({...initialAliases})
+  const updateOriginAlias = ({ alias, address }: { alias: string; address: CreateGuideAddressDataToneFormValues }) => {
+    aliases.current.origin.alias = alias
+    aliases.current.origin.address = address
   }
-  const updateDestinationAlias = (alias: string) => {
-    aliases.current.destination = alias
+  const updateDestinationAlias = ({ alias, address }: { alias: string; address: CreateGuideAddressDataToneFormValues }) => {
+    aliases.current.destination.alias = alias
+    aliases.current.destination.address = address
   }
   const resetAliases = () => {
     aliases.current = {...initialAliases}

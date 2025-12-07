@@ -6,7 +6,8 @@ import { Button } from "flowbite-react"
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
 import { PersonalDataTone } from "./PersonalDataTone"
 import {
-  AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressDataToneFormValues
+  AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressDataToneFormValues,
+  AliasSavedTone
 } from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
@@ -15,13 +16,13 @@ import { useSelectAlias } from "@/shared/hooks/useAlias"
 
 interface AddAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
-  aliasSaved: string;
+  aliasSaved: AliasSavedTone;
   isDestination?: boolean
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
-  updateSavedAlias: (alias: string) => void
+  updateSavedAlias: ({ alias, address }: { alias: string; address: CreateGuideAddressDataToneFormValues }) => void
 }
 
 export const AddAddressTone = ({
@@ -29,7 +30,10 @@ export const AddAddressTone = ({
 }: AddAddressToneProps) => {
   const [useTempAddress, setUseTempAddress] = useState(false);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
-  const { aliasSelected, setAliasSelected, addressError, setAddressError, addressSelectedTone, updateAddressSelectedTone } = useSelectAlias({ aliasSaved });
+  const {
+    aliasSelected, setAliasSelected, addressError, setAddressError, addressSelectedTone, updateAddressSelectedTone
+  } = useSelectAlias({ aliasSaved: aliasSaved.alias, address: aliasSaved.address });
+  console.log('addressSelectedTone', addressSelectedTone)
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -81,7 +85,7 @@ export const AddAddressTone = ({
       state: newAddress.state,
       reference: newAddress.reference,
     }
-    updateSavedAlias(newAddress.alias)
+    updateSavedAlias({ alias: newAddress.alias, address: updatedAddressData })
     updateAddressSelectedTone(updatedAddressData)
   }
 
