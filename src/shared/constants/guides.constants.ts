@@ -1,4 +1,4 @@
-import { CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressValuesWithLada, CreateGuideFormValues, CreateGuideFormValuesGE, CreateGuideFormValuesPkk, CreateGuideFormValuesTone } from "../types/guides.types";
+import { AliasesSaved, CreateGuideAddressFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressValuesWithLada, CreateGuideFormValues, CreateGuideFormValuesGE, CreateGuideFormValuesPkk, CreateGuideFormValuesTone } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
 // TODO: Confirm the default email
@@ -7,6 +7,11 @@ export const DEFAULT_REFERENCE = 'Sin referencia'
 export const DEFAULT_RFC = 'XAXX010101000'
 
 export const CREATE_GUIDE_STEPS = ["Remitente", "Destinatario", "Paquete", "Confirmar"]
+
+export const initialAliases: AliasesSaved = {
+  origin: "",
+  destination: ""
+}
 
 export const initialStateAddressForm: CreateGuideAddressFormValues = {
   name: "",

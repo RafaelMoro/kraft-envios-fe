@@ -7,6 +7,11 @@ export type GetProductSatIdPayload = {
   search: string
 }
 
+export type AliasesSaved = {
+  origin: string;
+  destination: string;
+}
+
 export type CreateGuideFormValues = {
   originAddress: CreateGuideAddressFormValues;
   destinationAddress: CreateGuideAddressFormValues;

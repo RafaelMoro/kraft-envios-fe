@@ -2,8 +2,8 @@
 import { useRef, useState } from "react";
 import { CreateGuideAddressDataToneFormValues } from "../types/guides.types";
 
-export const useSelectAlias = () => {
-  const [aliasSelected, setAliasSelected] = useState("");
+export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
+  const [aliasSelected, setAliasSelected] = useState(aliasSaved);
   const [addressError, setAddressError] = useState<string>("");
   const addressSelectedTone = useRef<CreateGuideAddressDataToneFormValues | null>(null);
 

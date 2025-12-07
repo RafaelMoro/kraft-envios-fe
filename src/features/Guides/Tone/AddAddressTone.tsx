@@ -15,19 +15,21 @@ import { useSelectAlias } from "@/shared/hooks/useSelectAlias"
 
 interface AddAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
+  aliasSaved: string;
   isDestination?: boolean
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
+  updateSavedAlias: (alias: string) => void
 }
 
 export const AddAddressTone = ({
-  addressData, updateAddress, isDestination, goNext, goPrev, toggleModal
+  addressData, aliasSaved, updateAddress, isDestination, goNext, goPrev, toggleModal, updateSavedAlias
 }: AddAddressToneProps) => {
   const [useTempAddress, setUseTempAddress] = useState(false);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
-  const { aliasSelected, setAliasSelected, addressError, setAddressError, addressSelectedTone, updateAddressSelectedTone } = useSelectAlias()
+  const { aliasSelected, setAliasSelected, addressError, setAddressError, addressSelectedTone, updateAddressSelectedTone } = useSelectAlias({ aliasSaved });
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -79,6 +81,7 @@ export const AddAddressTone = ({
       state: newAddress.state,
       reference: newAddress.reference,
     }
+    updateSavedAlias(newAddress.alias)
     updateAddressSelectedTone(updatedAddressData)
   }
 
