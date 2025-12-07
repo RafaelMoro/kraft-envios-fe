@@ -3,6 +3,9 @@ import { useRef, useState } from "react";
 import { AliasesSaved, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
 import { initialAliases } from "../constants/guides.constants";
 
+/**
+ * Hook to manage a selected alias and handle select alias error with component `SelectAddressDropdown`
+ */
 export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
   const [aliasSelected, setAliasSelected] = useState(aliasSaved);
   const [addressError, setAddressError] = useState<string>("");
@@ -21,6 +24,9 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
   }
 }
 
+/**
+ * Hook to save Alias selected for Origin and Destination addresses
+ */
 export const useSaveAlias = () => {
   const aliases = useRef<AliasesSaved>({...initialAliases})
   const updateOriginAlias = (alias: string) => {
