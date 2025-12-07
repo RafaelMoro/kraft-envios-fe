@@ -11,7 +11,7 @@ import {
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
-import { useSelectAlias } from "@/shared/hooks/useSelectAlias"
+import { useSelectAlias } from "@/shared/hooks/useAlias"
 
 interface AddAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
