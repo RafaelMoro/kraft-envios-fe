@@ -65,14 +65,18 @@ export const AddAddressTone = ({
 
   return (
     <AddAddressCreateGuide
-      PersonalDataUI={() => (
+      PersonalDataUI={
         <PersonalDataTone<AddressTonePersonalDataFormValues>
           addressData={addressData}
           errors={errors}
           register={register}
         />
-      )}
-      CreateTempAddressButton={<Button onClick={toggleTempAddress}>Usar dirección temporal</Button>}
+      }
+      CreateTempAddressButton={
+        <div className="my-4 w-full flex justify-end">
+          <Button outline onClick={toggleTempAddress}>Usar dirección temporal</Button>
+        </div>
+      }
     >
       <SelectAddressDropdown
         aliasSelected={aliasSelected}
