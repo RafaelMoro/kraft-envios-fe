@@ -7,7 +7,13 @@ import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { AddTempAddressTone } from "./AddTempAddressTone";
-import { CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, CreateGuideTonePayload, GlobalCreateGuideResponse, ParcelInfoValuesTone } from "@/shared/types/guides.types";
+import {
+  CreateGuideAddressFormValuesTone,
+  CreateGuideFormValuesTone,
+  CreateGuideTonePayload,
+  GlobalCreateGuideResponse,
+  ParcelInfoValuesTone
+} from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
