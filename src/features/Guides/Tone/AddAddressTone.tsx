@@ -33,7 +33,6 @@ export const AddAddressTone = ({
   const {
     aliasSelected, setAliasSelected, addressError, setAddressError, addressSelectedTone, updateAddressSelectedTone
   } = useSelectAlias({ aliasSaved: aliasSaved.alias, address: aliasSaved.address });
-  console.log('addressSelectedTone', addressSelectedTone)
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
