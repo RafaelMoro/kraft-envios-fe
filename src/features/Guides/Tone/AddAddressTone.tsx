@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "flowbite-react"
@@ -11,6 +11,7 @@ import {
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
+import { useSelectAlias } from "@/shared/hooks/useSelectAlias"
 
 interface AddAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
@@ -26,10 +27,7 @@ export const AddAddressTone = ({
 }: AddAddressToneProps) => {
   const [useTempAddress, setUseTempAddress] = useState(false);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
-
-  const [aliasSelected, setAliasSelected] = useState("");
-  const [addressError, setAddressError] = useState<string>("");
-  const addressSelectedTone = useRef<CreateGuideAddressDataToneFormValues | null>(null);
+  const { aliasSelected, setAliasSelected, addressError, setAddressError, addressSelectedTone, updateAddressSelectedTone } = useSelectAlias()
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -58,7 +56,7 @@ export const AddAddressTone = ({
       setAddressError("Por favor selecciona un alias de dirección");
       return;
     }
-    if (!addressSelectedTone.current) {
+    if (!addressSelectedTone) {
       setAddressError("La dirección seleccionada no es válida");
       console.warn("Address selected is null");
       return;
@@ -66,7 +64,7 @@ export const AddAddressTone = ({
 
     const allData: CreateGuideAddressFormValuesTone = {
       ...data,
-      ...addressSelectedTone.current
+      ...addressSelectedTone
     }
     updateAddress(allData)
     goNext()
@@ -81,7 +79,7 @@ export const AddAddressTone = ({
       state: newAddress.state,
       reference: newAddress.reference,
     }
-    addressSelectedTone.current = updatedAddressData
+    updateAddressSelectedTone(updatedAddressData)
   }
 
   if (useTempAddress) {
