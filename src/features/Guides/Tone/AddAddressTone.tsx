@@ -48,7 +48,7 @@ export const AddAddressTone = ({ formData, updateAddress }: AddAddressToneProps)
           register={register}
         />
       )}
-      CreateTempAddressButton={<button>Crear dirección temporal</button>}
+      CreateTempAddressButton={<button>Usar dirección temporal</button>}
     >
       <SelectAddressDropdown
         aliasSelected={aliasSelected}
