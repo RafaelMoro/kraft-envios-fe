@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "flowbite-react"
 
@@ -41,9 +41,18 @@ export const AddAddressTone = ({
   const {
     register,
     formState: { errors },
+    handleSubmit
   } = useForm<AddressTonePersonalDataFormValues>({
     resolver: yupResolver(AddAddressToneFormSchema)
   })
+
+  const onSubmit: SubmitHandler<AddressTonePersonalDataFormValues> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    // updateAddress(data)
+    console.log('data', data)
+    // goNext()
+  }
 
   const updateAddressInfo = (newAddress: Address) => {
     const updatedAddressData: CreateGuideAddressFormValuesTone = {
@@ -75,41 +84,45 @@ export const AddAddressTone = ({
   }
 
   return (
-    <AddAddressCreateGuide
-      PersonalDataUI={
-        <PersonalDataTone<AddressTonePersonalDataFormValues>
-          addressData={addressData}
-          errors={errors}
-          register={register}
-        />
-      }
-      SubmitFormUI={
-        <div className="flex justify-between mt-8">
-          <Button
-            {...(!isDestination && { outline: true })}
-            color={cancelColorButton}
-            data-testid="origin-address-cancel-button"
-            className="hover:cursor-pointer"
-            onClick={handleCancel}
-          >
-            {cancelButtonText}
-          </Button>
-          <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
-            Siguiente
-          </Button>
-        </div>
-      }
-      CreateTempAddressButton={
-        <div className="my-4 w-full flex justify-end">
-          <Button outline onClick={toggleTempAddress}>Usar dirección temporal</Button>
-        </div>
-      }
+    <form
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <SelectAddressDropdown
-        aliasSelected={aliasSelected}
-        setAliasSelected={setAliasSelected}
-        updateAddressInfo={updateAddressInfo}
-      />
-    </AddAddressCreateGuide>
+      <AddAddressCreateGuide
+        PersonalDataUI={
+          <PersonalDataTone<AddressTonePersonalDataFormValues>
+            addressData={addressData}
+            errors={errors}
+            register={register}
+          />
+        }
+        SubmitFormUI={
+          <div className="flex justify-between mt-8">
+            <Button
+              {...(!isDestination && { outline: true })}
+              color={cancelColorButton}
+              data-testid="origin-address-cancel-button"
+              className="hover:cursor-pointer"
+              onClick={handleCancel}
+            >
+              {cancelButtonText}
+            </Button>
+            <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+              Siguiente
+            </Button>
+          </div>
+        }
+        CreateTempAddressButton={
+          <div className="my-4 w-full flex justify-end">
+            <Button outline onClick={toggleTempAddress}>Usar dirección temporal</Button>
+          </div>
+        }
+      >
+        <SelectAddressDropdown
+          aliasSelected={aliasSelected}
+          setAliasSelected={setAliasSelected}
+          updateAddressInfo={updateAddressInfo}
+        />
+      </AddAddressCreateGuide>
+    </form>
   )
 }
