@@ -1,10 +1,15 @@
-import { useGetAddress } from "@/shared/hooks/useGetAddress"
+import { Button, Dropdown, DropdownItem, Spinner } from "flowbite-react"
 import { RiArrowDownSLine } from "@remixicon/react"
-import { Button, Dropdown, DropdownItem } from "flowbite-react"
 
-export const SelectAddressDropdown = () => {
+import { useGetAddress } from "@/shared/hooks/useGetAddress"
+
+interface SelectAddressDropdownProps {
+  aliasSelected: string
+  setAliasSelected: (alias: string) => void
+}
+
+export const SelectAddressDropdown = ({ aliasSelected, setAliasSelected }: SelectAddressDropdownProps) => {
   const { aliases, isPending, isError } = useGetAddress()
-  console.log({ aliases })
 
   return (
     <Dropdown
@@ -15,20 +20,19 @@ export const SelectAddressDropdown = () => {
           color="light"
           disabled={isPending || isError || aliases.length === 0}
         >
-          {/* { isPending && (<Spinner />)}
-          { (isError && !isPending) && ("No se ha podido cargar los alias")}
-          { (!isPending && data && !alias) && "Alias de domicilio"}
-          { (!isPending && Boolean(data) && Boolean(alias)) && alias} */}
-          Seleccionar dirección
+          { isPending && (<Spinner />)}
+          { (isError && !isPending) && ("No se han podido cargar los alias")}
+          { (!isPending && aliases.length > 0 && !aliasSelected) && 'Alias de dirección'}
+          { (!isPending && aliases.length > 0 && aliasSelected) && aliasSelected}
           <RiArrowDownSLine />
         </Button>
       )}
     >
-      {/* { (data && data?.length > 0 )&& data.map((alias) => (
-        <DropdownItem key={`alias-${alias}`} onClick={() => setAlias(alias)}>
+      { (aliases && aliases.length > 0 )&& aliases.map((alias) => (
+        <DropdownItem key={`alias-${alias}`} onClick={() => setAliasSelected(alias)}>
           {alias}
         </DropdownItem>
-      )) } */}
+      )) }
       <DropdownItem>
         Direccion prueba
       </DropdownItem>
