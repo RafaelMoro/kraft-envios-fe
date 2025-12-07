@@ -44,14 +44,14 @@ export type CreateGuideAddressFormValues = {
   reference?: string | null | undefined
 }
 
-export type AddressTonePersonalDataFormValues = {
+export type CreateGuidePersonalDataToneFormValues = {
   name: string;
   lastName: string;
   phone: string;
   email?: string | null | undefined
 }
 
-export type CreateGuideAddressFormValuesTone = AddressTonePersonalDataFormValues & {
+export type CreateGuideAddressDataToneFormValues = {
   street1: string;
   neighborhood: string;
   town: string;
@@ -59,6 +59,8 @@ export type CreateGuideAddressFormValuesTone = AddressTonePersonalDataFormValues
   state: string;
   reference?: string | null | undefined
 }
+
+export type CreateGuideAddressFormValuesTone = CreateGuidePersonalDataToneFormValues & CreateGuideAddressDataToneFormValues;
 
 export type CreateGuideAddressFormValuesPkk = {
   name: string;
@@ -305,7 +307,7 @@ export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> 
   quantity: number().typeError('Cantidad es requerida').required('Cantidad es requerida').min(1, 'La cantidad debe ser al menos 1'),
 })
 
-export const AddAddressToneFormSchema: ObjectSchema<AddressTonePersonalDataFormValues> = object().shape({
+export const AddAddressToneFormSchema: ObjectSchema<CreateGuidePersonalDataToneFormValues> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
   lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
   phone: string()

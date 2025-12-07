@@ -5,7 +5,7 @@ import { Button } from "flowbite-react"
 
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
 import { PersonalDataTone } from "./PersonalDataTone"
-import { AddAddressToneFormSchema, AddressTonePersonalDataFormValues, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
+import { AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
@@ -42,11 +42,11 @@ export const AddAddressTone = ({
     register,
     formState: { errors },
     handleSubmit
-  } = useForm<AddressTonePersonalDataFormValues>({
+  } = useForm<CreateGuidePersonalDataToneFormValues>({
     resolver: yupResolver(AddAddressToneFormSchema)
   })
 
-  const onSubmit: SubmitHandler<AddressTonePersonalDataFormValues> = (data, event) => {
+  const onSubmit: SubmitHandler<CreateGuidePersonalDataToneFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
     // updateAddress(data)
@@ -89,7 +89,7 @@ export const AddAddressTone = ({
     >
       <AddAddressCreateGuide
         PersonalDataUI={
-          <PersonalDataTone<AddressTonePersonalDataFormValues>
+          <PersonalDataTone<CreateGuidePersonalDataToneFormValues>
             addressData={addressData}
             errors={errors}
             register={register}
