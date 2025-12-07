@@ -1,19 +1,30 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { Button } from "flowbite-react"
 
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
 import { PersonalDataTone } from "./PersonalDataTone"
 import { AddAddressToneFormSchema, AddressTonePersonalDataFormValues, CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone } from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
+import { AddTempAddressTone } from "./AddTempAddressTone"
 
 interface AddAddressToneProps {
-  formData: CreateGuideFormValuesTone;
+  addressData: CreateGuideAddressFormValuesTone
+  isDestination?: boolean
+  goNext: () => void
+  goPrev: () => void
+  toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
 }
 
-export const AddAddressTone = ({ formData, updateAddress }: AddAddressToneProps) => {
+export const AddAddressTone = ({
+  addressData, updateAddress, isDestination, goNext, goPrev, toggleModal
+}: AddAddressToneProps) => {
+  const [useTempAddress, setUseTempAddress] = useState(false);
+  const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
+
   const [aliasSelected, setAliasSelected] = useState("");
 
   const {
@@ -39,16 +50,29 @@ export const AddAddressTone = ({ formData, updateAddress }: AddAddressToneProps)
     updateAddress(updatedAddressData)
   }
 
+  if (useTempAddress) {
+    return (
+      <AddTempAddressTone
+        addressData={addressData}
+        goNext={goNext}
+        updateAddress={updateAddress}
+        isDestination={isDestination}
+        toggleModal={toggleModal}
+        goPrev={toggleTempAddress}
+      />
+    )
+  }
+
   return (
     <AddAddressCreateGuide
       PersonalDataUI={() => (
         <PersonalDataTone<AddressTonePersonalDataFormValues>
-          addressData={formData.originAddress}
+          addressData={addressData}
           errors={errors}
           register={register}
         />
       )}
-      CreateTempAddressButton={<button>Usar dirección temporal</button>}
+      CreateTempAddressButton={<Button onClick={toggleTempAddress}>Usar dirección temporal</Button>}
     >
       <SelectAddressDropdown
         aliasSelected={aliasSelected}

@@ -32,13 +32,9 @@ export const AddTempAddressTone = ({
     goNext()
   }
 
+  // TODO: Doublecheck this function behavior
   const handleCancel = () => {
-    if (isDestination) {
-      goPrev()
-      return;
-    }
-
-    toggleModal()
+    goPrev()
   }
 
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"

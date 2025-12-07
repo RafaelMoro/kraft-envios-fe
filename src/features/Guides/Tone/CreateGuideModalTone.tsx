@@ -71,7 +71,13 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           </div>
         )}
         { step === 1 && (
-          <AddAddressTone formData={formData.current} />
+          <AddAddressTone
+            addressData={formData.current.originAddress}
+            goNext={goNext}
+            updateAddress={updateOriginAddress}
+            toggleModal={toggleModal}
+            goPrev={goPrev}
+          />
         )}
         {/* { step === 1 && (
           <AddTempAddressTone
