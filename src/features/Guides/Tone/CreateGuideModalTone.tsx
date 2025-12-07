@@ -6,7 +6,6 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { AddTempAddressTone } from "./AddTempAddressTone";
 import {
   CreateGuideAddressFormValuesTone,
   CreateGuideFormValuesTone,
@@ -85,17 +84,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
             goPrev={goPrev}
           />
         )}
-        {/* { step === 1 && (
-          <AddTempAddressTone
-            addressData={formData.current.originAddress}
-            goNext={goNext}
-            updateAddress={updateOriginAddress}
-            toggleModal={toggleModal}
-            goPrev={goPrev}
-          />
-        )} */}
         { step === 2 && (
-          <AddTempAddressTone
+          <AddAddressTone
             addressData={formData.current.destinationAddress}
             goNext={goNext}
             updateAddress={updateDestinationAddress}
