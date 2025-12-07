@@ -1,11 +1,11 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "flowbite-react"
 
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
 import { PersonalDataTone } from "./PersonalDataTone"
-import { AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
+import { AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressDataToneFormValues } from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
@@ -26,6 +26,8 @@ export const AddAddressTone = ({
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
 
   const [aliasSelected, setAliasSelected] = useState("");
+  const [addressError, setAddressError] = useState<string>("");
+  const addressSelectedTone = useRef<CreateGuideAddressDataToneFormValues | null>(null);
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -49,25 +51,27 @@ export const AddAddressTone = ({
   const onSubmit: SubmitHandler<CreateGuidePersonalDataToneFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+
+    if (!aliasSelected) {
+      setAddressError("Por favor selecciona un alias de dirección");
+      return;
+    }
+
     // updateAddress(data)
     console.log('data', data)
     // goNext()
   }
 
   const updateAddressInfo = (newAddress: Address) => {
-    const updatedAddressData: CreateGuideAddressFormValuesTone = {
+    const updatedAddressData: CreateGuideAddressDataToneFormValues = {
       street1: newAddress.addressName,
       external_number: newAddress.externalNumber,
       neighborhood: newAddress.neighborhood,
       town: newAddress?.town?.[0],
       state: newAddress.state,
       reference: newAddress.reference,
-      // TODO: Update these fields when available
-      name: '',
-      lastName: '',
-      phone: ''
     }
-    updateAddress(updatedAddressData)
+    addressSelectedTone.current = updatedAddressData
   }
 
   if (useTempAddress) {
@@ -121,6 +125,8 @@ export const AddAddressTone = ({
           aliasSelected={aliasSelected}
           setAliasSelected={setAliasSelected}
           updateAddressInfo={updateAddressInfo}
+          errorMessage={addressError}
+          setErrorMessage={setAddressError}
         />
       </AddAddressCreateGuide>
     </form>
