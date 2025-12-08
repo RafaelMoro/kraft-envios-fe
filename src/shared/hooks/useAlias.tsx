@@ -6,21 +6,15 @@ import { initialAliases } from "../constants/guides.constants";
 /**
  * Hook to manage a selected alias and handle select alias error with component `SelectAddressDropdown`
  */
-export const useSelectAlias = ({  aliasSaved, address }: { aliasSaved: string, address: CreateGuideAddressDataToneFormValues | null }) => {
+export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
   const [aliasSelected, setAliasSelected] = useState(aliasSaved);
   const [addressError, setAddressError] = useState<string>("");
-  const addressSelectedTone = useRef<CreateGuideAddressDataToneFormValues | null>(address);
 
-  const updateAddressSelectedTone = (address: CreateGuideAddressDataToneFormValues) => {
-    addressSelectedTone.current = address;
-  }
   return {
     aliasSelected,
     setAliasSelected,
     addressError,
     setAddressError,
-    addressSelectedTone: addressSelectedTone.current,
-    updateAddressSelectedTone
   }
 }
 

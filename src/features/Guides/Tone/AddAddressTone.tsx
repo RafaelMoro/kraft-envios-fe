@@ -31,8 +31,8 @@ export const AddAddressTone = ({
   const [useTempAddress, setUseTempAddress] = useState(false);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
   const {
-    aliasSelected, setAliasSelected, addressError, setAddressError, addressSelectedTone, updateAddressSelectedTone
-  } = useSelectAlias({ aliasSaved: aliasSaved.alias, address: aliasSaved.address });
+    aliasSelected, setAliasSelected, addressError, setAddressError,
+  } = useSelectAlias({ aliasSaved: aliasSaved.alias });
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -61,7 +61,7 @@ export const AddAddressTone = ({
       setAddressError("Por favor selecciona un alias de dirección");
       return;
     }
-    if (!addressSelectedTone) {
+    if (!aliasSaved.address) {
       setAddressError("La dirección seleccionada no es válida");
       console.warn("Address selected is null");
       return;
@@ -69,7 +69,7 @@ export const AddAddressTone = ({
 
     const allData: CreateGuideAddressFormValuesTone = {
       ...data,
-      ...addressSelectedTone
+      ...aliasSaved.address
     }
     updateAddress(allData)
     goNext()
@@ -85,7 +85,6 @@ export const AddAddressTone = ({
       reference: newAddress.reference,
     }
     updateSavedAlias({ alias: newAddress.alias, address: updatedAddressData })
-    updateAddressSelectedTone(updatedAddressData)
   }
 
   if (useTempAddress) {
