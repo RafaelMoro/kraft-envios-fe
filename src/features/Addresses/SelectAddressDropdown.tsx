@@ -20,6 +20,7 @@ export const SelectAddressDropdown = ({
   aliasSelected, errorMessage, setAliasSelected, updateAddressInfo, setErrorMessage, hideTownDropdown = false, hideCityDropdown = false
 }: SelectAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   const [showTownSelector, setShowTownSelector] = useState(false);
   const [townSelected, setTownSelected] = useState<string>("");
@@ -29,27 +30,30 @@ export const SelectAddressDropdown = ({
   const [citySelected, setCitySelected] = useState<string>("");
   const [cities, setCities] = useState<string[]>([]);
 
-  const handleSelectAddress = (address: Address) => {
-    console.log("Selected address:", address);
+  const handleSelectAlias = (address: Address) => {
+    let newTown = ""
+    let newCity = ""
 
     if (address.town.length > 1) {
       setShowTownSelector(true);
       setTowns(address.town);
-      setTownSelected("");
+      setTownSelected(newTown);
     } else {
       setShowTownSelector(false);
       setTowns([]);
-      setTownSelected(address.town?.[0] || "");
+      newTown = address.town?.[0] || "";
+      setTownSelected(newTown);
     }
 
     if (address.city.length > 1) {
       setShowCitySelector(true);
       setCities(address.city);
-      setCitySelected("");
+      setCitySelected(newCity);
     } else {
       setShowCitySelector(false);
       setCities([]);
-      setCitySelected(address.city?.[0] || "");
+      newCity = address.city?.[0] || "";
+      setCitySelected(newCity);
     }
 
     if (errorMessage) {
@@ -57,7 +61,17 @@ export const SelectAddressDropdown = ({
     }
 
     setAliasSelected(address.alias)
-    updateAddressInfo({ newAddress: address, town: townSelected, city: citySelected })
+    setSelectedAddress(address);
+    updateAddressInfo({ newAddress: address, town: newTown, city: newCity })
+  }
+
+  const handleSelectTown = (town: string) => {
+    setTownSelected(town);
+    if (!selectedAddress) {
+      console.warn("No address selected");
+      return;
+    }
+    updateAddressInfo({ newAddress: selectedAddress, town, city: citySelected })
   }
 
   return (
@@ -86,7 +100,7 @@ export const SelectAddressDropdown = ({
         )}
       >
         { (addresses && addresses.length > 0 )&& addresses.map((address) => (
-          <DropdownItem key={`alias-${address.alias}`} onClick={() => handleSelectAddress(address)}>
+          <DropdownItem key={`alias-${address.alias}`} onClick={() => handleSelectAlias(address)}>
             {address.alias}
           </DropdownItem>
         )) }
@@ -114,7 +128,7 @@ export const SelectAddressDropdown = ({
           )}
         >
           { (towns.length > 0 )&& towns.map((town) => (
-            <DropdownItem key={`town-${town}`} onClick={() => setTownSelected(town)}>
+            <DropdownItem key={`town-${town}`} onClick={() => handleSelectTown(town)}>
               {town}
             </DropdownItem>
           )) }
