@@ -10,7 +10,7 @@ import {
   AliasSavedTone
 } from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
-import { Address } from "@/shared/types/addresses.types"
+import { UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
 import { useSelectAlias } from "@/shared/hooks/useAlias"
 
@@ -75,12 +75,12 @@ export const AddAddressTone = ({
     goNext()
   }
 
-  const updateAddressInfo = (newAddress: Address) => {
+  const updateAddressInfo = ({ newAddress, town }: UpdateAddressInfoPayload) => {
     const updatedAddressData: CreateGuideAddressDataToneFormValues = {
       street1: newAddress.addressName,
       external_number: newAddress.externalNumber,
       neighborhood: newAddress.neighborhood,
-      town: newAddress?.town?.[0],
+      town,
       state: newAddress.state,
       reference: newAddress.reference,
     }
