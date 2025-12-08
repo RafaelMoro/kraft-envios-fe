@@ -9,12 +9,20 @@ import { initialAliases } from "../constants/guides.constants";
 export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
   const [aliasSelected, setAliasSelected] = useState(aliasSaved);
   const [addressError, setAddressError] = useState<string>("");
+  const [townError, setTownError] = useState<string>("");
+
+  const resetAliasSelected = () => {
+    setAliasSelected("");
+  }
 
   return {
     aliasSelected,
     setAliasSelected,
     addressError,
     setAddressError,
+    townError,
+    setTownError,
+    resetAliasSelected,
   }
 }
 

@@ -31,12 +31,14 @@ export const AddAddressTone = ({
   const [useTempAddress, setUseTempAddress] = useState(false);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
   const {
-    aliasSelected, setAliasSelected, addressError, setAddressError,
+    aliasSelected, setAliasSelected, addressError, setAddressError, townError, setTownError, resetAliasSelected
   } = useSelectAlias({ aliasSaved: aliasSaved.alias });
+  console.log('aliasSelected', aliasSelected)
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
   const handleCancel = () => {
+    resetAliasSelected();
     if (isDestination) {
       goPrev()
       return
@@ -64,6 +66,10 @@ export const AddAddressTone = ({
     if (!aliasSaved.address) {
       setAddressError("La dirección seleccionada no es válida");
       console.warn("Address selected is null");
+      return;
+    }
+    if (!aliasSaved.address.town) {
+      setTownError("Por favor selecciona un municipio");
       return;
     }
 
@@ -137,7 +143,9 @@ export const AddAddressTone = ({
           setAliasSelected={setAliasSelected}
           updateAddressInfo={updateAddressInfo}
           errorMessage={addressError}
+          townError={townError}
           setErrorMessage={setAddressError}
+          setTownError={setTownError}
         />
       </AddAddressCreateGuide>
     </form>

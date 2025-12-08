@@ -9,15 +9,18 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 interface SelectAddressDropdownProps {
   aliasSelected: string;
   errorMessage: string;
+  townError: string;
   hideTownDropdown?: boolean;
   hideCityDropdown?: boolean;
   setErrorMessage: (message: string) => void;
+  setTownError: (message: string) => void;
   setAliasSelected: (alias: string) => void
   updateAddressInfo: ({ newAddress, town, city }: UpdateAddressInfoPayload) => void
 }
 
 export const SelectAddressDropdown = ({
-  aliasSelected, errorMessage, setAliasSelected, updateAddressInfo, setErrorMessage, hideTownDropdown = false, hideCityDropdown = false
+  aliasSelected, errorMessage, townError, hideTownDropdown = false, hideCityDropdown = false,
+  setAliasSelected, updateAddressInfo, setErrorMessage, setTownError,
 }: SelectAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -66,12 +69,23 @@ export const SelectAddressDropdown = ({
   }
 
   const handleSelectTown = (town: string) => {
+    if (townError) setTownError("");
+
     setTownSelected(town);
     if (!selectedAddress) {
       console.warn("No address selected");
       return;
     }
     updateAddressInfo({ newAddress: selectedAddress, town, city: citySelected })
+  }
+
+  const handleSelectCity = (city: string) => {
+    setCitySelected(city);
+    if (!selectedAddress) {
+      console.warn("No address selected");
+      return;
+    }
+    updateAddressInfo({ newAddress: selectedAddress, town: townSelected, city })
   }
 
   return (
@@ -121,8 +135,8 @@ export const SelectAddressDropdown = ({
                 { townSelected && townSelected}
                 <RiArrowDownSLine />
               </Button>
-              { errorMessage && (
-                <ErrorMessage>{errorMessage}</ErrorMessage>
+              { townError && (
+                <ErrorMessage>{townError}</ErrorMessage>
               )}
             </div>
           )}
@@ -157,7 +171,7 @@ export const SelectAddressDropdown = ({
           )}
         >
           { (cities.length > 0 )&& cities.map((city) => (
-            <DropdownItem key={`city-${city}`} onClick={() => setCitySelected(city)}>
+            <DropdownItem key={`city-${city}`} onClick={() => handleSelectCity(city)}>
               {city}
             </DropdownItem>
           )) }
