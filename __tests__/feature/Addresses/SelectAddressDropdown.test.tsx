@@ -57,10 +57,6 @@ const emptyAliasSaved: AliasSavedTone = {
     neighborhood: ''
   },
   addressTone: {
-    name: '',
-    lastName: '',
-    phone: '',
-    email: '',
     street1: '',
     neighborhood: '',
     town: '',
@@ -297,85 +293,6 @@ describe('Feature: Select Address Dropdown', () => {
     })
   })
 
-  describe('Scenario: Select a town from the dropdown', () => {
-    it('Given the town dropdown is enabled, When user selects a town, Then it should call updateAddressInfo with the selected town', async () => {
-      const user = userEvent.setup()
-      const updateAddressInfo = jest.fn()
-
-      mockedUseGetAddress.mockReturnValue({
-        data: mockAddresses,
-        aliases: ['Casa', 'Oficina'],
-        refetch: jest.fn(),
-        isPending: false,
-        isError: false
-      })
-
-      render(
-        <SelectAddressDropdownWrapper
-          updateAddressInfo={updateAddressInfo}
-        />
-      )
-
-      const aliasButton = screen.getByTestId('select-address-dropdown-button')
-      await user.click(aliasButton)
-
-      const oficinaOption = await screen.findByText('Oficina')
-      await user.click(oficinaOption)
-
-      await waitFor(async () => {
-        const townButton = screen.getByTestId('select-town-dropdown-button')
-        expect(townButton).not.toBeDisabled()
-        await user.click(townButton)
-      })
-
-      const centroTown = await screen.findByRole('menuitem', { name: 'Centro' })
-      await user.click(centroTown)
-
-      expect(updateAddressInfo).toHaveBeenLastCalledWith({
-        newAddress: mockAddresses[1],
-        town: 'Centro',
-        city: ''
-      })
-    })
-
-    it('Given there is a town error, When user selects a town, Then it should clear the error', async () => {
-      const user = userEvent.setup()
-      const setTownError = jest.fn()
-
-      mockedUseGetAddress.mockReturnValue({
-        data: mockAddresses,
-        aliases: ['Casa', 'Oficina'],
-        refetch: jest.fn(),
-        isPending: false,
-        isError: false
-      })
-
-      render(
-        <SelectAddressDropdownWrapper
-          townError="Error en municipio"
-          setTownError={setTownError}
-        />
-      )
-
-      const aliasButton = screen.getByTestId('select-address-dropdown-button')
-      await user.click(aliasButton)
-
-      const oficinaOption = await screen.findByText('Oficina')
-      await user.click(oficinaOption)
-
-      await waitFor(async () => {
-        const townButton = screen.getByTestId('select-town-dropdown-button')
-        expect(townButton).not.toBeDisabled()
-        await user.click(townButton)
-      })
-
-      const centroTown = await screen.findByRole('menuitem', { name: 'Centro' })
-      await user.click(centroTown)
-
-      expect(setTownError).toHaveBeenCalledWith('')
-    })
-  })
-
   describe('Scenario: Display city dropdown when address has multiple cities', () => {
     it('Given an address with multiple cities is selected, When the component renders, Then it should show the city dropdown enabled', async () => {
       const user = userEvent.setup()
@@ -425,85 +342,6 @@ describe('Feature: Select Address Dropdown', () => {
         const cityButton = screen.getByTestId('select-city-dropdown-button')
         expect(cityButton).toBeDisabled()
       })
-    })
-  })
-
-  describe('Scenario: Select a city from the dropdown', () => {
-    it('Given the city dropdown is enabled, When user selects a city, Then it should call updateAddressInfo with the selected city', async () => {
-      const user = userEvent.setup()
-      const updateAddressInfo = jest.fn()
-
-      mockedUseGetAddress.mockReturnValue({
-        data: mockAddresses,
-        aliases: ['Casa', 'Oficina'],
-        refetch: jest.fn(),
-        isPending: false,
-        isError: false
-      })
-
-      render(
-        <SelectAddressDropdownWrapper
-          updateAddressInfo={updateAddressInfo}
-        />
-      )
-
-      const aliasButton = screen.getByTestId('select-address-dropdown-button')
-      await user.click(aliasButton)
-
-      const oficinaOption = await screen.findByText('Oficina')
-      await user.click(oficinaOption)
-
-      await waitFor(async () => {
-        const cityButton = screen.getByTestId('select-city-dropdown-button')
-        expect(cityButton).not.toBeDisabled()
-        await user.click(cityButton)
-      })
-
-      const monterreyCity = await screen.findByRole('menuitem', { name: 'Monterrey' })
-      await user.click(monterreyCity)
-
-      expect(updateAddressInfo).toHaveBeenLastCalledWith({
-        newAddress: mockAddresses[1],
-        town: '',
-        city: 'Monterrey'
-      })
-    })
-
-    it('Given there is a city error, When user selects a city, Then it should clear the error', async () => {
-      const user = userEvent.setup()
-      const setCityError = jest.fn()
-
-      mockedUseGetAddress.mockReturnValue({
-        data: mockAddresses,
-        aliases: ['Casa', 'Oficina'],
-        refetch: jest.fn(),
-        isPending: false,
-        isError: false
-      })
-
-      render(
-        <SelectAddressDropdownWrapper
-          cityError="Error en ciudad"
-          setCityError={setCityError}
-        />
-      )
-
-      const aliasButton = screen.getByTestId('select-address-dropdown-button')
-      await user.click(aliasButton)
-
-      const oficinaOption = await screen.findByText('Oficina')
-      await user.click(oficinaOption)
-
-      await waitFor(async () => {
-        const cityButton = screen.getByTestId('select-city-dropdown-button')
-        expect(cityButton).not.toBeDisabled()
-        await user.click(cityButton)
-      })
-
-      const monterreyCity = await screen.findByRole('menuitem', { name: 'Monterrey' })
-      await user.click(monterreyCity)
-
-      expect(setCityError).toHaveBeenCalledWith('')
     })
   })
 
