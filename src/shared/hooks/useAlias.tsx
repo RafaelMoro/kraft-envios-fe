@@ -80,13 +80,11 @@ export const useSaveAlias = () => {
     aliasesTone.current.destination.addressTone = addressTone
   }
 
-  const resetAliasesTone = () => {
-    const resetedAlias = structuredClone(initialAliasesTone)
-    aliasesTone.current = resetedAlias
-  }
-  const resetAliasesMn = () => {
-    const resetedAlias = structuredClone(initialAliasesMn)
-    aliasesMn.current = resetedAlias
+  const resetAliases = () => {
+    const resetedAliasTone = structuredClone(initialAliasesTone)
+    const resetedAliasMn = structuredClone(initialAliasesMn)
+    aliasesTone.current = resetedAliasTone
+    aliasesMn.current = resetedAliasMn
   }
   
   return {
@@ -96,7 +94,6 @@ export const useSaveAlias = () => {
     updateOriginAliasMn,
     updateDestinationAliasTone,
     updateDestinationAliasMn,
-    resetAliasesTone,
-    resetAliasesMn
+    resetAliases,
   }
 }
