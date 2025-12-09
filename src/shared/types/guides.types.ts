@@ -10,7 +10,7 @@ export type GetProductSatIdPayload = {
 export type AliasSavedTone = {
   alias: string;
   town: string;
-  address: CreateGuideAddressDataToneFormValues
+  addressTone: CreateGuideAddressDataToneFormValues
 }
 
 export type AllAliasesSavedTone = {

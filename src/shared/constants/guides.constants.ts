@@ -12,7 +12,7 @@ export const initialAliases: AllAliasesSavedTone = {
   origin: {
     alias: "",
     town: "",
-    address: {
+    addressTone: {
       street1: "",
       neighborhood: "",
       town: "",
@@ -24,7 +24,7 @@ export const initialAliases: AllAliasesSavedTone = {
   destination: {
     alias: "",
     town: "",
-    address: {
+    addressTone: {
       street1: "",
       neighborhood: "",
       town: "",

@@ -41,7 +41,7 @@ export const useSaveAlias = () => {
   }) => {
     aliases.current.origin.alias = alias
     aliases.current.origin.town = town
-    aliases.current.origin.address = address
+    aliases.current.origin.addressTone = address
   }
   const updateDestinationAlias = ({
     alias, address, town
@@ -50,7 +50,7 @@ export const useSaveAlias = () => {
   }) => {
     aliases.current.destination.alias = alias
     aliases.current.destination.town = town
-    aliases.current.destination.address = address
+    aliases.current.destination.addressTone = address
   }
   const resetAliases = () => {
     aliases.current = {...initialAliases}

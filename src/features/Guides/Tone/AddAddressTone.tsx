@@ -67,19 +67,19 @@ export const AddAddressTone = ({
       setAddressError("Por favor selecciona un alias de dirección");
       return;
     }
-    if (!aliasSaved.address) {
+    if (!aliasSaved.addressTone) {
       setAddressError("La dirección seleccionada no es válida");
       console.warn("Address selected is null");
       return;
     }
-    if (!aliasSaved.address.town) {
+    if (!aliasSaved.addressTone.town) {
       setTownError("Por favor selecciona un municipio");
       return;
     }
 
     const allData: CreateGuideAddressFormValuesTone = {
       ...data,
-      ...aliasSaved.address
+      ...aliasSaved.addressTone
     }
     updateAddress(allData)
     goNext()
