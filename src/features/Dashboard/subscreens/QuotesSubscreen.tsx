@@ -274,7 +274,9 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
       <CreateGuideModal open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
-      <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
+      { openCreateGuideTone && (
+        <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
+      )}
       <CreateGuidePkk
         open={openCreateGuidePkk}
         packageDimensions={packageDimensions.current}

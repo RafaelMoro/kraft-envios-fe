@@ -15,6 +15,12 @@ export type Address = {
   neighborhood: string;
 }
 
+export interface UpdateAddressInfoPayload {
+  newAddress: Address;
+  town: string;
+  city: string;
+}
+
 export type CreateAddressFormValues = {
   street1: string;
   externalNumber: string;

@@ -1,3 +1,9 @@
+## v0.28.0 (2025-12-09)
+
+### Pull Requests
+[#64](https://github.com/RafaelMoro/kraft-envios-fe/pull/64) | Add address feature alias in create guide TONE
+
+
 ## v0.27.0 (2025-12-01)
 
 ### Pull Requests

@@ -2,9 +2,22 @@ import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
 import { LadaStates } from "./global.types";
 import { ProviderSource } from "./quotes.types";
+import { Address } from "./addresses.types";
 
 export type GetProductSatIdPayload = {
   search: string
+}
+
+export type AliasSavedTone = {
+  alias: string;
+  town: string;
+  address: Address
+  addressTone: CreateGuideAddressDataToneFormValues
+}
+
+export type AllAliasesSavedTone = {
+  origin: AliasSavedTone
+  destination: AliasSavedTone
 }
 
 export type CreateGuideFormValues = {
@@ -44,18 +57,23 @@ export type CreateGuideAddressFormValues = {
   reference?: string | null | undefined
 }
 
-export type CreateGuideAddressFormValuesTone = {
+export type CreateGuidePersonalDataToneFormValues = {
   name: string;
   lastName: string;
+  phone: string;
+  email?: string | null | undefined
+}
+
+export type CreateGuideAddressDataToneFormValues = {
   street1: string;
   neighborhood: string;
   town: string;
   external_number: string;
   state: string;
-  phone: string;
-  email?: string | null | undefined
   reference?: string | null | undefined
 }
+
+export type CreateGuideAddressFormValuesTone = CreateGuidePersonalDataToneFormValues & CreateGuideAddressDataToneFormValues;
 
 export type CreateGuideAddressFormValuesPkk = {
   name: string;
@@ -302,31 +320,38 @@ export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> 
   quantity: number().typeError('Cantidad es requerida').required('Cantidad es requerida').min(1, 'La cantidad debe ser al menos 1'),
 })
 
-export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFormValuesTone> = object().shape({
+export const AddAddressToneFormSchema: ObjectSchema<CreateGuidePersonalDataToneFormValues> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
   lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
-  street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
-  neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
-  external_number: string().required('Número exterior es requerido').matches(/^\d+$/, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" }).min(1, 'El número exterior debe tener al menos 1 carácter'),
-  town: string().required('Municipio es requerido').min(2, 'El municipio debe tener al menos 2 caracteres'),
-  state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
   phone: string()
     .required('El teléfono es requerido')
     .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
     .min(10, 'El teléfono debe tener 10 dígitos')
     .max(10, 'El teléfono debe tener 10 dígitos'),
   email: emailOptionalValidation,
-  reference: string()
-    .nullable()
-    .notRequired()
-    .when('reference', {
-      is: (value: string) => value?.length,
-      then: (rule) => rule.min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
-    }),
 }, [
-  ["reference", "reference"],
   ["email", "email"]
 ])
+
+export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFormValuesTone> =
+  AddAddressToneFormSchema.concat(
+    object().shape({
+      street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
+      neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
+      external_number: string().required('Número exterior es requerido').matches(/^\d+$/, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" }).min(1, 'El número exterior debe tener al menos 1 carácter'),
+      town: string().required('Municipio es requerido').min(2, 'El municipio debe tener al menos 2 caracteres'),
+      state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
+      reference: string()
+        .nullable()
+        .notRequired()
+        .when('reference', {
+          is: (value: string) => value?.length,
+          then: (rule) => rule.min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
+        }),
+    }, [
+      ["reference", "reference"]
+    ])
+)
 
 export const ParcelInfoFormValuesSchema: ObjectSchema<ParcelInfoValues> = object({
   content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres')
