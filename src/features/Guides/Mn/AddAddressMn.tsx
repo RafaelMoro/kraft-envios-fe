@@ -1,46 +1,54 @@
-import { useState } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { Button } from "flowbite-react"
+"use client"
+import { useState } from "react";
+import { Button } from "flowbite-react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
-import { PersonalDataTone } from "./PersonalDataTone"
-import {
-  AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressDataToneFormValues,
-  AliasSavedTone
-} from "@/shared/types/guides.types"
-import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
-import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
-import { AddTempAddressTone } from "./AddTempAddressTone"
-import { useSelectAlias } from "@/shared/hooks/useAlias"
+import { useSelectAlias } from "@/shared/hooks/useAlias";
+import { AddTempAddressMn } from "./AddTempAddressMn";
+import { 
+  AddPersonalDataMnFormSchema, 
+  CreateGuideAddressFormValuesMn, 
+  CreateGuidePersonalDataMnFormValues,
+  AliasSavedMn,
+  CreateGuideAddressDataMnFormValues
+} from "@/shared/types/guides.types";
+import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide";
+import { PersonalDataMn } from "./PersonalDataMn";
+import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
+import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
 
-interface AddAddressToneProps {
-  addressData: CreateGuideAddressFormValuesTone
-  aliasSaved: AliasSavedTone;
+interface AddAddressMnProps {
+  title: string
+  addressData: CreateGuideAddressFormValuesMn
+  aliasSaved: AliasSavedMn;
+  isMobileTablet: boolean
   isDestination?: boolean
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  updateAddress: (data: CreateGuideAddressFormValuesTone) => void
+  updateAddress: (data: CreateGuideAddressFormValuesMn) => void
   updateSavedAlias: ({
-    alias, address, addressTone, town, city
+    alias, address, addressMn, town, city
   }: {
-    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string; city: string
+    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string; city: string
   }) => void
 }
 
-export const AddAddressTone = ({
-  addressData, aliasSaved, updateAddress, isDestination, goNext, goPrev, toggleModal, updateSavedAlias
-}: AddAddressToneProps) => {
+export const AddAddressMn = ({
+  isDestination, title, addressData, aliasSaved, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias
+}: AddAddressMnProps) => {
   const [useTempAddress, setUseTempAddress] = useState(false);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
+
   const {
     aliasSelected, setAliasSelected, addressError, setAddressError, townError, cityError, setTownError, setCityError, resetAliasSelected
   } = useSelectAlias({ aliasSaved: aliasSaved.alias });
-  const addressType = isDestination ? 'destination' : 'origin'
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
+  const addressType = isDestination ? 'destination' : 'origin'
+
   const handleCancel = () => {
     resetAliasSelected();
     if (isDestination) {
@@ -55,11 +63,11 @@ export const AddAddressTone = ({
     register,
     formState: { errors },
     handleSubmit
-  } = useForm<CreateGuidePersonalDataToneFormValues>({
-    resolver: yupResolver(AddAddressToneFormSchema)
+  } = useForm<CreateGuidePersonalDataMnFormValues>({
+    resolver: yupResolver(AddPersonalDataMnFormSchema)
   })
 
-  const onSubmit: SubmitHandler<CreateGuidePersonalDataToneFormValues> = (data, event) => {
+  const onSubmit: SubmitHandler<CreateGuidePersonalDataMnFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
 
@@ -67,47 +75,49 @@ export const AddAddressTone = ({
       setAddressError("Por favor selecciona un alias de dirección");
       return;
     }
-    if (!aliasSaved.addressTone) {
+    if (!aliasSaved.addressMn) {
       setAddressError("La dirección seleccionada no es válida");
       console.warn("Address selected is null");
       return;
     }
-    if (!aliasSaved.addressTone.town) {
-      setTownError("Por favor selecciona un municipio");
+    if (!aliasSaved.addressMn.city) {
+      setCityError("Por favor selecciona una ciudad");
       return;
     }
 
-    const allData: CreateGuideAddressFormValuesTone = {
+    const allData: CreateGuideAddressFormValuesMn = {
       ...data,
-      ...aliasSaved.addressTone
+      ...aliasSaved.addressMn
     }
     updateAddress(allData)
     goNext()
   }
 
   /**
-   * This function formats the address info into the address expected type of Tone
+   * This function formats the address info into the address expected type of Mn
    */
   const updateAddressInfo = ({ newAddress, town, city }: UpdateAddressInfoPayload) => {
-    const updatedAddressData: CreateGuideAddressDataToneFormValues = {
+    const updatedAddressData: CreateGuideAddressDataMnFormValues = {
       street1: newAddress.addressName,
       external_number: newAddress.externalNumber,
       neighborhood: newAddress.neighborhood,
-      town,
+      city: city || newAddress.city?.[0] || "",
       state: newAddress.state,
       reference: newAddress.reference,
     }
-    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressTone: updatedAddressData, town, city })
+    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressMn: updatedAddressData, town, city })
   }
 
   if (useTempAddress) {
     return (
-      <AddTempAddressTone
-        addressData={addressData}
+      <AddTempAddressMn
+        title={title}
         addressType={addressType}
         goNext={goNext}
         updateAddress={updateAddress}
-        toggleTempAddressModal={toggleTempAddress}
+        addressData={addressData}
+        isMobileTablet={isMobileTablet}
+        toggleTempAddress={toggleTempAddress}
       />
     )
   }
@@ -118,7 +128,7 @@ export const AddAddressTone = ({
     >
       <AddAddressCreateGuide
         PersonalDataUI={
-          <PersonalDataTone<CreateGuidePersonalDataToneFormValues>
+          <PersonalDataMn<CreateGuidePersonalDataMnFormValues>
             addressData={addressData}
             errors={errors}
             register={register}
@@ -129,13 +139,13 @@ export const AddAddressTone = ({
             <Button
               {...(!isDestination && { outline: true })}
               color={cancelColorButton}
-              data-testid={`${addressType}-address-tone-cancel-button`}
+              data-testid={`${addressType}-address-mn-cancel-button`}
               className="hover:cursor-pointer"
               onClick={handleCancel}
             >
               {cancelButtonText}
             </Button>
-            <Button data-testid={`${addressType}-address-tone-next-button`} type="submit" className="hover:cursor-pointer">
+            <Button data-testid={`${addressType}-address-mn-next-button`} type="submit" className="hover:cursor-pointer">
               Siguiente
             </Button>
           </div>

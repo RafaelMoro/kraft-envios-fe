@@ -1,7 +1,7 @@
 "use client"
 import { useRef, useState } from "react";
-import { AllAliasesSavedTone, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
-import { initialAliases } from "../constants/guides.constants";
+import { AllAliasesSavedTone, AllAliasSavedMn, CreateGuideAddressDataMnFormValues, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
+import { initialAliasesMn, initialAliasesTone } from "../constants/guides.constants";
 import { Address } from "../types/addresses.types";
 
 /**
@@ -34,36 +34,70 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
  * Hook to save Alias selected for Origin and Destination addresses
  */
 export const useSaveAlias = () => {
-  const aliases = useRef<AllAliasesSavedTone>(structuredClone(initialAliases))
-  const updateOriginAlias = ({
-    alias, address, addressTone, town
-  }:{ 
-    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
+  const aliasesTone = useRef<AllAliasesSavedTone>(structuredClone(initialAliasesTone))
+  const aliasesMn = useRef<AllAliasSavedMn>(structuredClone(initialAliasesMn))
+
+  const updateOriginAliasMn = ({
+    alias, address, addressMn, town, city
+  }: {
+    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string; city: string
   }) => {
-    aliases.current.origin.alias = alias
-    aliases.current.origin.town = town
-    aliases.current.origin.address = address
-    aliases.current.origin.addressTone = addressTone
+    aliasesMn.current.origin.alias = alias
+    aliasesMn.current.origin.town = town
+    aliasesMn.current.origin.city = city
+    aliasesMn.current.origin.address = address
+    aliasesMn.current.origin.addressMn = addressMn
   }
-  const updateDestinationAlias = ({
-    alias, address, addressTone, town
-  }:{ 
-    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
+
+  const updateDestinationAliasMn = ({
+    alias, address, addressMn, town, city
+  }: {
+    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string; city: string
   }) => {
-    aliases.current.destination.alias = alias
-    aliases.current.destination.town = town
-    aliases.current.destination.address = address
-    aliases.current.destination.addressTone = addressTone
+    aliasesMn.current.destination.alias = alias
+    aliasesMn.current.destination.town = town
+    aliasesMn.current.destination.city = city
+    aliasesMn.current.destination.address = address
+    aliasesMn.current.destination.addressMn = addressMn
   }
+
+  const updateOriginAliasTone = ({
+    alias, address, addressTone, town, city
+  }:{ 
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string; city: string
+  }) => {
+    aliasesTone.current.origin.alias = alias
+    aliasesTone.current.origin.town = town
+    aliasesTone.current.origin.city = city
+    aliasesTone.current.origin.address = address
+    aliasesTone.current.origin.addressTone = addressTone
+  }
+  const updateDestinationAliasTone = ({
+    alias, address, addressTone, town, city
+  }:{ 
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string; city: string
+  }) => {
+    aliasesTone.current.destination.alias = alias
+    aliasesTone.current.destination.town = town
+    aliasesTone.current.destination.city = city
+    aliasesTone.current.destination.address = address
+    aliasesTone.current.destination.addressTone = addressTone
+  }
+
   const resetAliases = () => {
-    const resetedAlias = structuredClone(initialAliases)
-    aliases.current = resetedAlias
+    const resetedAliasTone = structuredClone(initialAliasesTone)
+    const resetedAliasMn = structuredClone(initialAliasesMn)
+    aliasesTone.current = resetedAliasTone
+    aliasesMn.current = resetedAliasMn
   }
   
   return {
-    aliases: aliases.current,
-    updateOriginAlias,
-    updateDestinationAlias,
-    resetAliases
+    aliasesTone: aliasesTone.current,
+    aliasesMn: aliasesMn.current,
+    updateOriginAliasTone,
+    updateOriginAliasMn,
+    updateDestinationAliasTone,
+    updateDestinationAliasMn,
+    resetAliases,
   }
 }

@@ -8,13 +8,14 @@ import { PersonalDataTone } from "./PersonalDataTone"
 
 interface AddTempAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
+  addressType: "destination" | "origin"
   goNext: () => void
   toggleTempAddressModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
 }
 
 export const AddTempAddressTone = ({
-  addressData, goNext, toggleTempAddressModal, updateAddress,
+  addressData, addressType, goNext, toggleTempAddressModal, updateAddress,
 }: AddTempAddressToneProps) => {
   const {
     register,
@@ -144,13 +145,13 @@ export const AddTempAddressTone = ({
       <div className="flex justify-between mt-4">
         <Button
           color="light"
-          data-testid="origin-address-cancel-button"
+          data-testid={`${addressType}-address-tone-temp-cancel-button`}
           className="hover:cursor-pointer"
           onClick={handleCancel}
         >
           Volver
         </Button>
-        <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+        <Button data-testid={`${addressType}-address-tone-temp-next-button`} type="submit" className="hover:cursor-pointer">
           Siguiente
         </Button>
       </div>

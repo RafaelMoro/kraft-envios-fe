@@ -8,11 +8,19 @@ export type GetProductSatIdPayload = {
   search: string
 }
 
-export type AliasSavedTone = {
+export type AliasSaved = {
   alias: string;
   town: string;
+  city: string;
   address: Address
+}
+
+export type AliasSavedTone = AliasSaved & {
   addressTone: CreateGuideAddressDataToneFormValues
+}
+
+export type AliasSavedMn = AliasSaved & {
+  addressMn: CreateGuideAddressDataMnFormValues
 }
 
 export type AllAliasesSavedTone = {
@@ -20,9 +28,14 @@ export type AllAliasesSavedTone = {
   destination: AliasSavedTone
 }
 
+export type AllAliasSavedMn = {
+  origin: AliasSavedMn
+  destination: AliasSavedMn
+}
+
 export type CreateGuideFormValues = {
-  originAddress: CreateGuideAddressFormValues;
-  destinationAddress: CreateGuideAddressFormValues;
+  originAddress: CreateGuideAddressFormValuesMn;
+  destinationAddress: CreateGuideAddressFormValuesMn;
   parcelInfo: ParcelInfoFormValues;
 }
 
@@ -44,18 +57,36 @@ export type CreateGuideFormValuesGE = {
   parcelInfo: ParcelInfoValuesGE;
 }
 
-export type CreateGuideAddressFormValues = {
+/**
+ * Type for form values to create a guide for personal data in Mn
+ * Adding lastName to homologate the ask for the name field. It's merged into name later in confirm guide
+ */
+export type CreateGuidePersonalDataMnFormValues = {
   name: string;
+  lastName: string;
+  phone: string;
+  company?: string | null | undefined
+  email?: string | null | undefined
+}
+/**
+ * Type for payload to create a guide for personal data in Mn
+ */
+export type CreateGuidePersonalDataMnPayload = Omit<CreateGuidePersonalDataMnFormValues, 'lastName'>
+
+export type CreateGuideAddressDataMnFormValues = {
   street1: string;
   neighborhood: string;
   external_number: string;
   city: string;
-  company?: string | null | undefined
   state: string;
-  phone: string;
-  email?: string | null | undefined
   reference?: string | null | undefined
 }
+
+export type CreateGuideAddressFormValuesMn = CreateGuidePersonalDataMnFormValues & CreateGuideAddressDataMnFormValues;
+/**
+ * Type for payload to create a guide address in Mn
+ */
+export type CreateGuideAddressPayloadMn = CreateGuidePersonalDataMnPayload & CreateGuideAddressDataMnFormValues;
 
 export type CreateGuidePersonalDataToneFormValues = {
   name: string;
@@ -151,8 +182,8 @@ export type ParcelInfoValuesGE = ParcelInfoValues & PackageDimensions & {
 
 export type CreateGuideMnPayload = {
   quoteId: string
-  origin: CreateGuideAddressFormValues & { country: string };
-  destination: CreateGuideAddressFormValues & { country: string };
+  origin: CreateGuideAddressPayloadMn & { country: string };
+  destination: CreateGuideAddressPayloadMn & { country: string };
   parcel: ParcelInfoFormValues & { satProductId: string };
 }
 
@@ -281,12 +312,9 @@ export interface CreateAddressGEResponse {
 
 //#region Schemas
 
-export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValues> = object().shape({
+export const AddPersonalDataMnFormSchema: ObjectSchema<CreateGuidePersonalDataMnFormValues> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
-  street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
-  neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
-  external_number: string().required('Número exterior es requerido').matches(/^\d+$/, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" }).min(1, 'El número exterior debe tener al menos 1 carácter'),
-  city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
+  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
   company: string()
     .nullable()
     .notRequired()
@@ -294,25 +322,36 @@ export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormVa
       is: (value: string) => value?.length,
       then: (rule) => rule.min(2, 'El nombre de la compañía debe tener al menos 2 caracteres'),
     }),
-  state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
   phone: string()
     .required('El teléfono es requerido')
     .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
     .min(10, 'El teléfono debe tener 10 dígitos')
     .max(10, 'El teléfono debe tener 10 dígitos'),
   email: emailOptionalValidation,
-  reference: string()
-    .nullable()
-    .notRequired()
-    .when('reference', {
-      is: (value: string) => value?.length,
-      then: (rule) => rule.min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
-    }),
 }, [
   ["company", "company"],
-  ["reference", "reference"],
   ["email", "email"]
 ])
+
+export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValuesMn> = 
+  AddPersonalDataMnFormSchema.concat(
+    object().shape({
+      street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
+      neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
+      external_number: string().required('Número exterior es requerido').matches(/^\d+$/, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" }).min(1, 'El número exterior debe tener al menos 1 carácter'),
+      city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
+      state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
+      reference: string()
+        .nullable()
+        .notRequired()
+        .when('reference', {
+          is: (value: string) => value?.length,
+          then: (rule) => rule.min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
+        }),
+    }, [
+      ["reference", "reference"],
+    ])
+  )
 
 export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> = object({
   content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres'),
@@ -351,7 +390,7 @@ export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFo
     }, [
       ["reference", "reference"]
     ])
-)
+  )
 
 export const ParcelInfoFormValuesSchema: ObjectSchema<ParcelInfoValues> = object({
   content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres')

@@ -1,6 +1,7 @@
 "use client"
 import { useRef } from "react";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
+import { useMutation } from "@tanstack/react-query";
 
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
@@ -16,7 +17,6 @@ import {
 import { CREATE_GUIDE_STEPS, initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
-import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideToneCb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
@@ -35,7 +35,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(CREATE_GUIDE_STEPS)
 
-  const { aliases, updateOriginAlias, updateDestinationAlias, resetAliases } = useSaveAlias()
+  const { aliasesTone, updateOriginAliasTone, updateDestinationAliasTone, resetAliases } = useSaveAlias()
   const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
   const resetFormData = () => {
     formData.current = {...initialStateFormTone}
@@ -81,8 +81,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
         { step === 1 && (
           <AddAddressTone
             addressData={formData.current.originAddress}
-            aliasSaved={aliases.origin}
-            updateSavedAlias={updateOriginAlias}
+            aliasSaved={aliasesTone.origin}
+            updateSavedAlias={updateOriginAliasTone}
             goNext={goNext}
             updateAddress={updateOriginAddress}
             toggleModal={toggleModal}
@@ -92,8 +92,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
         { step === 2 && (
           <AddAddressTone
             addressData={formData.current.destinationAddress}
-            aliasSaved={aliases.destination}
-            updateSavedAlias={updateDestinationAlias}
+            aliasSaved={aliasesTone.destination}
+            updateSavedAlias={updateDestinationAliasTone}
             goNext={goNext}
             updateAddress={updateDestinationAddress}
             isDestination

@@ -2,32 +2,30 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
-import { CreateGuideAddressFormSchema, CreateGuideAddressFormValues } from "@/shared/types/guides.types"
+import { CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { PersonalDataMn } from "./PersonalDataMn"
 
 interface OriginAddressFormProps {
   title: string
-  addressData: CreateGuideAddressFormValues
+  addressData: CreateGuideAddressFormValuesMn
+  addressType: "destination" | "origin"
   isMobileTablet: boolean
   goNext: () => void
-  goPrev: () => void
-  updateAddress: (data: CreateGuideAddressFormValues) => void
-  toggleModal: () => void
-  isDestination?: boolean
+  updateAddress: (data: CreateGuideAddressFormValuesMn) => void
+  toggleTempAddress: () => void
 }
 
-export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
-  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
-  const cancelColorButton = isDestination ? "light" : "red"
+export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress }: OriginAddressFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateGuideAddressFormValues>({
+  } = useForm<CreateGuideAddressFormValuesMn>({
     resolver: yupResolver(CreateGuideAddressFormSchema)
   })
 
-  const onSubmit: SubmitHandler<CreateGuideAddressFormValues> = (data, event) => {
+  const onSubmit: SubmitHandler<CreateGuideAddressFormValuesMn> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
     updateAddress(data)
@@ -35,80 +33,18 @@ export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goN
   }
 
   const handleCancel = () => {
-    if (isDestination) {
-      goPrev()
-      return;
-    }
-
-    toggleModal()
+    toggleTempAddress()
   }
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
       { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">{title}</h5>)}
       <h4 className="text-xl">Datos personales</h4>
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="name">Nombre</Label>
-          </div>
-          <TextInput
-            data-testid="name"
-            defaultValue={addressData.name}
-            id="name"
-            type="text"
-            {...register("name")}
-          />
-          { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="phone">Teléfono</Label>
-          </div>
-          <TextInput
-            data-testid="phone"
-            id="phone"
-            type="text"
-            inputMode="numeric"
-            defaultValue={addressData.phone}
-            {...register("phone")}
-          />
-          { errors?.phone?.message && (
-            <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
-          </div>
-          <TextInput
-            id="email"
-            type="email"
-            defaultValue={addressData.email ?? ''}
-            {...register("email")}
-          />
-          { errors?.email?.message && (
-            <ErrorMessage>{errors.email?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="company">Nombre de la compañia (Opcional)</Label>
-          </div>
-          <TextInput
-            data-testid="company"
-            defaultValue={addressData.company ?? ''}
-            id="company"
-            type="text"
-            {...register("company")}
-          />
-          { errors?.company?.message && (
-            <ErrorMessage>{errors.company?.message}</ErrorMessage>
-          )}
-        </div>
-      </section>
+      <PersonalDataMn<CreateGuideAddressFormValuesMn>
+        addressData={addressData}
+        errors={errors}
+        register={register}
+      />
       <div className="mt-8 flex flex-col gap-5">
         <h4 className="text-xl">Domicilio</h4>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -206,10 +142,10 @@ export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goN
         </section>
       </div>
       <div className="flex justify-between mt-4">
-        <Button {...(!isDestination && { outline: true })} color={cancelColorButton} data-testid="origin-address-cancel-button" className="hover:cursor-pointer" onClick={handleCancel}>
-          {cancelButtonText}
+        <Button color="light" data-testid={`${addressType}-address-mn-temp-cancel-button`} className="hover:cursor-pointer" onClick={handleCancel}>
+          Volver
         </Button>
-        <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+        <Button data-testid={`${addressType}-address-mn-temp-next-button`} type="submit" className="hover:cursor-pointer">
           Siguiente
         </Button>
       </div>

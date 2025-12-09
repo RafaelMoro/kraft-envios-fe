@@ -18,7 +18,7 @@ import { CopyInfoQuotesModal } from "@/features/Quotes/CopyInfoQuotesModal"
 import { IntersectionObserverWrapper } from "@/shared/ui/organisms/IntersectionObserverWrapper"
 import { SendInfoButton } from "@/shared/ui/atoms/SendInfoButton"
 import { CopyQuotesButton } from "@/shared/ui/atoms/CopyQuotesButton"
-import { CreateGuideModal } from "@/features/Guides/Mn/CreateGuideModal"
+import { CreateGuideModalMn } from "@/features/Guides/Mn/CreateGuideModalMn"
 import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTone"
 import { CreateGuidePkk } from "@/features/Guides/Pkk/CreateGuidePkk"
 import { PackageDimensions } from "@/shared/types/guides.types"
@@ -273,7 +273,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         </article>
       )}
       <CopyInfoQuotesModal open={openCopyModal} toggleModal={toggleCopyModal} selectedQuotes={selectedQuotes} />
-      <CreateGuideModal open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
+      <CreateGuideModalMn open={openCreateGuideMn} toggleModal={toggleCreateGuideMn} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
       { openCreateGuideTone && (
         <CreateGuideModalTone open={openCreateGuideTone} toggleModal={toggleCreateGuideTone} selectedQuotes={selectedQuotes} resetSelectedQuotes={resetSelectedQuotes} />
       )}
