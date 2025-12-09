@@ -112,6 +112,7 @@ export const AddAddressMn = ({
     return (
       <AddTempAddressMn
         title={title}
+        addressType={addressType}
         goNext={goNext}
         updateAddress={updateAddress}
         addressData={addressData}

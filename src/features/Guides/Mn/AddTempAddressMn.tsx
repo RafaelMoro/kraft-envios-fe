@@ -9,6 +9,7 @@ import { PersonalDataMn } from "./PersonalDataMn"
 interface OriginAddressFormProps {
   title: string
   addressData: CreateGuideAddressFormValuesMn
+  addressType: "destination" | "origin"
   isMobileTablet: boolean
   goNext: () => void
   goPrev: () => void
@@ -17,9 +18,7 @@ interface OriginAddressFormProps {
   isDestination?: boolean
 }
 
-export const AddTempAddressMn = ({ addressData, title, isMobileTablet, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
-  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
-  const cancelColorButton = isDestination ? "light" : "red"
+export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
   const {
     register,
     handleSubmit,
@@ -150,10 +149,10 @@ export const AddTempAddressMn = ({ addressData, title, isMobileTablet, goNext, u
         </section>
       </div>
       <div className="flex justify-between mt-4">
-        <Button {...(!isDestination && { outline: true })} color={cancelColorButton} data-testid="origin-address-cancel-button" className="hover:cursor-pointer" onClick={handleCancel}>
-          {cancelButtonText}
+        <Button color="light" data-testid={`${addressType}-address-mn-temp-cancel-button`} className="hover:cursor-pointer" onClick={handleCancel}>
+          Volver
         </Button>
-        <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+        <Button data-testid={`${addressType}-address-mn-temp-next-button`} type="submit" className="hover:cursor-pointer">
           Siguiente
         </Button>
       </div>

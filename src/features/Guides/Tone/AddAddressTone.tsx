@@ -37,6 +37,7 @@ export const AddAddressTone = ({
   const {
     aliasSelected, setAliasSelected, addressError, setAddressError, townError, cityError, setTownError, setCityError, resetAliasSelected
   } = useSelectAlias({ aliasSaved: aliasSaved.alias });
+  const addressType = isDestination ? 'destination' : 'origin'
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -103,6 +104,7 @@ export const AddAddressTone = ({
     return (
       <AddTempAddressTone
         addressData={addressData}
+        addressType={addressType}
         goNext={goNext}
         updateAddress={updateAddress}
         toggleTempAddressModal={toggleTempAddress}
@@ -127,13 +129,13 @@ export const AddAddressTone = ({
             <Button
               {...(!isDestination && { outline: true })}
               color={cancelColorButton}
-              data-testid="origin-address-cancel-button"
+              data-testid={`${addressType}-address-tone-cancel-button`}
               className="hover:cursor-pointer"
               onClick={handleCancel}
             >
               {cancelButtonText}
             </Button>
-            <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
+            <Button data-testid={`${addressType}-address-tone-next-button`} type="submit" className="hover:cursor-pointer">
               Siguiente
             </Button>
           </div>
