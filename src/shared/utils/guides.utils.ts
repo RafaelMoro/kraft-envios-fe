@@ -28,6 +28,7 @@ import {
   GetProductId,
   SatProduct,
   SearchProduct,
+  CreateGuideAddressPayloadMn,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -121,9 +122,14 @@ export const replaceSpacesWithPlus = (input: string): string => {
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddress = (address: CreateGuideAddressFormValuesMn): CreateGuideAddressFormValuesMn => {
+export const verifyAndUpdateAddressMn = (address: CreateGuideAddressFormValuesMn): CreateGuideAddressPayloadMn => {
+  const { lastName, ...restData } = address
+    const formattedAddress = {
+      ...restData,
+      name: `${address.name} ${lastName}`.trim(),
+    }
   return {
-    ...address,
+    ...formattedAddress,
     company: address.company?.trim() || DEFAULT_COMPANY,
     email: address.email?.trim() || DEFAULT_EMAIL,
     reference: address.reference?.trim() || DEFAULT_REFERENCE

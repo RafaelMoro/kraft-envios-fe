@@ -57,6 +57,10 @@ export type CreateGuideFormValuesGE = {
   parcelInfo: ParcelInfoValuesGE;
 }
 
+/**
+ * Type for form values to create a guide for personal data in Mn
+ * Adding lastName to homologate the ask for the name field. It's merged into name later in confirm guide
+ */
 export type CreateGuidePersonalDataMnFormValues = {
   name: string;
   lastName: string;
@@ -64,6 +68,10 @@ export type CreateGuidePersonalDataMnFormValues = {
   company?: string | null | undefined
   email?: string | null | undefined
 }
+/**
+ * Type for payload to create a guide for personal data in Mn
+ */
+export type CreateGuidePersonalDataMnPayload = Omit<CreateGuidePersonalDataMnFormValues, 'lastName'>
 
 export type CreateGuideAddressDataMnFormValues = {
   street1: string;
@@ -75,6 +83,10 @@ export type CreateGuideAddressDataMnFormValues = {
 }
 
 export type CreateGuideAddressFormValuesMn = CreateGuidePersonalDataMnFormValues & CreateGuideAddressDataMnFormValues;
+/**
+ * Type for payload to create a guide address in Mn
+ */
+export type CreateGuideAddressPayloadMn = CreateGuidePersonalDataMnPayload & CreateGuideAddressDataMnFormValues;
 
 export type CreateGuidePersonalDataToneFormValues = {
   name: string;
@@ -170,8 +182,8 @@ export type ParcelInfoValuesGE = ParcelInfoValues & PackageDimensions & {
 
 export type CreateGuideMnPayload = {
   quoteId: string
-  origin: CreateGuideAddressFormValuesMn & { country: string };
-  destination: CreateGuideAddressFormValuesMn & { country: string };
+  origin: CreateGuideAddressPayloadMn & { country: string };
+  destination: CreateGuideAddressPayloadMn & { country: string };
   parcel: ParcelInfoFormValues & { satProductId: string };
 }
 
