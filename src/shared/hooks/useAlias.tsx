@@ -34,7 +34,7 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
  * Hook to save Alias selected for Origin and Destination addresses
  */
 export const useSaveAlias = () => {
-  const aliases = useRef<AllAliasesSavedTone>({...initialAliases})
+  const aliases = useRef<AllAliasesSavedTone>(structuredClone(initialAliases))
   const updateOriginAlias = ({
     alias, address, addressTone, town
   }:{ 
@@ -56,9 +56,7 @@ export const useSaveAlias = () => {
     aliases.current.destination.addressTone = addressTone
   }
   const resetAliases = () => {
-    console.log('resetAliases called')
-    const resetedAlias = {...initialAliases}
-    console.log('resetedAlias', resetedAlias)
+    const resetedAlias = structuredClone(initialAliases)
     aliases.current = resetedAlias
   }
   
