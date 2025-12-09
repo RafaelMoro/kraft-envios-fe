@@ -12,13 +12,11 @@ interface OriginAddressFormProps {
   addressType: "destination" | "origin"
   isMobileTablet: boolean
   goNext: () => void
-  goPrev: () => void
   updateAddress: (data: CreateGuideAddressFormValuesMn) => void
-  toggleModal: () => void
-  isDestination?: boolean
+  toggleTempAddress: () => void
 }
 
-export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
+export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress }: OriginAddressFormProps) => {
   const {
     register,
     handleSubmit,
@@ -35,12 +33,7 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
   }
 
   const handleCancel = () => {
-    if (isDestination) {
-      goPrev()
-      return;
-    }
-
-    toggleModal()
+    toggleTempAddress()
   }
 
   return (

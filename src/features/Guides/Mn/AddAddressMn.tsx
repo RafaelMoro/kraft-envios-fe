@@ -117,8 +117,7 @@ export const AddAddressMn = ({
         updateAddress={updateAddress}
         addressData={addressData}
         isMobileTablet={isMobileTablet}
-        toggleModal={toggleTempAddress}
-        goPrev={goPrev}
+        toggleTempAddress={toggleTempAddress}
       />
     )
   }
