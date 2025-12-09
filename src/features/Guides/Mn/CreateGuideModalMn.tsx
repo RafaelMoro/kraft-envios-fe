@@ -23,6 +23,8 @@ import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideMnCb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "./ResultGuideScreen";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { AddAddressMn } from "./AddAddressMn";
+import { useSaveAlias } from "@/shared/hooks/useAlias";
 
 interface CreateGuideProps {
   open: boolean;
@@ -46,6 +48,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
   const [searchProductSat, setSearchProductSat] = useState<string>(selectedProduct.current?.description ?? '')
   const [errorProductSat, setErrorProductSat] = useState<string>('')
 
+  const { aliasesMn, updateOriginAliasMn, updateDestinationAliasMn, resetAliasesMn } = useSaveAlias()
   // Form data to collect all steps data
   const formData = useRef<CreateGuideFormValues>({...initialStateForm})
   const resetFormData = () => {
@@ -63,6 +66,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
   }
 
   const closeModal = () => {
+    resetAliasesMn()
     resetFormData()
     resetSteps()
     setSearchProductSat('')
@@ -90,10 +94,12 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
           </div>
         )}
         { step === 1 && (
-          <AddTempAddressMn
+          <AddAddressMn
             title="Domicilio origen"
             goNext={goNext}
             updateAddress={updateOriginAddress}
+            aliasSaved={aliasesMn.origin}
+            updateSavedAlias={updateOriginAliasMn}
             addressData={formData.current.originAddress}
             isMobileTablet={isMobileTablet}
             toggleModal={closeModal}

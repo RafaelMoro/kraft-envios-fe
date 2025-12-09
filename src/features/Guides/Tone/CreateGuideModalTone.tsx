@@ -35,7 +35,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(CREATE_GUIDE_STEPS)
 
-  const { aliases, updateOriginAlias, updateDestinationAlias, resetAliases } = useSaveAlias()
+  const { aliasesTone, updateOriginAliasTone, updateDestinationAliasTone, resetAliasesTone } = useSaveAlias()
   const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
   const resetFormData = () => {
     formData.current = {...initialStateFormTone}
@@ -51,7 +51,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
   }
 
   const closeModal = () => {
-    resetAliases()
+    resetAliasesTone()
     resetFormData()
     resetSteps()
     resetSelectedQuotes()
@@ -81,8 +81,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
         { step === 1 && (
           <AddAddressTone
             addressData={formData.current.originAddress}
-            aliasSaved={aliases.origin}
-            updateSavedAlias={updateOriginAlias}
+            aliasSaved={aliasesTone.origin}
+            updateSavedAlias={updateOriginAliasTone}
             goNext={goNext}
             updateAddress={updateOriginAddress}
             toggleModal={toggleModal}
@@ -92,8 +92,8 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
         { step === 2 && (
           <AddAddressTone
             addressData={formData.current.destinationAddress}
-            aliasSaved={aliases.destination}
-            updateSavedAlias={updateDestinationAlias}
+            aliasSaved={aliasesTone.destination}
+            updateSavedAlias={updateDestinationAliasTone}
             goNext={goNext}
             updateAddress={updateDestinationAddress}
             isDestination

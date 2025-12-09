@@ -27,6 +27,11 @@ export type AllAliasesSavedTone = {
   destination: AliasSavedTone
 }
 
+export type AllAliasSavedMn = {
+  origin: AliasSavedMn
+  destination: AliasSavedMn
+}
+
 export type CreateGuideFormValues = {
   originAddress: CreateGuideAddressFormValuesMn;
   destinationAddress: CreateGuideAddressFormValuesMn;
