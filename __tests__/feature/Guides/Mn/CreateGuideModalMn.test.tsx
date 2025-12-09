@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CreateGuideModal } from '@/features/Guides/Mn/CreateGuideModalMn'
+import { CreateGuideModalMn } from '@/features/Guides/Mn/CreateGuideModalMn'
 import { QuoteUI } from '@/shared/types/quotes.types'
-import { mockMatchMedia, QueryMatchMedia } from '../../utils-test/mockWatchMedia'
+import { mockMatchMedia, QueryMatchMedia } from '../../../utils-test/mockWatchMedia'
 
 // Mock functions for props
 const mockToggleModal = jest.fn()
@@ -52,7 +52,7 @@ const renderWithProviders = (props = {}) => {
   
   return render(
     <QueryClientProvider client={queryClient}>
-      <CreateGuideModal {...mergedProps} />
+      <CreateGuideModalMn {...mergedProps} />
     </QueryClientProvider>
   )
 }
