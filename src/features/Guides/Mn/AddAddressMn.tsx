@@ -1,5 +1,8 @@
 "use client"
 import { useState } from "react";
+import { Button } from "flowbite-react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useSelectAlias } from "@/shared/hooks/useAlias";
 import { AddTempAddressMn } from "./AddTempAddressMn";
@@ -12,9 +15,6 @@ import {
 } from "@/shared/types/guides.types";
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide";
 import { PersonalDataMn } from "./PersonalDataMn";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Button } from "flowbite-react";
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
 
@@ -60,12 +60,38 @@ export const AddAddressMn = ({
   }
 
   const {
-      register,
-      formState: { errors },
-      handleSubmit
-    } = useForm<CreateGuidePersonalDataMnFormValues>({
-      resolver: yupResolver(AddPersonalDataMnFormSchema)
-    })
+    register,
+    formState: { errors },
+    handleSubmit
+  } = useForm<CreateGuidePersonalDataMnFormValues>({
+    resolver: yupResolver(AddPersonalDataMnFormSchema)
+  })
+
+  const onSubmit: SubmitHandler<CreateGuidePersonalDataMnFormValues> = (data, event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+
+    if (!aliasSelected) {
+      setAddressError("Por favor selecciona un alias de dirección");
+      return;
+    }
+    if (!aliasSaved.addressMn) {
+      setAddressError("La dirección seleccionada no es válida");
+      console.warn("Address selected is null");
+      return;
+    }
+    if (!aliasSaved.addressMn.city) {
+      setCityError("Por favor selecciona una ciudad");
+      return;
+    }
+
+    const allData: CreateGuideAddressFormValuesMn = {
+      ...data,
+      ...aliasSaved.addressMn
+    }
+    updateAddress(allData)
+    goNext()
+  }
 
   const updateAddressInfo = ({ newAddress, town, city }: UpdateAddressInfoPayload) => {
     const updatedAddressData: CreateGuideAddressDataMnFormValues = {
@@ -95,7 +121,7 @@ export const AddAddressMn = ({
 
   return (
     <form
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <AddAddressCreateGuide
         PersonalDataUI={
