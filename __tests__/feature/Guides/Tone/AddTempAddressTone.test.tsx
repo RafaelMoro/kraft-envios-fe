@@ -4,8 +4,7 @@ import { CreateGuideAddressFormValuesTone } from '@/shared/types/guides.types'
 
 // Mock functions for props
 const mockGoNext = jest.fn()
-const mockGoPrev = jest.fn()
-const mockToggleModal = jest.fn()
+const mockToggleTempAddressModal = jest.fn()
 const mockUpdateAddress = jest.fn()
 
 // Mock address data for testing
@@ -23,11 +22,9 @@ const mockAddressData: CreateGuideAddressFormValuesTone = {
 }
 
 const defaultProps = {
-  isDestination: false,
   addressData: mockAddressData,
   goNext: mockGoNext,
-  goPrev: mockGoPrev,
-  toggleModal: mockToggleModal,
+  toggleTempAddressModal: mockToggleTempAddressModal,
   updateAddress: mockUpdateAddress
 }
 
@@ -75,7 +72,7 @@ describe('AddTempAddressTone', () => {
       expect(screen.getByDisplayValue('Entre calle A y B')).toBeInTheDocument()
 
       // Then action buttons should be present
-      expect(screen.getByRole('button', { name: 'Cancelar' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Volver' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Siguiente' })).toBeInTheDocument()
     })
   })
