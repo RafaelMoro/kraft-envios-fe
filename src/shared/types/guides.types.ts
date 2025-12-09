@@ -8,11 +8,18 @@ export type GetProductSatIdPayload = {
   search: string
 }
 
-export type AliasSavedTone = {
+export type AliasSaved = {
   alias: string;
   town: string;
   address: Address
+}
+
+export type AliasSavedTone = AliasSaved & {
   addressTone: CreateGuideAddressDataToneFormValues
+}
+
+export type AliasSavedMn = AliasSaved & {
+  addressMn: CreateGuideAddressDataMnFormValues
 }
 
 export type AllAliasesSavedTone = {
