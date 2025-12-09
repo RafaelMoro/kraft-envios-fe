@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { CreateGuideAddressForm } from '@/features/Guides/Mn/AddTempAddressMn'
+import { AddTempAddressMn } from '@/features/Guides/Mn/AddTempAddressMn'
 import { initialStateAddressForm } from '@/shared/constants/guides.constants'
 
 // Mock functions for props
@@ -22,7 +22,7 @@ const defaultProps = {
 
 const renderComponent = (props = {}) => {
   const mergedProps = { ...defaultProps, ...props }
-  return render(<CreateGuideAddressForm {...mergedProps} />)
+  return render(<AddTempAddressMn {...mergedProps} />)
 }
 
 describe('CreateGuideAddressForm', () => {
