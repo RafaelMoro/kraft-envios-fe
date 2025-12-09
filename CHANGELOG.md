@@ -1,3 +1,9 @@
+## v0.29.0 (2025-12-09)
+
+### Pull Requests
+[#67](https://github.com/RafaelMoro/kraft-envios-fe/pull/67) | Add address feature into create guide Mn flow
+
+
 ## v0.28.0 (2025-12-09)
 
 ### Pull Requests
