@@ -160,7 +160,7 @@ export const SelectAddressDropdown = ({
               <Label className="pl-1">Ciudad</Label>
               <Button
                 className="hover:cursor-pointer flex justify-between"
-                data-testid="select-town-dropdown-button"
+                data-testid="select-city-dropdown-button"
                 color="light"
                 disabled={!showCitySelector}
               >
