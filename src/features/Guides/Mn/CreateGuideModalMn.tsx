@@ -33,7 +33,7 @@ interface CreateGuideProps {
   resetSelectedQuotes: () => void
 }
 
-export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelectedQuotes }: CreateGuideProps) => {
+export const CreateGuideModalMn = ({ open, toggleModal, selectedQuotes, resetSelectedQuotes }: CreateGuideProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(CREATE_GUIDE_STEPS)
