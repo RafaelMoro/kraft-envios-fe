@@ -315,7 +315,8 @@ describe('Feature: Add Address for Tone Guide Creation', () => {
             state: 'CDMX',
             reference: 'Cerca del parque'
           },
-          town: 'Cuauhtémoc'
+          town: 'Cuauhtémoc',
+          city: 'Ciudad de México'
         })
       })
     })
