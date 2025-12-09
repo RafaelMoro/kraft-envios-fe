@@ -21,8 +21,8 @@ export type AllAliasesSavedTone = {
 }
 
 export type CreateGuideFormValues = {
-  originAddress: CreateGuideAddressFormValues;
-  destinationAddress: CreateGuideAddressFormValues;
+  originAddress: CreateGuideAddressFormValuesMn;
+  destinationAddress: CreateGuideAddressFormValuesMn;
   parcelInfo: ParcelInfoFormValues;
 }
 
@@ -44,7 +44,7 @@ export type CreateGuideFormValuesGE = {
   parcelInfo: ParcelInfoValuesGE;
 }
 
-export type CreateGuideAddressFormValues = {
+export type CreateGuideAddressFormValuesMn = {
   name: string;
   street1: string;
   neighborhood: string;
@@ -151,8 +151,8 @@ export type ParcelInfoValuesGE = ParcelInfoValues & PackageDimensions & {
 
 export type CreateGuideMnPayload = {
   quoteId: string
-  origin: CreateGuideAddressFormValues & { country: string };
-  destination: CreateGuideAddressFormValues & { country: string };
+  origin: CreateGuideAddressFormValuesMn & { country: string };
+  destination: CreateGuideAddressFormValuesMn & { country: string };
   parcel: ParcelInfoFormValues & { satProductId: string };
 }
 
@@ -281,7 +281,7 @@ export interface CreateAddressGEResponse {
 
 //#region Schemas
 
-export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValues> = object().shape({
+export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValuesMn> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
   street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
   neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),

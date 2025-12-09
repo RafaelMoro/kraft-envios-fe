@@ -17,7 +17,7 @@ import {
   CreateMnGuideResponse,
   // FetchSatProductsResponse,
   GetProductSatIdPayload,
-  CreateGuideAddressFormValues,
+  CreateGuideAddressFormValuesMn,
   CreateGuideAddressFormValuesTone,
   CreateGuideAddressValuesPkk,
   CreateGuidePkkPayload,
@@ -121,7 +121,7 @@ export const replaceSpacesWithPlus = (input: string): string => {
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddress = (address: CreateGuideAddressFormValues): CreateGuideAddressFormValues => {
+export const verifyAndUpdateAddress = (address: CreateGuideAddressFormValuesMn): CreateGuideAddressFormValuesMn => {
   return {
     ...address,
     company: address.company?.trim() || DEFAULT_COMPANY,

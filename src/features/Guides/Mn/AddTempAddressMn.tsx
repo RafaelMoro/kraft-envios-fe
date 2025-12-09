@@ -2,16 +2,16 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
-import { CreateGuideAddressFormSchema, CreateGuideAddressFormValues } from "@/shared/types/guides.types"
+import { CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface OriginAddressFormProps {
   title: string
-  addressData: CreateGuideAddressFormValues
+  addressData: CreateGuideAddressFormValuesMn
   isMobileTablet: boolean
   goNext: () => void
   goPrev: () => void
-  updateAddress: (data: CreateGuideAddressFormValues) => void
+  updateAddress: (data: CreateGuideAddressFormValuesMn) => void
   toggleModal: () => void
   isDestination?: boolean
 }
@@ -23,11 +23,11 @@ export const AddTempAddressMn = ({ addressData, title, isMobileTablet, goNext, u
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateGuideAddressFormValues>({
+  } = useForm<CreateGuideAddressFormValuesMn>({
     resolver: yupResolver(CreateGuideAddressFormSchema)
   })
 
-  const onSubmit: SubmitHandler<CreateGuideAddressFormValues> = (data, event) => {
+  const onSubmit: SubmitHandler<CreateGuideAddressFormValuesMn> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
     updateAddress(data)

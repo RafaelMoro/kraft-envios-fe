@@ -8,7 +8,7 @@ import { Stepper } from "@/shared/ui/atoms/Stepper";
 import { AddTempAddressMn } from "./AddTempAddressMn";
 import {
   CreateGuideFormValues,
-  CreateGuideAddressFormValues,
+  CreateGuideAddressFormValuesMn,
   ParcelInfoFormValues,
   SearchProduct,
   CreateGuideMnPayload,
@@ -52,10 +52,10 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
     formData.current = {...initialStateForm}
     selectedProduct.current = null
   }
-  const updateOriginAddress = (data: CreateGuideAddressFormValues) => {
+  const updateOriginAddress = (data: CreateGuideAddressFormValuesMn) => {
     formData.current.originAddress = data
   }
-  const updateDestinationAddress = (data: CreateGuideAddressFormValues) => {
+  const updateDestinationAddress = (data: CreateGuideAddressFormValuesMn) => {
     formData.current.destinationAddress = data
   }
   const updateParcelInfo = (data: ParcelInfoFormValues) => {
