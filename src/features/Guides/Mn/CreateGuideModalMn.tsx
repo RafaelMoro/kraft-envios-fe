@@ -49,7 +49,6 @@ export const CreateGuideModalMn = ({ open, toggleModal, selectedQuotes, resetSel
   const [errorProductSat, setErrorProductSat] = useState<string>('')
 
   const { aliasesMn, updateOriginAliasMn, updateDestinationAliasMn, resetAliases } = useSaveAlias()
-  console.log('aliasesMn', aliasesMn)
 
   // Form data to collect all steps data
   const formData = useRef<CreateGuideFormValues>({...initialStateForm})
