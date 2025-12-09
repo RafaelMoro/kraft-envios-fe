@@ -34,12 +34,22 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
  */
 export const useSaveAlias = () => {
   const aliases = useRef<AllAliasesSavedTone>({...initialAliases})
-  const updateOriginAlias = ({ alias, address }: { alias: string; address: CreateGuideAddressDataToneFormValues }) => {
+  const updateOriginAlias = ({
+    alias, address, town
+  }:{ 
+    alias: string; address: CreateGuideAddressDataToneFormValues; town: string
+  }) => {
     aliases.current.origin.alias = alias
+    aliases.current.origin.town = town
     aliases.current.origin.address = address
   }
-  const updateDestinationAlias = ({ alias, address }: { alias: string; address: CreateGuideAddressDataToneFormValues }) => {
+  const updateDestinationAlias = ({
+    alias, address, town
+  }:{ 
+    alias: string; address: CreateGuideAddressDataToneFormValues; town: string
+  }) => {
     aliases.current.destination.alias = alias
+    aliases.current.destination.town = town
     aliases.current.destination.address = address
   }
   const resetAliases = () => {

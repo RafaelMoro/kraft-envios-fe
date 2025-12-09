@@ -5,9 +5,10 @@ import { RiArrowDownSLine } from "@remixicon/react"
 import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { AliasSavedTone } from "@/shared/types/guides.types"
 
 interface SelectAddressDropdownProps {
-  aliasSelected: string;
+  aliasSaved: AliasSavedTone;
   errorMessage: string;
   townError: string;
   cityError: string;
@@ -21,14 +22,14 @@ interface SelectAddressDropdownProps {
 }
 
 export const SelectAddressDropdown = ({
-  aliasSelected, errorMessage, townError, cityError, hideTownDropdown = false, hideCityDropdown = false,
+  aliasSaved, errorMessage, townError, cityError, hideTownDropdown = false, hideCityDropdown = false,
   setAliasSelected, updateAddressInfo, setErrorMessage, setTownError, setCityError,
 }: SelectAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   const [showTownSelector, setShowTownSelector] = useState(false);
-  const [townSelected, setTownSelected] = useState<string>("");
+  const [townSelected, setTownSelected] = useState<string>(aliasSaved.town);
   const [towns, setTowns] = useState<string[]>([]);
 
   const [showCitySelector, setShowCitySelector] = useState(false);
@@ -107,8 +108,8 @@ export const SelectAddressDropdown = ({
             >
               { isPending && (<Spinner />)}
               { (isError && !isPending) && ("No se han podido cargar los alias")}
-              { (!isPending && addresses && addresses.length > 0 && !aliasSelected) && 'Alias de dirección'}
-              { (!isPending && addresses && addresses.length > 0 && aliasSelected) && aliasSelected}
+              { (!isPending && addresses && addresses.length > 0 && !aliasSaved.alias) && 'Alias de dirección'}
+              { (!isPending && addresses && addresses.length > 0 && aliasSaved.alias) && aliasSaved.alias}
               <RiArrowDownSLine />
             </Button>
             { errorMessage && (

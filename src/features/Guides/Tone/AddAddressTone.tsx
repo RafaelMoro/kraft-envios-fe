@@ -22,7 +22,11 @@ interface AddAddressToneProps {
   goPrev: () => void
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
-  updateSavedAlias: ({ alias, address }: { alias: string; address: CreateGuideAddressDataToneFormValues }) => void
+  updateSavedAlias: ({
+    alias, address, town
+  }: {
+    alias: string; address: CreateGuideAddressDataToneFormValues; town: string
+  }) => void
 }
 
 export const AddAddressTone = ({
@@ -90,7 +94,7 @@ export const AddAddressTone = ({
       state: newAddress.state,
       reference: newAddress.reference,
     }
-    updateSavedAlias({ alias: newAddress.alias, address: updatedAddressData })
+    updateSavedAlias({ alias: newAddress.alias, address: updatedAddressData, town })
   }
 
   if (useTempAddress) {
@@ -139,7 +143,7 @@ export const AddAddressTone = ({
         }
       >
         <SelectAddressDropdown
-          aliasSelected={aliasSelected}
+          aliasSaved={aliasSaved}
           setAliasSelected={setAliasSelected}
           updateAddressInfo={updateAddressInfo}
           errorMessage={addressError}

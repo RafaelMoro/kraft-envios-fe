@@ -11,6 +11,7 @@ export const CREATE_GUIDE_STEPS = ["Remitente", "Destinatario", "Paquete", "Conf
 export const initialAliases: AllAliasesSavedTone = {
   origin: {
     alias: "",
+    town: "",
     address: {
       street1: "",
       neighborhood: "",
@@ -22,6 +23,7 @@ export const initialAliases: AllAliasesSavedTone = {
   },
   destination: {
     alias: "",
+    town: "",
     address: {
       street1: "",
       neighborhood: "",
