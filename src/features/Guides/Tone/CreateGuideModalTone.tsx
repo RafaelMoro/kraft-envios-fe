@@ -6,8 +6,13 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { CreateGuideAddressFormTone } from "./CreateGuideAddressFormTone";
-import { CreateGuideAddressFormValuesTone, CreateGuideFormValuesTone, CreateGuideTonePayload, GlobalCreateGuideResponse, ParcelInfoValuesTone } from "@/shared/types/guides.types";
+import {
+  CreateGuideAddressFormValuesTone,
+  CreateGuideFormValuesTone,
+  CreateGuideTonePayload,
+  GlobalCreateGuideResponse,
+  ParcelInfoValuesTone
+} from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateFormTone } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
@@ -15,6 +20,8 @@ import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideToneCb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
+import { AddAddressTone } from "./AddAddressTone";
+import { useSaveAlias } from "@/shared/hooks/useAlias";
 
 interface CreateGuideModalToneProps {
   open: boolean;
@@ -28,6 +35,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(CREATE_GUIDE_STEPS)
 
+  const { aliases, updateOriginAlias, updateDestinationAlias, resetAliases } = useSaveAlias()
   const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
   const resetFormData = () => {
     formData.current = {...initialStateFormTone}
@@ -43,6 +51,7 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
   }
 
   const closeModal = () => {
+    resetAliases()
     resetFormData()
     resetSteps()
     resetSelectedQuotes()
@@ -70,8 +79,10 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           </div>
         )}
         { step === 1 && (
-          <CreateGuideAddressFormTone
+          <AddAddressTone
             addressData={formData.current.originAddress}
+            aliasSaved={aliases.origin}
+            updateSavedAlias={updateOriginAlias}
             goNext={goNext}
             updateAddress={updateOriginAddress}
             toggleModal={toggleModal}
@@ -79,8 +90,10 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
           />
         )}
         { step === 2 && (
-          <CreateGuideAddressFormTone
+          <AddAddressTone
             addressData={formData.current.destinationAddress}
+            aliasSaved={aliases.destination}
+            updateSavedAlias={updateDestinationAlias}
             goNext={goNext}
             updateAddress={updateDestinationAddress}
             isDestination
