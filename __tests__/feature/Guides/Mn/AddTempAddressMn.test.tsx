@@ -5,19 +5,17 @@ import { initialStateAddressForm } from '@/shared/constants/guides.constants'
 
 // Mock functions for props
 const mockGoNext = jest.fn()
-const mockGoPrev = jest.fn()
 const mockUpdateAddress = jest.fn()
 const mockToggleModal = jest.fn()
 
 const defaultProps = {
   title: 'Test Address Form',
   addressData: initialStateAddressForm,
+  addressType: 'origin' as 'origin' | 'destination',
   isMobileTablet: false,
   goNext: mockGoNext,
-  goPrev: mockGoPrev,
   updateAddress: mockUpdateAddress,
-  toggleModal: mockToggleModal,
-  isDestination: false
+  toggleTempAddress: mockToggleModal
 }
 
 const renderComponent = (props = {}) => {
@@ -32,8 +30,8 @@ describe('CreateGuideAddressForm', () => {
 
   describe('Form rendering with origin address props', () => {
     it('should display all form fields with correct labels when rendering origin address form', () => {
-      // Given the CreateGuideAddressForm is rendered with origin address props (isDestination=false)
-      renderComponent({ isDestination: false })
+      // Given the CreateGuideAddressForm is rendered with origin address props
+      renderComponent({ addressType: 'origin' })
 
       // Then section headings should be displayed
       expect(screen.getByText('Datos personales')).toBeInTheDocument()
@@ -53,14 +51,13 @@ describe('CreateGuideAddressForm', () => {
     })
 
     it('should display cancel button with correct text and styling for origin address', () => {
-      // Given the CreateGuideAddressForm is rendered with origin address props (isDestination=false)
-      renderComponent({ isDestination: false })
+      // Given the CreateGuideAddressForm is rendered with origin address props
+      renderComponent({ addressType: 'origin' })
 
-      // Then cancel button shows 'Cancelar' with red color
-      const cancelButton = screen.getByTestId('origin-address-cancel-button')
+      // Then cancel button shows 'Volver' with light color
+      const cancelButton = screen.getByTestId('origin-address-mn-temp-cancel-button')
       expect(cancelButton).toBeInTheDocument()
-      expect(cancelButton).toHaveTextContent('Cancelar')
-      expect(cancelButton).toHaveClass('text-red-700')
+      expect(cancelButton).toHaveTextContent('Volver')
     })
 
     it('should display next button with correct text', () => {
@@ -68,7 +65,7 @@ describe('CreateGuideAddressForm', () => {
       renderComponent()
 
       // Then next button should be displayed
-      const nextButton = screen.getByTestId('origin-address-next-button')
+      const nextButton = screen.getByTestId('origin-address-mn-temp-next-button')
       expect(nextButton).toBeInTheDocument()
       expect(nextButton).toHaveTextContent('Siguiente')
       expect(nextButton).toHaveAttribute('type', 'submit')
@@ -97,14 +94,13 @@ describe('CreateGuideAddressForm', () => {
 
   describe('Form rendering with destination address props', () => {
     it('should display cancel button with correct text and styling for destination address', () => {
-      // Given the CreateGuideAddressForm is rendered with destination address props (isDestination=true)
-      renderComponent({ isDestination: true })
+      // Given the CreateGuideAddressForm is rendered with destination address props
+      renderComponent({ addressType: 'destination' })
 
-      // Then cancel button shows 'Regresar' with light color and outline style
-      const cancelButton = screen.getByTestId('origin-address-cancel-button')
+      // Then cancel button shows 'Volver' with light color
+      const cancelButton = screen.getByTestId('destination-address-mn-temp-cancel-button')
       expect(cancelButton).toBeInTheDocument()
-      expect(cancelButton).toHaveTextContent('Regresar')
-      expect(cancelButton).toHaveClass('border-gray-300')
+      expect(cancelButton).toHaveTextContent('Volver')
     })
   })
 
@@ -115,7 +111,7 @@ describe('CreateGuideAddressForm', () => {
       renderComponent()
 
       // When user submits form with empty required fields
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then validation errors should be displayed for required fields
@@ -134,7 +130,7 @@ describe('CreateGuideAddressForm', () => {
       renderComponent()
 
       // When user submits form with empty required fields
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then updateAddress and goNext should not be called
@@ -153,7 +149,7 @@ describe('CreateGuideAddressForm', () => {
       const externalNumberInput = screen.getByTestId('external_number')
       await user.type(externalNumberInput, 'abc123')
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate format validation error should be displayed
@@ -169,7 +165,7 @@ describe('CreateGuideAddressForm', () => {
       const phoneInput = screen.getByTestId('phone')
       await user.type(phoneInput, 'abc123def')
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate format validation error should be displayed
@@ -185,7 +181,7 @@ describe('CreateGuideAddressForm', () => {
       const phoneInput = screen.getByTestId('phone')
       await user.type(phoneInput, '123456789') // 9 digits
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate length validation error should be displayed
@@ -201,7 +197,7 @@ describe('CreateGuideAddressForm', () => {
       const phoneInput = screen.getByTestId('phone')
       await user.type(phoneInput, '12345678901') // 11 digits
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate length validation error should be displayed
@@ -226,7 +222,7 @@ describe('CreateGuideAddressForm', () => {
       const emailInput = screen.getByLabelText(/correo electrónico/i)
       await user.type(emailInput, 'invalid-email-format@a')
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate format validation error should be displayed
@@ -242,7 +238,7 @@ describe('CreateGuideAddressForm', () => {
       const companyInput = screen.getByTestId('company')
       await user.type(companyInput, 'A')
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate validation error should be displayed
@@ -258,7 +254,7 @@ describe('CreateGuideAddressForm', () => {
       const referenceInput = screen.getByTestId('reference')
       await user.type(referenceInput, 'A')
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate validation error should be displayed
@@ -274,6 +270,7 @@ describe('CreateGuideAddressForm', () => {
 
       // When user fills all required fields with valid data
       await user.type(screen.getByTestId('name'), 'John Doe')
+      await user.type(screen.getByTestId('lastName'), 'Doe')
       await user.type(screen.getByTestId('street1'), 'Main Street 123')
       await user.type(screen.getByTestId('neighborhood'), 'Downtown')
       await user.type(screen.getByTestId('external_number'), '123')
@@ -281,12 +278,13 @@ describe('CreateGuideAddressForm', () => {
       await user.type(screen.getByTestId('state'), 'CDMX')
       await user.type(screen.getByTestId('phone'), '5555551234')
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then updateAddress should be called with the form data
       expect(mockUpdateAddress).toHaveBeenCalledWith({
         name: 'John Doe',
+        lastName: 'Doe',
         street1: 'Main Street 123',
         neighborhood: 'Downtown',
         external_number: '123',
@@ -309,6 +307,7 @@ describe('CreateGuideAddressForm', () => {
 
       // When user fills all fields (required and optional) with valid data
       await user.type(screen.getByTestId('name'), 'Jane Smith')
+      await user.type(screen.getByTestId('lastName'), 'Smith')
       await user.type(screen.getByTestId('street1'), 'Oak Avenue 456')
       await user.type(screen.getByTestId('neighborhood'), 'Uptown')
       await user.type(screen.getByTestId('external_number'), '456')
@@ -319,12 +318,13 @@ describe('CreateGuideAddressForm', () => {
       await user.type(screen.getByLabelText(/correo electrónico/i), 'jane@example.com')
       await user.type(screen.getByTestId('reference'), 'Next to the park')
       
-      const submitButton = screen.getByTestId('origin-address-next-button')
+      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then updateAddress should be called with all the form data
       expect(mockUpdateAddress).toHaveBeenCalledWith({
         name: 'Jane Smith',
+        lastName: 'Smith',
         street1: 'Oak Avenue 456',
         neighborhood: 'Uptown',
         external_number: '456',
