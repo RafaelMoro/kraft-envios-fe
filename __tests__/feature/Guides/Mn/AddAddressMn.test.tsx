@@ -238,9 +238,16 @@ describe('Feature: Add Address for Mn Guide Creation', () => {
       renderComponent()
 
       // When user fills valid data and submits
-      await user.type(screen.getByTestId('name'), 'Carlos')
-      await user.type(screen.getByLabelText(/apellido/i), 'García')
-      await user.type(screen.getByLabelText(/teléfono/i), '5559876543')
+      const nameInput = screen.getByTestId('name')
+      const lastNameInput = screen.getByLabelText(/apellido/i)
+      const phoneInput = screen.getByLabelText(/teléfono/i)
+
+      await user.clear(nameInput)
+      await user.type(nameInput, 'Carlos')
+      await user.clear(lastNameInput)
+      await user.type(lastNameInput, 'García')
+      await user.clear(phoneInput)
+      await user.type(phoneInput, '5559876543')
 
       const submitButton = screen.getByTestId('origin-address-mn-next-button')
       await user.click(submitButton)
