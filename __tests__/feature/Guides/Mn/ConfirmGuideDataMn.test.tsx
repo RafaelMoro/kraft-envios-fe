@@ -10,7 +10,8 @@ const mockCreateGuide = jest.fn()
 
 // Mock data for testing
 const mockOriginAddress = {
-  name: 'Juan Pérez',
+  name: 'Juan',
+  lastName: 'Pérez',
   phone: '5551234567',
   email: 'juan.perez@email.com',
   company: 'Empresa Origen',
@@ -25,7 +26,8 @@ const mockOriginAddress = {
 }
 
 const mockDestinationAddress = {
-  name: 'María González',
+  name: 'María',
+  lastName: 'González',
   phone: '5559876543',
   email: 'maria.gonzalez@email.com',
   company: 'Empresa Destino',
@@ -107,7 +109,7 @@ describe('ConfirmGuideData', () => {
       expect(screen.getByText('Paquete')).toBeInTheDocument()
 
       // Then origin address data should be displayed
-      expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
+      expect(screen.getByText('Juan')).toBeInTheDocument()
       expect(screen.getByText('555-123-4567')).toBeInTheDocument()
       expect(screen.getByText('juan.perez@email.com')).toBeInTheDocument()
       expect(screen.getByText('Empresa Origen')).toBeInTheDocument()
@@ -115,7 +117,7 @@ describe('ConfirmGuideData', () => {
       expect(screen.getByText('Entre Av. Reforma y Insurgentes')).toBeInTheDocument()
 
       // Then destination address data should be displayed
-      expect(screen.getByText('María González')).toBeInTheDocument()
+      expect(screen.getByText('María')).toBeInTheDocument()
       expect(screen.getByText('555-987-6543')).toBeInTheDocument()
       expect(screen.getByText('maria.gonzalez@email.com')).toBeInTheDocument()
       expect(screen.getByText('Empresa Destino')).toBeInTheDocument()
@@ -151,11 +153,33 @@ describe('ConfirmGuideData', () => {
       expect(mockCreateGuide).toHaveBeenCalledWith({
         quoteId: 'quote-123',
         origin: {
-          ...mockOriginAddress,
+          name: 'Juan Pérez',
+          phone: '5551234567',
+          email: 'juan.perez@email.com',
+          company: 'Empresa Origen',
+          street1: 'Calle Principal 123',
+          neighborhood: 'Centro',
+          external_number: '123',
+          city: 'Ciudad de México',
+          state: 'CDMX',
+          reference: 'Entre Av. Reforma y Insurgentes',
+          postal_code: '06000',
+          internal_number: '',
           country: 'MX'
         },
         destination: {
-          ...mockDestinationAddress,
+          name: 'María González',
+          phone: '5559876543',
+          email: 'maria.gonzalez@email.com',
+          company: 'Empresa Destino',
+          street1: 'Avenida Secundaria 456',
+          neighborhood: 'Roma Norte',
+          external_number: '456',
+          city: 'Guadalajara',
+          state: 'Jalisco',
+          reference: 'Frente al parque',
+          postal_code: '06700',
+          internal_number: '',
           country: 'MX'
         },
         parcel: {
@@ -290,15 +314,37 @@ describe('ConfirmGuideData', () => {
       // Then payload should contain all original form data properties
       const expectedCall = mockCreateGuide.mock.calls[0][0]
       
-      // Verify origin contains all address fields plus country
+      // Verify origin contains all address fields plus country (name is combined from name + lastName)
       expect(expectedCall.origin).toEqual({
-        ...mockOriginAddress,
+        name: 'Juan Pérez',
+        phone: '5551234567',
+        email: 'juan.perez@email.com',
+        company: 'Empresa Origen',
+        street1: 'Calle Principal 123',
+        neighborhood: 'Centro',
+        external_number: '123',
+        city: 'Ciudad de México',
+        state: 'CDMX',
+        reference: 'Entre Av. Reforma y Insurgentes',
+        postal_code: '06000',
+        internal_number: '',
         country: 'MX'
       })
       
-      // Verify destination contains all address fields plus country
+      // Verify destination contains all address fields plus country (name is combined from name + lastName)
       expect(expectedCall.destination).toEqual({
-        ...mockDestinationAddress,
+        name: 'María González',
+        phone: '5559876543',
+        email: 'maria.gonzalez@email.com',
+        company: 'Empresa Destino',
+        street1: 'Avenida Secundaria 456',
+        neighborhood: 'Roma Norte',
+        external_number: '456',
+        city: 'Guadalajara',
+        state: 'Jalisco',
+        reference: 'Frente al parque',
+        postal_code: '06700',
+        internal_number: '',
         country: 'MX'
       })
       
