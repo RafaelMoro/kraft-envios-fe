@@ -36,7 +36,6 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
   const steps = new Set(CREATE_GUIDE_STEPS)
 
   const { aliases, updateOriginAlias, updateDestinationAlias, resetAliases } = useSaveAlias()
-  console.log('aliases', aliases)
   const formData = useRef<CreateGuideFormValuesTone>({...initialStateFormTone})
   const resetFormData = () => {
     formData.current = {...initialStateFormTone}
@@ -52,10 +51,10 @@ export const CreateGuideModalTone = ({ open, selectedQuotes, toggleModal, resetS
   }
 
   const closeModal = () => {
+    resetAliases()
     resetFormData()
     resetSteps()
     resetSelectedQuotes()
-    resetAliases()
     toggleModal()
   }
 

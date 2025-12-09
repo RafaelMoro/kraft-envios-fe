@@ -10,7 +10,7 @@ import {
   AliasSavedTone
 } from "@/shared/types/guides.types"
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
-import { UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
+import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
 import { useSelectAlias } from "@/shared/hooks/useAlias"
 
@@ -23,9 +23,9 @@ interface AddAddressToneProps {
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
   updateSavedAlias: ({
-    alias, address, town
+    alias, address, addressTone, town
   }: {
-    alias: string; address: CreateGuideAddressDataToneFormValues; town: string
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
   }) => void
 }
 
@@ -37,7 +37,6 @@ export const AddAddressTone = ({
   const {
     aliasSelected, setAliasSelected, addressError, setAddressError, townError, cityError, setTownError, setCityError, resetAliasSelected
   } = useSelectAlias({ aliasSaved: aliasSaved.alias });
-  console.log('aliasSelected', aliasSelected)
 
   const cancelColorButton = isDestination ? "light" : "red"
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
@@ -94,7 +93,7 @@ export const AddAddressTone = ({
       state: newAddress.state,
       reference: newAddress.reference,
     }
-    updateSavedAlias({ alias: newAddress.alias, address: updatedAddressData, town })
+    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressTone: updatedAddressData, town })
   }
 
   if (useTempAddress) {

@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { AllAliasesSavedTone, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
 import { initialAliases } from "../constants/guides.constants";
+import { Address } from "../types/addresses.types";
 
 /**
  * Hook to manage a selected alias and handle select alias error with component `SelectAddressDropdown`
@@ -35,25 +36,30 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
 export const useSaveAlias = () => {
   const aliases = useRef<AllAliasesSavedTone>({...initialAliases})
   const updateOriginAlias = ({
-    alias, address, town
+    alias, address, addressTone, town
   }:{ 
-    alias: string; address: CreateGuideAddressDataToneFormValues; town: string
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
   }) => {
     aliases.current.origin.alias = alias
     aliases.current.origin.town = town
-    aliases.current.origin.addressTone = address
+    aliases.current.origin.address = address
+    aliases.current.origin.addressTone = addressTone
   }
   const updateDestinationAlias = ({
-    alias, address, town
+    alias, address, addressTone, town
   }:{ 
-    alias: string; address: CreateGuideAddressDataToneFormValues; town: string
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
   }) => {
     aliases.current.destination.alias = alias
     aliases.current.destination.town = town
-    aliases.current.destination.addressTone = address
+    aliases.current.destination.address = address
+    aliases.current.destination.addressTone = addressTone
   }
   const resetAliases = () => {
-    aliases.current = {...initialAliases}
+    console.log('resetAliases called')
+    const resetedAlias = {...initialAliases}
+    console.log('resetedAlias', resetedAlias)
+    aliases.current = resetedAlias
   }
   
   return {

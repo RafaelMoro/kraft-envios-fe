@@ -12,6 +12,18 @@ export const initialAliases: AllAliasesSavedTone = {
   origin: {
     alias: "",
     town: "",
+    address: {
+      addressName: "",
+      externalNumber: "",
+      internalNumber: "",
+      reference: "",
+      zipcode: "",
+      state: "",
+      city: [],
+      town: [],
+      alias: "",
+      neighborhood: ""
+    },
     addressTone: {
       street1: "",
       neighborhood: "",
@@ -24,6 +36,18 @@ export const initialAliases: AllAliasesSavedTone = {
   destination: {
     alias: "",
     town: "",
+    address: {
+      addressName: "",
+      externalNumber: "",
+      internalNumber: "",
+      reference: "",
+      zipcode: "",
+      state: "",
+      city: [],
+      town: [],
+      alias: "",
+      neighborhood: ""
+    },
     addressTone: {
       street1: "",
       neighborhood: "",

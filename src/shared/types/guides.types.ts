@@ -2,6 +2,7 @@ import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
 import { LadaStates } from "./global.types";
 import { ProviderSource } from "./quotes.types";
+import { Address } from "./addresses.types";
 
 export type GetProductSatIdPayload = {
   search: string
@@ -10,6 +11,7 @@ export type GetProductSatIdPayload = {
 export type AliasSavedTone = {
   alias: string;
   town: string;
+  address: Address
   addressTone: CreateGuideAddressDataToneFormValues
 }
 

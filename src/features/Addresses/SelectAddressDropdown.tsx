@@ -26,13 +26,13 @@ export const SelectAddressDropdown = ({
   setAliasSelected, updateAddressInfo, setErrorMessage, setTownError, setCityError,
 }: SelectAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
-  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(aliasSaved?.address);
 
-  const [showTownSelector, setShowTownSelector] = useState(false);
+  const [showTownSelector, setShowTownSelector] = useState(aliasSaved?.address?.town.length > 1 || false);
   const [townSelected, setTownSelected] = useState<string>(aliasSaved.town);
   const [towns, setTowns] = useState<string[]>([]);
 
-  const [showCitySelector, setShowCitySelector] = useState(false);
+  const [showCitySelector, setShowCitySelector] = useState(aliasSaved?.address?.city.length > 1 || false);
   const [citySelected, setCitySelected] = useState<string>("");
   const [cities, setCities] = useState<string[]>([]);
 
