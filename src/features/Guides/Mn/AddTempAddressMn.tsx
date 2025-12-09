@@ -4,6 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 import { CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { PersonalDataMn } from "./PersonalDataMn"
 
 interface OriginAddressFormProps {
   title: string
@@ -47,68 +48,11 @@ export const AddTempAddressMn = ({ addressData, title, isMobileTablet, goNext, u
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
       { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">{title}</h5>)}
       <h4 className="text-xl">Datos personales</h4>
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="name">Nombre</Label>
-          </div>
-          <TextInput
-            data-testid="name"
-            defaultValue={addressData.name}
-            id="name"
-            type="text"
-            {...register("name")}
-          />
-          { errors?.name?.message && (
-            <ErrorMessage>{errors.name?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="phone">Teléfono</Label>
-          </div>
-          <TextInput
-            data-testid="phone"
-            id="phone"
-            type="text"
-            inputMode="numeric"
-            defaultValue={addressData.phone}
-            {...register("phone")}
-          />
-          { errors?.phone?.message && (
-            <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="email">Correo electrónico (Opcional)</Label>
-          </div>
-          <TextInput
-            id="email"
-            type="email"
-            defaultValue={addressData.email ?? ''}
-            {...register("email")}
-          />
-          { errors?.email?.message && (
-            <ErrorMessage>{errors.email?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="company">Nombre de la compañia (Opcional)</Label>
-          </div>
-          <TextInput
-            data-testid="company"
-            defaultValue={addressData.company ?? ''}
-            id="company"
-            type="text"
-            {...register("company")}
-          />
-          { errors?.company?.message && (
-            <ErrorMessage>{errors.company?.message}</ErrorMessage>
-          )}
-        </div>
-      </section>
+      <PersonalDataMn<CreateGuideAddressFormValuesMn>
+        addressData={addressData}
+        errors={errors}
+        register={register}
+      />
       <div className="mt-8 flex flex-col gap-5">
         <h4 className="text-xl">Domicilio</h4>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
