@@ -46,6 +46,7 @@ export type CreateGuideFormValuesGE = {
 
 export type CreateGuidePersonalDataMnFormValues = {
   name: string;
+  lastName: string;
   phone: string;
   company?: string | null | undefined
   email?: string | null | undefined
@@ -288,6 +289,7 @@ export interface CreateAddressGEResponse {
 
 export const AddPersonalDataMnFormSchema: ObjectSchema<CreateGuidePersonalDataMnFormValues> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
+  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
   company: string()
     .nullable()
     .notRequired()
