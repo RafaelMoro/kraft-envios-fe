@@ -65,12 +65,14 @@ export const initialAliasesMn: AllAliasSavedMn = {
   origin: {
     alias: "",
     town: "",
+    city: "",
     address: {...defaultAddress},
     addressMn: {...defaultAddressMn}
   },
   destination: {
     alias: "",
     town: "",
+    city: "",
     address: {...defaultAddress},
     addressMn: {...defaultAddressMn}
   }
@@ -78,6 +80,7 @@ export const initialAliasesMn: AllAliasSavedMn = {
 
 export const initialStateAddressForm: CreateGuideAddressFormValuesMn = {
   name: "",
+  lastName: "",
   street1: "",
   neighborhood: "",
   external_number: "",
