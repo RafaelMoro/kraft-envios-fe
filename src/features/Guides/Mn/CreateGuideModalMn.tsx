@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { AddTempAddressMn } from "./AddTempAddressMn";
 import {
   CreateGuideFormValues,
   CreateGuideAddressFormValuesMn,
@@ -108,10 +107,12 @@ export const CreateGuideModalMn = ({ open, toggleModal, selectedQuotes, resetSel
           />
         )}
         { step === 2 && (
-          <AddTempAddressMn
+          <AddAddressMn
             title="Domicilio destino"
             goNext={goNext}
             updateAddress={updateDestinationAddress}
+            aliasSaved={aliasesMn.destination}
+            updateSavedAlias={updateDestinationAliasMn}
             addressData={formData.current.destinationAddress}
             isMobileTablet={isMobileTablet}
             isDestination
