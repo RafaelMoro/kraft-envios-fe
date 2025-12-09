@@ -16,7 +16,7 @@ interface OriginAddressFormProps {
   isDestination?: boolean
 }
 
-export const CreateGuideAddressForm = ({ addressData, title, isMobileTablet, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
+export const AddTempAddressMn = ({ addressData, title, isMobileTablet, goNext, updateAddress, goPrev, toggleModal, isDestination }: OriginAddressFormProps) => {
   const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
   const cancelColorButton = isDestination ? "light" : "red"
   const {
