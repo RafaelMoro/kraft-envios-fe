@@ -5,10 +5,10 @@ import { RiArrowDownSLine } from "@remixicon/react"
 import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { AliasSavedTone } from "@/shared/types/guides.types"
+import { AliasSaved } from "@/shared/types/guides.types"
 
-interface SelectAddressDropdownProps {
-  aliasSaved: AliasSavedTone;
+interface SelectAddressDropdownProps<T extends AliasSaved> {
+  aliasSaved: T;
   errorMessage: string;
   townError: string;
   cityError: string;
@@ -21,10 +21,10 @@ interface SelectAddressDropdownProps {
   updateAddressInfo: ({ newAddress, town, city }: UpdateAddressInfoPayload) => void
 }
 
-export const SelectAddressDropdown = ({
+export const SelectAddressDropdown = <T extends AliasSaved>({
   aliasSaved, errorMessage, townError, cityError, hideTownDropdown = false, hideCityDropdown = false,
   setAliasSelected, updateAddressInfo, setErrorMessage, setTownError, setCityError,
-}: SelectAddressDropdownProps) => {
+}: SelectAddressDropdownProps<T>) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(aliasSaved?.address);
 
@@ -33,7 +33,7 @@ export const SelectAddressDropdown = ({
   const [towns, setTowns] = useState<string[]>(aliasSaved?.address?.town || []);
 
   const [showCitySelector, setShowCitySelector] = useState(aliasSaved?.address?.city.length > 1 || false);
-  const [citySelected, setCitySelected] = useState<string>("");
+  const [citySelected, setCitySelected] = useState<string>(aliasSaved.city);
   const [cities, setCities] = useState<string[]>(aliasSaved?.address?.city || []);
 
   const handleSelectAlias = (address: Address) => {

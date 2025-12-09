@@ -5,10 +5,9 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { CreateGuideAddressForm } from "./CreateGuideAddressForm";
 import {
   CreateGuideFormValues,
-  CreateGuideAddressFormValues,
+  CreateGuideAddressFormValuesMn,
   ParcelInfoFormValues,
   SearchProduct,
   CreateGuideMnPayload,
@@ -23,6 +22,8 @@ import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideMnCb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "./ResultGuideScreen";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { AddAddressMn } from "./AddAddressMn";
+import { useSaveAlias } from "@/shared/hooks/useAlias";
 
 interface CreateGuideProps {
   open: boolean;
@@ -31,7 +32,7 @@ interface CreateGuideProps {
   resetSelectedQuotes: () => void
 }
 
-export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelectedQuotes }: CreateGuideProps) => {
+export const CreateGuideModalMn = ({ open, toggleModal, selectedQuotes, resetSelectedQuotes }: CreateGuideProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(CREATE_GUIDE_STEPS)
@@ -46,16 +47,18 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
   const [searchProductSat, setSearchProductSat] = useState<string>(selectedProduct.current?.description ?? '')
   const [errorProductSat, setErrorProductSat] = useState<string>('')
 
+  const { aliasesMn, updateOriginAliasMn, updateDestinationAliasMn, resetAliases } = useSaveAlias()
+
   // Form data to collect all steps data
   const formData = useRef<CreateGuideFormValues>({...initialStateForm})
   const resetFormData = () => {
     formData.current = {...initialStateForm}
     selectedProduct.current = null
   }
-  const updateOriginAddress = (data: CreateGuideAddressFormValues) => {
+  const updateOriginAddress = (data: CreateGuideAddressFormValuesMn) => {
     formData.current.originAddress = data
   }
-  const updateDestinationAddress = (data: CreateGuideAddressFormValues) => {
+  const updateDestinationAddress = (data: CreateGuideAddressFormValuesMn) => {
     formData.current.destinationAddress = data
   }
   const updateParcelInfo = (data: ParcelInfoFormValues) => {
@@ -63,6 +66,7 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
   }
 
   const closeModal = () => {
+    resetAliases()
     resetFormData()
     resetSteps()
     setSearchProductSat('')
@@ -90,10 +94,12 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
           </div>
         )}
         { step === 1 && (
-          <CreateGuideAddressForm
+          <AddAddressMn
             title="Domicilio origen"
             goNext={goNext}
             updateAddress={updateOriginAddress}
+            aliasSaved={aliasesMn.origin}
+            updateSavedAlias={updateOriginAliasMn}
             addressData={formData.current.originAddress}
             isMobileTablet={isMobileTablet}
             toggleModal={closeModal}
@@ -101,10 +107,12 @@ export const CreateGuideModal = ({ open, toggleModal, selectedQuotes, resetSelec
           />
         )}
         { step === 2 && (
-          <CreateGuideAddressForm
+          <AddAddressMn
             title="Domicilio destino"
             goNext={goNext}
             updateAddress={updateDestinationAddress}
+            aliasSaved={aliasesMn.destination}
+            updateSavedAlias={updateDestinationAliasMn}
             addressData={formData.current.destinationAddress}
             isMobileTablet={isMobileTablet}
             isDestination

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CreateGuideModal } from '@/features/Guides/Mn/CreateGuideModal'
+import { CreateGuideModalMn } from '@/features/Guides/Mn/CreateGuideModalMn'
 import { QuoteUI } from '@/shared/types/quotes.types'
-import { mockMatchMedia, QueryMatchMedia } from '../../utils-test/mockWatchMedia'
+import { mockMatchMedia, QueryMatchMedia } from '../../../utils-test/mockWatchMedia'
 
 // Mock functions for props
 const mockToggleModal = jest.fn()
@@ -52,7 +52,7 @@ const renderWithProviders = (props = {}) => {
   
   return render(
     <QueryClientProvider client={queryClient}>
-      <CreateGuideModal {...mergedProps} />
+      <CreateGuideModalMn {...mergedProps} />
     </QueryClientProvider>
   )
 }
@@ -76,10 +76,11 @@ describe('CreateGuideModal', () => {
       expect(screen.getByText('Remitente')).toBeInTheDocument()
       expect(screen.getByText('Destinatario')).toBeInTheDocument()
 
-      // Then first step (CreateGuideAddressForm for origin) should be rendered
-      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      // Then first step (AddAddressMn for origin) should be rendered
       expect(screen.getByText('Domicilio')).toBeInTheDocument()
+      expect(screen.getByText('Selecciona una dirección o llene una dirección temporal')).toBeInTheDocument()
       expect(screen.getByText('Nombre')).toBeInTheDocument()
+      expect(screen.getByText('Apellido')).toBeInTheDocument()
       expect(screen.getByText('Teléfono')).toBeInTheDocument()
       expect(screen.getByText('Correo electrónico (Opcional)')).toBeInTheDocument()
 
