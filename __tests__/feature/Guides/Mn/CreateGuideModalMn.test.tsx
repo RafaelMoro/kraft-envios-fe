@@ -76,10 +76,11 @@ describe('CreateGuideModal', () => {
       expect(screen.getByText('Remitente')).toBeInTheDocument()
       expect(screen.getByText('Destinatario')).toBeInTheDocument()
 
-      // Then first step (CreateGuideAddressForm for origin) should be rendered
-      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      // Then first step (AddAddressMn for origin) should be rendered
       expect(screen.getByText('Domicilio')).toBeInTheDocument()
+      expect(screen.getByText('Selecciona una dirección o llene una dirección temporal')).toBeInTheDocument()
       expect(screen.getByText('Nombre')).toBeInTheDocument()
+      expect(screen.getByText('Apellido')).toBeInTheDocument()
       expect(screen.getByText('Teléfono')).toBeInTheDocument()
       expect(screen.getByText('Correo electrónico (Opcional)')).toBeInTheDocument()
 
