@@ -44,18 +44,23 @@ export type CreateGuideFormValuesGE = {
   parcelInfo: ParcelInfoValuesGE;
 }
 
-export type CreateGuideAddressFormValuesMn = {
+export type CreateGuidePersonalDataMnFormValues = {
   name: string;
+  phone: string;
+  company?: string | null | undefined
+  email?: string | null | undefined
+}
+
+export type CreateGuideAddressDataMnFormValues = {
   street1: string;
   neighborhood: string;
   external_number: string;
   city: string;
-  company?: string | null | undefined
   state: string;
-  phone: string;
-  email?: string | null | undefined
   reference?: string | null | undefined
 }
+
+export type CreateGuideAddressFormValuesMn = CreateGuidePersonalDataMnFormValues & CreateGuideAddressDataMnFormValues;
 
 export type CreateGuidePersonalDataToneFormValues = {
   name: string;
