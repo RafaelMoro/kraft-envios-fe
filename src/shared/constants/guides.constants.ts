@@ -48,12 +48,14 @@ export const initialAliasesTone: AllAliasesSavedTone = {
   origin: {
     alias: "",
     town: "",
+    city: "",
     address: {...defaultAddress},
     addressTone: {...defaultAddressTone}
   },
   destination: {
     alias: "",
     town: "",
+    city: "",
     address: {...defaultAddress},
     addressTone: {...defaultAddressTone}
   }

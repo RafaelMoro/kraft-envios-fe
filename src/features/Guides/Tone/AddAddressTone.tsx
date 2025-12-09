@@ -23,9 +23,9 @@ interface AddAddressToneProps {
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
   updateSavedAlias: ({
-    alias, address, addressTone, town
+    alias, address, addressTone, town, city
   }: {
-    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string; city: string
   }) => void
 }
 
@@ -84,7 +84,10 @@ export const AddAddressTone = ({
     goNext()
   }
 
-  const updateAddressInfo = ({ newAddress, town }: UpdateAddressInfoPayload) => {
+  /**
+   * This function formats the address info into the address expected type of Tone
+   */
+  const updateAddressInfo = ({ newAddress, town, city }: UpdateAddressInfoPayload) => {
     const updatedAddressData: CreateGuideAddressDataToneFormValues = {
       street1: newAddress.addressName,
       external_number: newAddress.externalNumber,
@@ -93,7 +96,7 @@ export const AddAddressTone = ({
       state: newAddress.state,
       reference: newAddress.reference,
     }
-    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressTone: updatedAddressData, town })
+    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressTone: updatedAddressData, town, city })
   }
 
   if (useTempAddress) {

@@ -29,9 +29,9 @@ interface AddAddressMnProps {
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesMn) => void
   updateSavedAlias: ({
-    alias, address, addressMn, town
+    alias, address, addressMn, town, city
   }: {
-    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string
+    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string; city: string
   }) => void
 }
 
@@ -93,6 +93,9 @@ export const AddAddressMn = ({
     goNext()
   }
 
+  /**
+   * This function formats the address info into the address expected type of Mn
+   */
   const updateAddressInfo = ({ newAddress, town, city }: UpdateAddressInfoPayload) => {
     const updatedAddressData: CreateGuideAddressDataMnFormValues = {
       street1: newAddress.addressName,
@@ -102,7 +105,7 @@ export const AddAddressMn = ({
       state: newAddress.state,
       reference: newAddress.reference,
     }
-    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressMn: updatedAddressData, town })
+    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressMn: updatedAddressData, town, city })
   }
 
   if (useTempAddress) {

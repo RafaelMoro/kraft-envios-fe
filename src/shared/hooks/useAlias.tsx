@@ -38,44 +38,48 @@ export const useSaveAlias = () => {
   const aliasesMn = useRef<AllAliasSavedMn>(structuredClone(initialAliasesMn))
 
   const updateOriginAliasMn = ({
-    alias, address, addressMn, town
+    alias, address, addressMn, town, city
   }: {
-    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string
+    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string; city: string
   }) => {
     aliasesMn.current.origin.alias = alias
     aliasesMn.current.origin.town = town
+    aliasesMn.current.origin.city = city
     aliasesMn.current.origin.address = address
     aliasesMn.current.origin.addressMn = addressMn
   }
 
   const updateDestinationAliasMn = ({
-    alias, address, addressMn, town
+    alias, address, addressMn, town, city
   }: {
-    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string
+    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string; city: string
   }) => {
     aliasesMn.current.destination.alias = alias
     aliasesMn.current.destination.town = town
+    aliasesMn.current.destination.city = city
     aliasesMn.current.destination.address = address
     aliasesMn.current.destination.addressMn = addressMn
   }
 
   const updateOriginAliasTone = ({
-    alias, address, addressTone, town
+    alias, address, addressTone, town, city
   }:{ 
-    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string; city: string
   }) => {
     aliasesTone.current.origin.alias = alias
     aliasesTone.current.origin.town = town
+    aliasesTone.current.origin.city = city
     aliasesTone.current.origin.address = address
     aliasesTone.current.origin.addressTone = addressTone
   }
   const updateDestinationAliasTone = ({
-    alias, address, addressTone, town
+    alias, address, addressTone, town, city
   }:{ 
-    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string
+    alias: string; address: Address; addressTone: CreateGuideAddressDataToneFormValues; town: string; city: string
   }) => {
     aliasesTone.current.destination.alias = alias
     aliasesTone.current.destination.town = town
+    aliasesTone.current.destination.city = city
     aliasesTone.current.destination.address = address
     aliasesTone.current.destination.addressTone = addressTone
   }

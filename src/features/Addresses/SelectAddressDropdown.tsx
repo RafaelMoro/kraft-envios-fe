@@ -33,7 +33,7 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   const [towns, setTowns] = useState<string[]>(aliasSaved?.address?.town || []);
 
   const [showCitySelector, setShowCitySelector] = useState(aliasSaved?.address?.city.length > 1 || false);
-  const [citySelected, setCitySelected] = useState<string>("");
+  const [citySelected, setCitySelected] = useState<string>(aliasSaved.city);
   const [cities, setCities] = useState<string[]>(aliasSaved?.address?.city || []);
 
   const handleSelectAlias = (address: Address) => {

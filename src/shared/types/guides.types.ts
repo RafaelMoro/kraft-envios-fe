@@ -11,6 +11,7 @@ export type GetProductSatIdPayload = {
 export type AliasSaved = {
   alias: string;
   town: string;
+  city: string;
   address: Address
 }
 
