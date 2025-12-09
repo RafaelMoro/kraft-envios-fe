@@ -3,17 +3,18 @@ import { useState } from "react";
 
 import { useSelectAlias } from "@/shared/hooks/useAlias";
 import { AddTempAddressMn } from "./AddTempAddressMn";
-import { CreateGuideAddressFormValues } from "@/shared/types/guides.types";
+import { CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types";
+import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide";
 
 interface AddAddressMnProps {
   title: string
-  addressData: CreateGuideAddressFormValues
+  addressData: CreateGuideAddressFormValuesMn
   isMobileTablet: boolean
   isDestination?: boolean
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  updateAddress: (data: CreateGuideAddressFormValues) => void
+  updateAddress: (data: CreateGuideAddressFormValuesMn) => void
 }
 
 export const AddAddressMn = ({
@@ -53,4 +54,22 @@ export const AddAddressMn = ({
       />
     )
   }
+
+  return (
+    <form
+      // onSubmit={handleSubmit(onSubmit)}
+    >
+      {/* <AddAddressCreateGuide
+        PersonalDataUI={
+          <PersonalDataTone<CreateGuidePersonalDataToneFormValues>
+            addressData={addressData}
+            errors={errors}
+            register={register}
+          />
+        }
+      >
+
+      </AddAddressCreateGuide> */}
+    </form>
+  )
 }
