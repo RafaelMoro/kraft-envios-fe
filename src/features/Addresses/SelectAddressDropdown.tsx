@@ -10,17 +10,19 @@ interface SelectAddressDropdownProps {
   aliasSelected: string;
   errorMessage: string;
   townError: string;
+  cityError: string;
   hideTownDropdown?: boolean;
   hideCityDropdown?: boolean;
   setErrorMessage: (message: string) => void;
   setTownError: (message: string) => void;
+  setCityError: (message: string) => void;
   setAliasSelected: (alias: string) => void
   updateAddressInfo: ({ newAddress, town, city }: UpdateAddressInfoPayload) => void
 }
 
 export const SelectAddressDropdown = ({
-  aliasSelected, errorMessage, townError, hideTownDropdown = false, hideCityDropdown = false,
-  setAliasSelected, updateAddressInfo, setErrorMessage, setTownError,
+  aliasSelected, errorMessage, townError, cityError, hideTownDropdown = false, hideCityDropdown = false,
+  setAliasSelected, updateAddressInfo, setErrorMessage, setTownError, setCityError,
 }: SelectAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -80,6 +82,8 @@ export const SelectAddressDropdown = ({
   }
 
   const handleSelectCity = (city: string) => {
+    if (cityError) setCityError("");
+
     setCitySelected(city);
     if (!selectedAddress) {
       console.warn("No address selected");
@@ -164,8 +168,8 @@ export const SelectAddressDropdown = ({
                 { citySelected && citySelected}
                 <RiArrowDownSLine />
               </Button>
-              { errorMessage && (
-                <ErrorMessage>{errorMessage}</ErrorMessage>
+              { cityError && (
+                <ErrorMessage>{cityError}</ErrorMessage>
               )}
             </div>
           )}

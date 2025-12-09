@@ -10,6 +10,7 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
   const [aliasSelected, setAliasSelected] = useState(aliasSaved);
   const [addressError, setAddressError] = useState<string>("");
   const [townError, setTownError] = useState<string>("");
+  const [cityError, setCityError] = useState<string>("");
 
   const resetAliasSelected = () => {
     setAliasSelected("");
@@ -21,7 +22,9 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
     addressError,
     setAddressError,
     townError,
+    cityError,
     setTownError,
+    setCityError,
     resetAliasSelected,
   }
 }

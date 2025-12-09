@@ -31,7 +31,7 @@ export const AddAddressTone = ({
   const [useTempAddress, setUseTempAddress] = useState(false);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
   const {
-    aliasSelected, setAliasSelected, addressError, setAddressError, townError, setTownError, resetAliasSelected
+    aliasSelected, setAliasSelected, addressError, setAddressError, townError, cityError, setTownError, setCityError, resetAliasSelected
   } = useSelectAlias({ aliasSaved: aliasSaved.alias });
   console.log('aliasSelected', aliasSelected)
 
@@ -144,8 +144,10 @@ export const AddAddressTone = ({
           updateAddressInfo={updateAddressInfo}
           errorMessage={addressError}
           townError={townError}
+          cityError={cityError}
           setErrorMessage={setAddressError}
           setTownError={setTownError}
+          setCityError={setCityError}
         />
       </AddAddressCreateGuide>
     </form>
