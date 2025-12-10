@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 import { AddressType, CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { PersonalDataMn } from "../PersonalDataMn"
+import { PersonalDataMn } from "../PersonalDataForm"
 
 interface OriginAddressFormProps {
   title: string
