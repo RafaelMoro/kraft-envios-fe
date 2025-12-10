@@ -194,8 +194,8 @@ export type CreateGuideMnPayload = {
 export type CreateGuideTonePayload = {
   quoteToken: string;
   notifyMe: boolean;
-  origin: CreateGuideAddressFormValuesTone;
-  destination: CreateGuideAddressFormValuesTone;
+  origin: CreateGuideAddressPayloadTone;
+  destination: CreateGuideAddressPayloadTone;
   parcel: {
     content: string;
   };
