@@ -146,6 +146,9 @@ export type CreateAddressFormValuesGE = {
   alias: string;
 }
 
+/**
+ * This type we're adding `isResidential` as we do not need to add that prop into the schema validation
+ */
 export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
 }

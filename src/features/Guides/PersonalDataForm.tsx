@@ -85,7 +85,7 @@ export const PersonalDataForm = <T extends PersonalDataT>({ addressData, errors,
         { emailError?.message && (
           <ErrorMessage>{emailError.message}</ErrorMessage>
         )}
-      </div>\
+      </div>
       { !hideCompanyField && (
         <div>
           <div className="mb-2 block">

@@ -1,11 +1,13 @@
-import { useAddAddress } from "@/shared/hooks/useAddAddress";
-import { AddPersonalDataFormSchema, AliasesSavedPkk, CreateGuideAddressDataPkkFormValues, CreateGuideAddressFormValuesPkk, CreateGuideAddressValuesPkk, PersonalDataFormValues } from "@/shared/types/guides.types";
-import { AddTempAddressPkk } from "./AddTempAddressPkk";
+import { useState } from "react";
+import { Button, ToggleSwitch } from "flowbite-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+import { useAddAddress } from "@/shared/hooks/useAddAddress";
+import { AddPersonalDataFormSchema, AliasesSavedPkk, CreateGuideAddressDataPkkFormValues, CreateGuideAddressValuesPkk, PersonalDataFormValues } from "@/shared/types/guides.types";
+import { AddTempAddressPkk } from "./AddTempAddressPkk";
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide";
 import { PersonalDataForm } from "../PersonalDataForm";
-import { Button } from "flowbite-react";
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
 
@@ -27,6 +29,7 @@ interface AddAddressPkkProps {
 export const AddAddressPkk = ({
   isDestination = false, addressData, aliasSaved, goPrev, goNext, toggleModal, updateAddress, updateSavedAlias
 }: AddAddressPkkProps) => {
+  const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     aliasSelected,
     setAliasSelected,
@@ -66,8 +69,9 @@ export const AddAddressPkk = ({
       return;
     }
 
-    const allData: CreateGuideAddressFormValuesPkk = {
+    const allData: CreateGuideAddressValuesPkk = {
       ...data,
+      isResidential,
       ...aliasSaved.addressPkk
     }
     updateAddress(allData)
@@ -108,6 +112,7 @@ export const AddAddressPkk = ({
             addressData={addressData}
             errors={errors}
             register={register}
+            hideCompanyField
           />
         }
         SubmitFormUI={
@@ -143,6 +148,9 @@ export const AddAddressPkk = ({
           setTownError={setTownError}
           setCityError={setCityError}
         />
+        <div className="w-full flex justify-start">
+          <ToggleSwitch checked={isResidential} label="Es residencial" onChange={setIsResidential} />
+        </div>
       </AddAddressCreateGuide>
     </form>
   )
