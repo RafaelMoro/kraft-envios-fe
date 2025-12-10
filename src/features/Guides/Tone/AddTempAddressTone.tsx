@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 
 import { AddressType, CreateGuideAddressFormSchemaTone, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { PersonalDataTone } from "./PersonalDataTone"
+import { PersonalDataForm } from "../PersonalDataForm"
 
 interface AddTempAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
@@ -41,7 +41,7 @@ export const AddTempAddressTone = ({
       className="flex flex-col gap-5"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <PersonalDataTone<CreateGuideAddressFormValuesTone>
+      <PersonalDataForm<CreateGuideAddressFormValuesTone>
         addressData={addressData}
         errors={errors}
         register={register}

@@ -12,7 +12,7 @@ import {
   CreateGuideAddressDataMnFormValues
 } from "@/shared/types/guides.types";
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide";
-import { PersonalDataMn } from "../PersonalDataForm";
+import { PersonalDataForm } from "../PersonalDataForm";
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
 import { useAddAddress } from "@/shared/hooks/useAddAddress";
@@ -123,7 +123,7 @@ export const AddAddressMn = ({
     >
       <AddAddressCreateGuide
         PersonalDataUI={
-          <PersonalDataMn<CreateGuidePersonalDataMnFormValues>
+          <PersonalDataForm<CreateGuidePersonalDataMnFormValues>
             addressData={addressData}
             errors={errors}
             register={register}
