@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
+import { AddTempAddressPkk } from "./AddTempAddressPkk";
 import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, CreateGuidePkkPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateFormPkk } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
@@ -75,7 +75,7 @@ export const CreateGuidePkk = ({
           </div>
         )}
         { step === 1 && (
-          <CreateGuideAddressFormPkk
+          <AddTempAddressPkk
             addressData={formData.current.originAddress}
             goNext={goNext}
             updateOriginAddress={updateOriginAddress}
@@ -84,7 +84,7 @@ export const CreateGuidePkk = ({
           />
         )}
         { step === 2 && (
-          <CreateGuideAddressFormPkk
+          <AddTempAddressPkk
             addressData={formData.current.destinationAddress}
             goNext={goNext}
             updateOriginAddress={updateDestinationAddress}

@@ -10,7 +10,7 @@ import {
 } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
-interface CreateGuideAddressFormPkkProps {
+interface AddTempAddressPkkProps {
   isDestination?: boolean
   addressData: CreateGuideAddressValuesPkk;
   goNext: () => void
@@ -19,9 +19,9 @@ interface CreateGuideAddressFormPkkProps {
   updateOriginAddress: (data: CreateGuideAddressValuesPkk) => void
 }
 
-export const CreateGuideAddressFormPkk = ({
+export const AddTempAddressPkk = ({
   isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
-}: CreateGuideAddressFormPkkProps) => {
+}: AddTempAddressPkkProps) => {
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     register,
