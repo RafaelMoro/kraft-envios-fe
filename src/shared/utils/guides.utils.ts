@@ -30,6 +30,7 @@ import {
   SearchProduct,
   CreateGuideAddressPayloadMn,
   CreateGuideAddressPayloadTone,
+  CreateGuideAddressPayloadPkk,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -161,12 +162,14 @@ export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValues
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk): CreateGuideAddressValuesPkk => {
-  const { phone, ...rest } = address
+export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk): CreateGuideAddressPayloadPkk => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { phone, lastName, company, ...rest } = address
   const newPhone = `+52${phone}`
   return {
     ...rest,
     phone: newPhone,
+    name: `${address.name} ${lastName}`.trim(),
     email: address.email?.trim() || DEFAULT_EMAIL,
   }
 }

@@ -127,7 +127,9 @@ export type CreateGuideAddressFormValuesPkk = PersonalDataFormValues & CreateGui
 /**
  * Type for payload to create a guide address in Pkk
  */
-export type CreateGuideAddressPayloadPkk = CreateGuidePersonalDataPkkPayload & CreateGuideAddressDataPkkFormValues;
+export type CreateGuideAddressPayloadPkk = CreateGuidePersonalDataPkkPayload & CreateGuideAddressDataPkkFormValues & {
+  isResidential: boolean;
+};
 
 export type CreateAddressFormValuesGE = {
   name: string;
@@ -207,8 +209,8 @@ export type CreateGuideTonePayload = {
 }
 
 export type CreateGuidePkkPayload = {
-  origin: CreateGuideAddressValuesPkk;
-  destination: CreateGuideAddressValuesPkk;
+  origin: CreateGuideAddressPayloadPkk;
+  destination: CreateGuideAddressPayloadPkk;
   parcel: ParcelInfoValuesPkk;
 }
 
