@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "flowbite-react"
@@ -12,7 +11,7 @@ import {
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown"
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
-import { useSelectAlias } from "@/shared/hooks/useAlias"
+import { useAddAddress } from "@/shared/hooks/useAddAddress"
 
 interface AddAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
@@ -30,26 +29,25 @@ interface AddAddressToneProps {
 }
 
 export const AddAddressTone = ({
-  addressData, aliasSaved, updateAddress, isDestination, goNext, goPrev, toggleModal, updateSavedAlias
+  addressData, aliasSaved, updateAddress, isDestination =  false, goNext, goPrev, toggleModal, updateSavedAlias
 }: AddAddressToneProps) => {
-  const [useTempAddress, setUseTempAddress] = useState(false);
-  const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
+  
   const {
-    aliasSelected, setAliasSelected, addressError, setAddressError, townError, cityError, setTownError, setCityError, resetAliasSelected
-  } = useSelectAlias({ aliasSaved: aliasSaved.alias });
-  const addressType = isDestination ? 'destination' : 'origin'
-
-  const cancelColorButton = isDestination ? "light" : "red"
-  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
-  const handleCancel = () => {
-    resetAliasSelected();
-    if (isDestination) {
-      goPrev()
-      return
-    }
-
-    toggleModal()
-  }
+    aliasSelected,
+    setAliasSelected,
+    addressError,
+    setAddressError,
+    townError,
+    cityError,
+    setTownError,
+    setCityError,
+    handleCancel,
+    addressType,
+    cancelButtonText,
+    cancelColorButton,
+    useTempAddress,
+    toggleTempAddress
+  } = useAddAddress({ isDestination, alias: aliasSaved.alias, toggleModal, goPrev });
 
   const {
     register,

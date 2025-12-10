@@ -2,13 +2,13 @@ import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
-import { CreateGuideAddressFormSchemaTone, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
+import { AddressType, CreateGuideAddressFormSchemaTone, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataTone } from "./PersonalDataTone"
 
 interface AddTempAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
-  addressType: "destination" | "origin"
+  addressType: AddressType
   goNext: () => void
   toggleTempAddressModal: () => void
   updateAddress: (data: CreateGuideAddressFormValuesTone) => void
