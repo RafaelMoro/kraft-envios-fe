@@ -3,7 +3,6 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Button } from "flowbite-react"
 
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide"
-import { PersonalDataTone } from "./PersonalDataTone"
 import {
   AddAddressToneFormSchema, CreateGuidePersonalDataToneFormValues, CreateGuideAddressFormValuesTone, CreateGuideAddressDataToneFormValues,
   AliasSavedTone
@@ -12,6 +11,7 @@ import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdow
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
 import { AddTempAddressTone } from "./AddTempAddressTone"
 import { useAddAddress } from "@/shared/hooks/useAddAddress"
+import { PersonalDataForm } from "../PersonalDataForm"
 
 interface AddAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
@@ -116,7 +116,7 @@ export const AddAddressTone = ({
     >
       <AddAddressCreateGuide
         PersonalDataUI={
-          <PersonalDataTone<CreateGuidePersonalDataToneFormValues>
+          <PersonalDataForm<CreateGuidePersonalDataToneFormValues>
             addressData={addressData}
             errors={errors}
             register={register}
