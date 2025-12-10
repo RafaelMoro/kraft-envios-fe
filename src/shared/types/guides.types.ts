@@ -25,6 +25,10 @@ export type AliasSavedMn = AliasSaved & {
   addressMn: CreateGuideAddressDataMnFormValues
 }
 
+export type AliasesSavedPkk = AliasSaved & {
+  addressPkk: CreateGuideAddressDataPkkFormValues
+}
+
 export type AllAliasesSavedTone = {
   origin: AliasSavedTone
   destination: AliasSavedTone
