@@ -1,6 +1,5 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
-import { LadaStates } from "./global.types";
 import { ProviderSource } from "./quotes.types";
 import { Address } from "./addresses.types";
 
@@ -151,12 +150,6 @@ export type CreateAddressFormValuesGE = {
  */
 export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
-}
-/**
- * Not needed as usually the users uses phone numbers and those already has lada states
- */
-export type CreateGuideAddressValuesWithLada = CreateGuideAddressValuesPkk & {
-  ladaState: LadaStates
 }
 
 export type CreateGuideAddressValuesGE = {
