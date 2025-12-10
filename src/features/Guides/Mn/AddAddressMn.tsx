@@ -5,9 +5,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import { AddTempAddressMn } from "./AddTempAddressMn";
 import { 
-  AddPersonalDataMnFormSchema, 
+  AddPersonalDataFormSchema, 
   CreateGuideAddressFormValuesMn, 
-  CreateGuidePersonalDataMnFormValues,
+  PersonalDataFormValues,
   AliasSavedMn,
   CreateGuideAddressDataMnFormValues
 } from "@/shared/types/guides.types";
@@ -58,11 +58,11 @@ export const AddAddressMn = ({
     register,
     formState: { errors },
     handleSubmit
-  } = useForm<CreateGuidePersonalDataMnFormValues>({
-    resolver: yupResolver(AddPersonalDataMnFormSchema)
+  } = useForm<PersonalDataFormValues>({
+    resolver: yupResolver(AddPersonalDataFormSchema)
   })
 
-  const onSubmit: SubmitHandler<CreateGuidePersonalDataMnFormValues> = (data, event) => {
+  const onSubmit: SubmitHandler<PersonalDataFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
 
@@ -123,7 +123,7 @@ export const AddAddressMn = ({
     >
       <AddAddressCreateGuide
         PersonalDataUI={
-          <PersonalDataForm<CreateGuidePersonalDataMnFormValues>
+          <PersonalDataForm<PersonalDataFormValues>
             addressData={addressData}
             errors={errors}
             register={register}

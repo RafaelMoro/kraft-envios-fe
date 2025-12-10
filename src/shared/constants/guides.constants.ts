@@ -1,7 +1,7 @@
 import { Address } from "../types/addresses.types";
 import {
   AllAliasesSavedTone, AllAliasSavedMn, CreateGuideAddressDataMnFormValues, CreateGuideAddressDataToneFormValues, CreateGuideAddressFormValuesMn,
-  CreateGuideAddressFormValuesTone, CreateGuideAddressValuesWithLada, CreateGuideFormValues, CreateGuideFormValuesGE, CreateGuideFormValuesPkk,
+  CreateGuideAddressFormValuesTone, CreateGuideAddressValuesWithLada, CreateGuideFormValuesMn, CreateGuideFormValuesGE, CreateGuideFormValuesPkk,
   CreateGuideFormValuesTone
 } from "../types/guides.types";
 
@@ -93,7 +93,7 @@ export const initialStateAddressForm: CreateGuideAddressFormValuesMn = {
 }
 
 
-export const initialStateForm: CreateGuideFormValues = {
+export const initialStateForm: CreateGuideFormValuesMn = {
   originAddress: initialStateAddressForm,
   destinationAddress: initialStateAddressForm,
   parcelInfo: {
