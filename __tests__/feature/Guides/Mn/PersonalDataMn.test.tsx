@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useForm } from 'react-hook-form'
-import { PersonalDataMn } from '@/features/Guides/Mn/PersonalDataMn'
+import { PersonalDataMn } from '@/features/Guides/PersonalDataMn'
 
 type TestFormData = {
   name: string
