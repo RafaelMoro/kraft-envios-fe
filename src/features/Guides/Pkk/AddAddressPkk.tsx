@@ -7,7 +7,7 @@ import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuid
 import { PersonalDataForm } from "../PersonalDataForm";
 import { Button } from "flowbite-react";
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
-import { UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
+import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
 
 interface AddAddressPkkProps {
   isDestination?: boolean
@@ -17,10 +17,15 @@ interface AddAddressPkkProps {
   goPrev: () => void
   toggleModal: () => void
   updateAddress: (data: CreateGuideAddressValuesPkk) => void
+  updateSavedAlias: ({
+    alias, address, addressPkk, town, city
+  }: {
+    alias: string; address: Address; addressPkk: CreateGuideAddressDataPkkFormValues; town: string; city: string
+  }) => void
 }
 
 export const AddAddressPkk = ({
-  isDestination = false, addressData, aliasSaved, goPrev, goNext, toggleModal, updateAddress
+  isDestination = false, addressData, aliasSaved, goPrev, goNext, toggleModal, updateAddress, updateSavedAlias
 }: AddAddressPkkProps) => {
   const {
     aliasSelected,

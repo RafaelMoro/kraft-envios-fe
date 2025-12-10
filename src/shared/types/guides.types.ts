@@ -39,6 +39,11 @@ export type AllAliasSavedMn = {
   destination: AliasSavedMn
 }
 
+export type AllAliasSavedPkk = {
+  origin: AliasesSavedPkk
+  destination: AliasesSavedPkk
+}
+
 export type CreateGuideFormValuesMn = {
   originAddress: CreateGuideAddressFormValuesMn;
   destinationAddress: CreateGuideAddressFormValuesMn;

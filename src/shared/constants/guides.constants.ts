@@ -2,7 +2,9 @@ import { Address } from "../types/addresses.types";
 import {
   AllAliasesSavedTone, AllAliasSavedMn, CreateGuideAddressDataMnFormValues, CreateGuideAddressDataToneFormValues, CreateGuideAddressFormValuesMn,
   CreateGuideAddressFormValuesTone, CreateGuideAddressValuesWithLada, CreateGuideFormValuesMn, CreateGuideFormValuesGE, CreateGuideFormValuesPkk,
-  CreateGuideFormValuesTone
+  CreateGuideFormValuesTone,
+  AllAliasSavedPkk,
+  CreateGuideAddressDataPkkFormValues
 } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
@@ -44,6 +46,14 @@ const defaultAddressMn: CreateGuideAddressDataMnFormValues = {
   reference: ""
 }
 
+const defaultAddressPkk: CreateGuideAddressDataPkkFormValues = {
+  street1: "",
+  neighborhood: "",
+  city: "",
+  state: "",
+  zipcode: "",
+}
+
 export const initialAliasesTone: AllAliasesSavedTone = {
   origin: {
     alias: "",
@@ -75,6 +85,23 @@ export const initialAliasesMn: AllAliasSavedMn = {
     city: "",
     address: {...defaultAddress},
     addressMn: {...defaultAddressMn}
+  }
+}
+
+export const initialAliasPkk: AllAliasSavedPkk = {
+  origin: {
+    alias: "",
+    town: "",
+    city: "",
+    address: {...defaultAddress},
+    addressPkk: {...defaultAddressPkk}
+  },
+  destination: {
+    alias: "",
+    town: "",
+    city: "",
+    address: {...defaultAddress},
+    addressPkk: {...defaultAddressPkk}
   }
 }
 

@@ -1,7 +1,7 @@
 "use client"
 import { useRef, useState } from "react";
-import { AllAliasesSavedTone, AllAliasSavedMn, CreateGuideAddressDataMnFormValues, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
-import { initialAliasesMn, initialAliasesTone } from "../constants/guides.constants";
+import { AllAliasesSavedTone, AllAliasSavedMn, AllAliasSavedPkk, CreateGuideAddressDataMnFormValues, CreateGuideAddressDataPkkFormValues, CreateGuideAddressDataToneFormValues } from "../types/guides.types";
+import { initialAliasesMn, initialAliasesTone, initialAliasPkk } from "../constants/guides.constants";
 import { Address } from "../types/addresses.types";
 
 /**
@@ -36,6 +36,7 @@ export const useSelectAlias = ({  aliasSaved }: { aliasSaved: string }) => {
 export const useSaveAlias = () => {
   const aliasesTone = useRef<AllAliasesSavedTone>(structuredClone(initialAliasesTone))
   const aliasesMn = useRef<AllAliasSavedMn>(structuredClone(initialAliasesMn))
+  const aliasesPkk = useRef<AllAliasSavedPkk>(structuredClone(initialAliasPkk))
 
   const updateOriginAliasMn = ({
     alias, address, addressMn, town, city
@@ -84,20 +85,49 @@ export const useSaveAlias = () => {
     aliasesTone.current.destination.addressTone = addressTone
   }
 
+  const updateOriginAliasPkk = ({
+    alias, address, addressPkk, town, city
+  }:{ 
+    alias: string; address: Address; addressPkk: CreateGuideAddressDataPkkFormValues; town: string; city: string
+  }) => {
+    aliasesPkk.current.origin.alias = alias
+    aliasesPkk.current.origin.town = town
+    aliasesPkk.current.origin.city = city
+    aliasesPkk.current.origin.address = address
+    aliasesPkk.current.origin.addressPkk = addressPkk
+  }
+
+  const updateDestinationAliasPkk = ({
+    alias, address, addressPkk, town, city
+  }:{ 
+    alias: string; address: Address; addressPkk: CreateGuideAddressDataPkkFormValues; town: string; city: string
+  }) => {
+    aliasesPkk.current.destination.alias = alias
+    aliasesPkk.current.destination.town = town
+    aliasesPkk.current.destination.city = city
+    aliasesPkk.current.destination.address = address
+    aliasesPkk.current.destination.addressPkk = addressPkk
+  }
+
   const resetAliases = () => {
     const resetedAliasTone = structuredClone(initialAliasesTone)
     const resetedAliasMn = structuredClone(initialAliasesMn)
+    const resetedAliasPkk = structuredClone(initialAliasPkk)
     aliasesTone.current = resetedAliasTone
     aliasesMn.current = resetedAliasMn
+    aliasesPkk.current = resetedAliasPkk
   }
   
   return {
     aliasesTone: aliasesTone.current,
     aliasesMn: aliasesMn.current,
+    aliasesPkk: aliasesPkk.current,
     updateOriginAliasTone,
     updateOriginAliasMn,
     updateDestinationAliasTone,
     updateDestinationAliasMn,
+    updateOriginAliasPkk,
+    updateDestinationAliasPkk,
     resetAliases,
   }
 }
