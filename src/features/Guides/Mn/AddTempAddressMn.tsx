@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 import { AddressType, CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { PersonalDataMn } from "../PersonalDataForm"
+import { PersonalDataForm } from "../PersonalDataForm"
 
 interface OriginAddressFormProps {
   title: string
@@ -40,7 +40,7 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
       { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">{title}</h5>)}
       <h4 className="text-xl">Datos personales</h4>
-      <PersonalDataMn<CreateGuideAddressFormValuesMn>
+      <PersonalDataForm<CreateGuideAddressFormValuesMn>
         addressData={addressData}
         errors={errors}
         register={register}

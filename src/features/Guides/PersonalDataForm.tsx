@@ -16,7 +16,7 @@ interface PersonalDataMnProps<T extends PersonalDataMn> {
   register: UseFormRegister<T>
 }
 
-export const PersonalDataMn = <T extends PersonalDataMn>({ addressData, errors, register }: PersonalDataMnProps<T>) => {
+export const PersonalDataForm = <T extends PersonalDataMn>({ addressData, errors, register }: PersonalDataMnProps<T>) => {
   const nameError = errors?.name as FieldError | undefined;
   const lastNameError = errors?.lastName as FieldError | undefined;
   const phoneError = errors?.phone as FieldError | undefined;
