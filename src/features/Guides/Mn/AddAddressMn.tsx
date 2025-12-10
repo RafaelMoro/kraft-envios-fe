@@ -1,10 +1,8 @@
 "use client"
-import { useState } from "react";
 import { Button } from "flowbite-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { useSelectAlias } from "@/shared/hooks/useAlias";
 import { AddTempAddressMn } from "./AddTempAddressMn";
 import { 
   AddPersonalDataMnFormSchema, 
@@ -17,6 +15,7 @@ import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuid
 import { PersonalDataMn } from "./PersonalDataMn";
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
+import { useAddAddress } from "@/shared/hooks/useAddAddress";
 
 interface AddAddressMnProps {
   title: string
@@ -36,28 +35,24 @@ interface AddAddressMnProps {
 }
 
 export const AddAddressMn = ({
-  isDestination, title, addressData, aliasSaved, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias
+  isDestination = false, title, addressData, aliasSaved, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias
 }: AddAddressMnProps) => {
-  const [useTempAddress, setUseTempAddress] = useState(false);
-  const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
-
   const {
-    aliasSelected, setAliasSelected, addressError, setAddressError, townError, cityError, setTownError, setCityError, resetAliasSelected
-  } = useSelectAlias({ aliasSaved: aliasSaved.alias });
-
-  const cancelColorButton = isDestination ? "light" : "red"
-  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
-  const addressType = isDestination ? 'destination' : 'origin'
-
-  const handleCancel = () => {
-    resetAliasSelected();
-    if (isDestination) {
-      goPrev()
-      return
-    }
-
-    toggleModal()
-  }
+    aliasSelected,
+    setAliasSelected,
+    addressError,
+    setAddressError,
+    townError,
+    cityError,
+    setTownError,
+    setCityError,
+    handleCancel,
+    addressType,
+    cancelButtonText,
+    cancelColorButton,
+    useTempAddress,
+    toggleTempAddress
+  } = useAddAddress({ isDestination, alias: aliasSaved.alias, toggleModal, goPrev });
 
   const {
     register,

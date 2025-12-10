@@ -2,14 +2,14 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
-import { CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
+import { AddressType, CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataMn } from "./PersonalDataMn"
 
 interface OriginAddressFormProps {
   title: string
   addressData: CreateGuideAddressFormValuesMn
-  addressType: "destination" | "origin"
+  addressType: AddressType
   isMobileTablet: boolean
   goNext: () => void
   updateAddress: (data: CreateGuideAddressFormValuesMn) => void

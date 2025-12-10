@@ -8,6 +8,8 @@ export type GetProductSatIdPayload = {
   search: string
 }
 
+export type AddressType = "destination" | "origin"
+
 export type AliasSaved = {
   alias: string;
   town: string;
