@@ -166,6 +166,7 @@ export const AddTempAddressPkk = ({
             </div>
             <TextInput
               id="zipcode"
+              data-testid="zipcode"
               type="text"
               inputMode="numeric"
               {...register("zipcode")}

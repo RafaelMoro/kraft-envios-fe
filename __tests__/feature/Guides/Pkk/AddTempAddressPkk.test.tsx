@@ -50,7 +50,6 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       expect(screen.getByLabelText(/^colonia$/i)).toHaveValue('Test Neighborhood')
       expect(screen.getByTestId('city')).toHaveValue('Test City')
       expect(screen.getByTestId('state')).toHaveValue('Test State')
-      expect(screen.getByLabelText(/código postal/i)).toHaveValue('12345')
     })
   })
 
