@@ -17,6 +17,9 @@ interface PersonalDataFormProps<T extends PersonalDataT> {
   register: UseFormRegister<T>
 }
 
+/**
+ * This component is used with Pkk, Mn and Tone
+ */
 export const PersonalDataForm = <T extends PersonalDataT>({ addressData, errors, register, hideCompanyField = false }: PersonalDataFormProps<T>) => {
   const nameError = errors?.name as FieldError | undefined;
   const lastNameError = errors?.lastName as FieldError | undefined;
