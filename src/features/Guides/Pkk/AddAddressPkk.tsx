@@ -92,12 +92,11 @@ export const AddAddressPkk = ({
   if (useTempAddress) {
     return (
       <AddTempAddressPkk
-        isDestination={isDestination}
         addressData={addressData}
+        addressType={addressType}
         goNext={goNext}
-        goPrev={goPrev}
-        updateOriginAddress={updateAddress}
-        toggleModal={toggleTempAddress}
+        updateAddress={updateAddress}
+        toggleTempAddress={toggleTempAddress}
       />
     )
   }

@@ -4,6 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
 import {
+  AddressType,
   CreateGuideAddressFormSchemaPkk,
   CreateGuideAddressFormValuesPkk,
   CreateGuideAddressValuesPkk,
@@ -11,16 +12,15 @@ import {
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
 interface AddTempAddressPkkProps {
-  isDestination?: boolean
   addressData: CreateGuideAddressValuesPkk;
+  addressType: AddressType
   goNext: () => void
-  goPrev: () => void
-  toggleModal: () => void
-  updateOriginAddress: (data: CreateGuideAddressValuesPkk) => void
+  toggleTempAddress: () => void
+  updateAddress: (data: CreateGuideAddressValuesPkk) => void
 }
 
 export const AddTempAddressPkk = ({
-  isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
+  addressData, addressType, goNext, toggleTempAddress, updateAddress: updateOriginAddress,
 }: AddTempAddressPkkProps) => {
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
@@ -41,16 +41,8 @@ export const AddTempAddressPkk = ({
   }
 
   const handleCancel = () => {
-    if (isDestination) {
-      goPrev()
-      return;
-    }
-
-    toggleModal()
+    toggleTempAddress()
   }
-
-  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
-  const cancelColorButton = isDestination ? "light" : "red"
 
   return (
     <form
@@ -189,13 +181,12 @@ export const AddTempAddressPkk = ({
       </div>
       <div className="flex justify-between mt-4">
         <Button
-          {...(!isDestination && { outline: true })}
-          color={cancelColorButton}
-          data-testid="origin-address-cancel-button"
+          color="light"
+          data-testid={`${addressType}-address-pkk-temp-cancel-button`}
           className="hover:cursor-pointer"
           onClick={handleCancel}
         >
-          {cancelButtonText}
+          Volver
         </Button>
         <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
           Siguiente
