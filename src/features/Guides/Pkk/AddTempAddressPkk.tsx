@@ -68,6 +68,21 @@ export const AddTempAddressPkk = ({
         </div>
         <div>
           <div className="mb-2 block">
+            <Label htmlFor="lastName">Apellido</Label>
+          </div>
+          <TextInput
+            data-testid="lastName"
+            defaultValue={addressData.lastName}
+            id="lastName"
+            type="text"
+            {...register("lastName")}
+          />
+          { errors?.lastName?.message && (
+            <ErrorMessage>{errors.lastName.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
             <Label htmlFor="email">Correo electrónico (Opcional)</Label>
           </div>
           <TextInput

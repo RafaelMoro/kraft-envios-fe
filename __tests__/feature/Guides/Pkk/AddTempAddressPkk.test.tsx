@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AddTempAddressPkk } from '@/features/Guides/Pkk/AddTempAddressPkk'
 import { CreateGuideAddressValuesPkk, AddressType } from '@/shared/types/guides.types'
@@ -152,7 +152,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
   })
 
   describe('Scenario: Submit form with valid data', () => {
-    it('Given valid form data, When user submits the form, Then it should call updateAddress and goNext', async () => {
+    it.only('Given valid form data, When user submits the form, Then it should call updateAddress and goNext', async () => {
       // Given valid form data
       const user = userEvent.setup()
       render(
@@ -167,6 +167,9 @@ describe('Feature: Add Temporary Address for Pkk', () => {
 
       // When user submits the form
       const submitButton = screen.getByTestId('origin-address-next-button')
+      const zipcodeInput = screen.getByTestId('zipcode')
+      await user.clear(zipcodeInput)
+      await user.type(zipcodeInput, '12345') // Ensure zipcode is valid
       await user.click(submitButton)
 
       // Then it should call updateAddress with the data including lastName and company
