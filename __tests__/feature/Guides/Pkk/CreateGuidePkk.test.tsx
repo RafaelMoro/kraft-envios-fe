@@ -219,6 +219,10 @@ describe('Feature: Create Guide for Pkk', () => {
         ...defaultUseStepsReturn,
         step: 2
       })
+      mockUseAddAddress.mockReturnValue({
+        ...defaultUseAddAddressReturn,
+        addressType: 'destination'
+      })
 
       // When the modal renders
       renderWithProviders(
@@ -356,6 +360,10 @@ describe('Feature: Create Guide for Pkk', () => {
         ...defaultUseStepsReturn,
         step: 2
       })
+      mockUseAddAddress.mockReturnValue({
+        ...defaultUseAddAddressReturn,
+        addressType: 'destination'
+      })
 
       // When rendering destination address form
       renderWithProviders(
@@ -402,6 +410,10 @@ describe('Feature: Create Guide for Pkk', () => {
       mockUseSteps.mockReturnValue({
         ...defaultUseStepsReturn,
         step: 2
+      })
+      mockUseAddAddress.mockReturnValue({
+        ...defaultUseAddAddressReturn,
+        addressType: 'destination'
       })
 
       // When AddAddressPkk is rendered
