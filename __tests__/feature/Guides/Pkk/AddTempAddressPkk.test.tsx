@@ -172,12 +172,12 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       await user.type(zipcodeInput, '12345') // Ensure zipcode is valid
       await user.click(submitButton)
 
-      // Then it should call updateAddress with the data including lastName and company
+      // Then it should call updateAddress with the data including lastName and email
       expect(mockUpdateAddress).toHaveBeenCalledWith(expect.objectContaining({
         name: 'John',
         lastName: 'Doe',
         phone: '5551234567',
-        company: 'Test Company',
+        email: 'john@example.com',
         street1: 'Test Street',
         neighborhood: 'Test Neighborhood',
         city: 'Test City',
