@@ -1,12 +1,13 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
-import { LadaStates } from "./global.types";
 import { ProviderSource } from "./quotes.types";
 import { Address } from "./addresses.types";
 
 export type GetProductSatIdPayload = {
   search: string
 }
+
+export type AddressType = "destination" | "origin"
 
 export type AliasSaved = {
   alias: string;
@@ -23,6 +24,10 @@ export type AliasSavedMn = AliasSaved & {
   addressMn: CreateGuideAddressDataMnFormValues
 }
 
+export type AliasesSavedPkk = AliasSaved & {
+  addressPkk: CreateGuideAddressDataPkkFormValues
+}
+
 export type AllAliasesSavedTone = {
   origin: AliasSavedTone
   destination: AliasSavedTone
@@ -33,7 +38,12 @@ export type AllAliasSavedMn = {
   destination: AliasSavedMn
 }
 
-export type CreateGuideFormValues = {
+export type AllAliasSavedPkk = {
+  origin: AliasesSavedPkk
+  destination: AliasesSavedPkk
+}
+
+export type CreateGuideFormValuesMn = {
   originAddress: CreateGuideAddressFormValuesMn;
   destinationAddress: CreateGuideAddressFormValuesMn;
   parcelInfo: ParcelInfoFormValues;
@@ -61,7 +71,7 @@ export type CreateGuideFormValuesGE = {
  * Type for form values to create a guide for personal data in Mn
  * Adding lastName to homologate the ask for the name field. It's merged into name later in confirm guide
  */
-export type CreateGuidePersonalDataMnFormValues = {
+export type PersonalDataFormValues = {
   name: string;
   lastName: string;
   phone: string;
@@ -71,7 +81,9 @@ export type CreateGuidePersonalDataMnFormValues = {
 /**
  * Type for payload to create a guide for personal data in Mn
  */
-export type CreateGuidePersonalDataMnPayload = Omit<CreateGuidePersonalDataMnFormValues, 'lastName'>
+export type CreateGuidePersonalDataMnPayload = Omit<PersonalDataFormValues, 'lastName'>
+export type CreateGuidePersonalDataPkkPayload = Omit<PersonalDataFormValues, 'lastName' | 'company'>
+export type CreateGuidePersonalDataTonePayload = Omit<PersonalDataFormValues, 'lastName' | 'company'>
 
 export type CreateGuideAddressDataMnFormValues = {
   street1: string;
@@ -82,18 +94,11 @@ export type CreateGuideAddressDataMnFormValues = {
   reference?: string | null | undefined
 }
 
-export type CreateGuideAddressFormValuesMn = CreateGuidePersonalDataMnFormValues & CreateGuideAddressDataMnFormValues;
+export type CreateGuideAddressFormValuesMn = PersonalDataFormValues & CreateGuideAddressDataMnFormValues;
 /**
  * Type for payload to create a guide address in Mn
  */
 export type CreateGuideAddressPayloadMn = CreateGuidePersonalDataMnPayload & CreateGuideAddressDataMnFormValues;
-
-export type CreateGuidePersonalDataToneFormValues = {
-  name: string;
-  lastName: string;
-  phone: string;
-  email?: string | null | undefined
-}
 
 export type CreateGuideAddressDataToneFormValues = {
   street1: string;
@@ -104,18 +109,27 @@ export type CreateGuideAddressDataToneFormValues = {
   reference?: string | null | undefined
 }
 
-export type CreateGuideAddressFormValuesTone = CreateGuidePersonalDataToneFormValues & CreateGuideAddressDataToneFormValues;
+export type CreateGuideAddressFormValuesTone = PersonalDataFormValues & CreateGuideAddressDataToneFormValues;
+/**
+ * Type for payload to create a guide address in Tone
+ */
+export type CreateGuideAddressPayloadTone = CreateGuidePersonalDataTonePayload & CreateGuideAddressDataToneFormValues;
 
-export type CreateGuideAddressFormValuesPkk = {
-  name: string;
-  email?: string | null | undefined
-  phone: string;
+export type CreateGuideAddressDataPkkFormValues = {
   street1: string;
   neighborhood: string;
   city: string;
   state: string;
   zipcode: string;
 }
+
+export type CreateGuideAddressFormValuesPkk = PersonalDataFormValues & CreateGuideAddressDataPkkFormValues;
+/**
+ * Type for payload to create a guide address in Pkk
+ */
+export type CreateGuideAddressPayloadPkk = CreateGuidePersonalDataPkkPayload & CreateGuideAddressDataPkkFormValues & {
+  isResidential: boolean;
+};
 
 export type CreateAddressFormValuesGE = {
   name: string;
@@ -133,14 +147,11 @@ export type CreateAddressFormValuesGE = {
   alias: string;
 }
 
+/**
+ * This type we're adding `isResidential` as we do not need to add that prop into the schema validation
+ */
 export type CreateGuideAddressValuesPkk = CreateGuideAddressFormValuesPkk & {
   isResidential: boolean;
-}
-/**
- * Not needed as usually the users uses phone numbers and those already has lada states
- */
-export type CreateGuideAddressValuesWithLada = CreateGuideAddressValuesPkk & {
-  ladaState: LadaStates
 }
 
 export type CreateGuideAddressValuesGE = {
@@ -190,16 +201,16 @@ export type CreateGuideMnPayload = {
 export type CreateGuideTonePayload = {
   quoteToken: string;
   notifyMe: boolean;
-  origin: CreateGuideAddressFormValuesTone;
-  destination: CreateGuideAddressFormValuesTone;
+  origin: CreateGuideAddressPayloadTone;
+  destination: CreateGuideAddressPayloadTone;
   parcel: {
     content: string;
   };
 }
 
 export type CreateGuidePkkPayload = {
-  origin: CreateGuideAddressValuesPkk;
-  destination: CreateGuideAddressValuesPkk;
+  origin: CreateGuideAddressPayloadPkk;
+  destination: CreateGuideAddressPayloadPkk;
   parcel: ParcelInfoValuesPkk;
 }
 
@@ -312,7 +323,7 @@ export interface CreateAddressGEResponse {
 
 //#region Schemas
 
-export const AddPersonalDataMnFormSchema: ObjectSchema<CreateGuidePersonalDataMnFormValues> = object().shape({
+export const AddPersonalDataFormSchema: ObjectSchema<PersonalDataFormValues> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
   lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
   company: string()
@@ -333,8 +344,8 @@ export const AddPersonalDataMnFormSchema: ObjectSchema<CreateGuidePersonalDataMn
   ["email", "email"]
 ])
 
-export const CreateGuideAddressFormSchema: ObjectSchema<CreateGuideAddressFormValuesMn> = 
-  AddPersonalDataMnFormSchema.concat(
+export const CreateGuideAddressFormSchemaMn: ObjectSchema<CreateGuideAddressFormValuesMn> = 
+  AddPersonalDataFormSchema.concat(
     object().shape({
       street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
       neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
@@ -359,21 +370,8 @@ export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> 
   quantity: number().typeError('Cantidad es requerida').required('Cantidad es requerida').min(1, 'La cantidad debe ser al menos 1'),
 })
 
-export const AddAddressToneFormSchema: ObjectSchema<CreateGuidePersonalDataToneFormValues> = object().shape({
-  name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
-  lastName: string().required('Apellido es requerido').min(2, 'El apellido debe tener al menos 2 caracteres'),
-  phone: string()
-    .required('El teléfono es requerido')
-    .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
-    .min(10, 'El teléfono debe tener 10 dígitos')
-    .max(10, 'El teléfono debe tener 10 dígitos'),
-  email: emailOptionalValidation,
-}, [
-  ["email", "email"]
-])
-
 export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFormValuesTone> =
-  AddAddressToneFormSchema.concat(
+  AddPersonalDataFormSchema.concat(
     object().shape({
       street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
       neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
@@ -396,26 +394,20 @@ export const ParcelInfoFormValuesSchema: ObjectSchema<ParcelInfoValues> = object
   content: string().required('Contenido es requerido').min(2, 'El contenido debe tener al menos 2 caracteres')
 })
 
-export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFormValuesPkk> = object().shape({
-  name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
-  email: emailOptionalValidation,
-  phone: string()
-    .required('El teléfono es requerido')
-    .matches(/^\d+$/, { excludeEmptyString: true, message: "El teléfono solo puede contener dígitos" })
-    .min(10, 'El teléfono debe tener 10 dígitos')
-    .max(10, 'El teléfono debe tener 10 dígitos'),
-  street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
-  neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
-  city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
-  state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
-  zipcode: string()
-    .required('La dirección postal es requerida')
-    .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
-    .min(5, 'La dirección postal debe tener 5 caracteres')
-    .max(5, 'La dirección postal debe tener 5 caracteres')
-}, [
-  ["email", "email"]
-])
+export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFormValuesPkk> = 
+   AddPersonalDataFormSchema.concat(
+     object().shape({
+       street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
+       neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
+       city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
+       state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
+       zipcode: string()
+         .required('La dirección postal es requerida')
+         .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
+         .min(5, 'La dirección postal debe tener 5 caracteres')
+         .max(5, 'La dirección postal debe tener 5 caracteres')
+     })
+   )  
 
 export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),

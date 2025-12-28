@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
-import { CreateGuideAddressFormPkk } from "./CreateGuideAddressFormPkk";
 import { CreateGuideAddressValuesPkk, CreateGuideFormValuesPkk, CreateGuidePkkPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValues } from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateFormPkk } from "@/shared/constants/guides.constants";
 import { ParcelInfo } from "../ParcelInfo";
@@ -13,6 +12,8 @@ import { ConfirmGuidePkk } from "./ConfirmGuidePkk";
 import { createGuidePkkCb } from "@/shared/utils/guides.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
+import { useSaveAlias } from "@/shared/hooks/useAlias";
+import { AddAddressPkk } from "./AddAddressPkk";
 
 interface CreateGuidePkkProps {
   open: boolean;
@@ -27,6 +28,8 @@ export const CreateGuidePkk = ({
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(CREATE_GUIDE_STEPS)
+
+  const { aliasesPkk, updateOriginAliasPkk, updateDestinationAliasPkk, resetAliases } = useSaveAlias()
 
   const formData = useRef<CreateGuideFormValuesPkk>({...initialStateFormPkk})
   const resetFormData = () => {
@@ -48,6 +51,7 @@ export const CreateGuidePkk = ({
   }
 
   const closeModal = () => {
+    resetAliases()
     resetFormData()
     resetSteps()
     resetSelectedQuotes()
@@ -75,19 +79,23 @@ export const CreateGuidePkk = ({
           </div>
         )}
         { step === 1 && (
-          <CreateGuideAddressFormPkk
+          <AddAddressPkk
             addressData={formData.current.originAddress}
             goNext={goNext}
-            updateOriginAddress={updateOriginAddress}
+            aliasSaved={aliasesPkk.origin}
+            updateSavedAlias={updateOriginAliasPkk}
+            updateAddress={updateOriginAddress}
             toggleModal={toggleModal}
             goPrev={goPrev}
           />
         )}
         { step === 2 && (
-          <CreateGuideAddressFormPkk
+          <AddAddressPkk
             addressData={formData.current.destinationAddress}
             goNext={goNext}
-            updateOriginAddress={updateDestinationAddress}
+            aliasSaved={aliasesPkk.destination}
+            updateSavedAlias={updateDestinationAliasPkk}
+            updateAddress={updateDestinationAddress}
             toggleModal={toggleModal}
             goPrev={goPrev}
             isDestination

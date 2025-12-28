@@ -43,8 +43,7 @@ describe('AddTempAddressTone', () => {
       // Given CreateGuideAddressFormTone is rendered with address data
       renderComponent()
 
-      // Then section headings should be present
-      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      // Then Domicilio section heading should be present
       expect(screen.getByText('Domicilio')).toBeInTheDocument()
 
       // Then all form fields should be present with correct labels

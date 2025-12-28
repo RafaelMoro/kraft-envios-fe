@@ -2,7 +2,7 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import { Label, TextInput } from "flowbite-react"
 import { FieldError, FieldErrors, Path, UseFormRegister } from "react-hook-form";
 
-type PersonalDataMn = {
+type PersonalDataT = {
   name: string;
   phone: string;
   lastName: string;
@@ -10,13 +10,17 @@ type PersonalDataMn = {
   email?: string | null | undefined;
 }
 
-interface PersonalDataMnProps<T extends PersonalDataMn> {
+interface PersonalDataFormProps<T extends PersonalDataT> {
   addressData: T;
+  hideCompanyField?: boolean;
   errors: FieldErrors<T>;
   register: UseFormRegister<T>
 }
 
-export const PersonalDataMn = <T extends PersonalDataMn>({ addressData, errors, register }: PersonalDataMnProps<T>) => {
+/**
+ * This component is used with Pkk, Mn and Tone
+ */
+export const PersonalDataForm = <T extends PersonalDataT>({ addressData, errors, register, hideCompanyField = false }: PersonalDataFormProps<T>) => {
   const nameError = errors?.name as FieldError | undefined;
   const lastNameError = errors?.lastName as FieldError | undefined;
   const phoneError = errors?.phone as FieldError | undefined;
@@ -78,6 +82,7 @@ export const PersonalDataMn = <T extends PersonalDataMn>({ addressData, errors, 
         <TextInput
           id="email"
           type="email"
+          data-testid="email"
           defaultValue={addressData.email ?? ''}
           {...register("email" as Path<T>)}
         />
@@ -85,21 +90,23 @@ export const PersonalDataMn = <T extends PersonalDataMn>({ addressData, errors, 
           <ErrorMessage>{emailError.message}</ErrorMessage>
         )}
       </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="company">Nombre de la compañia (Opcional)</Label>
+      { !hideCompanyField && (
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="company">Nombre de la compañia (Opcional)</Label>
+          </div>
+          <TextInput
+            data-testid="company"
+            defaultValue={addressData.company ?? ''}
+            id="company"
+            type="text"
+            {...register("company" as Path<T>)}
+          />
+          { companyError?.message && (
+            <ErrorMessage>{companyError.message}</ErrorMessage>
+          )}
         </div>
-        <TextInput
-          data-testid="company"
-          defaultValue={addressData.company ?? ''}
-          id="company"
-          type="text"
-          {...register("company" as Path<T>)}
-        />
-        { companyError?.message && (
-          <ErrorMessage>{companyError.message}</ErrorMessage>
-        )}
-      </div>
+      )}
     </section>
   )
 }

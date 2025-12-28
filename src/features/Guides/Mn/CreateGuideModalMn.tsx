@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper";
 import {
-  CreateGuideFormValues,
+  CreateGuideFormValuesMn,
   CreateGuideAddressFormValuesMn,
   ParcelInfoFormValues,
   SearchProduct,
@@ -50,7 +50,7 @@ export const CreateGuideModalMn = ({ open, toggleModal, selectedQuotes, resetSel
   const { aliasesMn, updateOriginAliasMn, updateDestinationAliasMn, resetAliases } = useSaveAlias()
 
   // Form data to collect all steps data
-  const formData = useRef<CreateGuideFormValues>({...initialStateForm})
+  const formData = useRef<CreateGuideFormValuesMn>({...initialStateForm})
   const resetFormData = () => {
     formData.current = {...initialStateForm}
     selectedProduct.current = null

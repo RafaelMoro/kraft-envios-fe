@@ -78,11 +78,10 @@ describe('CreateGuideModalTone', () => {
       expect(screen.getByText('Paquete')).toBeInTheDocument()
       expect(screen.getByText('Confirmar')).toBeInTheDocument()
 
-      // Then section headings should be displayed
-      expect(screen.getByText('Datos personales')).toBeInTheDocument()
+      // Then Domicilio section heading should be displayed
       expect(screen.getByText('Domicilio')).toBeInTheDocument()
 
-      // Then first step (CreateGuideAddressFormTone for origin) should be rendered
+      // Then first step (AddAddressTone for origin) should be rendered
       expect(screen.getByText('Nombre')).toBeInTheDocument()
       expect(screen.getByText('Apellido')).toBeInTheDocument()
       expect(screen.getByText('Teléfono')).toBeInTheDocument()

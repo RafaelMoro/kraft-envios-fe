@@ -1,42 +1,35 @@
-"use client"
-import { Button } from "flowbite-react";
+import { useState } from "react";
+import { Button, ToggleSwitch } from "flowbite-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { AddTempAddressMn } from "./AddTempAddressMn";
-import { 
-  AddPersonalDataFormSchema, 
-  CreateGuideAddressFormValuesMn, 
-  PersonalDataFormValues,
-  AliasSavedMn,
-  CreateGuideAddressDataMnFormValues
-} from "@/shared/types/guides.types";
+import { useAddAddress } from "@/shared/hooks/useAddAddress";
+import { AddPersonalDataFormSchema, AliasesSavedPkk, CreateGuideAddressDataPkkFormValues, CreateGuideAddressValuesPkk, PersonalDataFormValues } from "@/shared/types/guides.types";
+import { AddTempAddressPkk } from "./AddTempAddressPkk";
 import { AddAddressCreateGuide } from "@/features/Addresses/AddAddressCreateGuide";
 import { PersonalDataForm } from "../PersonalDataForm";
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
-import { useAddAddress } from "@/shared/hooks/useAddAddress";
 
-interface AddAddressMnProps {
-  title: string
-  addressData: CreateGuideAddressFormValuesMn
-  aliasSaved: AliasSavedMn;
-  isMobileTablet: boolean
+interface AddAddressPkkProps {
   isDestination?: boolean
+  addressData: CreateGuideAddressValuesPkk;
+  aliasSaved: AliasesSavedPkk
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
-  updateAddress: (data: CreateGuideAddressFormValuesMn) => void
+  updateAddress: (data: CreateGuideAddressValuesPkk) => void
   updateSavedAlias: ({
-    alias, address, addressMn, town, city
+    alias, address, addressPkk, town, city
   }: {
-    alias: string; address: Address; addressMn: CreateGuideAddressDataMnFormValues; town: string; city: string
+    alias: string; address: Address; addressPkk: CreateGuideAddressDataPkkFormValues; town: string; city: string
   }) => void
 }
 
-export const AddAddressMn = ({
-  isDestination = false, title, addressData, aliasSaved, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias
-}: AddAddressMnProps) => {
+export const AddAddressPkk = ({
+  isDestination = false, addressData, aliasSaved, goPrev, goNext, toggleModal, updateAddress, updateSavedAlias
+}: AddAddressPkkProps) => {
+  const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     aliasSelected,
     setAliasSelected,
@@ -70,48 +63,39 @@ export const AddAddressMn = ({
       setAddressError("Por favor selecciona un alias de dirección");
       return;
     }
-    if (!aliasSaved.addressMn) {
+    if (!aliasSaved.addressPkk) {
       setAddressError("La dirección seleccionada no es válida");
       console.warn("Address selected is null");
       return;
     }
-    if (!aliasSaved.addressMn.city) {
-      setCityError("Por favor selecciona una ciudad");
-      return;
-    }
 
-    const allData: CreateGuideAddressFormValuesMn = {
+    const allData: CreateGuideAddressValuesPkk = {
       ...data,
-      ...aliasSaved.addressMn
+      isResidential,
+      ...aliasSaved.addressPkk
     }
     updateAddress(allData)
     goNext()
   }
 
-  /**
-   * This function formats the address info into the address expected type of Mn
-   */
   const updateAddressInfo = ({ newAddress, town, city }: UpdateAddressInfoPayload) => {
-    const updatedAddressData: CreateGuideAddressDataMnFormValues = {
+    const updatedAddressData: CreateGuideAddressDataPkkFormValues = {
       street1: newAddress.addressName,
-      external_number: newAddress.externalNumber,
       neighborhood: newAddress.neighborhood,
       city: city || newAddress.city?.[0] || "",
       state: newAddress.state,
-      reference: newAddress.reference,
+      zipcode: newAddress.zipcode,
     }
-    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressMn: updatedAddressData, town, city })
+    updateSavedAlias({ alias: newAddress.alias, address: newAddress, addressPkk: updatedAddressData, town, city })
   }
 
   if (useTempAddress) {
     return (
-      <AddTempAddressMn
-        title={title}
+      <AddTempAddressPkk
+        addressData={addressData}
         addressType={addressType}
         goNext={goNext}
         updateAddress={updateAddress}
-        addressData={addressData}
-        isMobileTablet={isMobileTablet}
         toggleTempAddress={toggleTempAddress}
       />
     )
@@ -127,6 +111,7 @@ export const AddAddressMn = ({
             addressData={addressData}
             errors={errors}
             register={register}
+            hideCompanyField
           />
         }
         SubmitFormUI={
@@ -134,13 +119,13 @@ export const AddAddressMn = ({
             <Button
               {...(!isDestination && { outline: true })}
               color={cancelColorButton}
-              data-testid={`${addressType}-address-mn-cancel-button`}
+              data-testid={`${addressType}-address-pkk-cancel-button`}
               className="hover:cursor-pointer"
               onClick={handleCancel}
             >
               {cancelButtonText}
             </Button>
-            <Button data-testid={`${addressType}-address-mn-next-button`} type="submit" className="hover:cursor-pointer">
+            <Button data-testid={`${addressType}-address-pkk-next-button`} type="submit" className="hover:cursor-pointer">
               Siguiente
             </Button>
           </div>
@@ -162,6 +147,9 @@ export const AddAddressMn = ({
           setTownError={setTownError}
           setCityError={setCityError}
         />
+        <div className="w-full flex justify-start">
+          <ToggleSwitch checked={isResidential} label="Es residencial" onChange={setIsResidential} />
+        </div>
       </AddAddressCreateGuide>
     </form>
   )

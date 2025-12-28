@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ConfirmGuideData } from '@/features/Guides/Mn/ConfirmGuideData'
-import { CreateGuideFormValues, SearchProduct } from '@/shared/types/guides.types'
+import { CreateGuideFormValuesMn, SearchProduct } from '@/shared/types/guides.types'
 import { QuoteUI } from '@/shared/types/quotes.types'
 
 // Mock functions for props
@@ -47,7 +47,7 @@ const mockParcelInfo = {
   quantity: 2
 }
 
-const mockFormData: CreateGuideFormValues = {
+const mockFormData: CreateGuideFormValuesMn = {
   originAddress: mockOriginAddress,
   destinationAddress: mockDestinationAddress,
   parcelInfo: mockParcelInfo
