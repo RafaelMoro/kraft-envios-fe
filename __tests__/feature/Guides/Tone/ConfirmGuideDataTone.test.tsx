@@ -108,8 +108,7 @@ describe('ConfirmGuideDataTone', () => {
         quoteToken: '1', // fedexQuote.id
         notifyMe: true, // parcelInfo.notifyMe
         origin: {
-          name: 'Juan Pérez',
-          lastName: 'González',
+          name: 'Juan Pérez González', // name and lastName are combined
           street1: 'Av. Principal 123',
           neighborhood: 'Centro',
           town: 'Guadalajara',
@@ -120,8 +119,7 @@ describe('ConfirmGuideDataTone', () => {
           reference: 'Entre calle A y B'
         },
         destination: {
-          name: 'María López',
-          lastName: 'Martínez',
+          name: 'María López Martínez', // name and lastName are combined
           street1: 'Calle Secundaria 456',
           neighborhood: 'Roma Norte',
           town: 'Ciudad de México',
