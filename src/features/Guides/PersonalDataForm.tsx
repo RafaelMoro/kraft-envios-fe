@@ -82,6 +82,7 @@ export const PersonalDataForm = <T extends PersonalDataT>({ addressData, errors,
         <TextInput
           id="email"
           type="email"
+          data-testid="email"
           defaultValue={addressData.email ?? ''}
           {...register("email" as Path<T>)}
         />

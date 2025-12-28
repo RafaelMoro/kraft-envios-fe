@@ -107,13 +107,13 @@ describe('Feature: Add Address for Pkk', () => {
       )
 
       // Then personal data fields should be displayed
-      expect(screen.getByLabelText(/^nombre$/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/^apellido$/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/^teléfono$/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/correo electrónico \(opcional\)/i)).toBeInTheDocument()
+      expect(screen.getByTestId('name')).toBeInTheDocument()
+      expect(screen.getByTestId('lastName')).toBeInTheDocument()
+      expect(screen.getByTestId('phone')).toBeInTheDocument()
+      expect(screen.getByTestId('email')).toBeInTheDocument()
 
       // And address dropdown should be displayed
-      expect(screen.getByText(/alias de dirección/i)).toBeInTheDocument()
+      expect(screen.getByTestId('select-address-dropdown-button')).toBeInTheDocument()
     })
   })
 
