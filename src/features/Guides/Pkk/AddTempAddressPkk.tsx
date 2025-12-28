@@ -4,24 +4,24 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
 import {
+  AddressType,
   CreateGuideAddressFormSchemaPkk,
   CreateGuideAddressFormValuesPkk,
   CreateGuideAddressValuesPkk,
 } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 
-interface CreateGuideAddressFormPkkProps {
-  isDestination?: boolean
+interface AddTempAddressPkkProps {
   addressData: CreateGuideAddressValuesPkk;
+  addressType: AddressType
   goNext: () => void
-  goPrev: () => void
-  toggleModal: () => void
-  updateOriginAddress: (data: CreateGuideAddressValuesPkk) => void
+  toggleTempAddress: () => void
+  updateAddress: (data: CreateGuideAddressValuesPkk) => void
 }
 
-export const CreateGuideAddressFormPkk = ({
-  isDestination, addressData, goNext, goPrev, toggleModal, updateOriginAddress,
-}: CreateGuideAddressFormPkkProps) => {
+export const AddTempAddressPkk = ({
+  addressData, addressType, goNext, toggleTempAddress, updateAddress: updateOriginAddress,
+}: AddTempAddressPkkProps) => {
   const [isResidential, setIsResidential] = useState(addressData.isResidential);
   const {
     register,
@@ -41,16 +41,8 @@ export const CreateGuideAddressFormPkk = ({
   }
 
   const handleCancel = () => {
-    if (isDestination) {
-      goPrev()
-      return;
-    }
-
-    toggleModal()
+    toggleTempAddress()
   }
-
-  const cancelButtonText = isDestination ? "Regresar" : "Cancelar"
-  const cancelColorButton = isDestination ? "light" : "red"
 
   return (
     <form
@@ -72,6 +64,21 @@ export const CreateGuideAddressFormPkk = ({
           />
           { errors?.name?.message && (
             <ErrorMessage>{errors.name?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="lastName">Apellido</Label>
+          </div>
+          <TextInput
+            data-testid="lastName"
+            defaultValue={addressData.lastName}
+            id="lastName"
+            type="text"
+            {...register("lastName")}
+          />
+          { errors?.lastName?.message && (
+            <ErrorMessage>{errors.lastName.message}</ErrorMessage>
           )}
         </div>
         <div>
@@ -174,6 +181,7 @@ export const CreateGuideAddressFormPkk = ({
             </div>
             <TextInput
               id="zipcode"
+              data-testid="zipcode"
               type="text"
               inputMode="numeric"
               {...register("zipcode")}
@@ -189,13 +197,12 @@ export const CreateGuideAddressFormPkk = ({
       </div>
       <div className="flex justify-between mt-4">
         <Button
-          {...(!isDestination && { outline: true })}
-          color={cancelColorButton}
-          data-testid="origin-address-cancel-button"
+          color="light"
+          data-testid={`${addressType}-address-pkk-temp-cancel-button`}
           className="hover:cursor-pointer"
           onClick={handleCancel}
         >
-          {cancelButtonText}
+          Volver
         </Button>
         <Button data-testid="origin-address-next-button" type="submit" className="hover:cursor-pointer">
           Siguiente

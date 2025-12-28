@@ -1,8 +1,11 @@
 import { Address } from "../types/addresses.types";
 import {
   AllAliasesSavedTone, AllAliasSavedMn, CreateGuideAddressDataMnFormValues, CreateGuideAddressDataToneFormValues, CreateGuideAddressFormValuesMn,
-  CreateGuideAddressFormValuesTone, CreateGuideAddressValuesWithLada, CreateGuideFormValues, CreateGuideFormValuesGE, CreateGuideFormValuesPkk,
-  CreateGuideFormValuesTone
+  CreateGuideAddressFormValuesTone, CreateGuideFormValuesMn, CreateGuideFormValuesGE, CreateGuideFormValuesPkk,
+  CreateGuideFormValuesTone,
+  AllAliasSavedPkk,
+  CreateGuideAddressDataPkkFormValues,
+  CreateGuideAddressValuesPkk
 } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
@@ -44,6 +47,14 @@ const defaultAddressMn: CreateGuideAddressDataMnFormValues = {
   reference: ""
 }
 
+const defaultAddressPkk: CreateGuideAddressDataPkkFormValues = {
+  street1: "",
+  neighborhood: "",
+  city: "",
+  state: "",
+  zipcode: "",
+}
+
 export const initialAliasesTone: AllAliasesSavedTone = {
   origin: {
     alias: "",
@@ -78,6 +89,23 @@ export const initialAliasesMn: AllAliasSavedMn = {
   }
 }
 
+export const initialAliasPkk: AllAliasSavedPkk = {
+  origin: {
+    alias: "",
+    town: "",
+    city: "",
+    address: {...defaultAddress},
+    addressPkk: {...defaultAddressPkk}
+  },
+  destination: {
+    alias: "",
+    town: "",
+    city: "",
+    address: {...defaultAddress},
+    addressPkk: {...defaultAddressPkk}
+  }
+}
+
 export const initialStateAddressForm: CreateGuideAddressFormValuesMn = {
   name: "",
   lastName: "",
@@ -93,7 +121,7 @@ export const initialStateAddressForm: CreateGuideAddressFormValuesMn = {
 }
 
 
-export const initialStateForm: CreateGuideFormValues = {
+export const initialStateForm: CreateGuideFormValuesMn = {
   originAddress: initialStateAddressForm,
   destinationAddress: initialStateAddressForm,
   parcelInfo: {
@@ -116,14 +144,11 @@ export const initialStateAddressTone: CreateGuideAddressFormValuesTone = {
   reference: ""
 }
 
-export const initialStateAddressPkk: CreateGuideAddressValuesWithLada = {
+export const initialStateAddressPkk: CreateGuideAddressValuesPkk = {
   name: "",
+  lastName: "",
   email: "",
   phone: "",
-  ladaState: {
-    lada: [],
-    state: ""
-  },
   street1: "",
   neighborhood: "",
   city: "",

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useForm } from 'react-hook-form'
-import { PersonalDataMn } from '@/features/Guides/Mn/PersonalDataMn'
+import { PersonalDataForm } from '@/features/Guides/PersonalDataForm'
 
 type TestFormData = {
   name: string
@@ -40,7 +40,7 @@ const TestWrapper = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <PersonalDataMn 
+      <PersonalDataForm 
         addressData={addressData}
         errors={errors}
         register={register}

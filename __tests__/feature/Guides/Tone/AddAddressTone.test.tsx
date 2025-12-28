@@ -122,7 +122,6 @@ describe('Feature: Add Address for Tone Guide Creation', () => {
     it('Given the component renders, When displaying the form, Then it should show personal data fields with correct labels', () => {
       renderComponent()
 
-      expect(screen.getByText('Datos personales')).toBeInTheDocument()
       expect(screen.getByLabelText('Nombre')).toBeInTheDocument()
       expect(screen.getByLabelText('Apellido')).toBeInTheDocument()
       expect(screen.getByLabelText('Teléfono')).toBeInTheDocument()

@@ -1,13 +1,13 @@
 import { Button, Spinner } from "flowbite-react"
 
-import { CreateGuideFormValues, CreateGuideMnPayload, SearchProduct } from "@/shared/types/guides.types"
+import { CreateGuideFormValuesMn, CreateGuideMnPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { formatPhoneNumber, formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { verifyAndUpdateAddressMn } from "@/shared/utils/guides.utils"
 import { RiCheckboxMultipleBlankLine, RiEditBoxLine, RiMailLine, RiMapPin3Line, RiMapPinLine, RiMoneyDollarCircleLine, RiOrganizationChart, RiPhoneLine, RiUserLine } from "@remixicon/react";
 
 interface ConfirmGuideDataProps {
-  formData: CreateGuideFormValues;
+  formData: CreateGuideFormValuesMn;
   selectedProduct: SearchProduct | null;
   selectedQuotes: QuoteUI[];
   isPending: boolean;

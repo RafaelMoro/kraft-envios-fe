@@ -30,6 +30,10 @@ For the unit tests, consider the following instructions:
 
 - Avoid writing redundant tests with identical expectations when using Gherkin syntax. If multiple test scenarios have the same assertions and expected behavior, consolidate them into a single meaningful test or ensure each test validates genuinely different behavior. For example, testing "primary styling" and "alternative styling" separately is unnecessary if both only verify the same text display without testing actual styling differences. Focus on testing distinct behaviors rather than different prop combinations that produce identical outcomes.
 
+- Do not include file extensions in import statements. Always import without extensions (.ts, .tsx, .js, .jsx). For example, use `import { useAddAddress } from '@/shared/hooks/useAddAddress'` instead of `import { useAddAddress } from '@/shared/hooks/useAddAddress.tsx'`. This is the standard TypeScript convention and prevents module resolution issues.
+
+- When mocking hooks with jest.mock(), use relative imports instead of path aliases (@/). For example, use `jest.mock('../../../src/shared/hooks/useAlias')` instead of `jest.mock('@/shared/hooks/useAlias')`. This prevents module resolution issues in the test environment.
+
 ## Mocks
 
 - Do not export them as default, use name exports

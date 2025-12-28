@@ -2,14 +2,14 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Button, Label, TextInput } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
-import { CreateGuideAddressFormSchema, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
+import { AddressType, CreateGuideAddressFormSchemaMn, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { PersonalDataMn } from "./PersonalDataMn"
+import { PersonalDataForm } from "../PersonalDataForm"
 
 interface OriginAddressFormProps {
   title: string
   addressData: CreateGuideAddressFormValuesMn
-  addressType: "destination" | "origin"
+  addressType: AddressType
   isMobileTablet: boolean
   goNext: () => void
   updateAddress: (data: CreateGuideAddressFormValuesMn) => void
@@ -22,7 +22,7 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
     handleSubmit,
     formState: { errors },
   } = useForm<CreateGuideAddressFormValuesMn>({
-    resolver: yupResolver(CreateGuideAddressFormSchema)
+    resolver: yupResolver(CreateGuideAddressFormSchemaMn)
   })
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesMn> = (data, event) => {
@@ -40,7 +40,7 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
       { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">{title}</h5>)}
       <h4 className="text-xl">Datos personales</h4>
-      <PersonalDataMn<CreateGuideAddressFormValuesMn>
+      <PersonalDataForm<CreateGuideAddressFormValuesMn>
         addressData={addressData}
         errors={errors}
         register={register}

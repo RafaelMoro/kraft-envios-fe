@@ -1,3 +1,9 @@
+## v0.30.0 (2025-12-28)
+
+### Pull Requests
+[#69](https://github.com/RafaelMoro/kraft-envios-fe/pull/69) | Add addr feat create guide pkk
+
+
 ## v0.29.0 (2025-12-09)
 
 ### Pull Requests

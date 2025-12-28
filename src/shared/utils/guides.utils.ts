@@ -29,6 +29,8 @@ import {
   SatProduct,
   SearchProduct,
   CreateGuideAddressPayloadMn,
+  CreateGuideAddressPayloadTone,
+  CreateGuideAddressPayloadPkk,
 } from '../types/guides.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -124,10 +126,10 @@ export const replaceSpacesWithPlus = (input: string): string => {
  */
 export const verifyAndUpdateAddressMn = (address: CreateGuideAddressFormValuesMn): CreateGuideAddressPayloadMn => {
   const { lastName, ...restData } = address
-    const formattedAddress = {
-      ...restData,
-      name: `${address.name} ${lastName}`.trim(),
-    }
+  const formattedAddress = {
+    ...restData,
+    name: `${address.name} ${lastName}`.trim(),
+  }
   return {
     ...formattedAddress,
     company: address.company?.trim() || DEFAULT_COMPANY,
@@ -141,9 +143,15 @@ export const verifyAndUpdateAddressMn = (address: CreateGuideAddressFormValuesMn
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValuesTone): CreateGuideAddressFormValuesTone => {
+export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValuesTone): CreateGuideAddressPayloadTone => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { lastName, company, ...restData } = address
+  const formattedAddress = {
+    ...restData,
+    name: `${address.name} ${lastName}`.trim(),
+  }
   return {
-    ...address,
+    ...formattedAddress,
     email: address.email?.trim() || DEFAULT_EMAIL,
     reference: address.reference?.trim() || DEFAULT_REFERENCE
   }
@@ -154,12 +162,14 @@ export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValues
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk): CreateGuideAddressValuesPkk => {
-  const { phone, ...rest } = address
+export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk): CreateGuideAddressPayloadPkk => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { phone, lastName, company, ...rest } = address
   const newPhone = `+52${phone}`
   return {
     ...rest,
     phone: newPhone,
+    name: `${address.name} ${lastName}`.trim(),
     email: address.email?.trim() || DEFAULT_EMAIL,
   }
 }
