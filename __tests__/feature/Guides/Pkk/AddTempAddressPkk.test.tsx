@@ -152,7 +152,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
   })
 
   describe('Scenario: Submit form with valid data', () => {
-    it.only('Given valid form data, When user submits the form, Then it should call updateAddress and goNext', async () => {
+    it('Given valid form data, When user submits the form, Then it should call updateAddress and goNext', async () => {
       // Given valid form data
       const user = userEvent.setup()
       render(
@@ -211,6 +211,9 @@ describe('Feature: Add Temporary Address for Pkk', () => {
 
       // And submits the form
       const submitButton = screen.getByTestId('origin-address-next-button')
+      const zipcodeInput = screen.getByTestId('zipcode')
+      await user.clear(zipcodeInput)
+      await user.type(zipcodeInput, '12345') // Ensure zipcode is valid
       await user.click(submitButton)
 
       // Then updateAddress should be called with isResidential true
