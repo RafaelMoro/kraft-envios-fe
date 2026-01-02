@@ -4,7 +4,7 @@ import { FieldErrors, SubmitHandler, UseFormHandleSubmit, UseFormRegister, UseFo
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { AddTag } from "@/shared/ui/organisms/AddTag"
-import { CreateAddressFormValues, CreateAddressPayload } from "@/shared/types/addresses.types";
+import { CreateAddressFormValues, CreateAddressPayload, ManageAddressFormScreen } from "@/shared/types/addresses.types";
 import { useAddTag } from "@/shared/hooks/useAddTag";
 import { useState } from "react";
 import { formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
@@ -24,6 +24,7 @@ interface CreateAddressSubformProps {
   isPendingEdit: boolean;
   isSuccessEdit: boolean;
   toggleModal: () => void;
+  setSubscreen: (subscreen: ManageAddressFormScreen) => void
 }
 
 export const CreateAddressSubform = ({
@@ -41,11 +42,21 @@ export const CreateAddressSubform = ({
   isPendingEdit,
   isSuccessEdit,
   toggleModal,
+  setSubscreen,
 }: CreateAddressSubformProps) => {
   // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
   const [consentSkipGECreation , setConsentSkipGECreation] = useState(false);
   const [showConsentError, setShowConsentError] = useState(false);
+
+  const handleShouldCreateGEAddress = () => {
+    setShouldCreateGEAddress((prev) => {
+      if (!prev) {
+        setConsentSkipGECreation(false);
+      }
+      return !prev
+    });
+  }
 
   const handleConsentSkipGECreation = (isChecked: boolean) => {
     setConsentSkipGECreation(isChecked);
@@ -100,6 +111,11 @@ export const CreateAddressSubform = ({
   
       if (!shouldCreateGEAddress && !consentSkipGECreation) {
         setShowConsentError(true)
+        return
+      }
+  
+      if (shouldCreateGEAddress && !consentSkipGECreation) {
+        setSubscreen('ADD_GE_INFORMATION')
         return
       }
   
@@ -255,7 +271,7 @@ export const CreateAddressSubform = ({
           <ErrorMessage>{errors.alias?.message}</ErrorMessage>
         )}
       </div>
-      <ToggleSwitch checked={shouldCreateGEAddress} label="Crear dirección en GE" onChange={setShouldCreateGEAddress} />
+      <ToggleSwitch checked={shouldCreateGEAddress} label="Crear dirección en GE" onChange={handleShouldCreateGEAddress} />
       { !shouldCreateGEAddress && (
         <>
           <div className="flex items-center gap-2">

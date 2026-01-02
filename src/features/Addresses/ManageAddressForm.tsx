@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react";
 import { Modal, ModalBody, ModalHeader, } from "flowbite-react"
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,7 +9,7 @@ import { AddressAliasResponse, CreateAddressFormSchema, CreateAddressFormValues,
 import { createAddressCb, editAddressCb } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { CreateAddressSubform } from "./CreateAddressSubform";
-import { useState } from "react";
+import { AddPersonalInfoGESubform } from "./AddPersonalInfoGESubform";
 
 interface CreateAddressProps {
   open: boolean;
@@ -94,7 +95,11 @@ export const ManageAddressForm = ({
             isPendingEdit={isPendingEdit}
             isSuccessEdit={isSuccessEdit}
             toggleModal={toggleModal}
+            setSubscreen={setSubscreen}
           />
+        )}
+        { subscreen === 'ADD_GE_INFORMATION' && (
+          <AddPersonalInfoGESubform />
         )}
       </ModalBody>
     </Modal>
