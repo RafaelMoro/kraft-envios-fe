@@ -1,5 +1,5 @@
 "use client"
-import { Button, CheckIcon, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput } from "flowbite-react"
+import { Button, CheckIcon, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput, ToggleSwitch } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { createAddressCb, editAddressCb, formatPayloadCreateAddress } from "@/sh
 import { GeneralApiError } from "@/shared/types/global.types";
 import { AddTag } from "@/shared/ui/organisms/AddTag";
 import { useAddTag } from "@/shared/hooks/useAddTag";
+import { useState } from "react";
 
 interface CreateAddressProps {
   open: boolean;
@@ -21,7 +22,11 @@ interface CreateAddressProps {
   refetchAddresses: () => Promise<void>;
 }
 
-export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses }: CreateAddressProps) => {
+export const ManageAddressForm = ({
+  open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
+}: CreateAddressProps) => {
+  const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
+
   const {
     tags: towns,
     addTag: addTown,
@@ -269,6 +274,7 @@ export const ManageAddressForm = ({ open, formData, isEdit, toggleModal, toggleN
               <ErrorMessage>{errors.alias?.message}</ErrorMessage>
             )}
           </div>
+          <ToggleSwitch checked={shouldCreateGEAddress} label="Crear dirección en GE" onChange={setShouldCreateGEAddress} />
           <div className="lg:col-span-2 flex justify-between mt-4">
             <Button
               color="red"
