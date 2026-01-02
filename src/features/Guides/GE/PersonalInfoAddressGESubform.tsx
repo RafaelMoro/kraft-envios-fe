@@ -1,7 +1,7 @@
 import { Label, TextInput } from "flowbite-react"
+import { FieldError, FieldErrors, Path, UseFormRegister } from "react-hook-form";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { FieldError, FieldErrors, Path, UseFormRegister } from "react-hook-form";
 
 type PersonalDataGET = {
   name: string;
