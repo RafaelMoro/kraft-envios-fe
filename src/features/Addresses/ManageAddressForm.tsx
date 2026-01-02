@@ -1,5 +1,5 @@
 "use client"
-import { Button, CheckIcon, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput, ToggleSwitch } from "flowbite-react"
+import { Button, Checkbox, CheckIcon, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput, ToggleSwitch } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
@@ -26,6 +26,7 @@ export const ManageAddressForm = ({
   open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
 }: CreateAddressProps) => {
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
+  const [consentSkipGECreation , setConsentSkipGECreation] = useState(false);
 
   const {
     tags: towns,
@@ -54,6 +55,7 @@ export const ManageAddressForm = ({
     resolver: yupResolver(CreateAddressFormSchema)
   })
   const actionText = isEdit ? 'Editar' : 'Crear'
+  console.log('errors', errors)
 
   const onSuccess = async () => {
     await refetchAddresses()
@@ -95,6 +97,7 @@ export const ManageAddressForm = ({
   })
 
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
+    console.log(data)
     event?.preventDefault()
 
     // Check if alias has been modified in edit mode
@@ -275,6 +278,21 @@ export const ManageAddressForm = ({
             )}
           </div>
           <ToggleSwitch checked={shouldCreateGEAddress} label="Crear dirección en GE" onChange={setShouldCreateGEAddress} />
+          { !shouldCreateGEAddress && (
+            <>
+              <div className="flex items-center gap-2">
+                <Checkbox 
+                  id="remember"
+                  checked={consentSkipGECreation}
+                  onChange={(e) => setConsentSkipGECreation(e.target.checked)}
+                />
+                <Label htmlFor="remember">Entiendo y acepto omitir en no crear esta dirección en GE</Label>
+              </div>
+              <div className="lg:col-start-2 lg:col-end-3 w-full flex justify-center">
+                <ErrorMessage>Marque esta opcion para continuar.</ErrorMessage>
+              </div>
+            </>
+          )}
           <div className="lg:col-span-2 flex justify-between mt-4">
             <Button
               color="red"
