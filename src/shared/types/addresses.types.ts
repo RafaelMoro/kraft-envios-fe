@@ -32,6 +32,8 @@ export type CreateAddressFormValues = {
   alias: string;
 }
 
+export type ManageAddressFormScreen = 'CREATE_ADDRESS' | 'ADD_GE_INFORMATION'
+
 export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber' | 'reference' | 'street1'> & {
   internalNumber: string;
   reference: string;

@@ -4,10 +4,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 
-import { AddressAliasResponse, CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse } from "@/shared/types/addresses.types";
+import { AddressAliasResponse, CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse, ManageAddressFormScreen } from "@/shared/types/addresses.types";
 import { createAddressCb, editAddressCb } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { CreateAddressSubform } from "./CreateAddressSubform";
+import { useState } from "react";
 
 interface CreateAddressProps {
   open: boolean;
@@ -22,7 +23,7 @@ interface CreateAddressProps {
 export const ManageAddressForm = ({
   open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
 }: CreateAddressProps) => {
-
+  const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('CREATE_ADDRESS')
   const {
     register,
     handleSubmit,
@@ -77,22 +78,24 @@ export const ManageAddressForm = ({
     <Modal show={open} onClose={toggleModal}>
       <ModalHeader>{actionText} dirección</ModalHeader>
       <ModalBody>
-        <CreateAddressSubform
-          formData={formData}
-          isEdit={isEdit}
-          actionText={actionText}
-          errors={errors}
-          createAddressMutation={createAddressMutation}
-          editAddressMutation={editAddressMutation}
-          register={register}
-          handleSubmit={handleSubmit}
-          setError={setError}
-          isPending={isPending}
-          isSuccess={isSuccess}
-          isPendingEdit={isPendingEdit}
-          isSuccessEdit={isSuccessEdit}
-          toggleModal={toggleModal}
-        />
+        { subscreen === 'CREATE_ADDRESS' && (
+          <CreateAddressSubform
+            formData={formData}
+            isEdit={isEdit}
+            actionText={actionText}
+            errors={errors}
+            createAddressMutation={createAddressMutation}
+            editAddressMutation={editAddressMutation}
+            register={register}
+            handleSubmit={handleSubmit}
+            setError={setError}
+            isPending={isPending}
+            isSuccess={isSuccess}
+            isPendingEdit={isPendingEdit}
+            isSuccessEdit={isSuccessEdit}
+            toggleModal={toggleModal}
+          />
+        )}
       </ModalBody>
     </Modal>
   )
