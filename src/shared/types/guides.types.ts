@@ -131,12 +131,15 @@ export type CreateGuideAddressPayloadPkk = CreateGuidePersonalDataPkkPayload & C
   isResidential: boolean;
 };
 
-export type CreateAddressFormValuesGE = {
+export type PersonalDataGEFormValues = {
   name: string;
   phone: string;
   email?: string | null | undefined
   company?: string | null | undefined
   rfc?: string | null | undefined
+}
+
+export type CreateAddressFormValuesGE = PersonalDataGEFormValues & {
   street1: string;
   external_number: string;
   neighborhood: string;
