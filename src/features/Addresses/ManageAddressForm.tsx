@@ -62,7 +62,7 @@ export const ManageAddressForm = ({
     resolver: yupResolver(CreateAddressFormSchema)
   })
   const actionText = isEdit ? 'Editar' : 'Crear'
-  console.log('errors', errors)
+  const submitButtonText = shouldCreateGEAddress ? 'Siguiente' : `${actionText} dirección`;
 
   const onSuccess = async () => {
     await refetchAddresses()
@@ -326,7 +326,7 @@ export const ManageAddressForm = ({
             >
               { (isSuccess || isSuccessEdit) && (<CheckIcon />)}
               { (isPending || isPendingEdit) && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
-              { !isSuccess && !isSuccessEdit && !isPending && !isPendingEdit && `${actionText} dirección`}
+              { !isSuccess && !isSuccessEdit && !isPending && !isPendingEdit && submitButtonText }
             </Button>
           </div>
         </form>
