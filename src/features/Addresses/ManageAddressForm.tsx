@@ -25,8 +25,15 @@ interface CreateAddressProps {
 export const ManageAddressForm = ({
   open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
 }: CreateAddressProps) => {
+  // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
   const [consentSkipGECreation , setConsentSkipGECreation] = useState(false);
+  const [showConsentError, setShowConsentError] = useState(false);
+
+  const handleConsentSkipGECreation = (isChecked: boolean) => {
+    setConsentSkipGECreation(isChecked);
+    if (showConsentError) setShowConsentError(false);
+  }
 
   const {
     tags: towns,
@@ -97,8 +104,8 @@ export const ManageAddressForm = ({
   })
 
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
-    console.log(data)
     event?.preventDefault()
+    if (showConsentError) setShowConsentError(false)
 
     // Check if alias has been modified in edit mode
     if (isEdit && formData?.alias && data?.alias !== formData.alias) {
@@ -120,6 +127,11 @@ export const ManageAddressForm = ({
     const formattedPayload = formatPayloadCreateAddress({payload: data, cities, towns})
     if (isEdit) {
       editAddressMutation(formattedPayload)
+      return
+    }
+
+    if (!shouldCreateGEAddress && !consentSkipGECreation) {
+      setShowConsentError(true)
       return
     }
 
@@ -284,13 +296,15 @@ export const ManageAddressForm = ({
                 <Checkbox 
                   id="remember"
                   checked={consentSkipGECreation}
-                  onChange={(e) => setConsentSkipGECreation(e.target.checked)}
+                  onChange={(e) => handleConsentSkipGECreation(e.target.checked)}
                 />
                 <Label htmlFor="remember">Entiendo y acepto omitir en no crear esta dirección en GE</Label>
               </div>
-              <div className="lg:col-start-2 lg:col-end-3 w-full flex justify-center">
-                <ErrorMessage>Marque esta opcion para continuar.</ErrorMessage>
-              </div>
+              { showConsentError && (
+                <div className="lg:col-start-2 lg:col-end-3 w-full flex justify-center">
+                  <ErrorMessage>Marque esta opcion para continuar.</ErrorMessage>
+                </div>
+              )}
             </>
           )}
           <div className="lg:col-span-2 flex justify-between mt-4">
