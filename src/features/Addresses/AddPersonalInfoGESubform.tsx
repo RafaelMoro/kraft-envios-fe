@@ -5,17 +5,15 @@ import { useMutation } from "@tanstack/react-query"
 
 import { AddressDataGEFormValues, CreateAddressGEPayload, CreateAddressGEResponse, PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
 import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGESubform"
-import { CreateAddressPayload } from "@/shared/types/addresses.types"
 import { combineGEFormValues, createAddressGECb } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
 
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
   goBack: () => void;
-  createAddressMutation: (payload: CreateAddressPayload) => void
 }
 
-export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, createAddressMutation }: AddPersonalInfoGESubformProps) => {
+export const AddPersonalInfoGESubform = ({ addressDataGE, goBack }: AddPersonalInfoGESubformProps) => {
   const {
     register,
     handleSubmit,

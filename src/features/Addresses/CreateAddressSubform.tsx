@@ -123,9 +123,9 @@ export const CreateAddressSubform = ({
         const GEpayload = convertToAddressDataGEFormValues(data, cities)
         updateAddressDataGE(GEpayload)
         setSubscreen('ADD_GE_INFORMATION')
-        return
       }
 
+      // Create the address anyway
       createAddressMutation(formattedPayload)
     }
 
