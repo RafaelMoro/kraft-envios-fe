@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { AddressDataGEFormValues, PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
 import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGESubform"
 import { CreateAddressPayload } from "@/shared/types/addresses.types"
+import { combineGEFormValues } from "@/shared/utils/guides.utils"
 
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
@@ -12,7 +13,7 @@ interface AddPersonalInfoGESubformProps {
   createAddressMutation: (payload: CreateAddressPayload) => void
 }
 
-export const AddPersonalInfoGESubform = ({ goBack, createAddressMutation }: AddPersonalInfoGESubformProps) => {
+export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, createAddressMutation }: AddPersonalInfoGESubformProps) => {
   const {
     register,
     handleSubmit,
@@ -25,8 +26,13 @@ export const AddPersonalInfoGESubform = ({ goBack, createAddressMutation }: AddP
     event?.preventDefault()
     event?.stopPropagation()
 
-    console.log('data', data)
+    if (!addressDataGE) {
+      console.warn('No address data GE provided')
+      return
+    }
+
     // Convert payload to GE
+    const formattedPayload = combineGEFormValues(data, addressDataGE)
     // Fire mutation to create address in GE
     // Fire mutation to create address in our API
   }
