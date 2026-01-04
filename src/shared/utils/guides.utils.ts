@@ -32,6 +32,7 @@ import {
   CreateGuideAddressPayloadTone,
   CreateGuideAddressPayloadPkk,
   AddressDataGEFormValues,
+  PersonalDataGEFormValues,
 } from '../types/guides.types'
 import { CreateAddressFormValues } from '../types/addresses.types'
 
@@ -220,6 +221,27 @@ export const convertToAddressDataGEFormValues = (
     zipcode: formValues.zipcode,
     reference: formValues.reference,
     alias: formValues.alias,
+  }
+}
+
+/**
+ * Combines PersonalDataGEFormValues and AddressDataGEFormValues into CreateAddressFormValuesGE
+ * Applies default values for optional fields (email, company, rfc, reference) if not provided
+ * @param personalData - The personal data form values
+ * @param addressData - The address data form values
+ * @returns Combined form values object with defaults applied
+ */
+export const combineGEFormValues = (
+  personalData: PersonalDataGEFormValues,
+  addressData: AddressDataGEFormValues
+): CreateAddressFormValuesGE => {
+  return {
+    ...personalData,
+    ...addressData,
+    email: personalData.email?.trim() || DEFAULT_EMAIL,
+    company: personalData.company?.trim() || DEFAULT_COMPANY,
+    rfc: personalData.rfc?.trim() || DEFAULT_RFC,
+    reference: addressData.reference?.trim() || DEFAULT_REFERENCE,
   }
 }
 
