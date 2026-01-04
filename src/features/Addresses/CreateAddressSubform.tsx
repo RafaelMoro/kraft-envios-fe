@@ -8,6 +8,8 @@ import { CreateAddressFormValues, CreateAddressPayload, ManageAddressFormScreen 
 import { useAddTag } from "@/shared/hooks/useAddTag";
 import { useState } from "react";
 import { formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
+import { convertToAddressDataGEFormValues } from "@/shared/utils/guides.utils";
+import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -25,6 +27,7 @@ interface CreateAddressSubformProps {
   isSuccessEdit: boolean;
   toggleModal: () => void;
   setSubscreen: (subscreen: ManageAddressFormScreen) => void
+  updateAddressDataGE: (data: AddressDataGEFormValues) => void
 }
 
 export const CreateAddressSubform = ({
@@ -43,6 +46,7 @@ export const CreateAddressSubform = ({
   isSuccessEdit,
   toggleModal,
   setSubscreen,
+  updateAddressDataGE
 }: CreateAddressSubformProps) => {
   // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
@@ -116,11 +120,12 @@ export const CreateAddressSubform = ({
   
       // If the address is created in GE, then the create address mutation will be executed in that screen
       if (shouldCreateGEAddress && !consentSkipGECreation) {
+        const GEpayload = convertToAddressDataGEFormValues(data, cities)
+        updateAddressDataGE(GEpayload)
         setSubscreen('ADD_GE_INFORMATION')
         return
       }
-  
-      // TODO: Check if this will be executed before next screen of creating GE address
+
       createAddressMutation(formattedPayload)
     }
 

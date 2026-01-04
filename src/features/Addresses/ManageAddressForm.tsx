@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Modal, ModalBody, ModalHeader, } from "flowbite-react"
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,6 +10,7 @@ import { createAddressCb, editAddressCb } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { CreateAddressSubform } from "./CreateAddressSubform";
 import { AddPersonalInfoGESubform } from "./AddPersonalInfoGESubform";
+import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 
 interface CreateAddressProps {
   open: boolean;
@@ -26,6 +27,11 @@ export const ManageAddressForm = ({
 }: CreateAddressProps) => {
   const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('CREATE_ADDRESS')
   const goBack = () => setSubscreen('CREATE_ADDRESS')
+  const addressDataGE = useRef<AddressDataGEFormValues | null>(null)
+
+  const updateAddressDataGE = (data: AddressDataGEFormValues) => {
+    addressDataGE.current = data
+  }
 
   const {
     register,
@@ -98,10 +104,15 @@ export const ManageAddressForm = ({
             isSuccessEdit={isSuccessEdit}
             toggleModal={toggleModal}
             setSubscreen={setSubscreen}
+            updateAddressDataGE={updateAddressDataGE}
           />
         )}
         { subscreen === 'ADD_GE_INFORMATION' && (
-          <AddPersonalInfoGESubform goBack={goBack} createAddressMutation={createAddressMutation} />
+          <AddPersonalInfoGESubform
+            addressDataGE={addressDataGE.current}
+            goBack={goBack}
+            createAddressMutation={createAddressMutation}
+            />
         )}
       </ModalBody>
     </Modal>

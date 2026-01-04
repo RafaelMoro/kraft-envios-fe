@@ -2,11 +2,12 @@ import { Button } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
-import { PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
+import { AddressDataGEFormValues, PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
 import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGESubform"
 import { CreateAddressPayload } from "@/shared/types/addresses.types"
 
 interface AddPersonalInfoGESubformProps {
+  addressDataGE: AddressDataGEFormValues | null;
   goBack: () => void;
   createAddressMutation: (payload: CreateAddressPayload) => void
 }
