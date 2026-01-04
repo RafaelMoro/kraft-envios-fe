@@ -4,12 +4,14 @@ import { yupResolver } from "@hookform/resolvers/yup"
 
 import { PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
 import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGESubform"
+import { CreateAddressPayload } from "@/shared/types/addresses.types"
 
 interface AddPersonalInfoGESubformProps {
   goBack: () => void;
+  createAddressMutation: (payload: CreateAddressPayload) => void
 }
 
-export const AddPersonalInfoGESubform = ({ goBack }: AddPersonalInfoGESubformProps) => {
+export const AddPersonalInfoGESubform = ({ goBack, createAddressMutation }: AddPersonalInfoGESubformProps) => {
   const {
     register,
     handleSubmit,

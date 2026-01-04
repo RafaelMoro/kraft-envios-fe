@@ -101,7 +101,7 @@ export const ManageAddressForm = ({
           />
         )}
         { subscreen === 'ADD_GE_INFORMATION' && (
-          <AddPersonalInfoGESubform goBack={goBack} />
+          <AddPersonalInfoGESubform goBack={goBack} createAddressMutation={createAddressMutation} />
         )}
       </ModalBody>
     </Modal>
