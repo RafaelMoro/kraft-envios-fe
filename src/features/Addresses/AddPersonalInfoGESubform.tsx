@@ -1,11 +1,13 @@
-import { Button } from "flowbite-react"
+import { Button, CheckIcon, Spinner } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useMutation } from "@tanstack/react-query"
 
-import { AddressDataGEFormValues, PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
+import { AddressDataGEFormValues, CreateAddressGEPayload, CreateAddressGEResponse, PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
 import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGESubform"
 import { CreateAddressPayload } from "@/shared/types/addresses.types"
-import { combineGEFormValues } from "@/shared/utils/guides.utils"
+import { combineGEFormValues, createAddressGECb } from "@/shared/utils/guides.utils"
+import { GeneralApiError } from "@/shared/types/global.types"
 
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
@@ -22,6 +24,16 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, createAddressM
     resolver: yupResolver(PersonalInformationGEFormSchema)
   })
 
+  const { mutate: createAddressGE, isPending, isSuccess } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
+    mutationFn: createAddressGECb,
+    onSuccess: () => {
+      // success
+    },
+    onError: () => {
+      // error
+    }
+  })
+
   const onSubmit: SubmitHandler<PersonalDataGEFormValues> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
@@ -34,6 +46,7 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, createAddressM
     // Convert payload to GE
     const formattedPayload = combineGEFormValues(data, addressDataGE)
     // Fire mutation to create address in GE
+    createAddressGE(formattedPayload)
     // Fire mutation to create address in our API
   }
 
@@ -53,7 +66,7 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, createAddressM
         outline
         data-testid="cancel-button-create-address-ge"
         className="hover:cursor-pointer"
-        // disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
+        disabled={isPending || isSuccess}
         onClick={goBack}
       >
         Cancelar
@@ -62,12 +75,11 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, createAddressM
         data-testid="submit-button-create-address-ge"
         type="submit"
         className="hover:cursor-pointer"
-        // disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
+        disabled={isPending || isSuccess}
       >
-        Crear dirección
-        {/* { (isSuccess) && (<CheckIcon />)}
+        { (isSuccess) && (<CheckIcon />)}
         { (isPending) && (<Spinner aria-label="loading create address ge" />) }
-        { !isSuccess && !isPending && 'Crear dirección' } */}
+        { !isSuccess && !isPending && 'Crear dirección' }
       </Button>
     </div>
     </form>
