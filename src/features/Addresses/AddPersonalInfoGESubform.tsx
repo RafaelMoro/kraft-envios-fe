@@ -11,12 +11,14 @@ import { GeneralApiError } from "@/shared/types/global.types"
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
   goBack: () => void;
+  toggleModal: () => void;
 }
 
-export const AddPersonalInfoGESubform = ({ addressDataGE, goBack }: AddPersonalInfoGESubformProps) => {
+export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, toggleModal }: AddPersonalInfoGESubformProps) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<PersonalDataGEFormValues>({
     resolver: yupResolver(PersonalInformationGEFormSchema)
@@ -25,10 +27,11 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack }: AddPersonalI
   const { mutate: createAddressGE, isPending, isSuccess } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
     mutationFn: createAddressGECb,
     onSuccess: () => {
-      // success
+      reset()
+      toggleModal()
     },
     onError: () => {
-      // error
+      // TODO: Check if this is needed
     }
   })
 

@@ -46,8 +46,13 @@ export const ManageAddressForm = ({
 
   const onSuccess = async () => {
     await refetchAddresses()
+    reset()
+    // Do not close modal if GE address data is present meaning that the creation of address in GE is pending
+    if (addressDataGE.current) {
+      return;
+    }
+
     setTimeout(() => {
-      reset()
       toggleModal()
     }, 1000)
   }
@@ -111,6 +116,7 @@ export const ManageAddressForm = ({
           <AddPersonalInfoGESubform
             addressDataGE={addressDataGE.current}
             goBack={goBack}
+            toggleModal={toggleModal}
             />
         )}
       </ModalBody>
