@@ -114,6 +114,7 @@ export const CreateAddressSubform = ({
         return
       }
   
+      // If the address is created in GE, then the create address mutation will be executed in that screen
       if (shouldCreateGEAddress && !consentSkipGECreation) {
         setSubscreen('ADD_GE_INFORMATION')
         return
