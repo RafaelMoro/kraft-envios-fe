@@ -225,23 +225,31 @@ export const convertToAddressDataGEFormValues = (
 }
 
 /**
- * Combines PersonalDataGEFormValues and AddressDataGEFormValues into CreateAddressFormValuesGE
+ * Combines PersonalDataGEFormValues and AddressDataGEFormValues into CreateAddressGEPayload
  * Applies default values for optional fields (email, company, rfc, reference) if not provided
+ * Maps form field names to API payload field names
  * @param personalData - The personal data form values
  * @param addressData - The address data form values
- * @returns Combined form values object with defaults applied
+ * @returns Converted payload object for the API
  */
 export const combineGEFormValues = (
   personalData: PersonalDataGEFormValues,
   addressData: AddressDataGEFormValues
-): CreateAddressFormValuesGE => {
+): CreateAddressGEPayload => {
   return {
-    ...personalData,
-    ...addressData,
+    name: personalData.name,
+    phone: personalData.phone,
     email: personalData.email?.trim() || DEFAULT_EMAIL,
     company: personalData.company?.trim() || DEFAULT_COMPANY,
     rfc: personalData.rfc?.trim() || DEFAULT_RFC,
+    street: addressData.street1,
+    number: addressData.external_number,
+    neighborhood: addressData.neighborhood,
+    city: addressData.city,
+    state: addressData.state,
+    zipcode: addressData.zipcode,
     reference: addressData.reference?.trim() || DEFAULT_REFERENCE,
+    alias: addressData.alias,
   }
 }
 
