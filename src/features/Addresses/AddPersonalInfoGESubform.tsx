@@ -45,7 +45,6 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack }: AddPersonalI
     const formattedPayload = combineGEFormValues(data, addressDataGE)
     // Fire mutation to create address in GE
     createAddressGE(formattedPayload)
-    // Fire mutation to create address in our API
   }
 
   return (
