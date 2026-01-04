@@ -53,10 +53,17 @@ export const CreateAddressSubform = ({
   const [consentSkipGECreation , setConsentSkipGECreation] = useState(false);
   const [showConsentError, setShowConsentError] = useState(false);
 
+  // This flag is to enable the fetching of alias in GE
+  const [hasConsentedOnce, setHasConsentedOnce] = useState(false);
+
   const handleShouldCreateGEAddress = () => {
     setShouldCreateGEAddress((prev) => {
       if (!prev) {
         setConsentSkipGECreation(false);
+        // Set that the user has consented at least once
+        if (!hasConsentedOnce) {
+          setHasConsentedOnce(true);
+        }
       }
       return !prev
     });
