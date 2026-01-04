@@ -139,7 +139,7 @@ export type PersonalDataGEFormValues = {
   rfc?: string | null | undefined
 }
 
-export type CreateAddressFormValuesGE = PersonalDataGEFormValues & {
+export type AddressDataGEFormValues = {
   street1: string;
   external_number: string;
   neighborhood: string;
@@ -149,6 +149,8 @@ export type CreateAddressFormValuesGE = PersonalDataGEFormValues & {
   reference?: string | null | undefined
   alias: string;
 }
+
+export type CreateAddressFormValuesGE = PersonalDataGEFormValues & AddressDataGEFormValues
 
 /**
  * This type we're adding `isResidential` as we do not need to add that prop into the schema validation
