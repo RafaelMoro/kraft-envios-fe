@@ -31,7 +31,9 @@ import {
   CreateGuideAddressPayloadMn,
   CreateGuideAddressPayloadTone,
   CreateGuideAddressPayloadPkk,
+  AddressDataGEFormValues,
 } from '../types/guides.types'
+import { CreateAddressFormValues } from '../types/addresses.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
   try {
@@ -194,6 +196,29 @@ export const convertToCreateAddressGEPayload = (formValues: CreateAddressFormVal
     street: formValues.street1,
     number: formValues.external_number,
     reference: formValues.reference?.trim() || DEFAULT_REFERENCE,
+    alias: formValues.alias,
+  }
+}
+
+/**
+ * Converts CreateAddressFormValues to AddressDataGEFormValues
+ * Maps form field names and takes the first city from the cities array
+ * @param formValues - The form values object to convert
+ * @param cities - Array of cities, will use the first element
+ * @returns Converted payload object for GE address form
+ */
+export const convertToAddressDataGEFormValues = (
+  formValues: CreateAddressFormValues,
+  cities: string[]
+): AddressDataGEFormValues => {
+  return {
+    street1: formValues.street1,
+    external_number: formValues.externalNumber,
+    neighborhood: formValues.neighborhood,
+    city: cities[0] || '',
+    state: formValues.state,
+    zipcode: formValues.zipcode,
+    reference: formValues.reference,
     alias: formValues.alias,
   }
 }
