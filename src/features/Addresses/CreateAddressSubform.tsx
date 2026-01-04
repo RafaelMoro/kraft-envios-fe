@@ -1,6 +1,7 @@
 "use client"
 import { Button, Checkbox, CheckIcon, Label, Spinner, TextInput, ToggleSwitch } from "flowbite-react"
 import { FieldErrors, SubmitHandler, UseFormHandleSubmit, UseFormRegister, UseFormSetError } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { AddTag } from "@/shared/ui/organisms/AddTag"
@@ -8,7 +9,7 @@ import { CreateAddressFormValues, CreateAddressPayload, ManageAddressFormScreen 
 import { useAddTag } from "@/shared/hooks/useAddTag";
 import { useState } from "react";
 import { formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
-import { convertToAddressDataGEFormValues } from "@/shared/utils/guides.utils";
+import { convertToAddressDataGEFormValues, getAliasAddressesCb } from "@/shared/utils/guides.utils";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 
 interface CreateAddressSubformProps {
@@ -93,6 +94,13 @@ export const CreateAddressSubform = ({
 
   const submitButtonText = shouldCreateGEAddress ? 'Siguiente' : `${actionText} dirección`;
 
+  // TODO: Show error state that aliases could not be fetched
+  const { data: dataAliases,  isPending: isPendingFetchAlias, isError: isErrorFetchAlias } = useQuery({
+    queryKey: ['aliasAddresses'],
+    queryFn: getAliasAddressesCb,
+    enabled: hasConsentedOnce
+  })
+
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
       event?.preventDefault()
       if (showConsentError) setShowConsentError(false)
@@ -127,6 +135,15 @@ export const CreateAddressSubform = ({
   
       // If the address is created in GE, then the create address mutation will be executed in that screen
       if (shouldCreateGEAddress && !consentSkipGECreation) {
+        // Check if alias exists in GE
+        if ((dataAliases ?? []).find(aliasFetched => aliasFetched === data.alias)) {
+          setError('alias', {
+            type: 'manual',
+            message: 'El alias ya existe en GE, por favor elija otro'
+          })
+          return;
+        }
+
         const GEpayload = convertToAddressDataGEFormValues(data, cities)
         updateAddressDataGE(GEpayload)
         setSubscreen('ADD_GE_INFORMATION')
@@ -308,7 +325,7 @@ export const CreateAddressSubform = ({
           outline
           data-testid="origin-address-cancel-button"
           className="hover:cursor-pointer"
-          disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
+          disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit || isPendingFetchAlias}
           onClick={toggleModal}
         >
           Cancelar
