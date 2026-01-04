@@ -1,9 +1,15 @@
+import { Button } from "flowbite-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
+
 import { PersonalDataGEFormValues, PersonalInformationGEFormSchema } from "@/shared/types/guides.types"
 import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGESubform"
 
-export const AddPersonalInfoGESubform = () => {
+interface AddPersonalInfoGESubformProps {
+  goBack: () => void;
+}
+
+export const AddPersonalInfoGESubform = ({ goBack }: AddPersonalInfoGESubformProps) => {
   const {
     register,
     handleSubmit,
@@ -16,6 +22,7 @@ export const AddPersonalInfoGESubform = () => {
     event?.preventDefault()
     event?.stopPropagation()
 
+    console.log('data', data)
     // Convert payload to GE
     // Fire mutation to create address in GE
     // Fire mutation to create address in our API
@@ -31,6 +38,29 @@ export const AddPersonalInfoGESubform = () => {
         errors={errors}
         register={register}
       />
+      <div className="lg:col-span-2 flex justify-between mt-4">
+      <Button
+        color="red"
+        outline
+        data-testid="cancel-button-create-address-ge"
+        className="hover:cursor-pointer"
+        // disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
+        onClick={goBack}
+      >
+        Cancelar
+      </Button>
+      <Button
+        data-testid="submit-button-create-address-ge"
+        type="submit"
+        className="hover:cursor-pointer"
+        // disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
+      >
+        Crear dirección
+        {/* { (isSuccess) && (<CheckIcon />)}
+        { (isPending) && (<Spinner aria-label="loading create address ge" />) }
+        { !isSuccess && !isPending && 'Crear dirección' } */}
+      </Button>
+    </div>
     </form>
   )
 }

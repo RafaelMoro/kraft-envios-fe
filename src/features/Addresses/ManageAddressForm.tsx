@@ -25,6 +25,8 @@ export const ManageAddressForm = ({
   open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
 }: CreateAddressProps) => {
   const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('CREATE_ADDRESS')
+  const goBack = () => setSubscreen('CREATE_ADDRESS')
+
   const {
     register,
     handleSubmit,
@@ -99,7 +101,7 @@ export const ManageAddressForm = ({
           />
         )}
         { subscreen === 'ADD_GE_INFORMATION' && (
-          <AddPersonalInfoGESubform />
+          <AddPersonalInfoGESubform goBack={goBack} />
         )}
       </ModalBody>
     </Modal>
