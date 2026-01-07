@@ -1,4 +1,5 @@
 "use client"
+import { useEffect, useState } from "react";
 import { Button, Checkbox, CheckIcon, Label, Spinner, TextInput, ToggleSwitch } from "flowbite-react"
 import { FieldErrors, SubmitHandler, UseFormHandleSubmit, UseFormRegister, UseFormSetError } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
@@ -7,10 +8,10 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { AddTag } from "@/shared/ui/organisms/AddTag"
 import { CreateAddressFormValues, CreateAddressPayload, ManageAddressFormScreen } from "@/shared/types/addresses.types";
 import { useAddTag } from "@/shared/hooks/useAddTag";
-import { useState } from "react";
 import { formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
 import { convertToAddressDataGEFormValues, getAliasAddressesCb } from "@/shared/utils/guides.utils";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
+import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -75,6 +76,10 @@ export const CreateAddressSubform = ({
     if (showConsentError) setShowConsentError(false);
   }
 
+  const [errorFetchAlias, setErrorFetchAlias] = useState<string | null>(null);
+  const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
+  const toggleErrorBanner = () => setShowErrorBanner((prev) => !prev)
+
   const {
     tags: towns,
     addTag: addTown,
@@ -94,12 +99,28 @@ export const CreateAddressSubform = ({
 
   const submitButtonText = shouldCreateGEAddress ? 'Siguiente' : `${actionText} dirección`;
 
-  // TODO: Show error state that aliases could not be fetched
-  const { data: dataAliases,  isPending: isPendingFetchAlias, isError: isErrorFetchAlias } = useQuery({
+  const { data: dataAliases,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
     queryKey: ['aliasAddresses'],
     queryFn: getAliasAddressesCb,
     enabled: hasConsentedOnce
   })
+
+  // Reset error if data is present
+  useEffect(() => {
+    if (Boolean(dataAliases) && errorFetchAlias) {
+      setErrorFetchAlias(null)
+      setShowErrorBanner(false)
+    }
+  }, [dataAliases, errorFetchAlias])
+
+  // Log error fetching alias addresses
+  useEffect(() => {
+    if (errorAlias) {
+      console.error('Error fetching alias addresses from GE:', errorAlias)
+      setErrorFetchAlias('Ocurrió un error al obtener los alias. Por favor, intenta de nuevo más tarde.')
+      setShowErrorBanner(true)
+    }
+  }, [errorAlias])
 
   const onSubmit: SubmitHandler<CreateAddressFormValues> = (data, event) => {
       event?.preventDefault()
@@ -154,193 +175,198 @@ export const CreateAddressSubform = ({
     }
 
   return (
-    <form
-      className="grid grid-cols-1 lg:grid-cols-2 gap-5"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="street1">Calle</Label>
-        </div>
-        <TextInput
-          data-testid="street1"
-          defaultValue={formData.addressName}
-          id="street1"
-          type="text"
-          {...register("street1")}
-        />
-        { errors?.street1?.message && (
-          <ErrorMessage>{errors.street1?.message}</ErrorMessage>
-        )}
-      </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="externalNumber">Numero exterior</Label>
-        </div>
-        <TextInput
-          data-testid="externalNumber"
-          id="externalNumber"
-          type="text"
-          defaultValue={formData.externalNumber}
-          inputMode="numeric"
-          {...register("externalNumber")}
-        />
-        { errors?.externalNumber?.message && (
-          <ErrorMessage>{errors.externalNumber?.message}</ErrorMessage>
-        )}
-      </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="internalNumber">Numero interior (Opcional)</Label>
-        </div>
-        <TextInput
-          data-testid="internalNumber"
-          defaultValue={formData.internalNumber as string}
-          id="internalNumber"
-          type="text"
-          inputMode="numeric"
-          {...register("internalNumber")}
-        />
-        { errors?.internalNumber?.message && (
-          <ErrorMessage>{errors.internalNumber?.message}</ErrorMessage>
-        )}
-      </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="neighborhood">Colonia</Label>
-        </div>
-        <TextInput
-          data-testid="neighborhood"
-          id="neighborhood"
-          defaultValue={formData.neighborhood}
-          type="text"
-          {...register("neighborhood")}
-        />
-        { errors?.neighborhood?.message && (
-          <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-        )}
-      </div>
-      <AddTag
-        label="cities"
-        text="Ciudades"
-        tags={cities}
-        addTag={addCity}
-        removeTag={removeCity}
-        placeholder="Presiona enter para agregar ciudades"
-        errorMessage={citiesError}
-        setError={setCitiesError}
-      />
-      <AddTag
-        label="towns"
-        text="Municipios"
-        tags={towns}
-        addTag={addTown}
-        removeTag={removeTown}
-        placeholder="Presiona enter para agregar municipios"
-        errorMessage={townsError}
-        setError={setTownsError}
-      />
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="state">Estado de la República</Label>
-        </div>
-        <TextInput
-          data-testid="state"
-          id="state"
-          defaultValue={formData.state}
-          type="text"
-          {...register("state")}
-        />
-        { errors?.state?.message && (
-          <ErrorMessage>{errors.state?.message}</ErrorMessage>
-        )}
-      </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="zipcode">Código Postal</Label>
-        </div>
-        <TextInput
-          data-testid="zipcode"
-          defaultValue={formData.zipcode}
-          id="zipcode"
-          type="text"
-          inputMode="numeric"
-          {...register("zipcode")}
-        />
-        { errors?.zipcode?.message && (
-          <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-        )}
-      </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="reference">Referencia</Label>
-        </div>
-        <TextInput
-          data-testid="reference"
-          defaultValue={formData.reference as string}
-          id="reference"
-          type="text"
-          {...register("reference")}
-        />
-        { errors?.reference?.message && (
-          <ErrorMessage>{errors.reference?.message}</ErrorMessage>
-        )}
-      </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="alias">Alias</Label>
-        </div>
-        <TextInput
-          data-testid="alias"
-          defaultValue={formData.alias}
-          id="alias"
-          type="text"
-          {...register("alias")}
-        />
-        { errors?.alias?.message && (
-          <ErrorMessage>{errors.alias?.message}</ErrorMessage>
-        )}
-      </div>
-      <ToggleSwitch checked={shouldCreateGEAddress} label="Crear dirección en GE" onChange={handleShouldCreateGEAddress} />
-      { !shouldCreateGEAddress && (
-        <>
-          <div className="flex items-center gap-2">
-            <Checkbox 
-              id="remember"
-              checked={consentSkipGECreation}
-              onChange={(e) => handleConsentSkipGECreation(e.target.checked)}
-            />
-            <Label htmlFor="remember">Entiendo y acepto omitir en no crear esta dirección en GE</Label>
-          </div>
-          { showConsentError && (
-            <div className="lg:col-start-2 lg:col-end-3 w-full flex justify-center">
-              <ErrorMessage>Marque esta opcion para continuar.</ErrorMessage>
-            </div>
-          )}
-        </>
+    <>
+      { (errorFetchAlias && showErrorBanner) && (
+        <ErrorBanner message={errorFetchAlias} toggleError={toggleErrorBanner} />
       )}
-      <div className="lg:col-span-2 flex justify-between mt-4">
-        <Button
-          color="red"
-          outline
-          data-testid="origin-address-cancel-button"
-          className="hover:cursor-pointer"
-          disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit || isPendingFetchAlias}
-          onClick={toggleModal}
-        >
-          Cancelar
-        </Button>
-        <Button
-          data-testid="origin-address-next-button"
-          type="submit"
-          className="hover:cursor-pointer"
-          disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
-        >
-          { (isSuccess || isSuccessEdit) && (<CheckIcon />)}
-          { (isPending || isPendingEdit) && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
-          { !isSuccess && !isSuccessEdit && !isPending && !isPendingEdit && submitButtonText }
-        </Button>
-      </div>
-    </form>
+      <form
+        className="grid grid-cols-1 lg:grid-cols-2 gap-5"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="street1">Calle</Label>
+          </div>
+          <TextInput
+            data-testid="street1"
+            defaultValue={formData.addressName}
+            id="street1"
+            type="text"
+            {...register("street1")}
+          />
+          { errors?.street1?.message && (
+            <ErrorMessage>{errors.street1?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="externalNumber">Numero exterior</Label>
+          </div>
+          <TextInput
+            data-testid="externalNumber"
+            id="externalNumber"
+            type="text"
+            defaultValue={formData.externalNumber}
+            inputMode="numeric"
+            {...register("externalNumber")}
+          />
+          { errors?.externalNumber?.message && (
+            <ErrorMessage>{errors.externalNumber?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="internalNumber">Numero interior (Opcional)</Label>
+          </div>
+          <TextInput
+            data-testid="internalNumber"
+            defaultValue={formData.internalNumber as string}
+            id="internalNumber"
+            type="text"
+            inputMode="numeric"
+            {...register("internalNumber")}
+          />
+          { errors?.internalNumber?.message && (
+            <ErrorMessage>{errors.internalNumber?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="neighborhood">Colonia</Label>
+          </div>
+          <TextInput
+            data-testid="neighborhood"
+            id="neighborhood"
+            defaultValue={formData.neighborhood}
+            type="text"
+            {...register("neighborhood")}
+          />
+          { errors?.neighborhood?.message && (
+            <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
+          )}
+        </div>
+        <AddTag
+          label="cities"
+          text="Ciudades"
+          tags={cities}
+          addTag={addCity}
+          removeTag={removeCity}
+          placeholder="Presiona enter para agregar ciudades"
+          errorMessage={citiesError}
+          setError={setCitiesError}
+        />
+        <AddTag
+          label="towns"
+          text="Municipios"
+          tags={towns}
+          addTag={addTown}
+          removeTag={removeTown}
+          placeholder="Presiona enter para agregar municipios"
+          errorMessage={townsError}
+          setError={setTownsError}
+        />
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="state">Estado de la República</Label>
+          </div>
+          <TextInput
+            data-testid="state"
+            id="state"
+            defaultValue={formData.state}
+            type="text"
+            {...register("state")}
+          />
+          { errors?.state?.message && (
+            <ErrorMessage>{errors.state?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="zipcode">Código Postal</Label>
+          </div>
+          <TextInput
+            data-testid="zipcode"
+            defaultValue={formData.zipcode}
+            id="zipcode"
+            type="text"
+            inputMode="numeric"
+            {...register("zipcode")}
+          />
+          { errors?.zipcode?.message && (
+            <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="reference">Referencia</Label>
+          </div>
+          <TextInput
+            data-testid="reference"
+            defaultValue={formData.reference as string}
+            id="reference"
+            type="text"
+            {...register("reference")}
+          />
+          { errors?.reference?.message && (
+            <ErrorMessage>{errors.reference?.message}</ErrorMessage>
+          )}
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="alias">Alias</Label>
+          </div>
+          <TextInput
+            data-testid="alias"
+            defaultValue={formData.alias}
+            id="alias"
+            type="text"
+            {...register("alias")}
+          />
+          { errors?.alias?.message && (
+            <ErrorMessage>{errors.alias?.message}</ErrorMessage>
+          )}
+        </div>
+        <ToggleSwitch checked={shouldCreateGEAddress} label="Crear dirección en GE" onChange={handleShouldCreateGEAddress} />
+        { !shouldCreateGEAddress && (
+          <>
+            <div className="flex items-center gap-2">
+              <Checkbox 
+                id="remember"
+                checked={consentSkipGECreation}
+                onChange={(e) => handleConsentSkipGECreation(e.target.checked)}
+              />
+              <Label htmlFor="remember">Entiendo y acepto omitir en no crear esta dirección en GE</Label>
+            </div>
+            { showConsentError && (
+              <div className="lg:col-start-2 lg:col-end-3 w-full flex justify-center">
+                <ErrorMessage>Marque esta opcion para continuar.</ErrorMessage>
+              </div>
+            )}
+          </>
+        )}
+        <div className="lg:col-span-2 flex justify-between mt-4">
+          <Button
+            color="red"
+            outline
+            data-testid="origin-address-cancel-button"
+            className="hover:cursor-pointer"
+            disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit || isPendingFetchAlias}
+            onClick={toggleModal}
+          >
+            Cancelar
+          </Button>
+          <Button
+            data-testid="origin-address-next-button"
+            type="submit"
+            className="hover:cursor-pointer"
+            disabled={isPending || isSuccess || isPendingEdit || isSuccessEdit}
+          >
+            { (isSuccess || isSuccessEdit) && (<CheckIcon />)}
+            { (isPending || isPendingEdit) && (<Spinner aria-label={`loading ${actionText} kraft envios`} />) }
+            { !isSuccess && !isSuccessEdit && !isPending && !isPendingEdit && submitButtonText }
+          </Button>
+        </div>
+      </form>
+    </>
   )
 }
