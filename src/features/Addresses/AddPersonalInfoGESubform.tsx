@@ -11,10 +11,11 @@ import { GeneralApiError } from "@/shared/types/global.types"
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
   goBack: () => void;
-  toggleModal: () => void;
+  goResult: () => void;
+  setShowErrorCreateAddressGe: (show: boolean) => void;
 }
 
-export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, toggleModal }: AddPersonalInfoGESubformProps) => {
+export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, goResult, setShowErrorCreateAddressGe }: AddPersonalInfoGESubformProps) => {
   const {
     register,
     handleSubmit,
@@ -28,10 +29,13 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, toggleModal }:
     mutationFn: createAddressGECb,
     onSuccess: () => {
       reset()
-      toggleModal()
+      setTimeout(() => {
+        goResult()
+      }, 1000)
     },
     onError: () => {
-      // TODO: Check if this is needed
+      setShowErrorCreateAddressGe(true)
+      goResult()
     }
   })
 

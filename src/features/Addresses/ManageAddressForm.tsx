@@ -11,6 +11,7 @@ import { GeneralApiError } from "@/shared/types/global.types";
 import { CreateAddressSubform } from "./CreateAddressSubform";
 import { AddPersonalInfoGESubform } from "./AddPersonalInfoGESubform";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
+import { ResultCreateAddress } from "./ResultCreateAddress";
 
 interface CreateAddressProps {
   open: boolean;
@@ -25,8 +26,10 @@ interface CreateAddressProps {
 export const ManageAddressForm = ({
   open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
 }: CreateAddressProps) => {
-  const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('CREATE_ADDRESS')
+  const [showErrorCreateAddressGe, setShowErrorCreateAddressGe] = useState(false)
+  const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('SHOW_RESULT')
   const goBack = () => setSubscreen('CREATE_ADDRESS')
+  const goResult = () => setSubscreen('SHOW_RESULT')
   const addressDataGE = useRef<AddressDataGEFormValues | null>(null)
 
   const updateAddressDataGE = (data: AddressDataGEFormValues) => {
@@ -116,8 +119,12 @@ export const ManageAddressForm = ({
           <AddPersonalInfoGESubform
             addressDataGE={addressDataGE.current}
             goBack={goBack}
-            toggleModal={toggleModal}
+            goResult={goResult}
+            setShowErrorCreateAddressGe={setShowErrorCreateAddressGe}
             />
+        )}
+        { subscreen === 'SHOW_RESULT' && (
+          <ResultCreateAddress toggleModal={toggleModal} showErrorCreateAddressGe={showErrorCreateAddressGe}  />
         )}
       </ModalBody>
     </Modal>

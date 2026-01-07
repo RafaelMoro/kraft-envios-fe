@@ -2,13 +2,15 @@ import { RiCheckboxCircleFill } from "@remixicon/react";
 import { Button } from "flowbite-react";
 
 interface ResultCreateAddressProps {
-  isError?: boolean;
+  toggleModal: () => void;
+  showErrorCreateAddressGe?: boolean;
 }
 
-export const ResultCreateAddress = ({ isError }: ResultCreateAddressProps) => {
-  const title = isError
+export const ResultCreateAddress = ({ toggleModal, showErrorCreateAddressGe }: ResultCreateAddressProps) => {
+  const title = showErrorCreateAddressGe
     ? '¡Ups! Ocurrió un problema al añadir la dirección.'
     : '¡Perfecto! Dirección añadida correctamente.'
+
   return (
     <section className="flex flex-col gap-10">
       <h4 className="text-xl font-semibold text-center text-blue-800 dark:text-blue-900">{title}</h4>
@@ -22,7 +24,7 @@ export const ResultCreateAddress = ({ isError }: ResultCreateAddressProps) => {
           Dirección creada en GE
         </li>
       </ul>
-      <Button outline>Listo</Button>
+      <Button outline onClick={toggleModal}>Listo</Button>
     </section>
   )
 }
