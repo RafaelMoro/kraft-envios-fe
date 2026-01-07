@@ -61,10 +61,23 @@ export const deleteAddressCb = async (data: DeleteAddressPayload) => {
 export const saveAddressToLocalStorage = async (payload: CreateAddressGEPayload ) => {
   try {
     const localStorage = getLocalStorageInfo();
-    const pendingGEAddresses = localStorage['pending-GE-addresses'] || [];
+    const pendingGEAddresses = localStorage[PENDING_GE_ADDRESSES_KEY] || [];
     const newPendingGEAddresses = [...pendingGEAddresses, payload];
     addToLocalStorage({ prop: PENDING_GE_ADDRESSES_KEY, newInfo: newPendingGEAddresses })
   } catch (error) {
     console.error('Error saving address to local storage:', error);
+  }
+}
+
+export const getAddressesGELocalStorage = async () => {
+  try {
+    const localStorage = getLocalStorageInfo();
+    const pendingGEAddresses = localStorage[PENDING_GE_ADDRESSES_KEY]
+    if (!pendingGEAddresses) {
+      return null
+    }
+    return pendingGEAddresses as CreateAddressGEPayload[]
+  } catch (error) {
+    console.error('Error getting address from local storage:', error);
   }
 }
