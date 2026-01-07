@@ -7,6 +7,7 @@ import { AddressDataGEFormValues, CreateAddressGEPayload, CreateAddressGERespons
 import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGESubform"
 import { combineGEFormValues, createAddressGECb } from "@/shared/utils/guides.utils"
 import { GeneralApiError } from "@/shared/types/global.types"
+import { saveAddressToLocalStorage } from "@/shared/utils/addresses.utils"
 
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
@@ -51,7 +52,11 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, goResult, setS
     // Convert payload to GE
     const formattedPayload = combineGEFormValues(data, addressDataGE)
     // Fire mutation to create address in GE
-    createAddressGE(formattedPayload)
+    createAddressGE(formattedPayload, {
+      onError: async (error, variables) => {
+        await saveAddressToLocalStorage(variables)
+      },
+    })
   }
 
   return (
