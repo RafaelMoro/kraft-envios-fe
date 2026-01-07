@@ -175,7 +175,7 @@ export const CreateAddressSubform = ({
     }
 
   return (
-    <>
+    <div className="flex flex-col gap-5">
       { (errorFetchAlias && showErrorBanner) && (
         <ErrorBanner message={errorFetchAlias} toggleError={toggleErrorBanner} />
       )}
@@ -367,6 +367,6 @@ export const CreateAddressSubform = ({
           </Button>
         </div>
       </form>
-    </>
+    </div>
   )
 }
