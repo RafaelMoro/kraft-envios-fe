@@ -1,0 +1,1 @@
+export const PENDING_GE_ADDRESSES_KEY = 'pending-GE-addresses';

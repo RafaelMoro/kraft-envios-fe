@@ -1,6 +1,9 @@
 import axios, { AxiosResponse } from "axios";
 import { Address, AddressAliasResponse, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse, DeleteAddressPayload, GetAddressesResponse } from "../types/addresses.types";
 import { ADDRESS_API_ENDPOINT } from "../constants/global.constants";
+import { CreateAddressGEPayload } from "../types/guides.types";
+import { addToLocalStorage, getLocalStorageInfo } from "./local-storage.utils";
+import { PENDING_GE_ADDRESSES_KEY } from "../constants/local-storage.constants";
 
 export const formatPayloadCreateAddress = ({
   payload, cities, towns
@@ -52,5 +55,16 @@ export const deleteAddressCb = async (data: DeleteAddressPayload) => {
     return res?.data
   } catch (error) {
     throw error
+  }
+}
+
+export const saveAddressToLocalStorage = async (payload: CreateAddressGEPayload ) => {
+  try {
+    const localStorage = getLocalStorageInfo();
+    const pendingGEAddresses = localStorage['pending-GE-addresses'] || [];
+    const newPendingGEAddresses = [...pendingGEAddresses, payload];
+    addToLocalStorage({ prop: PENDING_GE_ADDRESSES_KEY, newInfo: newPendingGEAddresses })
+  } catch (error) {
+    console.error('Error saving address to local storage:', error);
   }
 }
