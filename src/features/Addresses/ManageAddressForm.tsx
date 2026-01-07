@@ -27,7 +27,7 @@ export const ManageAddressForm = ({
   open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
 }: CreateAddressProps) => {
   const [showErrorCreateAddressGe, setShowErrorCreateAddressGe] = useState(false)
-  const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('SHOW_RESULT')
+  const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('CREATE_ADDRESS')
   const goBack = () => setSubscreen('CREATE_ADDRESS')
   const goResult = () => setSubscreen('SHOW_RESULT')
   const addressDataGE = useRef<AddressDataGEFormValues | null>(null)
