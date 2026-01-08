@@ -113,6 +113,12 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
     })
   }, [])
 
+  const handleAddressRemoved = (alias: string) => {
+    setPendingAddressesGE((prev) => 
+      prev ? prev.filter((addr) => addr.alias !== alias) : null
+    )
+  }
+
   return (
     <main className='w-full p-4'>
       { openNotification && (
@@ -152,7 +158,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
           <h2 className="text-2xl font-bold text-center">Direcciones pendientes por crear en GE</h2>
           <div className="grid grid-cols-1 justify-items-center lg:justify-items-start lg:grid-cols-2 gap-5">
             { pendingAddressesGE.map((addr) => (
-              <PendingAddressGE key={addr.alias} address={addr} />
+              <PendingAddressGE key={addr.alias} address={addr} onAddressRemoved={handleAddressRemoved} />
             ))}
           </div>
         </section>

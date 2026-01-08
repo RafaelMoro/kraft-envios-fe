@@ -11,15 +11,17 @@ import { removeAddressFromLocalStorage } from "@/shared/utils/addresses.utils"
 
 interface PendingAddressGEProps {
   address: CreateAddressGEPayload
+  onAddressRemoved: (alias: string) => void
 }
 
-export const PendingAddressGE = ({ address }: PendingAddressGEProps) => {
+export const PendingAddressGE = ({ address, onAddressRemoved }: PendingAddressGEProps) => {
   const [showError, setShowError] = useState(false)
   const { mutate: createAddressGE, isPending, isSuccess } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
     mutationFn: createAddressGECb,
     onSuccess: async () => {
       // Remove address from LS
       await removeAddressFromLocalStorage(address.alias)
+      onAddressRemoved(address.alias)
     },
     onError: () => {
       // show error state
