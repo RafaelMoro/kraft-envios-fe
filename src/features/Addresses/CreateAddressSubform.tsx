@@ -2,14 +2,13 @@
 import { useEffect, useState } from "react";
 import { Button, Checkbox, CheckIcon, Label, Spinner, TextInput, ToggleSwitch } from "flowbite-react"
 import { FieldErrors, SubmitHandler, UseFormHandleSubmit, UseFormRegister, UseFormSetError } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { AddTag } from "@/shared/ui/organisms/AddTag"
 import { CreateAddressFormValues, CreateAddressPayload, ManageAddressFormScreen } from "@/shared/types/addresses.types";
 import { useAddTag } from "@/shared/hooks/useAddTag";
 import { formatPayloadCreateAddress } from "@/shared/utils/addresses.utils";
-import { convertToAddressDataGEFormValues, getAliasAddressesCb } from "@/shared/utils/guides.utils";
+import { convertToAddressDataGEFormValues } from "@/shared/utils/guides.utils";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner";
 
@@ -30,6 +29,11 @@ interface CreateAddressSubformProps {
   toggleModal: () => void;
   setSubscreen: (subscreen: ManageAddressFormScreen) => void
   updateAddressDataGE: (data: AddressDataGEFormValues) => void
+  hasConsentedOnce: boolean;
+  setHasConsentedOnce: (consented: boolean) => void;
+  dataAliases: string[] | undefined
+  isPendingFetchAlias: boolean
+  errorAlias: Error | null
 }
 
 export const CreateAddressSubform = ({
@@ -48,15 +52,17 @@ export const CreateAddressSubform = ({
   isSuccessEdit,
   toggleModal,
   setSubscreen,
-  updateAddressDataGE
+  updateAddressDataGE,
+  hasConsentedOnce,
+  setHasConsentedOnce,
+  dataAliases,
+  isPendingFetchAlias,
+  errorAlias,
 }: CreateAddressSubformProps) => {
   // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
   const [consentSkipGECreation , setConsentSkipGECreation] = useState(false);
   const [showConsentError, setShowConsentError] = useState(false);
-
-  // This flag is to enable the fetching of alias in GE
-  const [hasConsentedOnce, setHasConsentedOnce] = useState(false);
 
   const handleShouldCreateGEAddress = () => {
     setShouldCreateGEAddress((prev) => {
@@ -98,16 +104,6 @@ export const CreateAddressSubform = ({
   } = useAddTag({ tagsInitState: (formData?.city ?? []) })
 
   const submitButtonText = shouldCreateGEAddress ? 'Siguiente' : `${actionText} dirección`;
-
-  const { data: dataAliases, refetch,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
-    queryKey: ['aliasAddresses'],
-    queryFn: getAliasAddressesCb,
-    enabled: hasConsentedOnce
-  })
-
-  const refetchAddressesGE = async () => {
-    await refetch()
-  }
 
   // Reset error if data is present
   useEffect(() => {

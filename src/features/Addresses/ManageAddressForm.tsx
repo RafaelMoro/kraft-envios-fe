@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { Modal, ModalBody, ModalHeader, } from "flowbite-react"
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { AddressAliasResponse, CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse, ManageAddressFormScreen } from "@/shared/types/addresses.types";
 import { createAddressCb, editAddressCb } from "@/shared/utils/addresses.utils";
@@ -12,6 +12,7 @@ import { CreateAddressSubform } from "./CreateAddressSubform";
 import { AddPersonalInfoGESubform } from "./AddPersonalInfoGESubform";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 import { ResultCreateAddress } from "./ResultCreateAddress";
+import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
 
 interface CreateAddressProps {
   open: boolean;
@@ -67,6 +68,17 @@ export const ManageAddressForm = ({
     toggleModal()
   }
 
+  // This flag is to enable the fetching of alias in GE
+  const [hasConsentedOnce, setHasConsentedOnce] = useState(false);
+  const { data: dataAliases, refetch,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
+    queryKey: ['aliasAddresses'],
+    queryFn: getAliasAddressesCb,
+    enabled: hasConsentedOnce
+  })
+  const refetchAddressesGE = async () => {
+    await refetch()
+  }
+
   const {
     mutate: createAddressMutation, isPending, isSuccess
   } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
@@ -113,6 +125,11 @@ export const ManageAddressForm = ({
             toggleModal={toggleModal}
             setSubscreen={setSubscreen}
             updateAddressDataGE={updateAddressDataGE}
+            hasConsentedOnce={hasConsentedOnce}
+            setHasConsentedOnce={setHasConsentedOnce}
+            dataAliases={dataAliases}
+            isPendingFetchAlias={isPendingFetchAlias}
+            errorAlias={errorAlias}
           />
         )}
         { subscreen === 'ADD_GE_INFORMATION' && (
