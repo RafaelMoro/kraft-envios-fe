@@ -81,3 +81,14 @@ export const getAddressesGELocalStorage = async () => {
     console.error('Error getting address from local storage:', error);
   }
 }
+
+export const removeAddressFromLocalStorage = async (alias: string) => {
+  try {
+    const localStorage = getLocalStorageInfo();
+    const pendingGEAddresses = localStorage[PENDING_GE_ADDRESSES_KEY] || [];
+    const updatedAddresses = pendingGEAddresses.filter((address: CreateAddressGEPayload) => address.alias !== alias);
+    addToLocalStorage({ prop: PENDING_GE_ADDRESSES_KEY, newInfo: updatedAddresses })
+  } catch (error) {
+    console.error('Error removing address from local storage:', error);
+  }
+}

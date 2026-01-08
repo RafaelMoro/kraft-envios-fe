@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query"
 import { CreateAddressGEPayload, CreateAddressGEResponse } from "@/shared/types/guides.types"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { createAddressGECb } from "@/shared/utils/guides.utils"
+import { removeAddressFromLocalStorage } from "@/shared/utils/addresses.utils"
 
 interface PendingAddressGEProps {
   address: CreateAddressGEPayload
@@ -16,9 +17,9 @@ export const PendingAddressGE = ({ address }: PendingAddressGEProps) => {
   const [showError, setShowError] = useState(false)
   const { mutate: createAddressGE, isPending, isSuccess } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
     mutationFn: createAddressGECb,
-    onSuccess: () => {
-      // success
+    onSuccess: async () => {
       // Remove address from LS
+      await removeAddressFromLocalStorage(address.alias)
     },
     onError: () => {
       // show error state
