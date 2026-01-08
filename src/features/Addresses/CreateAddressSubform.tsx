@@ -99,11 +99,15 @@ export const CreateAddressSubform = ({
 
   const submitButtonText = shouldCreateGEAddress ? 'Siguiente' : `${actionText} dirección`;
 
-  const { data: dataAliases,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
+  const { data: dataAliases, refetch,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
     queryKey: ['aliasAddresses'],
     queryFn: getAliasAddressesCb,
     enabled: hasConsentedOnce
   })
+
+  const refetchAddressesGE = async () => {
+    await refetch()
+  }
 
   // Reset error if data is present
   useEffect(() => {
