@@ -148,9 +148,9 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
         </section>
       </div>
       { pendingAddressesGE && pendingAddressesGE.length > 0 && (
-        <section className="mt-16 flex flex-col gap-8">
+        <section className="mt-20 flex flex-col gap-8">
           <h2 className="text-2xl font-bold text-center">Direcciones pendientes de creación en GE</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 justify-items-center lg:justify-items-start lg:grid-cols-2 gap-5">
             { pendingAddressesGE.map((addr) => (
               <PendingAddressGE key={addr.alias} address={addr} />
             ))}
