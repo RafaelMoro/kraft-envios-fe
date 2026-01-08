@@ -138,6 +138,7 @@ export const ManageAddressForm = ({
             goBack={goBack}
             goResult={goResult}
             setShowErrorCreateAddressGe={setShowErrorCreateAddressGe}
+            refetchAddressesGE={refetchAddressesGE}
             />
         )}
         { subscreen === 'SHOW_RESULT' && (

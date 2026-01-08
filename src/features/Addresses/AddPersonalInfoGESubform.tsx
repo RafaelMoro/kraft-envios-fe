@@ -14,9 +14,10 @@ interface AddPersonalInfoGESubformProps {
   goBack: () => void;
   goResult: () => void;
   setShowErrorCreateAddressGe: (show: boolean) => void;
+  refetchAddressesGE: () => Promise<void>
 }
 
-export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, goResult, setShowErrorCreateAddressGe }: AddPersonalInfoGESubformProps) => {
+export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, goResult, setShowErrorCreateAddressGe, refetchAddressesGE }: AddPersonalInfoGESubformProps) => {
   const {
     register,
     handleSubmit,
@@ -28,8 +29,9 @@ export const AddPersonalInfoGESubform = ({ addressDataGE, goBack, goResult, setS
 
   const { mutate: createAddressGE, isPending, isSuccess } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
     mutationFn: createAddressGECb,
-    onSuccess: () => {
+    onSuccess: async () => {
       reset()
+      await refetchAddressesGE()
       setTimeout(() => {
         goResult()
       }, 1000)
