@@ -72,39 +72,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
     await refetch()
   }
 
-  const mockedAddresses: CreateAddressGEPayload[] = [
-    {
-      name: "Rafael Moro",
-      phone: "2213526425",
-      email: "j.temix33@gmail.com",
-      company: "Kraft Envios",
-      rfc: "XAXX010101000",
-      street: "Blvd Norte",
-      number: "4222",
-      neighborhood: "Las cuartillas",
-      city: "Puebla",
-      state: "Puebla",
-      zipcode: "72050",
-      reference: "Sin referencia",
-      alias: "Ana Erika Martinez",
-    },
-    {
-      name: "Rafael Moro",
-      phone: "2213526425",
-      email: "j.temix33@gmail.com",
-      company: "Kraft Envios",
-      rfc: "XAXX010101000",
-      street: "Blvd Norte",
-      number: "4222",
-      neighborhood: "Las cuartillas",
-      city: "Puebla",
-      state: "Puebla",
-      zipcode: "72050",
-      reference: "Sin referencia",
-      alias: "Jose Eduardo Avila",
-    },
-  ];
-  const [pendingAddressesGE, setPendingAddressesGE] = useState<CreateAddressGEPayload[] | null>(mockedAddresses)
+  const [pendingAddressesGE, setPendingAddressesGE] = useState<CreateAddressGEPayload[] | null>(null)
 
   useEffect(() => {
     getAddressesGELocalStorage().then((addresses) => {
