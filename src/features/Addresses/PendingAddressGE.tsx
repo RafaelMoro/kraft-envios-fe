@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"
 import { Button, Card, CheckIcon, Spinner } from "flowbite-react"
 import { RiMapPinFill } from "@remixicon/react"
 import { useMutation } from "@tanstack/react-query"
@@ -12,6 +13,7 @@ interface PendingAddressGEProps {
 }
 
 export const PendingAddressGE = ({ address }: PendingAddressGEProps) => {
+  const [showError, setShowError] = useState(false)
   const { mutate: createAddressGE, isPending, isSuccess } = useMutation<CreateAddressGEResponse, GeneralApiError, CreateAddressGEPayload>({
     mutationFn: createAddressGECb,
     onSuccess: () => {
@@ -19,9 +21,13 @@ export const PendingAddressGE = ({ address }: PendingAddressGEProps) => {
       // Remove address from LS
     },
     onError: () => {
-      // error
       // show error state
+      setShowError(true)
+
       // after 3 seconds reset
+      setTimeout(() => {
+        setShowError(false)
+      }, 3000)
     }
   })
 
@@ -50,6 +56,9 @@ export const PendingAddressGE = ({ address }: PendingAddressGEProps) => {
             { !isSuccess && !isPending && 'Volver a intentar' }
           </Button>
         </div>
+        { showError && (
+          <p className="text-sm text-red-500 md:col-span-2">¡Ups! Ocurrió un problema al crear la dirección. Inténtalo más tarde.</p>
+        )}
       </div>
     </Card>
   )
