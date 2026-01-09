@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
 import { RiArrowDownSLine } from "@remixicon/react"
@@ -9,25 +10,29 @@ import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
 
 interface SelectOnlyAddressDropdownProps {
   addressData: CreateGuideAddressValuesGE;
-  errorMessage: string;
   handleSelectAlias: (newAlias: string) => void;
 }
 
-export const SelectOnlyAddressDropdown = ({ addressData, errorMessage, handleSelectAlias }: SelectOnlyAddressDropdownProps) => {
+export const SelectOnlyAddressDropdown = ({ addressData, handleSelectAlias }: SelectOnlyAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const { data: aliasesGE,  isPending: isPendingFetchAliasGE, isError: isErrorFetchAliasGE } = useQuery({
     queryKey: ['aliasAddresses'],
     queryFn: getAliasAddressesCb
   })
 
+  const [aliasSelected, setAliasSelected] = useState<string>(addressData.alias || "");
+  const [addressError, setAddressError] = useState<string>("");
+
   const onSelectAlias = (newAlias: string) => {
+    setAliasSelected(newAlias)
     // Check if alias exists in GE aliases
     const aliasGEFound = aliasesGE?.find(aliasGe => aliasGe === newAlias)
     if (!aliasGEFound) {
-      // Show error
       // This alias does not exist in GE. Go to addresses to create it as well
+      setAddressError("El alias seleccionado no existe para envíos GE. Por favor, crea la dirección con este alias en la sección de direcciones.");
       return
     }
+
     handleSelectAlias(newAlias)
   }
 
@@ -46,12 +51,12 @@ export const SelectOnlyAddressDropdown = ({ addressData, errorMessage, handleSel
             { (isPending || isPendingFetchAliasGE) && (<Spinner />)}
             { (isError && !isPending) && ("No se han podido cargar los alias")}
             { (isErrorFetchAliasGE && !isPendingFetchAliasGE) && ("No se han podido cargar los alias de GE")}
-            { (!isPending && addresses && addresses.length > 0 && !addressData.alias) && 'Alias de dirección'}
-            { (!isPending && addresses && addresses.length > 0 && addressData.alias) && addressData.alias}
+            { (!isPending && addresses && addresses.length > 0 && !aliasSelected) && 'Alias de dirección'}
+            { (!isPending && addresses && addresses.length > 0 && aliasSelected) && aliasSelected}
             <RiArrowDownSLine />
           </Button>
-          { errorMessage && (
-            <ErrorMessage>{errorMessage}</ErrorMessage>
+          { addressError && (
+            <ErrorMessage>{addressError}</ErrorMessage>
           )}
         </div>
       )}
