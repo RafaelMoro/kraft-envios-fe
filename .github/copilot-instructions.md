@@ -32,6 +32,8 @@ For the unit tests, consider the following instructions:
 
 - When mocking hooks with jest.mock(), use relative imports instead of path aliases (@/). For example, use `jest.mock('../../../src/shared/hooks/useAlias')` instead of `jest.mock('@/shared/hooks/useAlias')`. This prevents module resolution issues in the test environment.
 
+- When testing email validation, always include the @ sign in invalid email test values. Use something like 'invalid-email@a' rather than just 'invalid-email'. This ensures the validation logic properly triggers, as many email validators (like Yup's .email()) require the @ sign to be present before checking format validity.
+
 ## Mocks
 
 - Do not export them as default, use name exports
