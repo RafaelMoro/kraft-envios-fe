@@ -10,10 +10,10 @@ import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
 
 interface SelectOnlyAddressDropdownProps {
   addressData: CreateGuideAddressValuesGE;
-  handleSelectAlias: (newAlias: string) => void;
+  updateAliasSelection: (newAlias: string) => void;
 }
 
-export const SelectOnlyAddressDropdown = ({ addressData, handleSelectAlias }: SelectOnlyAddressDropdownProps) => {
+export const SelectOnlyAddressDropdown = ({ addressData, updateAliasSelection }: SelectOnlyAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const { data: aliasesGE,  isPending: isPendingFetchAliasGE, isError: isErrorFetchAliasGE } = useQuery({
     queryKey: ['aliasAddresses'],
@@ -35,7 +35,7 @@ export const SelectOnlyAddressDropdown = ({ addressData, handleSelectAlias }: Se
       return
     }
 
-    handleSelectAlias(newAlias)
+    updateAliasSelection(newAlias)
   }
 
   return (

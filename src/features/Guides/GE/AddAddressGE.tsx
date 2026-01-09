@@ -7,7 +7,7 @@ import { initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 
 export const AddAddressGE = () => {
   const formData = useRef<CreateGuideFormValuesGE>({...initialStateCreateGuideGE})
-  const updateOriginAddress = (newAlias: string) => {
+  const updateOriginAlias = (newAlias: string) => {
     formData.current.originAddress.alias = newAlias
   }
 
@@ -17,7 +17,7 @@ export const AddAddressGE = () => {
       <p className="text-sm text-gray-600 dark:text-gray-400">Selecciona una dirección.</p>
       <SelectOnlyAddressDropdown
         addressData={formData.current.originAddress}
-        handleSelectAlias={updateOriginAddress}
+        updateAliasSelection={updateOriginAlias}
       />
     </div>
   )
