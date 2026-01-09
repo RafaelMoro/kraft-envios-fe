@@ -31,7 +31,10 @@ import {
   CreateGuideAddressPayloadMn,
   CreateGuideAddressPayloadTone,
   CreateGuideAddressPayloadPkk,
+  AddressDataGEFormValues,
+  PersonalDataGEFormValues,
 } from '../types/guides.types'
+import { CreateAddressFormValues } from '../types/addresses.types'
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
   try {
@@ -195,6 +198,58 @@ export const convertToCreateAddressGEPayload = (formValues: CreateAddressFormVal
     number: formValues.external_number,
     reference: formValues.reference?.trim() || DEFAULT_REFERENCE,
     alias: formValues.alias,
+  }
+}
+
+/**
+ * Converts CreateAddressFormValues to AddressDataGEFormValues
+ * Maps form field names and takes the first city from the cities array
+ * @param formValues - The form values object to convert
+ * @param cities - Array of cities, will use the first element
+ * @returns Converted payload object for GE address form
+ */
+export const convertToAddressDataGEFormValues = (
+  formValues: CreateAddressFormValues,
+  cities: string[]
+): AddressDataGEFormValues => {
+  return {
+    street1: formValues.street1,
+    external_number: formValues.externalNumber,
+    neighborhood: formValues.neighborhood,
+    city: cities[0] || '',
+    state: formValues.state,
+    zipcode: formValues.zipcode,
+    reference: formValues.reference,
+    alias: formValues.alias,
+  }
+}
+
+/**
+ * Combines PersonalDataGEFormValues and AddressDataGEFormValues into CreateAddressGEPayload
+ * Applies default values for optional fields (email, company, rfc, reference) if not provided
+ * Maps form field names to API payload field names
+ * @param personalData - The personal data form values
+ * @param addressData - The address data form values
+ * @returns Converted payload object for the API
+ */
+export const combineGEFormValues = (
+  personalData: PersonalDataGEFormValues,
+  addressData: AddressDataGEFormValues
+): CreateAddressGEPayload => {
+  return {
+    name: personalData.name,
+    phone: personalData.phone,
+    email: personalData.email?.trim() || DEFAULT_EMAIL,
+    company: personalData.company?.trim() || DEFAULT_COMPANY,
+    rfc: personalData.rfc?.trim() || DEFAULT_RFC,
+    street: addressData.street1,
+    number: addressData.external_number,
+    neighborhood: addressData.neighborhood,
+    city: addressData.city,
+    state: addressData.state,
+    zipcode: addressData.zipcode,
+    reference: addressData.reference?.trim() || DEFAULT_REFERENCE,
+    alias: addressData.alias,
   }
 }
 

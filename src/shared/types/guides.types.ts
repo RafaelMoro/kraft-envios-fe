@@ -131,12 +131,15 @@ export type CreateGuideAddressPayloadPkk = CreateGuidePersonalDataPkkPayload & C
   isResidential: boolean;
 };
 
-export type CreateAddressFormValuesGE = {
+export type PersonalDataGEFormValues = {
   name: string;
   phone: string;
   email?: string | null | undefined
   company?: string | null | undefined
   rfc?: string | null | undefined
+}
+
+export type AddressDataGEFormValues = {
   street1: string;
   external_number: string;
   neighborhood: string;
@@ -146,6 +149,8 @@ export type CreateAddressFormValuesGE = {
   reference?: string | null | undefined
   alias: string;
 }
+
+export type CreateAddressFormValuesGE = PersonalDataGEFormValues & AddressDataGEFormValues
 
 /**
  * This type we're adding `isResidential` as we do not need to add that prop into the schema validation
@@ -407,9 +412,9 @@ export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFor
          .min(5, 'La dirección postal debe tener 5 caracteres')
          .max(5, 'La dirección postal debe tener 5 caracteres')
      })
-   )  
+   ) 
 
-export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> = object().shape({
+export const PersonalInformationGEFormSchema: ObjectSchema<PersonalDataGEFormValues> = object().shape({
   name: string().required('Nombre es requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
   phone: string()
     .required('El teléfono es requerido')
@@ -433,27 +438,34 @@ export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> = ob
         .min(13, 'El RFC debe tener 13 caracteres')
         .max(13, 'El RFC debe tener 13 caracteres')
     }),
-  street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
-  neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
-  external_number: string().required('Número exterior es requerido').matches(/^\d+$/, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" }).min(1, 'El número exterior debe tener al menos 1 carácter'),
-  city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
-  state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
-  zipcode: string()
-    .required('El código postal es requerido')
-    .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
-    .min(5, 'El código postal debe tener 5 caracteres')
-    .max(5, 'El código postal debe tener 5 caracteres'),
-  alias: string().required('El alias del domicilio es requerido').min(2, 'El alias del domicilio debe tener al menos 2 caracteres'),
-  reference: string()
-    .nullable()
-    .notRequired()
-    .when('reference', {
-      is: (value: string) => value?.length,
-      then: (rule) => rule.min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
-    }),
 }, [
   ["email", "email"],
   ["company", "company"],
   ["rfc", "rfc"],
-  ["reference", "reference"],
 ])
+
+export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> = 
+PersonalInformationGEFormSchema.concat(
+  object().shape({
+    street1: string().required('Calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
+    neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
+    external_number: string().required('Número exterior es requerido').matches(/^\d+$/, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" }).min(1, 'El número exterior debe tener al menos 1 carácter'),
+    city: string().required('Ciudad es requerida').min(2, 'La ciudad debe tener al menos 2 caracteres'),
+    state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
+    zipcode: string()
+      .required('El código postal es requerido')
+      .matches(/^\d+$/, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
+      .min(5, 'El código postal debe tener 5 caracteres')
+      .max(5, 'El código postal debe tener 5 caracteres'),
+    alias: string().required('El alias del domicilio es requerido').min(2, 'El alias del domicilio debe tener al menos 2 caracteres'),
+    reference: string()
+      .nullable()
+      .notRequired()
+      .when('reference', {
+        is: (value: string) => value?.length,
+        then: (rule) => rule.min(2, 'La referencia del domicilio debe tener al menos 2 caracteres'),
+      }),
+  }, [
+    ["reference", "reference"],
+  ])
+)

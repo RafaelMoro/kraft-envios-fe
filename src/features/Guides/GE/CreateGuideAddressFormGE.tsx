@@ -10,6 +10,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { GeneralApiError } from "@/shared/types/global.types"
 import { convertToCreateAddressGEPayload, createAddressGECb, getAliasAddressesCb } from "@/shared/utils/guides.utils"
 import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner"
+import { PersonalInfoAddressGESubform } from "./PersonalInfoAddressGESubform"
 
 interface CreateGuideAddressFormGEProps {
   typeAddress: 'origin' | 'destination';
@@ -101,78 +102,10 @@ export const CreateGuideAddressFormGE = ({
         onSubmit={handleSubmit(onSubmit)}
       >
         <h4 className="text-xl">Datos personales</h4>
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="name">Nombre</Label>
-            </div>
-            <TextInput
-              data-testid="name"
-              id="name"
-              type="text"
-              {...register("name")}
-            />
-            { errors?.name?.message && (
-              <ErrorMessage>{errors.name?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="phone">Teléfono</Label>
-            </div>
-            <TextInput
-              data-testid="phone"
-              id="phone"
-              type="text"
-              inputMode="numeric"
-              {...register("phone")}
-            />
-            { errors?.phone?.message && (
-              <ErrorMessage>{errors?.phone?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="email">Correo electrónico (Opcional)</Label>
-            </div>
-            <TextInput
-              id="email"
-              type="email"
-              {...register("email")}
-            />
-            { errors?.email?.message && (
-              <ErrorMessage>{errors.email?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="company">Nombre de la compañia (Opcional)</Label>
-            </div>
-            <TextInput
-              data-testid="company"
-              id="company"
-              type="text"
-              {...register("company")}
-            />
-            { errors?.company?.message && (
-              <ErrorMessage>{errors.company?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="rfc">RFC (Opcional)</Label>
-            </div>
-            <TextInput
-              data-testid="rfc"
-              id="rfc"
-              type="text"
-              {...register("rfc")}
-            />
-            { errors?.rfc?.message && (
-              <ErrorMessage>{errors.rfc?.message}</ErrorMessage>
-            )}
-          </div>
-        </section>
+        <PersonalInfoAddressGESubform<CreateAddressFormValuesGE>
+          errors={errors}
+          register={register}
+        />
         <div className="mt-8 flex flex-col gap-5">
           <h4 className="text-xl">Domicilio</h4>
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">

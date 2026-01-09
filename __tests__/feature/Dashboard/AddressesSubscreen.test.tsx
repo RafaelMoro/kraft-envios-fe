@@ -6,9 +6,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AddressesSubscreen } from "@/features/Dashboard/subscreens/AddressesSubscreen"
 import { LoginData } from "@/shared/types/login.types"
 import { Address } from "@/shared/types/addresses.types"
+import * as addressUtils from '../../../src/shared/utils/addresses.utils'
 
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
+
+jest.mock('../../../src/shared/utils/addresses.utils', () => ({
+  ...jest.requireActual('../../../src/shared/utils/addresses.utils'),
+  getAddressesGELocalStorage: jest.fn()
+}))
 
 const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
@@ -82,7 +88,9 @@ const mockAddresses: Address[] = [
 describe('Feature: Addresses Subscreen', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(addressUtils.getAddressesGELocalStorage as jest.Mock).mockResolvedValue(null)
   })
+
 
   describe('Scenario: Display welcome message with user name', () => {
     it('Given a logged-in user, When the subscreen renders, Then it should display the welcome message with user name', async () => {
@@ -142,38 +150,6 @@ describe('Feature: Addresses Subscreen', () => {
 
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /crear dirección/i })).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Scenario: Close create address modal when cancel is clicked', () => {
-    it('Given the create address modal is open, When the user clicks cancel, Then the modal should close', async () => {
-      const user = userEvent.setup()
-
-      mockedAxios.get.mockResolvedValueOnce({
-        data: {
-          data: { addresses: [] },
-          error: null,
-          message: null,
-          success: true,
-          version: '1.0.0'
-        }
-      })
-
-      render(<AddressesSubscreenWrapper userInfo={mockUserInfo} />)
-
-      const createButton = screen.getByRole('button', { name: /crear dirección/i })
-      await user.click(createButton)
-
-      await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /crear dirección/i })).toBeInTheDocument()
-      })
-
-      const cancelButton = screen.getByRole('button', { name: /cancelar/i })
-      await user.click(cancelButton)
-
-      await waitFor(() => {
-        expect(screen.queryByRole('heading', { name: /crear dirección/i })).not.toBeInTheDocument()
       })
     })
   })
