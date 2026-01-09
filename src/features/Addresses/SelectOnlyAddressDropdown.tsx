@@ -24,7 +24,9 @@ export const SelectOnlyAddressDropdown = ({ addressData, handleSelectAlias }: Se
   const [addressError, setAddressError] = useState<string>("");
 
   const onSelectAlias = (newAlias: string) => {
+    if (addressError) setAddressError('')
     setAliasSelected(newAlias)
+
     // Check if alias exists in GE aliases
     const aliasGEFound = aliasesGE?.find(aliasGe => aliasGe === newAlias)
     if (!aliasGEFound) {
