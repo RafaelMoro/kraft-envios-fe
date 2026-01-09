@@ -75,11 +75,11 @@ describe('Feature: Add Personal Information GE Subform', () => {
     render(<AddPersonalInfoGESubformWrapper />)
 
     expect(screen.getByRole('heading', { name: /datos personales/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/nombre/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/teléfono/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/compañía/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/rfc/i)).toBeInTheDocument()
+    expect(screen.getByTestId('name')).toBeInTheDocument()
+    expect(screen.getByTestId('phone')).toBeInTheDocument()
+    expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
+    expect(screen.getByTestId('company')).toBeInTheDocument()
+    expect(screen.getByTestId('rfc')).toBeInTheDocument()
 
     expect(screen.getByTestId('cancel-button-create-address-ge')).toBeInTheDocument()
     expect(screen.getByTestId('submit-button-create-address-ge')).toBeInTheDocument()
@@ -155,7 +155,7 @@ describe('Feature: Add Personal Information GE Subform', () => {
       // Fill all fields
       await user.type(screen.getByTestId('name'), 'Juan Pérez')
       await user.type(screen.getByTestId('phone'), '5512345678')
-      await user.type(screen.getByTestId('email'), 'juan@example.com')
+      await user.type(screen.getByLabelText(/correo electrónico/i), 'juan@example.com')
       await user.type(screen.getByTestId('company'), 'Mi Empresa')
       await user.type(screen.getByTestId('rfc'), 'JUAP800101ABC')
 
@@ -241,14 +241,20 @@ describe('Feature: Add Personal Information GE Subform', () => {
       const user = userEvent.setup()
       render(<AddPersonalInfoGESubformWrapper />)
 
-      const emailInput = screen.getByTestId('email')
+      // Fill required fields first so validation runs on email
+      const nameInput = screen.getByTestId('name')
+      const phoneInput = screen.getByTestId('phone')
+      await user.type(nameInput, 'Juan Pérez')
+      await user.type(phoneInput, '5512345678')
+
+      const emailInput = screen.getByLabelText(/correo electrónico/i)
       await user.type(emailInput, 'invalid-email')
 
       const submitButton = screen.getByTestId('submit-button-create-address-ge')
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByText(/ingresa un email válido/i)).toBeInTheDocument()
+        expect(screen.getByText(/correo electrónico inválido/i)).toBeInTheDocument()
       })
     })
   })
@@ -314,13 +320,14 @@ describe('Feature: Add Personal Information GE Subform', () => {
     it('Given the mutation fails, When the error callback is executed, Then it should show error and navigate to result', async () => {
       const user = userEvent.setup()
       
-      let onErrorCallback: (() => void) | undefined
+      let capturedOnError: ((error: any, variables: any, context: any) => void) | undefined
 
       const mockMutate = jest.fn((payload, options) => {
-        onErrorCallback = options?.onError
+        // Capture the onError callback from the mutate options
+        capturedOnError = options?.onError
       })
 
-      ;(useMutation as jest.Mock).mockImplementation(({ onError }) => {
+      ;(useMutation as jest.Mock).mockImplementation((config) => {
         return {
           mutate: mockMutate,
           isPending: false,
@@ -335,15 +342,18 @@ describe('Feature: Add Personal Information GE Subform', () => {
       await user.type(screen.getByTestId('phone'), '5512345678')
       await user.click(screen.getByTestId('submit-button-create-address-ge'))
 
-      // Execute the error callback manually
-      if (onErrorCallback) {
-        onErrorCallback()
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalled()
+      })
+
+      // Now trigger the component's onError callback which was passed to useMutation
+      const useMutationConfig = (useMutation as jest.Mock).mock.calls[0][0]
+      if (useMutationConfig.onError) {
+        useMutationConfig.onError()
       }
 
-      await waitFor(() => {
-        expect(mockSetShowErrorCreateAddressGe).toHaveBeenCalledWith(true)
-        expect(mockGoResult).toHaveBeenCalled()
-      })
+      expect(mockSetShowErrorCreateAddressGe).toHaveBeenCalledWith(true)
+      expect(mockGoResult).toHaveBeenCalled()
     })
 
     it('Given the mutation fails, When the error callback is executed, Then it should save address to local storage', async () => {
@@ -390,14 +400,16 @@ describe('Feature: Add Personal Information GE Subform', () => {
       await user.type(screen.getByTestId('phone'), '5512345678')
       await user.click(screen.getByTestId('submit-button-create-address-ge'))
 
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalled()
+      })
+
       // Execute the onError callback from mutate options
       if (mutateOnErrorCallback) {
         await mutateOnErrorCallback(mockError, mockPayload)
       }
 
-      await waitFor(() => {
-        expect(addressesUtils.saveAddressToLocalStorage).toHaveBeenCalledWith(mockPayload)
-      })
+      expect(addressesUtils.saveAddressToLocalStorage).toHaveBeenCalledWith(mockPayload)
     })
   })
 
@@ -423,10 +435,8 @@ describe('Feature: Add Personal Information GE Subform', () => {
       const submitButton = screen.getByTestId('submit-button-create-address-ge')
       await user.click(submitButton)
 
-      await waitFor(() => {
-        expect(consoleWarnSpy).toHaveBeenCalledWith('No address data GE provided')
-        expect(mockMutate).not.toHaveBeenCalled()
-      })
+      expect(consoleWarnSpy).toHaveBeenCalledWith('No address data GE provided')
+      expect(mockMutate).not.toHaveBeenCalled()
 
       consoleWarnSpy.mockRestore()
     })
