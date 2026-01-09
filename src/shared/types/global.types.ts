@@ -1,4 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
+import { CreateAddressGEPayload } from "./guides.types";
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -35,4 +36,8 @@ export type UserRoles = 'user' | 'admin'
 export interface LadaStates {
   state: string;
   lada: string[];
+}
+
+export type KraftEnviosLocalStorage = {
+  'pending-GE-addresses': CreateAddressGEPayload[]
 }

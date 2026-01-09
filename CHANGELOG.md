@@ -1,3 +1,9 @@
+## v0.31.0 (2026-01-09)
+
+### Pull Requests
+[#71](https://github.com/RafaelMoro/kraft-envios-fe/pull/71) | Add creation of addresses of GE into creation of addresses
+
+
 ## v0.30.0 (2025-12-28)
 
 ### Pull Requests

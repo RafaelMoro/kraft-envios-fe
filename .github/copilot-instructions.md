@@ -18,8 +18,6 @@ For the unit tests, consider the following instructions:
 
 - Do not mock next/image
 
-- Use Gherkin cucumber syntax for describing tests. Here is the reference: https://cucumber.io/docs/gherkin/reference
-
 - Do not use jest.mock() to mock internal components from the same project (components from @/features, @/shared, etc.). This approach can cause module resolution errors and makes tests brittle. Instead, test the actual component behavior or use integration testing approaches that test the full component tree.
 
 - Do not use document.querySelector() or document.getElementById() in tests. These methods break the testing library abstraction and make tests brittle. Instead, use testing-library queries like getByRole, getByText, getByLabelText, or add data-testid attributes to components and use getByTestId for elements that are hard to query semantically.
@@ -28,11 +26,13 @@ For the unit tests, consider the following instructions:
 
 - Do not write tests that assert on styling, visual appearance, or layout properties. Avoid testing CSS properties, colors, fonts, positioning, or any visual styling aspects. These are implementation details that should be handled by visual regression testing or manual testing. Focus tests on functionality, user interactions, accessibility, and component behavior instead of how things look.
 
-- Avoid writing redundant tests with identical expectations when using Gherkin syntax. If multiple test scenarios have the same assertions and expected behavior, consolidate them into a single meaningful test or ensure each test validates genuinely different behavior. For example, testing "primary styling" and "alternative styling" separately is unnecessary if both only verify the same text display without testing actual styling differences. Focus on testing distinct behaviors rather than different prop combinations that produce identical outcomes.
+- Avoid writing redundant tests with identical expectations. If multiple test scenarios have the same assertions and expected behavior, consolidate them into a single meaningful test or ensure each test validates genuinely different behavior. For example, testing "primary styling" and "alternative styling" separately is unnecessary if both only verify the same text display without testing actual styling differences. Focus on testing distinct behaviors rather than different prop combinations that produce identical outcomes.
 
 - Do not include file extensions in import statements. Always import without extensions (.ts, .tsx, .js, .jsx). For example, use `import { useAddAddress } from '@/shared/hooks/useAddAddress'` instead of `import { useAddAddress } from '@/shared/hooks/useAddAddress.tsx'`. This is the standard TypeScript convention and prevents module resolution issues.
 
 - When mocking hooks with jest.mock(), use relative imports instead of path aliases (@/). For example, use `jest.mock('../../../src/shared/hooks/useAlias')` instead of `jest.mock('@/shared/hooks/useAlias')`. This prevents module resolution issues in the test environment.
+
+- When testing email validation, always include the @ sign in invalid email test values. Use something like 'invalid-email@a' rather than just 'invalid-email'. This ensures the validation logic properly triggers, as many email validators (like Yup's .email()) require the @ sign to be present before checking format validity.
 
 ## Mocks
 

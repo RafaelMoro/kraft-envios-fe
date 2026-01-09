@@ -29,11 +29,13 @@ export const SelectAliasGE = ({ setAlias, alias, data, isPending, isError }: Sel
         </Button>
       )}
     >
-      { (data && data?.length > 0 )&& data.map((alias) => (
-        <DropdownItem key={`alias-${alias}`} onClick={() => setAlias(alias)}>
-          {alias}
-        </DropdownItem>
-      )) }
+      <div className="overflow-y-auto max-h-52">
+        { (data && data?.length > 0 )&& data.map((alias) => (
+          <DropdownItem key={`alias-${alias}`} onClick={() => setAlias(alias)}>
+            {alias}
+          </DropdownItem>
+        )) }
+      </div>
     </Dropdown>
   )
 }
