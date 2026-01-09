@@ -248,7 +248,8 @@ describe('Feature: Add Personal Information GE Subform', () => {
       await user.type(phoneInput, '5512345678')
 
       const emailInput = screen.getByLabelText(/correo electrónico/i)
-      await user.type(emailInput, 'invalid-email')
+      await user.type(emailInput, 'invalid-email@a')
+      expect(emailInput).toHaveValue('invalid-email@a')
 
       const submitButton = screen.getByTestId('submit-button-create-address-ge')
       await user.click(submitButton)
