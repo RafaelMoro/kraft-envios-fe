@@ -21,6 +21,10 @@ interface SelectAddressDropdownProps<T extends AliasSaved> {
   updateAddressInfo: ({ newAddress, town, city }: UpdateAddressInfoPayload) => void
 }
 
+/**
+ * This component renders a dropdown to select an address alias, town, and city. It's used with Pkk, Mn and TONE
+ * For GE, it has its own SelectAliasGE component.
+ */
 export const SelectAddressDropdown = <T extends AliasSaved>({
   aliasSaved, errorMessage, townError, cityError, hideTownDropdown = false, hideCityDropdown = false,
   setAliasSelected, updateAddressInfo, setErrorMessage, setTownError, setCityError,
