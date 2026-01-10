@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ResultGuideScreen } from '@/features/Guides/Mn/ResultGuideScreen'
+import { ResultGuideScreen } from '@/features/Guides/ResultGuideScreen'
 import { GlobalCreateGuideResponse } from '@/shared/types/guides.types'
 
 // Mock functions for props

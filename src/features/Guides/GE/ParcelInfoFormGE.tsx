@@ -64,7 +64,6 @@ export const ParcelInfoFormGE = ({
 
   return (
     <form
-      className="p-4"
       onSubmit={handleSubmit(onSubmit)}
     >
       { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">Información del paquete</h5>)}
@@ -86,7 +85,7 @@ export const ParcelInfoFormGE = ({
           )}
         </div>
       </section>
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-between mt-7">
         <Button
           color="light"
           data-testid="parcel-info-form-cancel-button"

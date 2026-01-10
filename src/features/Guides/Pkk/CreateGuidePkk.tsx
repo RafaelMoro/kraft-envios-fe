@@ -11,7 +11,7 @@ import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuidePkk } from "./ConfirmGuidePkk";
 import { createGuidePkkCb } from "@/shared/utils/guides.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
-import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
+import { ResultGuideScreen } from "../ResultGuideScreen";
 import { useSaveAlias } from "@/shared/hooks/useAlias";
 import { AddAddressPkk } from "./AddAddressPkk";
 

@@ -14,6 +14,9 @@ interface ResultGuideScreenProps {
   closeModal: () => void
 }
 
+/**
+ * This component is used with GE, Pkk, Mn and Tone.
+ */
 export const ResultGuideScreen = ({ guide, isSuccess, isError, errorMessage, closeModal }: ResultGuideScreenProps) => {
   const [urlFile, setUrlFile] = useState<string | null>(null);
   const title = isSuccess ? "Guía creada con éxito" : "Error al crear la guía"

@@ -159,10 +159,32 @@ export const initialStateAddressPkk: CreateGuideAddressValuesPkk = {
 
 export const initialStateCreateGuideGE: CreateGuideFormValuesGE = {
   originAddress: {
-    alias: ''
+    address: {
+      alias: ''
+    },
+    information: {
+      addressName: '',
+      externalNumber: '',
+      internalNumber: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      zipcode: ''
+    }
   },
   destinationAddress: {
-    alias: ''
+    address: {
+      alias: ''
+    },
+    information: {
+      addressName: '',
+      externalNumber: '',
+      internalNumber: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      zipcode: ''
+    }
   },
   parcelInfo: {
     content: "",
