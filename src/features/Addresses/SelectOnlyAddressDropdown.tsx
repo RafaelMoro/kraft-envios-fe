@@ -1,37 +1,34 @@
-import { useState } from "react";
+"use client"
 import { useQuery } from "@tanstack/react-query";
 import { Button, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
 import { RiArrowDownSLine } from "@remixicon/react"
 
 import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { CreateGuideAddressValuesGE } from "@/shared/types/guides.types";
 import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
 
 interface SelectOnlyAddressDropdownProps {
-  addressData: CreateGuideAddressValuesGE;
+  aliasSelected: string | null;
+  aliasError: string | null
   updateAliasSelection: (newAlias: string) => void;
+  setAliasError: (newError: string) => void;
 }
 
-export const SelectOnlyAddressDropdown = ({ addressData, updateAliasSelection }: SelectOnlyAddressDropdownProps) => {
+export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAliasSelection, setAliasError }: SelectOnlyAddressDropdownProps) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const { data: aliasesGE,  isPending: isPendingFetchAliasGE, isError: isErrorFetchAliasGE } = useQuery({
     queryKey: ['aliasAddresses'],
     queryFn: getAliasAddressesCb
   })
 
-  const [aliasSelected, setAliasSelected] = useState<string>(addressData.alias || "");
-  const [addressError, setAddressError] = useState<string>("");
-
   const onSelectAlias = (newAlias: string) => {
-    if (addressError) setAddressError('')
-    setAliasSelected(newAlias)
+    if (aliasError) setAliasError('')
 
     // Check if alias exists in GE aliases
     const aliasGEFound = aliasesGE?.find(aliasGe => aliasGe === newAlias)
     if (!aliasGEFound) {
       // This alias does not exist in GE. Go to addresses to create it as well
-      setAddressError("El alias seleccionado no existe para envíos GE. Por favor, crea la dirección con este alias en la sección de direcciones.");
+      setAliasError("El alias seleccionado no existe para envíos GE. Por favor, crea la dirección con este alias en la sección de direcciones.");
       return
     }
 
@@ -57,8 +54,8 @@ export const SelectOnlyAddressDropdown = ({ addressData, updateAliasSelection }:
             { (!isPending && addresses && addresses.length > 0 && aliasSelected) && aliasSelected }
             <RiArrowDownSLine />
           </Button>
-          { addressError && (
-            <ErrorMessage>{addressError}</ErrorMessage>
+          { aliasError && (
+            <ErrorMessage>{aliasError}</ErrorMessage>
           )}
         </div>
       )}
