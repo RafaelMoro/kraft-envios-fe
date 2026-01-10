@@ -86,7 +86,7 @@ export const ParcelInfoFormGE = ({
           )}
         </div>
       </section>
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-between mt-7">
         <Button
           color="light"
           data-testid="parcel-info-form-cancel-button"

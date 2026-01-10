@@ -23,6 +23,7 @@ export const AddAddressGE = ({
 
   const typeAddressLabel = typeAddress === 'origin' ? 'origen' : 'destino'
   const cancelButtonText = typeAddress === 'destination' ? 'Regresar' : 'Cancelar'
+  const colorCancelButton = typeAddress === 'destination' ? 'light' : 'red'
 
   const handleNextStep = () => {
     // save info
@@ -59,10 +60,10 @@ export const AddAddressGE = ({
         updateAliasSelection={setSelectedAlias}
         setAliasError={setAliasError}
       />
-      <div className="flex flex-col gap-4 mt-7">
+      <div className="w-full mt-7 flex flex-col md:flex-row md:justify-between gap-4">
         <Button
-          outline
-          color="red"
+          {...(typeAddress === 'origin' && { outline: true })}
+          color={colorCancelButton}
           onClick={handleCancel}
         >{cancelButtonText}</Button>
         <Button disabled={!selectedAlias} onClick={handleNextStep}>Siguiente</Button>
