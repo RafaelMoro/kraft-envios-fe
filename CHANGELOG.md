@@ -1,3 +1,9 @@
+## v0.32.0 (2026-01-10)
+
+### Pull Requests
+[#73](https://github.com/RafaelMoro/kraft-envios-fe/pull/73) | Add our API alias selection into creation guide of GE
+
+
 ## v0.31.0 (2026-01-09)
 
 ### Pull Requests
