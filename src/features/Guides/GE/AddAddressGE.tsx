@@ -3,13 +3,13 @@ import { useState } from "react";
 import { Button } from "flowbite-react";
 
 import { SelectOnlyAddressDropdown } from "@/features/Addresses/SelectOnlyAddressDropdown";
-import { CreateGuideAddressValuesGE } from "@/shared/types/guides.types";
+import { AddressExtraInfoGE, AddressInfoFormGE } from "@/shared/types/guides.types";
 
 interface AddAddressGEProps {
   typeAddress: 'origin' | 'destination';
-  addressData: CreateGuideAddressValuesGE;
+  addressData: AddressInfoFormGE;
   aliasError: string | null
-  updateAddress: (data: CreateGuideAddressValuesGE) => boolean
+  updateAddress: (data: AddressInfoFormGE) => boolean
   setAliasError: (newError: string) => void;
   toggleModal: () => void;
   goNext: () => void
@@ -19,21 +19,39 @@ interface AddAddressGEProps {
 export const AddAddressGE = ({
   typeAddress, addressData, aliasError, setAliasError, toggleModal, updateAddress, goNext, goPrev
 }: AddAddressGEProps) => {
-  const [selectedAlias, setSelectedAlias] = useState<string | null>(addressData?.alias ?? null)
+  const [selectedAlias, setSelectedAlias] = useState<string | null>(addressData?.address?.alias ?? null)
+  const [addressInfo, setAddressInfo] = useState<AddressExtraInfoGE | null>(addressData?.information ?? null)
+  const handleSelectAlias = ({ newAlias, addressInfo }:{ newAlias: string, addressInfo: AddressExtraInfoGE }) => {
+    setSelectedAlias(newAlias)
+    setAddressInfo(addressInfo)
+  }
 
   const typeAddressLabel = typeAddress === 'origin' ? 'origen' : 'destino'
   const cancelButtonText = typeAddress === 'destination' ? 'Regresar' : 'Cancelar'
   const colorCancelButton = typeAddress === 'destination' ? 'light' : 'red'
 
   const handleNextStep = () => {
-    // save info
+    if (aliasError) {
+      return;
+    }
+
     if (!selectedAlias) {
       // show error
       setAliasError("Por favor, selecciona un alias para continuar.")
       return;
     }
+    if (!addressInfo) {
+      console.warn('No address info available to update address')
+      return
+    }
 
-    const canGoNext = updateAddress({ alias: selectedAlias })
+    const newData: AddressInfoFormGE = {
+      address: {
+        alias: selectedAlias
+      },
+      information: addressInfo
+    }
+    const canGoNext = updateAddress(newData)
     if (canGoNext) {
       goNext()
     }
@@ -57,7 +75,7 @@ export const AddAddressGE = ({
       <SelectOnlyAddressDropdown
         aliasSelected={selectedAlias}
         aliasError={aliasError}
-        updateAliasSelection={setSelectedAlias}
+        updateAliasSelection={handleSelectAlias}
         setAliasError={setAliasError}
       />
       <div className="w-full mt-7 flex flex-col md:flex-row md:justify-between gap-4">

@@ -1,16 +1,16 @@
 import { useRef, useState } from "react";
 import { Modal, ModalHeader } from "flowbite-react"
+import { useMutation } from "@tanstack/react-query";
 
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
-import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, CreateGuideGEPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
+import { AddressInfoFormGE, CreateGuideFormValuesGE, CreateGuideGEPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
 import { ConfirmGuideGE } from "./ConfirmGuideGE";
 import { QuoteUI } from "@/shared/types/quotes.types";
-import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideGECb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
@@ -48,7 +48,7 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
    * It always returns true as the boolean that is returned indicates if there was an error, to catch same alias error.
    * @returns true
    */
-  const updateOriginAddress = (data: CreateGuideAddressValuesGE) => {
+  const updateOriginAddress = (data: AddressInfoFormGE) => {
     formData.current.originAddress = data
     return true
   }
@@ -59,8 +59,8 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
    * If not, it updates the address and returns true.
    * @returns boolean
    */
-  const updateDestinationAddress = (data: CreateGuideAddressValuesGE) => {
-    if (data.alias === formData.current.originAddress.alias) {
+  const updateDestinationAddress = (data: AddressInfoFormGE) => {
+    if (data.address.alias === formData.current.originAddress.address.alias) {
       setErrorSelectAlias('El alias de la dirección de destino no puede ser igual al de origen')
       return false
     }

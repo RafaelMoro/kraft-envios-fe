@@ -6,11 +6,13 @@ import { RiArrowDownSLine } from "@remixicon/react"
 import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
+import { AddressExtraInfoGE } from "@/shared/types/guides.types";
+import { Address } from "@/shared/types/addresses.types";
 
 interface SelectOnlyAddressDropdownProps {
   aliasSelected: string | null;
   aliasError: string | null
-  updateAliasSelection: (newAlias: string) => void;
+  updateAliasSelection: ({ newAlias, addressInfo }:{ newAlias: string, addressInfo: AddressExtraInfoGE }) => void;
   setAliasError: (newError: string) => void;
 }
 
@@ -21,18 +23,26 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
     queryFn: getAliasAddressesCb
   })
 
-  const onSelectAlias = (newAlias: string) => {
+  const onSelectAlias = (newAddress: Address) => {
     if (aliasError) setAliasError('')
 
     // Check if alias exists in GE aliases
-    const aliasGEFound = aliasesGE?.find(aliasGe => aliasGe === newAlias)
+    const aliasGEFound = aliasesGE?.find(aliasGe => aliasGe === newAddress.alias)
     if (!aliasGEFound) {
       // This alias does not exist in GE. Go to addresses to create it as well
       setAliasError("El alias seleccionado no existe para envíos GE. Por favor, crea la dirección con este alias en la sección de direcciones.");
-      return
     }
 
-    updateAliasSelection(newAlias)
+    const addressInfo: AddressExtraInfoGE = {
+      addressName: newAddress.addressName,
+      externalNumber: newAddress.externalNumber,
+      internalNumber: newAddress.internalNumber,
+      neighborhood: newAddress.neighborhood,
+      city: newAddress.city?.[0],
+      state: newAddress.state,
+      zipcode: newAddress.zipcode,
+    }
+    updateAliasSelection({ newAlias: newAddress.alias, addressInfo })
   }
 
   return (
@@ -61,7 +71,7 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
       )}
     >
       { (addresses && addresses.length > 0 )&& addresses.map((address) => (
-        <DropdownItem key={`alias-${address.alias}`} onClick={() => onSelectAlias(address.alias)}>
+        <DropdownItem key={`alias-${address.alias}`} onClick={() => onSelectAlias(address)}>
           {address.alias}
         </DropdownItem>
       )) }

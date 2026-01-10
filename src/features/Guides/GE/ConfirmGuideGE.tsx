@@ -20,11 +20,10 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
 
     const payload: CreateGuideGEPayload = {
       quoteId,
-      origin: originAddress,
-      destination: destinationAddress,
+      origin: originAddress.address,
+      destination: destinationAddress.address,
       parcel: parcelInfo
     }
-
     createGuide(payload)
   }
 
@@ -36,7 +35,7 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
         <ul className="grid grid-cols-1 gap-2">
           <li className="ml-6 text-base inline-flex gap-2">
             <RiMailLine size={18} />
-            {originAddress.alias}
+            {originAddress.address.alias}
           </li>
         </ul>
       </article>
@@ -44,7 +43,7 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
         <h5 className="text-lg font-bold">Datos del destinatario</h5>
         <li className="ml-6 text-base inline-flex gap-2">
             <RiMailLine size={18} />
-            {destinationAddress.alias}
+            {destinationAddress.address.alias}
           </li>
       </article>
       <article className="flex flex-col gap-4">
