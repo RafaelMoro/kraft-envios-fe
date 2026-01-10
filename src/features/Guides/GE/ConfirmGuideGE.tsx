@@ -32,7 +32,7 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
   }
 
   return (
-    <section className=" p-4 flex flex-col gap-10">
+    <section className="flex flex-col gap-10">
       <h4 className="text-xl font-bold text-center">Confirmar datos</h4>
       <article className="flex flex-col gap-4">
         <h5 className="text-lg font-bold">Remitente</h5>
