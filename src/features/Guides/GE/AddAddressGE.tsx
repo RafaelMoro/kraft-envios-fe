@@ -84,7 +84,7 @@ export const AddAddressGE = ({
           color={colorCancelButton}
           onClick={handleCancel}
         >{cancelButtonText}</Button>
-        <Button disabled={!selectedAlias} onClick={handleNextStep}>Siguiente</Button>
+        <Button disabled={!selectedAlias || Boolean(aliasError)} onClick={handleNextStep}>Siguiente</Button>
       </div>
     </div>
   )
