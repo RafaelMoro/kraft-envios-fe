@@ -123,26 +123,16 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
           goPrev={goPrev}
         />
       )}
-      {/* { step === 1 && (
-        <CreateGuideAddressFormGE
-          typeAddress="origin"
-          addressData={formData.current.originAddress}
-          goNext={goNext}
-          updateAddress={updateOriginAddress}
-          toggleModal={toggleModal}
-          goPrev={goPrev}
-          errorSelectAlias={errorSelectAlias}
-        />
-      )} */}
       { step === 2 && (
-        <CreateGuideAddressFormGE
+        <AddAddressGE
           typeAddress="destination"
           addressData={formData.current.destinationAddress}
+          aliasError={errorSelectAlias}
+          setAliasError={setErrorSelectAlias}
           goNext={goNext}
           updateAddress={updateDestinationAddress}
           toggleModal={toggleModal}
           goPrev={goPrev}
-          errorSelectAlias={errorSelectAlias}
         />
       )}
       { step === 3 && (

@@ -59,7 +59,7 @@ export const AddAddressGE = ({
         updateAliasSelection={setSelectedAlias}
         setAliasError={setAliasError}
       />
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-7">
         <Button
           outline
           color="red"
