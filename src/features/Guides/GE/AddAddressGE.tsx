@@ -8,15 +8,18 @@ import { CreateGuideAddressValuesGE } from "@/shared/types/guides.types";
 interface AddAddressGEProps {
   typeAddress: 'origin' | 'destination';
   addressData: CreateGuideAddressValuesGE;
+  aliasError: string | null
   updateAddress: (data: CreateGuideAddressValuesGE) => boolean
+  setAliasError: (newError: string) => void;
   toggleModal: () => void;
   goNext: () => void
   goPrev: () => void
 }
 
-export const AddAddressGE = ({ typeAddress, addressData, toggleModal, updateAddress, goNext, goPrev }: AddAddressGEProps) => {
-  const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
-  const [aliasError, setAliasError] = useState<string>("")
+export const AddAddressGE = ({
+  typeAddress, addressData, aliasError, setAliasError, toggleModal, updateAddress, goNext, goPrev
+}: AddAddressGEProps) => {
+  const [selectedAlias, setSelectedAlias] = useState<string | null>(addressData?.alias ?? null)
 
   const typeAddressLabel = typeAddress === 'origin' ? 'origen' : 'destino'
   const cancelButtonText = typeAddress === 'destination' ? 'Regresar' : 'Cancelar'
@@ -47,7 +50,9 @@ export const AddAddressGE = ({ typeAddress, addressData, toggleModal, updateAddr
   return (
     <div className="p-4 flex flex-col gap-4">
       <h4 className="text-xl">Domicilio</h4>
-      <p className="text-sm text-gray-600 dark:text-gray-400">Selecciona un alias. El alias debe de existir en GE para continuar.</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Selecciona un alias. El alias debe de existir en GE para continuar.
+      </p>
       <SelectOnlyAddressDropdown
         aliasSelected={selectedAlias}
         aliasError={aliasError}
