@@ -1,20 +1,20 @@
 import { useRef, useState } from "react";
-import { Modal, ModalHeader } from "flowbite-react"
+import { Modal, ModalBody, ModalHeader } from "flowbite-react"
+import { useMutation } from "@tanstack/react-query";
 
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
-import { CreateGuideAddressFormGE } from "./CreateGuideAddressFormGE";
-import { CreateGuideAddressValuesGE, CreateGuideFormValuesGE, CreateGuideGEPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
+import { AddressInfoFormGE, CreateGuideFormValuesGE, CreateGuideGEPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
 import { ConfirmGuideGE } from "./ConfirmGuideGE";
 import { QuoteUI } from "@/shared/types/quotes.types";
-import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideGECb } from "@/shared/utils/guides.utils";
-import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
+import { ResultGuideScreen } from "../ResultGuideScreen";
+import { AddAddressGE } from "./AddAddressGE";
 
 interface CreateGuideGEProps {
   open: boolean;
@@ -48,7 +48,7 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
    * It always returns true as the boolean that is returned indicates if there was an error, to catch same alias error.
    * @returns true
    */
-  const updateOriginAddress = (data: CreateGuideAddressValuesGE) => {
+  const updateOriginAddress = (data: AddressInfoFormGE) => {
     formData.current.originAddress = data
     return true
   }
@@ -59,8 +59,8 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
    * If not, it updates the address and returns true.
    * @returns boolean
    */
-  const updateDestinationAddress = (data: CreateGuideAddressValuesGE) => {
-    if (data.alias === formData.current.originAddress.alias) {
+  const updateDestinationAddress = (data: AddressInfoFormGE) => {
+    if (data.address.alias === formData.current.originAddress.address.alias) {
       setErrorSelectAlias('El alias de la dirección de destino no puede ser igual al de origen')
       return false
     }
@@ -105,66 +105,70 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
   return (
     <Modal show={open} onClose={closeModal}>
       <ModalHeader>Crear guía GE</ModalHeader>
-      { !isMobileTablet && (
-        <div className="py-6 flex justify-center">
-          <Stepper steps={steps} currentStep={step} />
-        </div>
-      )}
-      { step === 1 && (
-        <CreateGuideAddressFormGE
-          typeAddress="origin"
-          addressData={formData.current.originAddress}
-          goNext={goNext}
-          updateAddress={updateOriginAddress}
-          toggleModal={toggleModal}
-          goPrev={goPrev}
-          errorSelectAlias={errorSelectAlias}
-        />
-      )}
-      { step === 2 && (
-        <CreateGuideAddressFormGE
-          typeAddress="destination"
-          addressData={formData.current.destinationAddress}
-          goNext={goNext}
-          updateAddress={updateDestinationAddress}
-          toggleModal={toggleModal}
-          goPrev={goPrev}
-          errorSelectAlias={errorSelectAlias}
-        />
-      )}
-      { step === 3 && (
-        <ParcelInfoFormGE
-          isMobileTablet={isMobileTablet}
-          searchProductSat={searchProductSat}
-          selectedProduct={selectedProduct.current}
-          parcelInfo={formData.current.parcelInfo}
-          goNext={goNext}
-          goPrev={goPrev}
-          updateErrorProductSat={setErrorProductSat}
-          updateParcelInfo={updateParcelInfo}
-        >
-          <ProductSatDropdown
-            searchProductSat={searchProductSat}
-            errorProductSat={errorProductSat}
-            setSearchProductSat={setSearchProductSat}
-            updateSelectedOption={updateSelectedProduct}
-            updateErrorProductSat={setErrorProductSat}
+      <ModalBody>
+        { !isMobileTablet && (
+          <div className="py-6 flex justify-center">
+            <Stepper steps={steps} currentStep={step} />
+          </div>
+        )}
+        { step === 1 && (
+          <AddAddressGE
+            typeAddress="origin"
+            addressData={formData.current.originAddress}
+            aliasError={errorSelectAlias}
+            setAliasError={setErrorSelectAlias}
+            goNext={goNext}
+            updateAddress={updateOriginAddress}
+            toggleModal={toggleModal}
+            goPrev={goPrev}
           />
-        </ParcelInfoFormGE>
-      )}
-      { step === 4 && (
-        <ConfirmGuideGE
-          formData={formData.current}
-          selectedProduct={selectedProduct.current}
-          selectedQuotes={selectedQuotes}
-          goPrev={goPrev}
-          isPending={isPending}
-          createGuide={createGuide}
-        />
-      )}
-      { (isError || isSuccess) && step === 5 && (
-        <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
-      ) }
+        )}
+        { step === 2 && (
+          <AddAddressGE
+            typeAddress="destination"
+            addressData={formData.current.destinationAddress}
+            aliasError={errorSelectAlias}
+            setAliasError={setErrorSelectAlias}
+            goNext={goNext}
+            updateAddress={updateDestinationAddress}
+            toggleModal={toggleModal}
+            goPrev={goPrev}
+          />
+        )}
+        { step === 3 && (
+          <ParcelInfoFormGE
+            isMobileTablet={isMobileTablet}
+            searchProductSat={searchProductSat}
+            selectedProduct={selectedProduct.current}
+            parcelInfo={formData.current.parcelInfo}
+            goNext={goNext}
+            goPrev={goPrev}
+            updateErrorProductSat={setErrorProductSat}
+            updateParcelInfo={updateParcelInfo}
+          >
+            <ProductSatDropdown
+              searchProductSat={searchProductSat}
+              errorProductSat={errorProductSat}
+              setSearchProductSat={setSearchProductSat}
+              updateSelectedOption={updateSelectedProduct}
+              updateErrorProductSat={setErrorProductSat}
+            />
+          </ParcelInfoFormGE>
+        )}
+        { step === 4 && (
+          <ConfirmGuideGE
+            formData={formData.current}
+            selectedProduct={selectedProduct.current}
+            selectedQuotes={selectedQuotes}
+            goPrev={goPrev}
+            isPending={isPending}
+            createGuide={createGuide}
+          />
+        )}
+        { (isError || isSuccess) && step === 5 && (
+          <ResultGuideScreen guide={data} isSuccess={isSuccess} isError={isError} closeModal={closeModal} />
+        ) }
+      </ModalBody>
     </Modal>
   )
 }

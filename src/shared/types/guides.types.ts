@@ -61,9 +61,27 @@ export type CreateGuideFormValuesPkk = {
   parcelInfo: ParcelInfoValuesPkk;
 }
 
+/**
+ * This type is to show additional info in the confirm modal
+ */
+export type AddressExtraInfoGE = {
+  addressName: string;
+  externalNumber: string;
+  internalNumber: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipcode: string
+}
+
+export type AddressInfoFormGE = {
+  address: CreateGuideAddressValuesGE;
+  information: AddressExtraInfoGE
+}
+
 export type CreateGuideFormValuesGE = {
-  originAddress: CreateGuideAddressValuesGE;
-  destinationAddress: CreateGuideAddressValuesGE;
+  originAddress: AddressInfoFormGE
+  destinationAddress: AddressInfoFormGE;
   parcelInfo: ParcelInfoValuesGE;
 }
 

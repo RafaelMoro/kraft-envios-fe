@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { Address, AddressAliasResponse, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse, DeleteAddressPayload, GetAddressesResponse } from "../types/addresses.types";
 import { ADDRESS_API_ENDPOINT } from "../constants/global.constants";
-import { CreateAddressGEPayload } from "../types/guides.types";
+import { AddressExtraInfoGE, CreateAddressGEPayload } from "../types/guides.types";
 import { addToLocalStorage, getLocalStorageInfo } from "./local-storage.utils";
 import { PENDING_GE_ADDRESSES_KEY } from "../constants/local-storage.constants";
 
@@ -91,4 +91,9 @@ export const removeAddressFromLocalStorage = async (alias: string) => {
   } catch (error) {
     console.error('Error removing address from local storage:', error);
   }
+}
+
+export const formatAddressForDisplay = (information: AddressExtraInfoGE): string => {
+  const addressNumberInfo = information?.internalNumber ? `${information.externalNumber}, ${information.internalNumber}` : `${information.externalNumber}`;
+  return `${information.addressName} ${addressNumberInfo}, ${information.neighborhood}, ${information.city} ${information.state}, C.P. ${information.zipcode}`;
 }

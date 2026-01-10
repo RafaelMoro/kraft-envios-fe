@@ -1,7 +1,9 @@
+import { Button, Spinner } from "flowbite-react";
+import { RiEditBoxLine, RiMailLine, RiMapPinLine, RiMenuSearchLine, RiRuler2Line, RiWeightLine } from "@remixicon/react";
+
 import { CreateGuideFormValuesGE, CreateGuideGEPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
-import { RiEditBoxLine, RiMailLine, RiMenuSearchLine, RiRuler2Line, RiWeightLine } from "@remixicon/react";
-import { Button, Spinner } from "flowbite-react";
+import { formatAddressForDisplay } from "@/shared/utils/addresses.utils";
 
 interface ConfirmGuideGEProps {
   formData: CreateGuideFormValuesGE;
@@ -14,38 +16,47 @@ interface ConfirmGuideGEProps {
 
 export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQuotes, goPrev, createGuide }: ConfirmGuideGEProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
+  const originInformation = originAddress.information
+  const destinationInformation = destinationAddress.information
 
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
 
     const payload: CreateGuideGEPayload = {
       quoteId,
-      origin: originAddress,
-      destination: destinationAddress,
+      origin: originAddress.address,
+      destination: destinationAddress.address,
       parcel: parcelInfo
     }
-
     createGuide(payload)
   }
 
   return (
-    <section className=" p-4 flex flex-col gap-10">
+    <section className="flex flex-col gap-10">
       <h4 className="text-xl font-bold text-center">Confirmar datos</h4>
       <article className="flex flex-col gap-4">
         <h5 className="text-lg font-bold">Remitente</h5>
         <ul className="grid grid-cols-1 gap-2">
           <li className="ml-6 text-base inline-flex gap-2">
             <RiMailLine size={18} />
-            {originAddress.alias}
+            {originAddress.address.alias}
+          </li>
+          <li className="ml-6 text-base inline-flex gap-2">
+            <RiMapPinLine />
+            {formatAddressForDisplay(originInformation)}
           </li>
         </ul>
       </article>
       <article className="flex flex-col gap-4">
         <h5 className="text-lg font-bold">Datos del destinatario</h5>
         <li className="ml-6 text-base inline-flex gap-2">
-            <RiMailLine size={18} />
-            {destinationAddress.alias}
-          </li>
+          <RiMailLine size={18} />
+          {destinationAddress.address.alias}
+        </li>
+        <li className="ml-6 text-base inline-flex gap-2">
+          <RiMapPinLine />
+          {formatAddressForDisplay(destinationInformation)}
+        </li>
       </article>
       <article className="flex flex-col gap-4">
         <h5 className="text-lg font-bold">Paquete</h5>
