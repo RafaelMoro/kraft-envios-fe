@@ -19,7 +19,7 @@ import { ParcelInfo } from "../ParcelInfo";
 import { ConfirmGuideDataTone } from "./ConfirmGuideDataTone";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideToneCb } from "@/shared/utils/guides.utils";
-import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
+import { ResultGuideScreen } from "../ResultGuideScreen";
 import { AddAddressTone } from "./AddAddressTone";
 import { useSaveAlias } from "@/shared/hooks/useAlias";
 

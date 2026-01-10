@@ -13,7 +13,7 @@ import { ConfirmGuideGE } from "./ConfirmGuideGE";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideGECb } from "@/shared/utils/guides.utils";
-import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
+import { ResultGuideScreen } from "../ResultGuideScreen";
 import { AddAddressGE } from "./AddAddressGE";
 
 interface CreateGuideGEProps {

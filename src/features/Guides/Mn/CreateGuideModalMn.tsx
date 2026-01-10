@@ -20,7 +20,7 @@ import { ProductSatDropdown } from "./ProductSatDropdown";
 import { QuoteUI } from "@/shared/types/quotes.types";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideMnCb } from "@/shared/utils/guides.utils";
-import { ResultGuideScreen } from "./ResultGuideScreen";
+import { ResultGuideScreen } from "../ResultGuideScreen";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { AddAddressMn } from "./AddAddressMn";
 import { useSaveAlias } from "@/shared/hooks/useAlias";
