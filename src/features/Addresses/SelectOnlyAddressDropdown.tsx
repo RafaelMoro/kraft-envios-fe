@@ -59,9 +59,9 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
           >
             { (isPending || isPendingFetchAliasGE) && (<Spinner />)}
             { (isError && !isPending) && ("No se han podido cargar los alias")}
-            { (isErrorFetchAliasGE && !isPendingFetchAliasGE) && ("No se han podido cargar los alias de GE")}
-            { (!isPending && addresses && addresses.length > 0 && !aliasSelected) && 'Alias de dirección'}
-            { (!isPending && addresses && addresses.length > 0 && aliasSelected) && aliasSelected }
+            { (!isError && isErrorFetchAliasGE && !isPendingFetchAliasGE) && ("No se han podido cargar los alias de GE")}
+            { (!isPending && !isError && !isErrorFetchAliasGE && addresses && addresses.length > 0 && !aliasSelected) && 'Alias de dirección'}
+            { (!isPending && !isError && !isErrorFetchAliasGE && addresses && addresses.length > 0 && aliasSelected) && aliasSelected }
             <RiArrowDownSLine />
           </Button>
           { aliasError && (
