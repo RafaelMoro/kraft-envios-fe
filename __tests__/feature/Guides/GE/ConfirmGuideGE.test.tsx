@@ -52,11 +52,18 @@ const mockSelectedProduct: SearchProduct = {
 const mockSelectedQuotes: QuoteUI[] = [
   {
     id: 'quote-123',
-    provider: 'GE',
-    amount: 150,
-    currency: 'MXN',
-    deliveryEstimate: 3,
-    service: 'Estandar'
+    service: 'Estandar',
+    total: 150,
+    typeService: 'standard',
+    courier: 'Estafeta',
+    source: 'GE',
+    amountFormatted: '$150.00 MXN',
+    logoSrc: {
+      source: '/img/estafeta.png',
+      provider: 'estafeta',
+      width: 100,
+      height: 50
+    }
   }
 ]
 
