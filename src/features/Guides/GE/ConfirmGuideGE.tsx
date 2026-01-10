@@ -1,7 +1,8 @@
+import { Button, Spinner } from "flowbite-react";
+import { RiEditBoxLine, RiMailLine, RiMapPinLine, RiMenuSearchLine, RiRuler2Line, RiWeightLine } from "@remixicon/react";
+
 import { CreateGuideFormValuesGE, CreateGuideGEPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
-import { RiEditBoxLine, RiMailLine, RiMenuSearchLine, RiRuler2Line, RiWeightLine } from "@remixicon/react";
-import { Button, Spinner } from "flowbite-react";
 
 interface ConfirmGuideGEProps {
   formData: CreateGuideFormValuesGE;
@@ -14,6 +15,8 @@ interface ConfirmGuideGEProps {
 
 export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQuotes, goPrev, createGuide }: ConfirmGuideGEProps) => {
   const { originAddress, destinationAddress, parcelInfo } = formData
+  const originInformation = originAddress.information
+  const destinationInformation = destinationAddress.information
 
   const handleSubmit = () => {
     const quoteId = selectedQuotes?.[0]?.id
@@ -37,14 +40,28 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
             <RiMailLine size={18} />
             {originAddress.address.alias}
           </li>
+          <li className="ml-6 text-base inline-flex gap-2">
+            <RiMapPinLine />
+            {originInformation.addressName} {originInformation.externalNumber} {originInformation.internalNumber},
+            {originInformation.neighborhood},
+            {originInformation.city} {originInformation.state},
+            {originInformation.zipcode}
+          </li>
         </ul>
       </article>
       <article className="flex flex-col gap-4">
         <h5 className="text-lg font-bold">Datos del destinatario</h5>
         <li className="ml-6 text-base inline-flex gap-2">
-            <RiMailLine size={18} />
-            {destinationAddress.address.alias}
-          </li>
+          <RiMailLine size={18} />
+          {destinationAddress.address.alias}
+        </li>
+        <li className="ml-6 text-base inline-flex gap-2">
+          <RiMapPinLine />
+          {destinationInformation.addressName} {destinationInformation.externalNumber} { destinationInformation.internalNumber},
+          {destinationInformation.neighborhood},
+          {destinationInformation.city} {destinationInformation.state},
+          {destinationInformation.zipcode}
+        </li>
       </article>
       <article className="flex flex-col gap-4">
         <h5 className="text-lg font-bold">Paquete</h5>
