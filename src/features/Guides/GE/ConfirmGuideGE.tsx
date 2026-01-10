@@ -3,6 +3,7 @@ import { RiEditBoxLine, RiMailLine, RiMapPinLine, RiMenuSearchLine, RiRuler2Line
 
 import { CreateGuideFormValuesGE, CreateGuideGEPayload, SearchProduct } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types";
+import { formatAddressForDisplay } from "@/shared/utils/addresses.utils";
 
 interface ConfirmGuideGEProps {
   formData: CreateGuideFormValuesGE;
@@ -42,10 +43,7 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
           </li>
           <li className="ml-6 text-base inline-flex gap-2">
             <RiMapPinLine />
-            {originInformation.addressName} {originInformation.externalNumber} {originInformation.internalNumber},
-            {originInformation.neighborhood},
-            {originInformation.city} {originInformation.state},
-            {originInformation.zipcode}
+            {formatAddressForDisplay(originInformation)}
           </li>
         </ul>
       </article>
@@ -57,10 +55,7 @@ export const ConfirmGuideGE = ({ formData, selectedProduct, isPending, selectedQ
         </li>
         <li className="ml-6 text-base inline-flex gap-2">
           <RiMapPinLine />
-          {destinationInformation.addressName} {destinationInformation.externalNumber} { destinationInformation.internalNumber},
-          {destinationInformation.neighborhood},
-          {destinationInformation.city} {destinationInformation.state},
-          {destinationInformation.zipcode}
+          {formatAddressForDisplay(destinationInformation)}
         </li>
       </article>
       <article className="flex flex-col gap-4">
