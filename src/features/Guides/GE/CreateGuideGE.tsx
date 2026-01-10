@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { createGuideGECb } from "@/shared/utils/guides.utils";
 import { ResultGuideScreen } from "../Mn/ResultGuideScreen";
+import { AddAddressGE } from "./AddAddressGE";
 
 interface CreateGuideGEProps {
   open: boolean;
@@ -111,6 +112,18 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
         </div>
       )}
       { step === 1 && (
+        <AddAddressGE
+          typeAddress="origin"
+          addressData={formData.current.originAddress}
+          aliasError={errorSelectAlias}
+          setAliasError={setErrorSelectAlias}
+          goNext={goNext}
+          updateAddress={updateOriginAddress}
+          toggleModal={toggleModal}
+          goPrev={goPrev}
+        />
+      )}
+      {/* { step === 1 && (
         <CreateGuideAddressFormGE
           typeAddress="origin"
           addressData={formData.current.originAddress}
@@ -120,7 +133,7 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
           goPrev={goPrev}
           errorSelectAlias={errorSelectAlias}
         />
-      )}
+      )} */}
       { step === 2 && (
         <CreateGuideAddressFormGE
           typeAddress="destination"

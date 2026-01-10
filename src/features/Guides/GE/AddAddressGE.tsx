@@ -51,7 +51,7 @@ export const AddAddressGE = ({
     <div className="p-4 flex flex-col gap-4">
       <h4 className="text-xl">Domicilio</h4>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        Selecciona un alias. El alias debe de existir en GE para continuar.
+        Selecciona un alias de {typeAddressLabel}. El alias debe de existir en GE para continuar.
       </p>
       <SelectOnlyAddressDropdown
         aliasSelected={selectedAlias}
