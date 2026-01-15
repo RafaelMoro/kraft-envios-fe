@@ -5,8 +5,9 @@ import { Button, CheckIcon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner 
 
 import { Address, AddressAliasResponse, DeleteAddressPayload } from "@/shared/types/addresses.types";
 import { GeneralApiError } from "@/shared/types/global.types";
-import { deleteAddressCb } from "@/shared/utils/addresses.utils";
+import { deleteAddressCb, deleteGEAddressCb } from "@/shared/utils/addresses.utils";
 import { getGEAddressesCb } from "@/shared/utils/guides.utils";
+import { DeleteGEAdressResponse } from "@/shared/types/guides.types";
 
 interface DeleteAddressModalProps {
   open: boolean;
@@ -47,6 +48,20 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
     }
   })
 
+  const {
+    mutate: deleteGEAddress, isError: isErrorGeDeleteAddress, isPending: isPendingGeDeleteAddress, isSuccess: isSuccessGeDeleteAddress, isIdle: isIdleGeDeleteAddress
+  } = useMutation<DeleteGEAdressResponse, GeneralApiError, string>({
+    mutationFn: deleteGEAddressCb,
+    onSuccess: () => {
+      // success
+    },
+    onError: () => {
+      // updateNotificationMessage('Ocurrió un error al eliminar la dirección. Por favor, intenta de nuevo.')
+      // toggleNotification()
+      // toggleModal()
+    }
+  })
+
   const handleDelete = () => {
     if (!addressToDelete) {
       console.warn('No address to delete')
@@ -55,6 +70,12 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
     if (geAddresses && addressToDelete?.isGEAddress) {
       const geAddresstoDelete = geAddresses?.find(geAddress => geAddress.alias === addressToDelete.alias)
       const geAddressId = geAddresstoDelete?.id
+      if (!geAddressId) {
+        console.warn('No GE address ID found to delete')
+        return
+      }
+      // TODO: Check if first we get the delete adress and then this mutation
+      deleteGEAddress(geAddressId)
     }
     deleteAddress({ alias: addressToDelete.alias })
   }
