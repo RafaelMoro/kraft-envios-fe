@@ -36,7 +36,7 @@ export const AddressCard = ({ address, handleDeleteAddress, handleEditAddress }:
           )}
           { address?.isGEAddress && (
             <div className="w-fit">
-              <Badge color="pink" size="xs" className="">
+              <Badge color="pink" size="xs">
                 Dirección creada en GE
               </Badge>
             </div>
