@@ -34,7 +34,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
   }
 
   // Delete address states
-  const [selectedAddressAlias, setSelectedAddressAlias] = useState<string>("")
+  const [addressToDelete, setAddressToDelete] = useState<Address | null>(null)
   const [openDeleteAddress, setOpenDeleteAddress] = useState(false)
   const toggleModalDeleteAddress = () => setOpenDeleteAddress((prev) => !prev)
 
@@ -64,8 +64,8 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
 
   const { data: addressesData, refetch, isPending, isError } = useGetAddress()
 
-  const handleDeleteAddress = (addressAlias: string) => {
-    setSelectedAddressAlias(addressAlias)
+  const handleDeleteAddress = (addressToBeDeleted: Address) => {
+    setAddressToDelete(addressToBeDeleted)
     toggleModalDeleteAddress()
   }
 
@@ -146,7 +146,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       { openDeleteAddress && (
         <DeleteAddressModal
           open={openDeleteAddress}
-          addressAlias={selectedAddressAlias}
+          addressToDelete={addressToDelete}
           toggleModal={toggleModalDeleteAddress}
           refetchAddresses={refetchAddresses}
           toggleNotification={toggleNotification}

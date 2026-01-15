@@ -5,7 +5,7 @@ import { Address } from "@/shared/types/addresses.types"
 
 interface AddressCardProps {
   address: Address;
-  handleDeleteAddress: (addressAlias: string) => void
+  handleDeleteAddress: (addressToDelete: Address) => void
   handleEditAddress: (addressToEdit: Address) => void
 }
 
@@ -67,7 +67,7 @@ export const AddressCard = ({ address, handleDeleteAddress, handleEditAddress }:
             <RiPencilLine size={18} />
             Editar
           </Button>
-          <Button className="border-0 inline-flex gap-2" color="red" outline onClick={() => handleDeleteAddress(address?.alias)}>
+          <Button className="border-0 inline-flex gap-2" color="red" outline onClick={() => handleDeleteAddress(address)}>
             <RiDeleteBinLine size={18} />
             Eliminar
           </Button>

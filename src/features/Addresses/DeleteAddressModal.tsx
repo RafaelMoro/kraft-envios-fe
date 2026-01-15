@@ -1,20 +1,21 @@
 "use client"
-import { AddressAliasResponse, DeleteAddressPayload } from "@/shared/types/addresses.types";
-import { GeneralApiError } from "@/shared/types/global.types";
-import { deleteAddressCb } from "@/shared/utils/addresses.utils";
 import { useMutation } from "@tanstack/react-query";
 import { Button, CheckIcon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
 
+import { Address, AddressAliasResponse, DeleteAddressPayload } from "@/shared/types/addresses.types";
+import { GeneralApiError } from "@/shared/types/global.types";
+import { deleteAddressCb } from "@/shared/utils/addresses.utils";
+
 interface DeleteAddressModalProps {
   open: boolean;
-  addressAlias: string;
+  addressToDelete: Address | null;
   toggleModal: () => void;
   refetchAddresses: () => Promise<void>;
   toggleNotification: () => void;
   updateNotificationMessage: (message: string) => void;
 }
 
-export const DeleteAddressModal = ({ open, toggleModal, addressAlias, refetchAddresses, toggleNotification, updateNotificationMessage }: DeleteAddressModalProps) => {
+export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetchAddresses, toggleNotification, updateNotificationMessage }: DeleteAddressModalProps) => {
   const { mutate: deleteAddress, isError, isPending, isSuccess, isIdle } = useMutation<AddressAliasResponse, GeneralApiError, DeleteAddressPayload>({
     mutationFn: deleteAddressCb,
     onSuccess: () => {
@@ -31,14 +32,18 @@ export const DeleteAddressModal = ({ open, toggleModal, addressAlias, refetchAdd
   })
 
   const handleDelete = () => {
-    deleteAddress({ alias: addressAlias })
+    if (!addressToDelete) {
+      console.log('No address to delete')
+      return
+    }
+    deleteAddress({ alias: addressToDelete.alias })
   }
 
   return (
     <Modal show={open} onClose={toggleModal}>
       <ModalHeader>Eliminar dirección</ModalHeader>
       <ModalBody>
-        <p className="font-semibold text-center mb-2">¿Estás seguro que deseas eliminar la dirección &quot;{addressAlias}&quot;?</p>
+        <p className="font-semibold text-center mb-2">¿Estás seguro que deseas eliminar la dirección &quot;{addressToDelete?.alias}&quot;?</p>
         <p className="text-red-600 dark:text-red-400 text-center">Esta acción no se puede deshacer.</p>
       </ModalBody>
       <ModalFooter>
