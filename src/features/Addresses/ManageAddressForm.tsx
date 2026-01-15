@@ -72,7 +72,7 @@ export const ManageAddressForm = ({
   const [hasConsentedOnce, setHasConsentedOnce] = useState(false);
   const { data: dataAliases, refetch,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
     queryKey: ['aliasAddresses'],
-    queryFn: getGEAddressesCb,
+    queryFn: () => getGEAddressesCb(true),
     enabled: hasConsentedOnce
   })
   const refetchAddressesGE = async () => {

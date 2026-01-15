@@ -20,7 +20,7 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
   const { data: addresses, isPending, isError } = useGetAddress()
   const { data: aliasesGE,  isPending: isPendingFetchAliasGE, isError: isErrorFetchAliasGE } = useQuery({
     queryKey: ['aliasAddresses'],
-    queryFn: getGEAddressesCb
+    queryFn: () => getGEAddressesCb(true)
   })
 
   const onSelectAlias = (newAddress: Address) => {
