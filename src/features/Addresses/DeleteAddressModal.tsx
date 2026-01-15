@@ -1,10 +1,12 @@
 "use client"
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button, CheckIcon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
 
 import { Address, AddressAliasResponse, DeleteAddressPayload } from "@/shared/types/addresses.types";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { deleteAddressCb } from "@/shared/utils/addresses.utils";
+import { getGEAddressesCb } from "@/shared/utils/guides.utils";
 
 interface DeleteAddressModalProps {
   open: boolean;
@@ -16,6 +18,20 @@ interface DeleteAddressModalProps {
 }
 
 export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetchAddresses, toggleNotification, updateNotificationMessage }: DeleteAddressModalProps) => {
+  const [isGEAddress, setIsGEAddress] = useState(false)
+  
+  useEffect(() => {
+    if (addressToDelete && addressToDelete.isGEAddress) {
+      setIsGEAddress(true)
+    }
+  }, [addressToDelete])
+
+  const { data: geAddresses,  isPending: isPendingGeAddresses, isError: isErrorGeAddresses } = useQuery({
+    queryKey: ['GEAddresses'],
+    queryFn: getGEAddressesCb,
+    enabled: isGEAddress
+  })
+
   const { mutate: deleteAddress, isError, isPending, isSuccess, isIdle } = useMutation<AddressAliasResponse, GeneralApiError, DeleteAddressPayload>({
     mutationFn: deleteAddressCb,
     onSuccess: () => {
@@ -33,8 +49,12 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
 
   const handleDelete = () => {
     if (!addressToDelete) {
-      console.log('No address to delete')
+      console.warn('No address to delete')
       return
+    }
+    if (geAddresses && addressToDelete?.isGEAddress) {
+      const geAddresstoDelete = geAddresses?.find(geAddress => geAddress.alias === addressToDelete.alias)
+      const geAddressId = geAddresstoDelete?.id
     }
     deleteAddress({ alias: addressToDelete.alias })
   }
@@ -52,7 +72,7 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
       <ModalFooter>
         <div className="w-full flex justify-between">
           <Button disabled={isPending || isSuccess} outline onClick={toggleModal}>Cancelar</Button>
-          <Button disabled={isPending || isSuccess} onClick={handleDelete} color="red">
+          <Button disabled={isPending || isSuccess || isPendingGeAddresses} onClick={handleDelete} color="red">
             { (isIdle || isError) && 'Eliminar'}
             { isPending && (<Spinner aria-label="loading delete address" />) }
             { isSuccess && (<CheckIcon />)}
