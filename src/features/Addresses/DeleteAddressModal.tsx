@@ -44,6 +44,9 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
       <ModalHeader>Eliminar dirección</ModalHeader>
       <ModalBody>
         <p className="font-semibold text-center mb-2">¿Estás seguro que deseas eliminar la dirección &quot;{addressToDelete?.alias}&quot;?</p>
+        { addressToDelete && addressToDelete?.isGEAddress && (
+          <p className="font-semibold text-red-600 dark:text-red-400 text-center mb-2">Esta dirección también será eliminada de GE</p>
+        )}
         <p className="text-red-600 dark:text-red-400 text-center">Esta acción no se puede deshacer.</p>
       </ModalBody>
       <ModalFooter>
