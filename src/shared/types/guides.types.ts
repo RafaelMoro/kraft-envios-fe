@@ -353,6 +353,13 @@ export interface GetAliasAddressesGEResponse {
   version: string;
 }
 
+export interface DeleteGEAdressResponse {
+  version: string;
+  message: string;
+  error: null;
+  data: null
+}
+
 export interface CreateAddressGEResponse {
   zipcode: string;
   neighborhood: string;
