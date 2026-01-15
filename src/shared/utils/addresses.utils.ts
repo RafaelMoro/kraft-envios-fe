@@ -6,8 +6,13 @@ import { addToLocalStorage, getLocalStorageInfo } from "./local-storage.utils";
 import { PENDING_GE_ADDRESSES_KEY } from "../constants/local-storage.constants";
 
 export const formatPayloadCreateAddress = ({
-  payload, cities, towns
-}: { payload: CreateAddressFormValues, cities: string[], towns: string[]}): CreateAddressPayload => {
+  payload, cities, towns, isGEAddress = false
+}: {
+  payload: CreateAddressFormValues,
+  cities: string[],
+  towns: string[],
+  isGEAddress?: boolean
+}): CreateAddressPayload => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { street1, ...rest } = payload
   return {
@@ -16,7 +21,8 @@ export const formatPayloadCreateAddress = ({
     reference: payload.reference ?? '',
     city: cities,
     town: towns,
-    addressName: payload.street1
+    addressName: payload.street1,
+    isGEAddress
   }
 }
 

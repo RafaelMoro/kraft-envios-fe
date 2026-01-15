@@ -143,7 +143,7 @@ export const CreateAddressSubform = ({
         return
       }
   
-      const formattedPayload = formatPayloadCreateAddress({payload: data, cities, towns})
+      const formattedPayload = formatPayloadCreateAddress({ payload: data, cities, towns, isGEAddress: shouldCreateGEAddress })
       if (isEdit) {
         editAddressMutation(formattedPayload)
         return

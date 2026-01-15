@@ -41,6 +41,7 @@ export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber
   city: string[];
   town: string[];
   addressName: string;
+  isGEAddress: boolean;
 }
 
 export type DeleteAddressPayload = {

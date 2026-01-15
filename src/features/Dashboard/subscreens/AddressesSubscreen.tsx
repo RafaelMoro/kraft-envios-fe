@@ -52,6 +52,7 @@ export const AddressesSubscreen = ({ userInfo }: AddressesSubscreenProps) => {
       state: addressToEdit.state,
       zipcode: addressToEdit.zipcode,
       town: addressToEdit.town,
+      isGEAddress: addressToEdit.isGEAddress || false,
     }
     setIsEdit(true)
     toggleModalManageAddress()
