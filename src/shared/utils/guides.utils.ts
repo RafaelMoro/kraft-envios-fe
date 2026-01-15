@@ -91,7 +91,7 @@ export const createGuideGECb = async (data: CreateGuideGEPayload) => {
   }
 }
 
-export const getAliasAddressesCb = async (): Promise<string[]> => {
+export const getGEAddressesCb = async (): Promise<string[]> => {
   try {
     const res: AxiosResponse<{ aliases: string[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
     const aliases = res?.data?.aliases ?? []

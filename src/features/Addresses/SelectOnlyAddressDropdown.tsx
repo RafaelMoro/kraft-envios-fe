@@ -5,7 +5,7 @@ import { RiArrowDownSLine } from "@remixicon/react"
 
 import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
+import { getGEAddressesCb } from "@/shared/utils/guides.utils";
 import { AddressExtraInfoGE } from "@/shared/types/guides.types";
 import { Address } from "@/shared/types/addresses.types";
 
@@ -20,7 +20,7 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
   const { data: addresses, isPending, isError } = useGetAddress()
   const { data: aliasesGE,  isPending: isPendingFetchAliasGE, isError: isErrorFetchAliasGE } = useQuery({
     queryKey: ['aliasAddresses'],
-    queryFn: getAliasAddressesCb
+    queryFn: getGEAddressesCb
   })
 
   const onSelectAlias = (newAddress: Address) => {
