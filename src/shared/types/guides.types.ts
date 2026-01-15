@@ -322,9 +322,29 @@ export interface CreateMnGuideResponse {
   version: string;
 }
 
+export interface AddressGE {
+  zipcode: string;
+  city: string;
+  state: string;
+  neighborhood: string;
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  rfc: string;
+  addressName: string;
+  externalNumber: string;
+  reference: string;
+  alias: string;
+  id: string;
+}
+
 export interface GetAliasAddressesGEResponse {
   data: {
-    aliases: string[]
+    aliases: string[];
+    addresses: AddressGE[];
+    pages: number;
+    page: number;
   }
   error: null;
   message: null;
