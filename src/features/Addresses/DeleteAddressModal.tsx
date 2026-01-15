@@ -22,10 +22,10 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
   const [isGEAddress, setIsGEAddress] = useState(false)
   
   useEffect(() => {
-    if (addressToDelete && addressToDelete.isGEAddress) {
+    if (addressToDelete && addressToDelete.isGEAddress && !isGEAddress) {
       setIsGEAddress(true)
     }
-  }, [addressToDelete])
+  }, [addressToDelete, isGEAddress])
 
   const { data: geAddresses,  isPending: isPendingGeAddresses, isError: isErrorGeAddresses } = useQuery({
     queryKey: ['GEAddresses'],
@@ -49,16 +49,22 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
   })
 
   const {
-    mutate: deleteGEAddress, isError: isErrorGeDeleteAddress, isPending: isPendingGeDeleteAddress, isSuccess: isSuccessGeDeleteAddress, isIdle: isIdleGeDeleteAddress
+    mutate: deleteGEAddress,
+    isError: isErrorGeDeleteAddress,
+    isPending: isPendingGeDeleteAddress,
+    isSuccess: isSuccessGeDeleteAddress,
+    isIdle: isIdleGeDeleteAddress
   } = useMutation<DeleteGEAdressResponse, GeneralApiError, string>({
     mutationFn: deleteGEAddressCb,
     onSuccess: () => {
-      // success
+      if (addressToDelete) {
+        deleteAddress({ alias: addressToDelete.alias })
+      }
     },
     onError: () => {
-      // updateNotificationMessage('Ocurrió un error al eliminar la dirección. Por favor, intenta de nuevo.')
-      // toggleNotification()
-      // toggleModal()
+      updateNotificationMessage('Ocurrió un error al eliminar la dirección de GE. Por favor, intente más tarde.')
+      toggleNotification()
+      toggleModal()
     }
   })
 
@@ -74,10 +80,11 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
         console.warn('No GE address ID found to delete')
         return
       }
-      // TODO: Check if first we get the delete adress and then this mutation
+      // If this address was also created in GE, delete it from there first
       deleteGEAddress(geAddressId)
+    } else {
+      deleteAddress({ alias: addressToDelete.alias })
     }
-    deleteAddress({ alias: addressToDelete.alias })
   }
 
   return (
