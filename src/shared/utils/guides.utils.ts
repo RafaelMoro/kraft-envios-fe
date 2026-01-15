@@ -91,9 +91,12 @@ export const createGuideGECb = async (data: CreateGuideGEPayload) => {
   }
 }
 
-export const getGEAddressesCb = async (): Promise<string[]> => {
+export const getGEAddressesCb = async (aliasesOnly?: boolean): Promise<string[]> => {
   try {
-    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
+    const url = aliasesOnly !== undefined 
+      ? `${GET_ALIAS_ADDRESSES_GE_ENDPOINT}?aliasesOnly=${aliasesOnly}`
+      : GET_ALIAS_ADDRESSES_GE_ENDPOINT
+    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(url)
     const aliases = res?.data?.aliases ?? []
     return aliases
   } catch (error) {

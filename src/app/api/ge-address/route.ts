@@ -5,14 +5,21 @@ import { getAccessToken } from "@/shared/lib/auth.lib"
 import { GetAliasAddressesGEResponse } from "@/shared/types/guides.types"
 import { GeneralError } from "@/shared/types/global.types";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const accessToken = await getAccessToken()
     if (!accessToken) {
       return NextResponse.json({ message: 'missing access token' }, { status: 400 })
     }
   
-    const uri = `${process.env.BACKEND_URI}/ge/alias-addresses`
+    const { searchParams } = new URL(request.url)
+    const aliasesOnly = searchParams.get('aliasesOnly')
+    
+    let uri = `${process.env.BACKEND_URI}/ge/addresses`
+    if (aliasesOnly !== null) {
+      uri += `?aliasesOnly=${aliasesOnly}`
+    }
+    
     const res: AxiosResponse<GetAliasAddressesGEResponse> = await axios.get(uri, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
