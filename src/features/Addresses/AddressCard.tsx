@@ -34,6 +34,13 @@ export const AddressCard = ({ address, handleDeleteAddress, handleEditAddress }:
               </p>
           </div>
           )}
+          { address?.isGEAddress && (
+            <div className="w-fit">
+              <Badge color="pink" size="xs" className="">
+                Dirección creada en GE
+              </Badge>
+            </div>
+          )}
           { (address.city.length > 1 || address.town.length > 1) && (
             <>
               <div className="flex flex-col gap-1">
