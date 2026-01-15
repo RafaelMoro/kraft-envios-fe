@@ -27,7 +27,11 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
     }
   }, [addressToDelete, isGEAddress])
 
-  const { data: geAddresses,  isPending: isPendingGeAddresses, isError: isErrorGeAddresses } = useQuery({
+  const {
+    data: geAddresses,
+    isPending: isPendingGeAddresses,
+    isError: isErrorGeAddresses,
+  } = useQuery({
     queryKey: ['GEAddresses'],
     queryFn: getGEAddressesCb,
     enabled: isGEAddress
@@ -100,9 +104,9 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
       <ModalFooter>
         <div className="w-full flex justify-between">
           <Button disabled={isPending || isSuccess} outline onClick={toggleModal}>Cancelar</Button>
-          <Button disabled={isPending || isSuccess || isPendingGeAddresses} onClick={handleDelete} color="red">
-            { (isIdle || isError) && 'Eliminar'}
-            { isPending && (<Spinner aria-label="loading delete address" />) }
+          <Button disabled={isPending || isSuccess || isPendingGeAddresses || isPendingGeDeleteAddress} onClick={handleDelete} color="red">
+            { (isIdle || isError || isIdleGeDeleteAddress) && 'Eliminar'}
+            { (isPending || isPendingGeAddresses || isPendingGeDeleteAddress) && (<Spinner aria-label="loading delete address" />) }
             { isSuccess && (<CheckIcon />)}
           </Button>
         </div>
