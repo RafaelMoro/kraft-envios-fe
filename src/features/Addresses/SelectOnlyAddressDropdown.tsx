@@ -70,11 +70,13 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
         </div>
       )}
     >
-      { (addresses && addresses.length > 0 )&& addresses.map((address) => (
-        <DropdownItem key={`alias-${address.alias}`} onClick={() => onSelectAlias(address)}>
-          {address.alias}
-        </DropdownItem>
-      )) }
+      <div className="overflow-y-auto max-h-52">
+        { (addresses && addresses.length > 0 )&& addresses.map((address) => (
+          <DropdownItem key={`alias-${address.alias}`} onClick={() => onSelectAlias(address)}>
+            {address.alias}
+          </DropdownItem>
+        )) }
+      </div>
     </Dropdown>
   )
 }
