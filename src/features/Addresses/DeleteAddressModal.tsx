@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button, CheckIcon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
+import { RiCheckboxCircleFill } from "@remixicon/react";
 
 import { Address, AddressAliasResponse, DeleteAddressPayload } from "@/shared/types/addresses.types";
 import { GeneralApiError } from "@/shared/types/global.types";
@@ -14,12 +15,13 @@ interface DeleteAddressModalProps {
   addressToDelete: Address | null;
   toggleModal: () => void;
   refetchAddresses: () => Promise<void>;
-  toggleNotification: () => void;
-  updateNotificationMessage: (message: string) => void;
 }
 
-export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetchAddresses, toggleNotification, updateNotificationMessage }: DeleteAddressModalProps) => {
+export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetchAddresses, }: DeleteAddressModalProps) => {
   const [isGEAddress, setIsGEAddress] = useState(false)
+  const [showResult, setShowResult] = useState(false)
+  const [modalTitle, setModalTitle] = useState('Eliminar dirección')
+  const [modalResultText, setModalResultText] = useState('')
   
   useEffect(() => {
     if (addressToDelete && addressToDelete.isGEAddress && !isGEAddress) {
@@ -41,14 +43,9 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
     mutationFn: deleteAddressCb,
     onSuccess: () => {
       refetchAddresses()
-      setTimeout(() => {
-        toggleModal()
-      }, 1000)
     },
     onError: () => {
-      updateNotificationMessage('Ocurrió un error al eliminar la dirección. Por favor, intenta de nuevo.')
-      toggleNotification()
-      toggleModal()
+      setShowResult(true)
     }
   })
 
@@ -66,11 +63,29 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
       }
     },
     onError: () => {
-      updateNotificationMessage('Ocurrió un error al eliminar la dirección de GE. Por favor, intente más tarde.')
-      toggleNotification()
-      toggleModal()
+      setShowResult(true)
     }
   })
+
+  useEffect(() => {
+    if ((isErrorGeDeleteAddress || isError) && !isErrorGeAddresses) {
+      setModalTitle('Error al eliminar la dirección')
+      setModalResultText('Ocurrió un error al eliminar la dirección. Por favor, intenta de nuevo más tarde.')
+    }
+  }, [isErrorGeDeleteAddress, isError, isErrorGeAddresses])
+
+  useEffect(() => {
+    if (isErrorGeAddresses) {
+      setModalTitle('Error al obtener la dirección de GE')
+      setModalResultText('Ocurrió un error al obtener la información de la dirección en GE. Por favor, intenta de nuevo más tarde.')
+    }
+  }, [isErrorGeAddresses])
+
+  useEffect(() => {
+    if (isSuccessGeDeleteAddress && isSuccess) {
+      setModalTitle('Dirección eliminada')
+    }
+  }, [isSuccessGeDeleteAddress, isSuccess])
 
   const handleDelete = () => {
     if (!addressToDelete) {
@@ -93,23 +108,51 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
 
   return (
     <Modal show={open} onClose={toggleModal}>
-      <ModalHeader>Eliminar dirección</ModalHeader>
+      <ModalHeader>{modalTitle}</ModalHeader>
       <ModalBody>
-        <p className="font-semibold text-center mb-2">¿Estás seguro que deseas eliminar la dirección &quot;{addressToDelete?.alias}&quot;?</p>
-        { addressToDelete && addressToDelete?.isGEAddress && (
-          <p className="font-semibold text-red-600 dark:text-red-400 text-center mb-2">Esta dirección también será eliminada de GE</p>
+        { !showResult && (
+          <>
+            <p className="font-semibold text-center mb-2">¿Estás seguro que deseas eliminar la dirección &quot;{addressToDelete?.alias}&quot;?</p>
+            { addressToDelete && addressToDelete?.isGEAddress && (
+              <p className="font-semibold text-red-600 dark:text-red-400 text-center mb-2">Esta dirección también será eliminada de GE</p>
+            )}
+            <p className="text-red-600 dark:text-red-400 text-center">Esta acción no se puede deshacer.</p>
+          </>
         )}
-        <p className="text-red-600 dark:text-red-400 text-center">Esta acción no se puede deshacer.</p>
+        { showResult && isSuccess && isSuccessGeDeleteAddress && (
+          <ul className="flex flex-col gap-3 items-center">
+            <li className="inline-flex gap-1">
+              <RiCheckboxCircleFill className="text-blue-800 dark:text-blue-600" />
+              Dirección eliminada en el sistema
+            </li>
+            <li className="inline-flex gap-1">
+              <RiCheckboxCircleFill className="text-blue-800 dark:text-blue-600" />
+              Dirección eliminada en GE
+            </li>
+          </ul>
+        )}
+        { showResult && (isErrorGeDeleteAddress || isError) && (
+          <p className="text-gray-600 dark:text-gray-400 text-center">{modalResultText}</p>
+        )}
       </ModalBody>
       <ModalFooter>
-        <div className="w-full flex justify-between">
-          <Button disabled={isPending || isSuccess} outline onClick={toggleModal}>Cancelar</Button>
-          <Button disabled={isPending || isSuccess || isPendingGeAddresses || isPendingGeDeleteAddress} onClick={handleDelete} color="red">
-            { (isIdle || isError || isIdleGeDeleteAddress) && 'Eliminar'}
-            { (isPending || isPendingGeAddresses || isPendingGeDeleteAddress) && (<Spinner aria-label="loading delete address" />) }
-            { isSuccess && (<CheckIcon />)}
-          </Button>
-        </div>
+        { !showResult && (
+          <div className="w-full flex justify-between">
+            <Button disabled={isPending || isSuccess} outline onClick={toggleModal}>Cancelar</Button>
+            <Button disabled={isPending || isSuccess || isPendingGeAddresses || isPendingGeDeleteAddress} onClick={handleDelete} color="red">
+              { (isIdle || isError || isIdleGeDeleteAddress) && 'Eliminar'}
+              { (isPending || isPendingGeAddresses || isPendingGeDeleteAddress) && (<Spinner aria-label="loading delete address" />) }
+              { isSuccess && (<CheckIcon />)}
+            </Button>
+          </div>
+        )}
+        { showResult && (
+          <div className="w-full flex justify-center">
+            <Button onClick={toggleModal}>
+              Listo
+            </Button>
+          </div>
+        )}
       </ModalFooter>
     </Modal>
   )
