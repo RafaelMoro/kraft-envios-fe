@@ -13,6 +13,7 @@ export type Address = {
   town: string[]
   alias: string;
   neighborhood: string;
+  isGEAddress?: boolean;
 }
 
 export interface UpdateAddressInfoPayload {
