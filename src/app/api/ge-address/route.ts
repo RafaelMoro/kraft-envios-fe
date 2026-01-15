@@ -25,8 +25,8 @@ export async function GET(request: Request) {
         'Authorization': `Bearer ${accessToken}`
       }
     })
-    const aliasAddresses = res?.data?.data?.aliases
-    return NextResponse.json({ aliases: aliasAddresses }, { status: 200 })
+    const data = res?.data?.data
+    return NextResponse.json({ aliases: data?.aliases, addresses: data?.addresses }, { status: 200 })
 
   } catch (error) {
     if (axios.isAxiosError(error)) {
