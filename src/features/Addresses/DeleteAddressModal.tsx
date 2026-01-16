@@ -43,6 +43,7 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
     mutationFn: deleteAddressCb,
     onSuccess: () => {
       refetchAddresses()
+      setShowResult(true)
     },
     onError: () => {
       setShowResult(true)
@@ -68,7 +69,8 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
 
   useEffect(() => {
     if ((isErrorGeDeleteAddress || isError) && !isErrorGeAddresses) {
-      setModalTitle('Error al eliminar la dirección')
+      const title = isErrorGeDeleteAddress ? 'Error al eliminar la dirección en GE' : 'Error al eliminar la dirección'
+      setModalTitle(title)
       setModalResultText('Ocurrió un error al eliminar la dirección. Por favor, intenta de nuevo más tarde.')
     }
   }, [isErrorGeDeleteAddress, isError, isErrorGeAddresses])
