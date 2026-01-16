@@ -165,6 +165,12 @@ describe('Feature: Delete Address Modal', () => {
       )
 
       const deleteButton = screen.getByTestId('delete-button')
+      
+      // Wait for button to be enabled
+      await waitFor(() => {
+        expect(deleteButton).not.toBeDisabled()
+      })
+      
       await user.click(deleteButton)
 
       await waitFor(() => {
@@ -198,6 +204,12 @@ describe('Feature: Delete Address Modal', () => {
       )
 
       const deleteButton = screen.getByTestId('delete-button')
+      
+      // Wait for button to be enabled
+      await waitFor(() => {
+        expect(deleteButton).not.toBeDisabled()
+      })
+      
       await user.click(deleteButton)
 
       await waitFor(() => {
@@ -232,6 +244,12 @@ describe('Feature: Delete Address Modal', () => {
       )
 
       const deleteButton = screen.getByTestId('delete-button')
+      
+      // Wait for button to be enabled
+      await waitFor(() => {
+        expect(deleteButton).not.toBeDisabled()
+      })
+      
       await user.click(deleteButton)
 
       await waitFor(() => {
@@ -261,6 +279,11 @@ describe('Feature: Delete Address Modal', () => {
 
       const deleteButton = screen.getByTestId('delete-button')
       const cancelButton = screen.getByTestId('cancel-button')
+      
+      // Wait for button to be enabled first
+      await waitFor(() => {
+        expect(deleteButton).not.toBeDisabled()
+      })
 
       await user.click(deleteButton)
 
@@ -298,11 +321,9 @@ describe('Feature: Delete Address Modal', () => {
       // Mock GE addresses fetch
       mockedAxios.get.mockResolvedValueOnce({
         data: {
-          data: {
-            addresses: [
-              { id: 'ge-123', alias: 'Casa' }
-            ]
-          }
+          addresses: [
+            { id: 'ge-123', alias: 'Casa' }
+          ]
         }
       })
 
@@ -330,6 +351,11 @@ describe('Feature: Delete Address Modal', () => {
           refetchAddresses={refetchAddresses}
         />
       )
+
+      // Wait for GE addresses query to complete and warning to show
+      await waitFor(() => {
+        expect(screen.getByText(/esta dirección también será eliminada de ge/i)).toBeInTheDocument()
+      })
 
       await waitFor(() => {
         expect(screen.getByTestId('delete-button')).not.toBeDisabled()
@@ -398,6 +424,12 @@ describe('Feature: Delete Address Modal', () => {
       )
 
       const deleteButton = screen.getByTestId('delete-button')
+      
+      // Wait for button to be enabled
+      await waitFor(() => {
+        expect(deleteButton).not.toBeDisabled()
+      })
+      
       await user.click(deleteButton)
 
       await waitFor(() => {

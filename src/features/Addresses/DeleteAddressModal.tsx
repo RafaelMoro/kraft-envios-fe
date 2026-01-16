@@ -147,11 +147,11 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
             >Cancelar</Button>
             <Button
               data-testid="delete-button"
-              disabled={isPending || isSuccess || isPendingGeAddresses || isPendingGeDeleteAddress}
+              disabled={isPending || isSuccess || (isGEAddress && isPendingGeAddresses) || isPendingGeDeleteAddress}
               onClick={handleDelete}
               color="red"
             >
-              { (!isPending && !isPendingGeAddresses && !isPendingGeDeleteAddress)
+              { (!isPending && !(isGEAddress && isPendingGeAddresses) && !isPendingGeDeleteAddress)
                 ? 'Eliminar'
                 : ( <Spinner aria-label="loading delete address" /> )}
             </Button>
