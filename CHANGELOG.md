@@ -1,3 +1,9 @@
+## v0.33.0 (2026-01-16)
+
+### Pull Requests
+[#75](https://github.com/RafaelMoro/kraft-envios-fe/pull/75) | Add delete address ge
+
+
 ## v0.32.0 (2026-01-10)
 
 ### Pull Requests
