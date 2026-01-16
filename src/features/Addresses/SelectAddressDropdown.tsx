@@ -122,11 +122,13 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
           </div>
         )}
       >
-        { (addresses && addresses.length > 0 )&& addresses.map((address) => (
-          <DropdownItem key={`alias-${address.alias}`} onClick={() => handleSelectAlias(address)}>
-            {address.alias}
-          </DropdownItem>
-        )) }
+        <div className="overflow-y-auto max-h-52">
+          { (addresses && addresses.length > 0 )&& addresses.map((address) => (
+            <DropdownItem key={`alias-${address.alias}`} onClick={() => handleSelectAlias(address)}>
+              {address.alias}
+            </DropdownItem>
+          )) }
+        </div>
       </Dropdown>
       { !hideTownDropdown && (
         <Dropdown

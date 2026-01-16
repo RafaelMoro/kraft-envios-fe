@@ -5,7 +5,7 @@ import { RiArrowDownSLine } from "@remixicon/react"
 
 import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
+import { getGEAliasesCb } from "@/shared/utils/guides.utils";
 import { AddressExtraInfoGE } from "@/shared/types/guides.types";
 import { Address } from "@/shared/types/addresses.types";
 
@@ -20,7 +20,7 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
   const { data: addresses, isPending, isError } = useGetAddress()
   const { data: aliasesGE,  isPending: isPendingFetchAliasGE, isError: isErrorFetchAliasGE } = useQuery({
     queryKey: ['aliasAddresses'],
-    queryFn: getAliasAddressesCb
+    queryFn: () => getGEAliasesCb(true)
   })
 
   const onSelectAlias = (newAddress: Address) => {
@@ -70,11 +70,13 @@ export const SelectOnlyAddressDropdown = ({ aliasSelected, aliasError, updateAli
         </div>
       )}
     >
-      { (addresses && addresses.length > 0 )&& addresses.map((address) => (
-        <DropdownItem key={`alias-${address.alias}`} onClick={() => onSelectAlias(address)}>
-          {address.alias}
-        </DropdownItem>
-      )) }
+      <div className="overflow-y-auto max-h-52">
+        { (addresses && addresses.length > 0 )&& addresses.map((address) => (
+          <DropdownItem key={`alias-${address.alias}`} onClick={() => onSelectAlias(address)}>
+            {address.alias}
+          </DropdownItem>
+        )) }
+      </div>
     </Dropdown>
   )
 }

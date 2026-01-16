@@ -13,6 +13,7 @@ export type Address = {
   town: string[]
   alias: string;
   neighborhood: string;
+  isGEAddress?: boolean;
 }
 
 export interface UpdateAddressInfoPayload {
@@ -40,6 +41,7 @@ export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber
   city: string[];
   town: string[];
   addressName: string;
+  isGEAddress: boolean;
 }
 
 export type DeleteAddressPayload = {

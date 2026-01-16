@@ -11,4 +11,5 @@ export const initialStateAddressForm: CreateAddressPayload = {
   town: [],
   reference: '',
   alias: '',
+  isGEAddress: false,
 }
