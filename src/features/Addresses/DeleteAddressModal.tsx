@@ -139,8 +139,18 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
       <ModalFooter>
         { !showResult && (
           <div className="w-full flex justify-between">
-            <Button disabled={isPending || isSuccess} outline onClick={toggleModal}>Cancelar</Button>
-            <Button disabled={isPending || isSuccess || isPendingGeAddresses || isPendingGeDeleteAddress} onClick={handleDelete} color="red">
+            <Button
+              data-testid="cancel-button"
+              disabled={isPending || isSuccess}
+              outline
+              onClick={toggleModal}
+            >Cancelar</Button>
+            <Button
+              data-testid="delete-button"
+              disabled={isPending || isSuccess || isPendingGeAddresses || isPendingGeDeleteAddress}
+              onClick={handleDelete}
+              color="red"
+            >
               { (!isPending && !isPendingGeAddresses && !isPendingGeDeleteAddress)
                 ? 'Eliminar'
                 : ( <Spinner aria-label="loading delete address" /> )}
@@ -149,7 +159,7 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
         )}
         { showResult && (
           <div className="w-full flex justify-center">
-            <Button onClick={toggleModal}>
+            <Button data-testid="confirm-button" onClick={toggleModal}>
               Listo
             </Button>
           </div>

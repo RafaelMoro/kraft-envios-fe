@@ -4,6 +4,7 @@ import axios from 'axios'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { DeleteAddressModal } from "@/features/Addresses/DeleteAddressModal"
+import { Address } from "@/shared/types/addresses.types"
 
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
@@ -27,35 +28,43 @@ const createTestQueryClient = () => new QueryClient({
 
 const DeleteAddressModalWrapper = ({
   open,
-  addressAlias,
+  addressToDelete,
   toggleModal,
   refetchAddresses,
-  toggleNotification,
-  updateNotificationMessage
 }: {
   open: boolean
-  addressAlias: string
+  addressToDelete: Address | null
   toggleModal: () => void
   refetchAddresses: () => Promise<void>
-  toggleNotification: () => void
-  updateNotificationMessage: (message: string) => void
 }) => {
   const queryClient = createTestQueryClient()
   return (
     <QueryClientProvider client={queryClient}>
       <DeleteAddressModal
         open={open}
-        addressAlias={addressAlias}
+        addressToDelete={addressToDelete}
         toggleModal={toggleModal}
         refetchAddresses={refetchAddresses}
-        toggleNotification={toggleNotification}
-        updateNotificationMessage={updateNotificationMessage}
       />
     </QueryClientProvider>
   )
 }
 
 describe('Feature: Delete Address Modal', () => {
+  const mockAddress: Address = {
+    addressName: 'Calle Principal',
+    externalNumber: '123',
+    internalNumber: '',
+    reference: '',
+    zipcode: '12345',
+    state: 'Estado',
+    city: ['Ciudad'],
+    town: ['Municipio'],
+    alias: 'Casa',
+    neighborhood: 'Colonia',
+    isGEAddress: false,
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -68,17 +77,13 @@ describe('Feature: Delete Address Modal', () => {
     it('Given the modal is open, When the component renders, Then it should display the modal with address alias', () => {
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn()
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
 
       render(
         <DeleteAddressModalWrapper
           open={true}
-          addressAlias="Casa"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
@@ -86,7 +91,7 @@ describe('Feature: Delete Address Modal', () => {
       expect(screen.getByText(/¿estás seguro que deseas eliminar la dirección "casa"\?/i)).toBeInTheDocument()
       expect(screen.getByText(/esta acción no se puede deshacer/i)).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /eliminar/i })).toBeInTheDocument()
+      expect(screen.getByTestId('delete-button')).toBeInTheDocument()
     })
   })
 
@@ -94,17 +99,13 @@ describe('Feature: Delete Address Modal', () => {
     it('Given the modal is closed, When the component renders, Then it should not display the modal', () => {
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn()
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
 
       render(
         <DeleteAddressModalWrapper
           open={false}
-          addressAlias="Casa"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
@@ -117,17 +118,13 @@ describe('Feature: Delete Address Modal', () => {
       const user = userEvent.setup()
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn()
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
 
       render(
         <DeleteAddressModalWrapper
           open={true}
-          addressAlias="Casa"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
@@ -140,12 +137,9 @@ describe('Feature: Delete Address Modal', () => {
 
   describe('Scenario: Successful address deletion', () => {
     it('Given valid address alias, When the user confirms deletion, Then the address should be deleted successfully', async () => {
-      jest.useFakeTimers()
-      const user = userEvent.setup({ delay: null })
+      const user = userEvent.setup()
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn().mockResolvedValue(undefined)
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
 
       mockedAxios.delete.mockResolvedValueOnce({
         data: {
@@ -164,15 +158,13 @@ describe('Feature: Delete Address Modal', () => {
       render(
         <DeleteAddressModalWrapper
           open={true}
-          addressAlias="Casa"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
-      const deleteButton = screen.getByRole('button', { name: /eliminar/i })
+      const deleteButton = screen.getByTestId('delete-button')
       await user.click(deleteButton)
 
       await waitFor(() => {
@@ -185,12 +177,6 @@ describe('Feature: Delete Address Modal', () => {
       await waitFor(() => {
         expect(refetchAddresses).toHaveBeenCalled()
       })
-
-      jest.advanceTimersByTime(1000)
-
-      await waitFor(() => {
-        expect(toggleModal).toHaveBeenCalled()
-      })
     })
   })
 
@@ -199,23 +185,19 @@ describe('Feature: Delete Address Modal', () => {
       const user = userEvent.setup()
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn().mockResolvedValue(undefined)
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
 
       mockedAxios.delete.mockImplementation(() => new Promise(() => {}))
 
       render(
         <DeleteAddressModalWrapper
           open={true}
-          addressAlias="Oficina"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
-      const deleteButton = screen.getByRole('button', { name: /eliminar/i })
+      const deleteButton = screen.getByTestId('delete-button')
       await user.click(deleteButton)
 
       await waitFor(() => {
@@ -224,13 +206,11 @@ describe('Feature: Delete Address Modal', () => {
     })
   })
 
-  describe('Scenario: Failed address deletion shows error notification', () => {
-    it('Given valid address alias, When the API returns an error, Then the error notification should be displayed', async () => {
+  describe('Scenario: Failed address deletion shows error in modal', () => {
+    it('Given valid address alias, When the API returns an error, Then the error should be displayed in the modal', async () => {
       const user = userEvent.setup()
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn()
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
 
       mockedAxios.delete.mockRejectedValueOnce({
         code: 'ERR_BAD_REQUEST',
@@ -245,22 +225,20 @@ describe('Feature: Delete Address Modal', () => {
       render(
         <DeleteAddressModalWrapper
           open={true}
-          addressAlias="Casa"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
-      const deleteButton = screen.getByRole('button', { name: /eliminar/i })
+      const deleteButton = screen.getByTestId('delete-button')
       await user.click(deleteButton)
 
       await waitFor(() => {
-        expect(updateNotificationMessage).toHaveBeenCalledWith('Ocurrió un error al eliminar la dirección. Por favor, intenta de nuevo.')
+        expect(screen.getByText(/ocurrió un error al eliminar la dirección/i)).toBeInTheDocument()
       })
-      expect(toggleNotification).toHaveBeenCalled()
-      expect(toggleModal).toHaveBeenCalled()
+
+      expect(screen.getByRole('heading', { name: /error al eliminar la dirección/i })).toBeInTheDocument()
     })
   })
 
@@ -269,27 +247,20 @@ describe('Feature: Delete Address Modal', () => {
       const user = userEvent.setup()
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn().mockResolvedValue(undefined)
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
 
       mockedAxios.delete.mockImplementation(() => new Promise(() => {}))
 
       render(
         <DeleteAddressModalWrapper
           open={true}
-          addressAlias="Casa"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
-      const deleteButton = screen.getByRole('button', { name: /eliminar/i })
-      const cancelButton = screen.getByRole('button', { name: /cancelar/i })
-
-      expect(deleteButton).not.toBeDisabled()
-      expect(cancelButton).not.toBeDisabled()
+      const deleteButton = screen.getByTestId('delete-button')
+      const cancelButton = screen.getByTestId('cancel-button')
 
       await user.click(deleteButton)
 
@@ -300,14 +271,111 @@ describe('Feature: Delete Address Modal', () => {
     })
   })
 
-  describe('Scenario: Show check icon after successful deletion', () => {
-    it('Given deletion succeeded, When the component is in success state, Then it should display a check icon', async () => {
-      jest.useFakeTimers()
-      const user = userEvent.setup({ delay: null })
+  describe('Scenario: GE Address deletion flow', () => {
+    it('Given a GE address, When the modal opens, Then it should show GE deletion warning', () => {
+      const toggleModal = jest.fn()
+      const refetchAddresses = jest.fn()
+      const geAddress = { ...mockAddress, isGEAddress: true }
+
+      render(
+        <DeleteAddressModalWrapper
+          open={true}
+          addressToDelete={geAddress}
+          toggleModal={toggleModal}
+          refetchAddresses={refetchAddresses}
+        />
+      )
+
+      expect(screen.getByText(/esta dirección también será eliminada de ge/i)).toBeInTheDocument()
+    })
+
+    it('Given a GE address, When deletion succeeds, Then it should show both deletion confirmations', async () => {
+      const user = userEvent.setup()
       const toggleModal = jest.fn()
       const refetchAddresses = jest.fn().mockResolvedValue(undefined)
-      const toggleNotification = jest.fn()
-      const updateNotificationMessage = jest.fn()
+      const geAddress = { ...mockAddress, isGEAddress: true }
+
+      // Mock GE addresses fetch
+      mockedAxios.get.mockResolvedValueOnce({
+        data: {
+          data: {
+            addresses: [
+              { id: 'ge-123', alias: 'Casa' }
+            ]
+          }
+        }
+      })
+
+      // Mock GE address deletion
+      mockedAxios.delete.mockResolvedValueOnce({
+        data: { success: true }
+      })
+
+      // Mock regular address deletion
+      mockedAxios.delete.mockResolvedValueOnce({
+        data: {
+          data: {
+            address: {
+              alias: 'Casa'
+            }
+          }
+        }
+      })
+
+      render(
+        <DeleteAddressModalWrapper
+          open={true}
+          addressToDelete={geAddress}
+          toggleModal={toggleModal}
+          refetchAddresses={refetchAddresses}
+        />
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('delete-button')).not.toBeDisabled()
+      })
+
+      const deleteButton = screen.getByTestId('delete-button')
+      await user.click(deleteButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/dirección eliminada en el sistema/i)).toBeInTheDocument()
+        expect(screen.getByText(/dirección eliminada en ge/i)).toBeInTheDocument()
+      })
+
+      expect(screen.getByRole('heading', { name: /dirección eliminada/i })).toBeInTheDocument()
+    })
+
+    it('Given GE address fetch fails, When the modal opens, Then it should show error in title', async () => {
+      const toggleModal = jest.fn()
+      const refetchAddresses = jest.fn()
+      const geAddress = { ...mockAddress, isGEAddress: true }
+
+      mockedAxios.get.mockRejectedValueOnce({
+        code: 'ERR_BAD_REQUEST',
+        message: 'Request failed'
+      })
+
+      render(
+        <DeleteAddressModalWrapper
+          open={true}
+          addressToDelete={geAddress}
+          toggleModal={toggleModal}
+          refetchAddresses={refetchAddresses}
+        />
+      )
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /error al obtener la dirección de ge/i })).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Scenario: Show "Listo" button after completion', () => {
+    it('Given deletion succeeded, When result is shown, Then it should display "Listo" button', async () => {
+      const user = userEvent.setup()
+      const toggleModal = jest.fn()
+      const refetchAddresses = jest.fn().mockResolvedValue(undefined)
 
       mockedAxios.delete.mockResolvedValueOnce({
         data: {
@@ -316,36 +384,34 @@ describe('Feature: Delete Address Modal', () => {
               alias: 'Casa'
             }
           },
-          error: null,
-          message: null,
           success: true,
-          version: '1.0.0'
         }
       })
 
       render(
         <DeleteAddressModalWrapper
           open={true}
-          addressAlias="Casa"
+          addressToDelete={mockAddress}
           toggleModal={toggleModal}
           refetchAddresses={refetchAddresses}
-          toggleNotification={toggleNotification}
-          updateNotificationMessage={updateNotificationMessage}
         />
       )
 
-      const deleteButton = screen.getByRole('button', { name: /eliminar/i })
+      const deleteButton = screen.getByTestId('delete-button')
       await user.click(deleteButton)
 
       await waitFor(() => {
-        expect(mockedAxios.delete).toHaveBeenCalled()
         expect(refetchAddresses).toHaveBeenCalled()
       })
 
       await waitFor(() => {
-        const deleteButtonAfterSuccess = screen.queryByRole('button', { name: /eliminar/i })
-        expect(deleteButtonAfterSuccess).not.toBeInTheDocument()
+        expect(screen.getByTestId('confirm-button')).toBeInTheDocument()
       })
+
+      const listoButton = screen.getByTestId('confirm-button')
+      await user.click(listoButton)
+
+      expect(toggleModal).toHaveBeenCalled()
     })
   })
 })
