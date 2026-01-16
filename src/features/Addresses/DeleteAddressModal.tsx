@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Button, CheckIcon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
 import { RiCheckboxCircleFill } from "@remixicon/react";
 
 import { Address, AddressAliasResponse, DeleteAddressPayload } from "@/shared/types/addresses.types";
