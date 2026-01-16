@@ -39,7 +39,7 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
     enabled: isGEAddress
   })
 
-  const { mutate: deleteAddress, isError, isPending, isSuccess, isIdle } = useMutation<AddressAliasResponse, GeneralApiError, DeleteAddressPayload>({
+  const { mutate: deleteAddress, isError, isPending, isSuccess } = useMutation<AddressAliasResponse, GeneralApiError, DeleteAddressPayload>({
     mutationFn: deleteAddressCb,
     onSuccess: () => {
       refetchAddresses()
@@ -54,7 +54,6 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
     isError: isErrorGeDeleteAddress,
     isPending: isPendingGeDeleteAddress,
     isSuccess: isSuccessGeDeleteAddress,
-    isIdle: isIdleGeDeleteAddress
   } = useMutation<DeleteGEAdressResponse, GeneralApiError, string>({
     mutationFn: deleteGEAddressCb,
     onSuccess: () => {
@@ -140,9 +139,9 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
           <div className="w-full flex justify-between">
             <Button disabled={isPending || isSuccess} outline onClick={toggleModal}>Cancelar</Button>
             <Button disabled={isPending || isSuccess || isPendingGeAddresses || isPendingGeDeleteAddress} onClick={handleDelete} color="red">
-              { (isIdle || isError || isIdleGeDeleteAddress) && 'Eliminar'}
-              { (isPending || isPendingGeAddresses || isPendingGeDeleteAddress) && (<Spinner aria-label="loading delete address" />) }
-              { isSuccess && (<CheckIcon />)}
+              { (!isPending && !isPendingGeAddresses && !isPendingGeDeleteAddress)
+                ? 'Eliminar'
+                : ( <Spinner aria-label="loading delete address" /> )}
             </Button>
           </div>
         )}

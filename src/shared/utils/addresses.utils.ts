@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { Address, AddressAliasResponse, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse, DeleteAddressPayload, GetAddressesResponse } from "../types/addresses.types";
-import { ADDRESS_API_ENDPOINT } from "../constants/global.constants";
+import { ADDRESS_API_ENDPOINT, ADDRESS_GE_API_ENDPOINT } from "../constants/global.constants";
 import { AddressExtraInfoGE, CreateAddressGEPayload, DeleteGEAdressResponse } from "../types/guides.types";
 import { addToLocalStorage, getLocalStorageInfo } from "./local-storage.utils";
 import { PENDING_GE_ADDRESSES_KEY } from "../constants/local-storage.constants";
@@ -66,7 +66,7 @@ export const deleteAddressCb = async (data: DeleteAddressPayload) => {
 
 export const deleteGEAddressCb = async (geAddressId: string) => {
   try {
-    const uri = `${ADDRESS_API_ENDPOINT}/ge/${geAddressId}`
+    const uri = `${ADDRESS_GE_API_ENDPOINT}?addressId=${geAddressId}`
     const res: AxiosResponse<DeleteGEAdressResponse>  = await axios.delete(uri)
     return res?.data
   } catch (error) {

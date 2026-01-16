@@ -51,7 +51,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ message: 'missing addressId' }, { status: 400 })
     }
 
-    const uri = `${process.env.BACKEND_URI}/ge/addresses/${addressId}`
+    const uri = `${process.env.BACKEND_URI}/ge/address/${addressId}`
     const res: AxiosResponse<DeleteGEAdressResponse> = await axios.delete(uri, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
