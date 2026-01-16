@@ -33,6 +33,7 @@ import {
   CreateGuideAddressPayloadPkk,
   AddressDataGEFormValues,
   PersonalDataGEFormValues,
+  AddressGE,
 } from '../types/guides.types'
 import { CreateAddressFormValues } from '../types/addresses.types'
 
@@ -91,11 +92,24 @@ export const createGuideGECb = async (data: CreateGuideGEPayload) => {
   }
 }
 
-export const getAliasAddressesCb = async (): Promise<string[]> => {
+export const getGEAliasesCb = async (aliasesOnly?: boolean): Promise<string[]> => {
   try {
-    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
+    const url = aliasesOnly !== undefined 
+      ? `${GET_ALIAS_ADDRESSES_GE_ENDPOINT}?aliasesOnly=${aliasesOnly}`
+      : GET_ALIAS_ADDRESSES_GE_ENDPOINT
+    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(url)
     const aliases = res?.data?.aliases ?? []
     return aliases
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getGEAddressesCb = async (): Promise<AddressGE[]> => {
+  try {
+    const res: AxiosResponse<{ addresses: AddressGE[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
+    const addresses = res?.data?.addresses ?? []
+    return addresses
   } catch (error) {
     throw error
   }

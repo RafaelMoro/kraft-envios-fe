@@ -12,7 +12,7 @@ import { CreateAddressSubform } from "./CreateAddressSubform";
 import { AddPersonalInfoGESubform } from "./AddPersonalInfoGESubform";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 import { ResultCreateAddress } from "./ResultCreateAddress";
-import { getAliasAddressesCb } from "@/shared/utils/guides.utils";
+import { getGEAliasesCb } from "@/shared/utils/guides.utils";
 
 interface CreateAddressProps {
   open: boolean;
@@ -72,7 +72,7 @@ export const ManageAddressForm = ({
   const [hasConsentedOnce, setHasConsentedOnce] = useState(false);
   const { data: dataAliases, refetch,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
     queryKey: ['aliasAddresses'],
-    queryFn: getAliasAddressesCb,
+    queryFn: () => getGEAliasesCb(true),
     enabled: hasConsentedOnce
   })
   const refetchAddressesGE = async () => {

@@ -66,15 +66,17 @@ export const CreateAddressSubform = ({
 
   const handleShouldCreateGEAddress = () => {
     setShouldCreateGEAddress((prev) => {
-      if (!prev) {
+      const nextValue = !prev;
+      if (nextValue) {
         setConsentSkipGECreation(false);
-        // Set that the user has consented at least once
-        if (!hasConsentedOnce) {
-          setHasConsentedOnce(true);
-        }
       }
-      return !prev
+      return nextValue;
     });
+    
+    // Set that the user has consented at least once (outside the state updater)
+    if (!shouldCreateGEAddress && !hasConsentedOnce) {
+      setHasConsentedOnce(true);
+    }
   }
 
   const handleConsentSkipGECreation = (isChecked: boolean) => {
@@ -143,7 +145,7 @@ export const CreateAddressSubform = ({
         return
       }
   
-      const formattedPayload = formatPayloadCreateAddress({payload: data, cities, towns})
+      const formattedPayload = formatPayloadCreateAddress({ payload: data, cities, towns, isGEAddress: shouldCreateGEAddress })
       if (isEdit) {
         editAddressMutation(formattedPayload)
         return
