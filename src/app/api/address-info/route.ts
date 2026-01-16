@@ -1,7 +1,9 @@
+import { NextResponse } from "next/server";
+import axios, { AxiosResponse } from "axios";
+
 import { getAccessToken } from "@/shared/lib/auth.lib";
 import { GeneralError } from "@/shared/types/global.types";
-import axios, { AxiosResponse } from "axios";
-import { NextResponse } from "next/server";
+import { GetAddressInfoResponse } from "@/shared/types/quotes.types";
 
 export async function GET(request: Request) {
   try {
@@ -19,12 +21,13 @@ export async function GET(request: Request) {
     }
 
     const uri = `${process.env.BACKEND_URI}/quotes/address-info/${zipcode}`;
-    const res: AxiosResponse<unknown> = await axios.get(uri, {
+    const res: AxiosResponse<GetAddressInfoResponse> = await axios.get(uri, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return NextResponse.json(res.data, { status: 200 });
+    const data = res?.data;
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
     const message = (error as unknown as GeneralError)?.response?.data?.error
       ?.message;
