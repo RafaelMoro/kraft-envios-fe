@@ -14,4 +14,6 @@ export const initialStateAddressForm: CreateAddressPayload = {
   isGEAddress: false,
 };
 
-export const ADDRESS_LENGTH_ERROR = "El código postal debe tener 5 caracteres";
+export const ZIPCODE_LENGTH_ERROR = "El código postal debe tener 5 caracteres";
+export const ZIPCODE_ONLY_NUMBERS_ERROR =
+  "El código postal solo puede contener dígitos";

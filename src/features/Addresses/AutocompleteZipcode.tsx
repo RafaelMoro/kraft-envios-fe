@@ -1,15 +1,19 @@
-import { Label, TextInput } from "flowbite-react";
 import { useState } from "react";
-
-import { AddTag } from "@/shared/ui/organisms/AddTag";
+import { Label, TextInput } from "flowbite-react";
 import {
   FieldError,
   FieldErrors,
   Path,
   UseFormRegister,
 } from "react-hook-form";
+
+import { AddTag } from "@/shared/ui/organisms/AddTag";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
-import { ADDRESS_LENGTH_ERROR } from "@/shared/constants/addresses.constants";
+import {
+  ZIPCODE_LENGTH_ERROR,
+  ZIPCODE_ONLY_NUMBERS_ERROR,
+} from "@/shared/constants/addresses.constants";
+import { onlyNumberRegex } from "@/shared/types/addresses.types";
 
 type AddressInformationT = {
   zipcode: string;
@@ -55,8 +59,13 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
+    if (!onlyNumberRegex.test(value)) {
+      setZipcodeError(ZIPCODE_ONLY_NUMBERS_ERROR);
+      // We return here because we don't want to update the zipcode state with invalid value
+      return;
+    }
     if (value.length < 5 || value.length > 5) {
-      setZipcodeError(ADDRESS_LENGTH_ERROR);
+      setZipcodeError(ZIPCODE_LENGTH_ERROR);
     }
     setZipcode(value);
   };

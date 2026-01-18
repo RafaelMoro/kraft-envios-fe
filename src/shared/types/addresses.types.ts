@@ -1,7 +1,10 @@
 import { object, ObjectSchema, string } from "yup";
-import { ADDRESS_LENGTH_ERROR } from "../constants/addresses.constants";
+import {
+  ZIPCODE_LENGTH_ERROR,
+  ZIPCODE_ONLY_NUMBERS_ERROR,
+} from "../constants/addresses.constants";
 
-const onlyNumberRegex = /^\d+$/;
+export const onlyNumberRegex = /^\d+$/;
 
 export type Address = {
   addressName: string;
@@ -120,10 +123,10 @@ export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> =
         .required("El código postal es requerido")
         .matches(onlyNumberRegex, {
           excludeEmptyString: true,
-          message: "El código postal solo puede contener dígitos",
+          message: ZIPCODE_ONLY_NUMBERS_ERROR,
         })
-        .min(5, ADDRESS_LENGTH_ERROR)
-        .max(5, ADDRESS_LENGTH_ERROR),
+        .min(5, ZIPCODE_LENGTH_ERROR)
+        .max(5, ZIPCODE_LENGTH_ERROR),
       state: string()
         .required("Estado es requerido")
         .min(2, "El estado debe tener al menos 2 caracteres"),
