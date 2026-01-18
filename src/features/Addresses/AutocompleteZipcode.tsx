@@ -9,7 +9,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
-import { ADDRESS_MIN_LENGTH_ERROR } from "@/shared/constants/addresses.constants";
+import { ADDRESS_LENGTH_ERROR } from "@/shared/constants/addresses.constants";
 
 type AddressInformationT = {
   zipcode: string;
@@ -55,8 +55,8 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
-    if (value.length < 5) {
-      setZipcodeError(ADDRESS_MIN_LENGTH_ERROR);
+    if (value.length < 5 || value.length > 5) {
+      setZipcodeError(ADDRESS_LENGTH_ERROR);
     }
     setZipcode(value);
   };

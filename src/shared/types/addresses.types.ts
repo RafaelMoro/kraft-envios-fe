@@ -1,5 +1,5 @@
 import { object, ObjectSchema, string } from "yup";
-import { ADDRESS_MIN_LENGTH_ERROR } from "../constants/addresses.constants";
+import { ADDRESS_LENGTH_ERROR } from "../constants/addresses.constants";
 
 const onlyNumberRegex = /^\d+$/;
 
@@ -122,8 +122,8 @@ export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> =
           excludeEmptyString: true,
           message: "El código postal solo puede contener dígitos",
         })
-        .min(5, ADDRESS_MIN_LENGTH_ERROR)
-        .max(5, "El código postal debe tener 5 caracteres"),
+        .min(5, ADDRESS_LENGTH_ERROR)
+        .max(5, ADDRESS_LENGTH_ERROR),
       state: string()
         .required("Estado es requerido")
         .min(2, "El estado debe tener al menos 2 caracteres"),
