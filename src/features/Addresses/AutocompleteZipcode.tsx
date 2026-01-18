@@ -1,10 +1,39 @@
 import { Label, TextInput } from "flowbite-react";
 import { AddTag } from "@/shared/ui/organisms/AddTag";
+import {
+  FieldError,
+  FieldErrors,
+  Path,
+  UseFormRegister,
+} from "react-hook-form";
+import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
+
+type AddressInformationT = {
+  zipcode: string;
+  neighborhood: string;
+  state: string;
+};
+
+interface AutocompleteZipcodeProps<T extends AddressInformationT> {
+  addressData: T;
+  hideCityField?: boolean;
+  errors: FieldErrors<T>;
+  register: UseFormRegister<T>;
+}
 
 /**
  * This component autocompletes neighborhood, state, and cities with zipocode
  */
-export const AutocompleteZipcode = () => {
+export const AutocompleteZipcode = <T extends AddressInformationT>({
+  addressData,
+  hideCityField,
+  errors,
+  register,
+}: AutocompleteZipcodeProps<T>) => {
+  const zipcodeError = errors?.zipcode as FieldError | undefined;
+  const neighborhoodError = errors?.neighborhood as FieldError | undefined;
+  const stateError = errors?.state as FieldError | undefined;
+
   return (
     <>
       <div>
@@ -13,15 +42,15 @@ export const AutocompleteZipcode = () => {
         </div>
         <TextInput
           data-testid="zipcode"
-          // defaultValue={formData.zipcode}
+          defaultValue={addressData.zipcode}
           id="zipcode"
           type="text"
           inputMode="numeric"
-          // {...register("zipcode")}
+          {...register("zipcode" as Path<T>)}
         />
-        {/* { errors?.zipcode?.message && (
-          <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-        )} */}
+        {zipcodeError?.message && (
+          <ErrorMessage>{zipcodeError?.message}</ErrorMessage>
+        )}
       </div>
       <div>
         <div className="mb-2 block">
@@ -30,13 +59,13 @@ export const AutocompleteZipcode = () => {
         <TextInput
           data-testid="neighborhood"
           id="neighborhood"
-          //  defaultValue={formData.neighborhood}
+          defaultValue={addressData.neighborhood}
           type="text"
-          // {...register("neighborhood")}
+          {...register("neighborhood" as Path<T>)}
         />
-        {/* { errors?.neighborhood?.message && (
-          <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-        )} */}
+        {neighborhoodError?.message && (
+          <ErrorMessage>{neighborhoodError?.message}</ErrorMessage>
+        )}
       </div>
       <div>
         <div className="mb-2 block">
@@ -45,24 +74,26 @@ export const AutocompleteZipcode = () => {
         <TextInput
           data-testid="state"
           id="state"
-          // defaultValue={formData.state}
+          defaultValue={addressData.state}
           type="text"
-          // {...register("state")}
+          {...register("state" as Path<T>)}
         />
-        {/* {errors?.state?.message && (
-          <ErrorMessage>{errors.state?.message}</ErrorMessage>
-        )} */}
+        {stateError?.message && (
+          <ErrorMessage>{stateError?.message}</ErrorMessage>
+        )}
       </div>
-      <AddTag
-        label="cities"
-        text="Ciudades"
-        tags={cities}
-        addTag={addCity}
-        removeTag={removeCity}
-        placeholder="Presiona enter para agregar ciudades"
-        errorMessage={citiesError}
-        setError={setCitiesError}
-      />
+      {!hideCityField && (
+        <AddTag
+          label="cities"
+          text="Ciudades"
+          tags={cities}
+          addTag={addCity}
+          removeTag={removeCity}
+          placeholder="Presiona enter para agregar ciudades"
+          errorMessage={citiesError}
+          setError={setCitiesError}
+        />
+      )}
     </>
   );
 };
