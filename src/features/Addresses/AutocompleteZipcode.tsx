@@ -18,7 +18,12 @@ interface AutocompleteZipcodeProps<T extends AddressInformationT> {
   addressData: T;
   hideCityField?: boolean;
   errors: FieldErrors<T>;
+  cities: string[];
+  citiesError: string;
   register: UseFormRegister<T>;
+  addCity: (newCity: string) => void;
+  removeCity: (cityToRemove: string) => void;
+  setCitiesError: (errorMessage: string) => void;
 }
 
 /**
@@ -29,6 +34,11 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   hideCityField,
   errors,
   register,
+  cities,
+  addCity,
+  removeCity,
+  citiesError,
+  setCitiesError,
 }: AutocompleteZipcodeProps<T>) => {
   const zipcodeError = errors?.zipcode as FieldError | undefined;
   const neighborhoodError = errors?.neighborhood as FieldError | undefined;
