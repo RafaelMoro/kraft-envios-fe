@@ -1,11 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label, TextInput } from "flowbite-react";
-import {
-  FieldError,
-  FieldErrors,
-  Path,
-  UseFormRegister,
-} from "react-hook-form";
+import { FieldError, FieldErrors } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
 import { AddTag } from "@/shared/ui/organisms/AddTag";
@@ -30,7 +25,6 @@ interface AutocompleteZipcodeProps<T extends AddressInformationT> {
   cities: string[];
   citiesError: string;
   zipcode: string;
-  register: UseFormRegister<T>;
   addCity: (newCity: string) => void;
   removeCity: (cityToRemove: string) => void;
   setCitiesError: (errorMessage: string) => void;
@@ -44,7 +38,6 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   addressData,
   hideCityField,
   errors,
-  register,
   cities,
   zipcode,
   addCity,
@@ -57,16 +50,35 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   const stateError = errors?.state as FieldError | undefined;
 
   const [zipcodeError, setZipcodeError] = useState<string>("");
+  const [debouncedZipcode, setDebouncedZipcode] = useState<string>("");
+
+  // Debounce zipcode to avoid firing queries back to back
+  useEffect(() => {
+    if (zipcode.length === 5 && onlyNumberRegex.test(zipcode)) {
+      const timeoutId = setTimeout(() => {
+        setDebouncedZipcode(zipcode);
+      }, 2000);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setDebouncedZipcode("");
+    }
+  }, [zipcode]);
+
   const { data } = useQuery({
-    queryKey: ["getAddressByZipcode", zipcode],
-    queryFn: () => getAddressByZipcode(zipcode),
-    // TODO: Check this
-    enabled: zipcode.length === 5 && onlyNumberRegex.test(zipcode),
+    queryKey: ["getAddressByZipcode", debouncedZipcode],
+    queryFn: () => getAddressByZipcode(debouncedZipcode),
+    enabled:
+      debouncedZipcode.length === 5 && onlyNumberRegex.test(debouncedZipcode),
   });
 
   const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
+    if (!value) {
+      setZipcode("");
+      return;
+    }
     if (!onlyNumberRegex.test(value)) {
       setZipcodeError(ZIPCODE_ONLY_NUMBERS_ERROR);
       // We return here because we don't want to update the zipcode state with invalid value
@@ -104,7 +116,6 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
           id="neighborhood"
           defaultValue={addressData.neighborhood}
           type="text"
-          {...register("neighborhood" as Path<T>)}
         />
         {neighborhoodError?.message && (
           <ErrorMessage>{neighborhoodError?.message}</ErrorMessage>
@@ -119,7 +130,6 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
           id="state"
           defaultValue={addressData.state}
           type="text"
-          {...register("state" as Path<T>)}
         />
         {stateError?.message && (
           <ErrorMessage>{stateError?.message}</ErrorMessage>
