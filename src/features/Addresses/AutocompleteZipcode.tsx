@@ -6,6 +6,7 @@ import {
   Path,
   UseFormRegister,
 } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 
 import { AddTag } from "@/shared/ui/organisms/AddTag";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
@@ -14,6 +15,7 @@ import {
   ZIPCODE_ONLY_NUMBERS_ERROR,
 } from "@/shared/constants/addresses.constants";
 import { onlyNumberRegex } from "@/shared/types/addresses.types";
+import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
 
 type AddressInformationT = {
   zipcode: string;
@@ -55,6 +57,12 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   const stateError = errors?.state as FieldError | undefined;
 
   const [zipcodeError, setZipcodeError] = useState<string>("");
+  const { data } = useQuery({
+    queryKey: ["getAddressByZipcode", zipcode],
+    queryFn: () => getAddressByZipcode(zipcode),
+    // TODO: Check this
+    enabled: zipcode.length === 5 && onlyNumberRegex.test(zipcode),
+  });
 
   const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -69,6 +77,7 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
     }
     setZipcode(value);
   };
+  console.log("data", data);
 
   return (
     <>
