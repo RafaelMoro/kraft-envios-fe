@@ -1,4 +1,5 @@
 import { object, ObjectSchema, string } from "yup";
+import { ADDRESS_MIN_LENGTH_ERROR } from "../constants/addresses.constants";
 
 const onlyNumberRegex = /^\d+$/;
 
@@ -9,12 +10,12 @@ export type Address = {
   reference: string;
   zipcode: string;
   state: string;
-  city: string[]
-  town: string[]
+  city: string[];
+  town: string[];
   alias: string;
   neighborhood: string;
   isGEAddress?: boolean;
-}
+};
 
 export interface UpdateAddressInfoPayload {
   newAddress: Address;
@@ -31,27 +32,33 @@ export type CreateAddressFormValues = {
   state: string;
   reference?: string | null | undefined;
   alias: string;
-}
+};
 
-export type ManageAddressFormScreen = 'CREATE_ADDRESS' | 'ADD_GE_INFORMATION' | 'SHOW_RESULT'
+export type ManageAddressFormScreen =
+  | "CREATE_ADDRESS"
+  | "ADD_GE_INFORMATION"
+  | "SHOW_RESULT";
 
-export type CreateAddressPayload = Omit<CreateAddressFormValues, 'internalNumber' | 'reference' | 'street1'> & {
+export type CreateAddressPayload = Omit<
+  CreateAddressFormValues,
+  "internalNumber" | "reference" | "street1"
+> & {
   internalNumber: string;
   reference: string;
   city: string[];
   town: string[];
   addressName: string;
   isGEAddress: boolean;
-}
+};
 
 export type DeleteAddressPayload = {
   alias: string;
-}
+};
 
 export interface CreateAddressResponse {
   data: {
-    address: Address
-  }
+    address: Address;
+  };
   error: null;
   message: null;
   success: boolean;
@@ -60,8 +67,8 @@ export interface CreateAddressResponse {
 
 export interface GetAddressesResponse {
   data: {
-    addresses: Address[]
-  }
+    addresses: Address[];
+  };
   error: null;
   message: null;
   success: boolean;
@@ -72,46 +79,68 @@ export interface AddressAliasResponse {
   data: {
     address: {
       alias: string;
-    }
-  }
+    };
+  };
   error: null;
   message: null;
   success: boolean;
   version: string;
 }
 
-export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> = object().shape({
-  street1: string().required('La calle es requerida').min(2, 'La calle debe tener al menos 2 caracteres'),
-  externalNumber: string()
-    .required('El número exterior es requerido')
-    .matches(onlyNumberRegex, { excludeEmptyString: true, message: "El número exterior solo puede contener dígitos" })
-    .min(1, 'El número exterior debe ser al menos de 1 dígito'),
-  internalNumber: string()
-    .nullable()
-    .notRequired()
-    .when('internalNumber', {
-      is: (value: string) => value?.length,
-      then: (rule) => rule
-        .matches(onlyNumberRegex, { excludeEmptyString: true, message: "El número interior solo puede contener dígitos" })
-        .min(1, 'El número interior debe ser al menos de 1 dígito'),
-    }),
-  neighborhood: string().required('Colonia es requerida').min(2, 'La colonia debe tener al menos 2 caracteres'),
-  zipcode: string()
-      .required('El código postal es requerido')
-      .matches(onlyNumberRegex, { excludeEmptyString: true, message: "El código postal solo puede contener dígitos" })
-      .min(5, 'El código postal debe tener 5 caracteres')
-      .max(5, 'El código postal debe tener 5 caracteres'),
-  state: string().required('Estado es requerido').min(2, 'El estado debe tener al menos 2 caracteres'),
-  reference: string()
-    .nullable()
-    .notRequired()
-    .when('reference', {
-      is: (value: string) => value?.length,
-      then: (rule) => rule
-        .min(1, 'La referencia debe tener al menos 1 carácter'),
-    }),
-  alias: string().required('Alias es requerido').min(2, 'El alias debe tener al menos 2 caracteres'),
-}, [
-  ["internalNumber", "internalNumber"],
-  ["reference", "reference"]
-])
+export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> =
+  object().shape(
+    {
+      street1: string()
+        .required("La calle es requerida")
+        .min(2, "La calle debe tener al menos 2 caracteres"),
+      externalNumber: string()
+        .required("El número exterior es requerido")
+        .matches(onlyNumberRegex, {
+          excludeEmptyString: true,
+          message: "El número exterior solo puede contener dígitos",
+        })
+        .min(1, "El número exterior debe ser al menos de 1 dígito"),
+      internalNumber: string()
+        .nullable()
+        .notRequired()
+        .when("internalNumber", {
+          is: (value: string) => value?.length,
+          then: (rule) =>
+            rule
+              .matches(onlyNumberRegex, {
+                excludeEmptyString: true,
+                message: "El número interior solo puede contener dígitos",
+              })
+              .min(1, "El número interior debe ser al menos de 1 dígito"),
+        }),
+      neighborhood: string()
+        .required("Colonia es requerida")
+        .min(2, "La colonia debe tener al menos 2 caracteres"),
+      zipcode: string()
+        .required("El código postal es requerido")
+        .matches(onlyNumberRegex, {
+          excludeEmptyString: true,
+          message: "El código postal solo puede contener dígitos",
+        })
+        .min(5, ADDRESS_MIN_LENGTH_ERROR)
+        .max(5, "El código postal debe tener 5 caracteres"),
+      state: string()
+        .required("Estado es requerido")
+        .min(2, "El estado debe tener al menos 2 caracteres"),
+      reference: string()
+        .nullable()
+        .notRequired()
+        .when("reference", {
+          is: (value: string) => value?.length,
+          then: (rule) =>
+            rule.min(1, "La referencia debe tener al menos 1 carácter"),
+        }),
+      alias: string()
+        .required("Alias es requerido")
+        .min(2, "El alias debe tener al menos 2 caracteres"),
+    },
+    [
+      ["internalNumber", "internalNumber"],
+      ["reference", "reference"],
+    ],
+  );

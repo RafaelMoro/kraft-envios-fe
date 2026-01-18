@@ -1,4 +1,6 @@
 import { Label, TextInput } from "flowbite-react";
+import { useState } from "react";
+
 import { AddTag } from "@/shared/ui/organisms/AddTag";
 import {
   FieldError,
@@ -7,6 +9,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
+import { ADDRESS_MIN_LENGTH_ERROR } from "@/shared/constants/addresses.constants";
 
 type AddressInformationT = {
   zipcode: string;
@@ -20,10 +23,12 @@ interface AutocompleteZipcodeProps<T extends AddressInformationT> {
   errors: FieldErrors<T>;
   cities: string[];
   citiesError: string;
+  zipcode: string;
   register: UseFormRegister<T>;
   addCity: (newCity: string) => void;
   removeCity: (cityToRemove: string) => void;
   setCitiesError: (errorMessage: string) => void;
+  setZipcode: (newZipcode: string) => void;
 }
 
 /**
@@ -35,14 +40,26 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   errors,
   register,
   cities,
+  zipcode,
   addCity,
   removeCity,
   citiesError,
   setCitiesError,
+  setZipcode,
 }: AutocompleteZipcodeProps<T>) => {
-  const zipcodeError = errors?.zipcode as FieldError | undefined;
   const neighborhoodError = errors?.neighborhood as FieldError | undefined;
   const stateError = errors?.state as FieldError | undefined;
+
+  const [zipcodeError, setZipcodeError] = useState<string>("");
+
+  const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (value.length < 5) {
+      setZipcodeError(ADDRESS_MIN_LENGTH_ERROR);
+    }
+    setZipcode(value);
+  };
 
   return (
     <>
@@ -52,15 +69,13 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
         </div>
         <TextInput
           data-testid="zipcode"
-          defaultValue={addressData.zipcode}
           id="zipcode"
           type="text"
           inputMode="numeric"
-          {...register("zipcode" as Path<T>)}
+          value={zipcode}
+          onChange={handleZipcodeChange}
         />
-        {zipcodeError?.message && (
-          <ErrorMessage>{zipcodeError?.message}</ErrorMessage>
-        )}
+        {zipcodeError && <ErrorMessage>{zipcodeError}</ErrorMessage>}
       </div>
       <div>
         <div className="mb-2 block">
