@@ -11,7 +11,6 @@ import { RiArrowDownSLine } from "@remixicon/react";
 import { FieldError, FieldErrors } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
-import { AddTag } from "@/shared/ui/organisms/AddTag";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import {
   ZIPCODE_LENGTH_ERROR,
@@ -30,11 +29,7 @@ type AddressInformationT = {
 interface AutocompleteZipcodeProps<T extends AddressInformationT> {
   hideCityField?: boolean;
   errors: FieldErrors<T>;
-  citiesError: string;
   zipcode: string;
-  addCity: (newCity: string) => void;
-  removeCity: (cityToRemove: string) => void;
-  setCitiesError: (errorMessage: string) => void;
   setZipcode: (newZipcode: string) => void;
 }
 
@@ -45,10 +40,6 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   hideCityField,
   errors,
   zipcode,
-  addCity,
-  removeCity,
-  citiesError,
-  setCitiesError,
   setZipcode,
 }: AutocompleteZipcodeProps<T>) => {
   const neighborhoodError = errors?.neighborhood as FieldError | undefined;
@@ -60,8 +51,10 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [states, setStates] = useState<string[]>([]);
+
   const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>("");
   const [stateSelected, setStateSelected] = useState<string>("");
+  const [citySelected, setCitySelected] = useState<string>("");
 
   // Debounce zipcode to avoid firing queries back to back
   useEffect(() => {
@@ -209,16 +202,41 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
         </div>
       </Dropdown>
       {!hideCityField && (
-        <AddTag
-          label="cities"
-          text="Ciudades"
-          tags={cities}
-          addTag={addCity}
-          removeTag={removeCity}
-          placeholder="Presiona enter para agregar ciudades"
-          errorMessage={citiesError}
-          setError={setCitiesError}
-        />
+        <Dropdown
+          label=""
+          renderTrigger={() => (
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="city">Ciudad</Label>
+              </div>
+              <Button
+                className="hover:cursor-pointer flex justify-between w-full"
+                data-testid="autocomplete-dropdown-city-button"
+                color="light"
+                disabled={isFetching || states.length === 0}
+              >
+                {isFetching ? <Spinner /> : citySelected}
+                <RiArrowDownSLine />
+              </Button>
+              {stateError?.message && (
+                <ErrorMessage>{stateError?.message}</ErrorMessage>
+              )}
+            </div>
+          )}
+        >
+          <div className="overflow-y-auto max-h-52">
+            {cities &&
+              cities.length > 0 &&
+              cities.map((item) => (
+                <DropdownItem
+                  key={`city-${item}`}
+                  onClick={() => setCitySelected(item)}
+                >
+                  {item}
+                </DropdownItem>
+              ))}
+          </div>
+        </Dropdown>
       )}
     </>
   );
