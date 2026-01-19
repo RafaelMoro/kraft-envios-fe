@@ -30,6 +30,7 @@ import { convertToAddressDataGEFormValues } from "@/shared/utils/guides.utils";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner";
 import { AutocompleteZipcode } from "./AutocompleteZipcode";
+import { AddressRegionFields } from "./AddressRegionFields";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -270,22 +271,24 @@ export const CreateAddressSubform = ({
             <ErrorMessage>{errors.internalNumber?.message}</ErrorMessage>
           )}
         </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="neighborhood">Colonia</Label>
-          </div>
-          <TextInput
-            data-testid="neighborhood"
-            id="neighborhood"
-            defaultValue={formData.neighborhood}
-            type="text"
-            {...register("neighborhood")}
-          />
-          {errors?.neighborhood?.message && (
-            <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-          )}
-        </div>
-        <AddTag
+        <AddressRegionFields<CreateAddressFormValues>
+          CityField={
+            <AddTag
+              label="cities"
+              text="Ciudades"
+              tags={cities}
+              addTag={addCity}
+              removeTag={removeCity}
+              placeholder="Presiona enter para agregar ciudades"
+              errorMessage={citiesError}
+              setError={setCitiesError}
+            />
+          }
+          addressData={formData}
+          errors={errors}
+          register={register}
+        />
+        {/* <AddTag
           label="cities"
           text="Ciudades"
           tags={cities}
@@ -294,7 +297,7 @@ export const CreateAddressSubform = ({
           placeholder="Presiona enter para agregar ciudades"
           errorMessage={citiesError}
           setError={setCitiesError}
-        />
+        /> */}
         <AddTag
           label="towns"
           text="Municipios"
@@ -305,37 +308,6 @@ export const CreateAddressSubform = ({
           errorMessage={townsError}
           setError={setTownsError}
         />
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="state">Estado de la República</Label>
-          </div>
-          <TextInput
-            data-testid="state"
-            id="state"
-            defaultValue={formData.state}
-            type="text"
-            {...register("state")}
-          />
-          {errors?.state?.message && (
-            <ErrorMessage>{errors.state?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="zipcode">Código Postal</Label>
-          </div>
-          <TextInput
-            data-testid="zipcode"
-            defaultValue={formData.zipcode}
-            id="zipcode"
-            type="text"
-            inputMode="numeric"
-            {...register("zipcode")}
-          />
-          {errors?.zipcode?.message && (
-            <ErrorMessage>{errors.zipcode?.message}</ErrorMessage>
-          )}
-        </div>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="reference">Referencia</Label>

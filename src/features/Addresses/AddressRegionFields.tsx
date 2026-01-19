@@ -7,6 +7,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
+import { CreateAddressPayload } from "@/shared/types/addresses.types";
 
 type AddressRegionDataT = {
   zipcode: string;
@@ -15,7 +16,7 @@ type AddressRegionDataT = {
 };
 interface AddressRegionFieldsProps<T extends AddressRegionDataT> {
   CityField: ReactNode;
-  addressData: T;
+  addressData: CreateAddressPayload;
   errors: FieldErrors<T>;
   register: UseFormRegister<T>;
 }
