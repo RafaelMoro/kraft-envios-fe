@@ -13,6 +13,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import {
+  INITIAL_STATE_SELECT_CITY,
+  INITIAL_STATE_SELECT_NEIGHBORHOOD,
+  INITIAL_STATE_SELECT_STATE,
   ZIPCODE_LENGTH_ERROR,
   ZIPCODE_ONLY_NUMBERS_ERROR,
 } from "@/shared/constants/addresses.constants";
@@ -52,9 +55,15 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   const [cities, setCities] = useState<string[]>([]);
   const [states, setStates] = useState<string[]>([]);
 
-  const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>("");
-  const [stateSelected, setStateSelected] = useState<string>("");
-  const [citySelected, setCitySelected] = useState<string>("");
+  const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>(
+    INITIAL_STATE_SELECT_NEIGHBORHOOD,
+  );
+  const [stateSelected, setStateSelected] = useState<string>(
+    INITIAL_STATE_SELECT_STATE,
+  );
+  const [citySelected, setCitySelected] = useState<string>(
+    INITIAL_STATE_SELECT_CITY,
+  );
 
   // Debounce zipcode to avoid firing queries back to back
   useEffect(() => {
@@ -89,8 +98,9 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
       setStates(Array.from(new Set(onlyStates)));
 
       // Reset selected neighborhood when zipcode changes
-      setNeighborhoodSelected("");
-      setStateSelected("");
+      setNeighborhoodSelected(INITIAL_STATE_SELECT_NEIGHBORHOOD);
+      setStateSelected(INITIAL_STATE_SELECT_STATE);
+      setCitySelected(INITIAL_STATE_SELECT_CITY);
     }
   }, [data]);
 
