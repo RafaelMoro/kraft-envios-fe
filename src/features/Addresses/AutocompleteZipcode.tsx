@@ -85,6 +85,10 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
       debouncedZipcode.length === 5 && onlyNumberRegex.test(debouncedZipcode),
   });
 
+  /**
+   * Effect to update neighborhoods, cities and states when data changes
+   * It also sets the selected neighborhood, city and state if there's only one option
+   */
   useEffect(() => {
     if (data?.neighborhoods) {
       const onlyNeighborhoods = data.neighborhoods.map(
@@ -92,15 +96,31 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
       );
       const onlyCities = data.neighborhoods.map((item) => item.city);
       const onlyStates = data.neighborhoods.map((item) => item.state);
+      const newNeighborhoods = Array.from(new Set(onlyNeighborhoods));
+      const newCities = Array.from(new Set(onlyCities));
+      const newStates = Array.from(new Set(onlyStates));
 
-      setNeighborhoods(Array.from(new Set(onlyNeighborhoods)));
-      setCities(Array.from(new Set(onlyCities)));
-      setStates(Array.from(new Set(onlyStates)));
+      setNeighborhoods(newNeighborhoods);
+      setCities(newCities);
+      setStates(newStates);
+
+      const newCurrentNeighborhood =
+        newNeighborhoods.length === 1
+          ? (newNeighborhoods?.[0] ?? INITIAL_STATE_SELECT_NEIGHBORHOOD)
+          : INITIAL_STATE_SELECT_NEIGHBORHOOD;
+      const newSelectedState =
+        newStates.length === 1
+          ? (newStates?.[0] ?? INITIAL_STATE_SELECT_STATE)
+          : INITIAL_STATE_SELECT_STATE;
+      const newSelectedCity =
+        newCities.length === 1
+          ? (newCities?.[0] ?? INITIAL_STATE_SELECT_CITY)
+          : INITIAL_STATE_SELECT_CITY;
 
       // Reset selected neighborhood when zipcode changes
-      setNeighborhoodSelected(INITIAL_STATE_SELECT_NEIGHBORHOOD);
-      setStateSelected(INITIAL_STATE_SELECT_STATE);
-      setCitySelected(INITIAL_STATE_SELECT_CITY);
+      setNeighborhoodSelected(newCurrentNeighborhood);
+      setStateSelected(newSelectedState);
+      setCitySelected(newSelectedCity);
     }
   }, [data]);
 
