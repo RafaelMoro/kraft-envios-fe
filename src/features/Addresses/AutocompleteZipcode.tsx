@@ -7,6 +7,7 @@ import {
   Spinner,
   TextInput,
 } from "flowbite-react";
+import { RiArrowDownSLine } from "@remixicon/react";
 import { FieldError, FieldErrors } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,8 +19,8 @@ import {
 } from "@/shared/constants/addresses.constants";
 import { onlyNumberRegex } from "@/shared/types/addresses.types";
 import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
-import { RiArrowDownSLine } from "@remixicon/react";
 
+// TODO: Check if this needs to be deleted
 type AddressInformationT = {
   zipcode: string;
   neighborhood: string;
@@ -27,7 +28,6 @@ type AddressInformationT = {
 };
 
 interface AutocompleteZipcodeProps<T extends AddressInformationT> {
-  addressData: T;
   hideCityField?: boolean;
   errors: FieldErrors<T>;
   citiesError: string;
@@ -42,7 +42,6 @@ interface AutocompleteZipcodeProps<T extends AddressInformationT> {
  * This component autocompletes neighborhood, state, and cities with zipocode
  */
 export const AutocompleteZipcode = <T extends AddressInformationT>({
-  addressData,
   hideCityField,
   errors,
   zipcode,
@@ -62,6 +61,7 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   const [cities, setCities] = useState<string[]>([]);
   const [states, setStates] = useState<string[]>([]);
   const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>("");
+  const [stateSelected, setStateSelected] = useState<string>("");
 
   // Debounce zipcode to avoid firing queries back to back
   useEffect(() => {
@@ -97,6 +97,7 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
 
       // Reset selected neighborhood when zipcode changes
       setNeighborhoodSelected("");
+      setStateSelected("");
     }
   }, [data]);
 
@@ -146,7 +147,7 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
             </div>
             <Button
               className="hover:cursor-pointer flex justify-between w-full"
-              data-testid="select-address-dropdown-button"
+              data-testid="autocomplete-dropdown-neighborhood-button"
               color="light"
               disabled={isFetching || neighborhoods.length === 0}
             >
@@ -172,20 +173,41 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
             ))}
         </div>
       </Dropdown>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="state">Estado de la República</Label>
-        </div>
-        <TextInput
-          data-testid="state"
-          id="state"
-          defaultValue={addressData.state}
-          type="text"
-        />
-        {stateError?.message && (
-          <ErrorMessage>{stateError?.message}</ErrorMessage>
+      <Dropdown
+        label=""
+        renderTrigger={() => (
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="state">Estado de la República</Label>
+            </div>
+            <Button
+              className="hover:cursor-pointer flex justify-between w-full"
+              data-testid="autocomplete-dropdown-state-button"
+              color="light"
+              disabled={isFetching || states.length === 0}
+            >
+              {isFetching ? <Spinner /> : stateSelected}
+              <RiArrowDownSLine />
+            </Button>
+            {stateError?.message && (
+              <ErrorMessage>{stateError?.message}</ErrorMessage>
+            )}
+          </div>
         )}
-      </div>
+      >
+        <div className="overflow-y-auto max-h-52">
+          {states &&
+            states.length > 0 &&
+            states.map((item) => (
+              <DropdownItem
+                key={`state-${item}`}
+                onClick={() => setStateSelected(item)}
+              >
+                {item}
+              </DropdownItem>
+            ))}
+        </div>
+      </Dropdown>
       {!hideCityField && (
         <AddTag
           label="cities"
