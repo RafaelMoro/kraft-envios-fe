@@ -20,6 +20,7 @@ import {
 } from "../types/guides.types";
 import { addToLocalStorage, getLocalStorageInfo } from "./local-storage.utils";
 import { PENDING_GE_ADDRESSES_KEY } from "../constants/local-storage.constants";
+import { Neighborhood } from "../types/quotes.types";
 
 export const formatPayloadCreateAddress = ({
   payload,
@@ -106,7 +107,10 @@ export const deleteGEAddressCb = async (geAddressId: string) => {
 export const getAddressByZipcode = async (zipcode: string) => {
   try {
     const uri = `${GET_ADDRESS_INFO_API_ENDPOINT}?zipcode=${zipcode}`;
-    const res: AxiosResponse<unknown> = await axios.get(uri);
+    const res: AxiosResponse<{
+      neighborhoods: Neighborhood[];
+      message: string | null;
+    }> = await axios.get(uri);
     return res?.data;
   } catch (error) {
     throw error;
