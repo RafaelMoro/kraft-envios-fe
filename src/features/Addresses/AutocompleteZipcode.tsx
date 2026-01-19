@@ -8,7 +8,6 @@ import {
   TextInput,
 } from "flowbite-react";
 import { RiArrowDownSLine } from "@remixicon/react";
-import { FieldError, FieldErrors } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
@@ -22,16 +21,8 @@ import {
 import { onlyNumberRegex } from "@/shared/types/addresses.types";
 import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
 
-// TODO: Check if this needs to be deleted
-type AddressInformationT = {
-  zipcode: string;
-  neighborhood: string;
-  state: string;
-};
-
-interface AutocompleteZipcodeProps<T extends AddressInformationT> {
+interface AutocompleteZipcodeProps {
   hideCityField?: boolean;
-  errors: FieldErrors<T>;
   zipcode: string;
   setZipcode: (newZipcode: string) => void;
 }
@@ -39,14 +30,14 @@ interface AutocompleteZipcodeProps<T extends AddressInformationT> {
 /**
  * This component autocompletes neighborhood, state, and cities with zipocode
  */
-export const AutocompleteZipcode = <T extends AddressInformationT>({
+export const AutocompleteZipcode = ({
   hideCityField,
-  errors,
   zipcode,
   setZipcode,
-}: AutocompleteZipcodeProps<T>) => {
-  const neighborhoodError = errors?.neighborhood as FieldError | undefined;
-  const stateError = errors?.state as FieldError | undefined;
+}: AutocompleteZipcodeProps) => {
+  // TODO: Change these errors
+  const neighborhoodError = "";
+  const stateError = "";
 
   const [zipcodeError, setZipcodeError] = useState<string>("");
   const [debouncedZipcode, setDebouncedZipcode] = useState<string>("");
@@ -177,8 +168,8 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
               {isFetching ? <Spinner /> : neighborhoodSelected}
               <RiArrowDownSLine />
             </Button>
-            {neighborhoodError?.message && (
-              <ErrorMessage>{neighborhoodError?.message}</ErrorMessage>
+            {neighborhoodError && (
+              <ErrorMessage>{neighborhoodError}</ErrorMessage>
             )}
           </div>
         )}
@@ -212,9 +203,7 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
               {isFetching ? <Spinner /> : stateSelected}
               <RiArrowDownSLine />
             </Button>
-            {stateError?.message && (
-              <ErrorMessage>{stateError?.message}</ErrorMessage>
-            )}
+            {stateError && <ErrorMessage>{stateError}</ErrorMessage>}
           </div>
         )}
       >
@@ -248,9 +237,7 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
                 {isFetching ? <Spinner /> : citySelected}
                 <RiArrowDownSLine />
               </Button>
-              {stateError?.message && (
-                <ErrorMessage>{stateError?.message}</ErrorMessage>
-              )}
+              {stateError && <ErrorMessage>{stateError}</ErrorMessage>}
             </div>
           )}
         >
