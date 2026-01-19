@@ -221,148 +221,153 @@ export const CreateAddressSubform = ({
           toggleError={toggleErrorBanner}
         />
       )}
-      <form
-        className="grid grid-cols-1 lg:grid-cols-2 gap-5"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="street1">Calle</Label>
-          </div>
-          <TextInput
-            data-testid="street1"
-            defaultValue={formData.addressName}
-            id="street1"
-            type="text"
-            {...register("street1")}
-          />
-          {errors?.street1?.message && (
-            <ErrorMessage>{errors.street1?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="externalNumber">Numero exterior</Label>
-          </div>
-          <TextInput
-            data-testid="externalNumber"
-            id="externalNumber"
-            type="text"
-            defaultValue={formData.externalNumber}
-            inputMode="numeric"
-            {...register("externalNumber")}
-          />
-          {errors?.externalNumber?.message && (
-            <ErrorMessage>{errors.externalNumber?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="internalNumber">Numero interior (Opcional)</Label>
-          </div>
-          <TextInput
-            data-testid="internalNumber"
-            defaultValue={formData.internalNumber as string}
-            id="internalNumber"
-            type="text"
-            inputMode="numeric"
-            {...register("internalNumber")}
-          />
-          {errors?.internalNumber?.message && (
-            <ErrorMessage>{errors.internalNumber?.message}</ErrorMessage>
-          )}
-        </div>
-        <AddressRegionSelector
-          ManualFieldsUI={
-            <AddressRegionFields<CreateAddressFormValues>
-              CityField={
-                <AddTag
-                  label="cities"
-                  text="Ciudades"
-                  tags={cities}
-                  addTag={addCity}
-                  removeTag={removeCity}
-                  placeholder="Presiona enter para agregar ciudades"
-                  errorMessage={citiesError}
-                  setError={setCitiesError}
-                />
-              }
-              addressData={formData}
-              errors={errors}
-              register={register}
-            />
-          }
-          AutocompleteUI={
-            <AutocompleteZipcode
-              zipcode={tempZipcode}
-              setZipcode={setTempZipcode}
-            />
-          }
-        />
-        <AddTag
-          label="towns"
-          text="Municipios"
-          tags={towns}
-          addTag={addTown}
-          removeTag={removeTown}
-          placeholder="Presiona enter para agregar municipios"
-          errorMessage={townsError}
-          setError={setTownsError}
-        />
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="reference">Referencia</Label>
-          </div>
-          <TextInput
-            data-testid="reference"
-            defaultValue={formData.reference as string}
-            id="reference"
-            type="text"
-            {...register("reference")}
-          />
-          {errors?.reference?.message && (
-            <ErrorMessage>{errors.reference?.message}</ErrorMessage>
-          )}
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="alias">Alias</Label>
-          </div>
-          <TextInput
-            data-testid="alias"
-            defaultValue={formData.alias}
-            id="alias"
-            type="text"
-            {...register("alias")}
-          />
-          {errors?.alias?.message && (
-            <ErrorMessage>{errors.alias?.message}</ErrorMessage>
-          )}
-        </div>
-        <ToggleSwitch
-          checked={shouldCreateGEAddress}
-          label="Crear dirección en GE"
-          onChange={handleShouldCreateGEAddress}
-        />
-        {!shouldCreateGEAddress && (
-          <>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="remember"
-                checked={consentSkipGECreation}
-                onChange={(e) => handleConsentSkipGECreation(e.target.checked)}
+      <form className="flex flex-col gap-20" onSubmit={handleSubmit(onSubmit)}>
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <AddressRegionSelector
+            ManualFieldsUI={
+              <AddressRegionFields<CreateAddressFormValues>
+                CityField={
+                  <AddTag
+                    label="cities"
+                    text="Ciudades"
+                    tags={cities}
+                    addTag={addCity}
+                    removeTag={removeCity}
+                    placeholder="Presiona enter para agregar ciudades"
+                    errorMessage={citiesError}
+                    setError={setCitiesError}
+                  />
+                }
+                addressData={formData}
+                errors={errors}
+                register={register}
               />
-              <Label htmlFor="remember">
-                Entiendo y acepto omitir en no crear esta dirección en GE
-              </Label>
+            }
+            AutocompleteUI={
+              <AutocompleteZipcode
+                zipcode={tempZipcode}
+                setZipcode={setTempZipcode}
+              />
+            }
+          />
+        </section>
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="street1">Calle</Label>
             </div>
-            {showConsentError && (
-              <div className="lg:col-start-2 lg:col-end-3 w-full flex justify-center">
-                <ErrorMessage>Marque esta opcion para continuar.</ErrorMessage>
-              </div>
+            <TextInput
+              data-testid="street1"
+              defaultValue={formData.addressName}
+              id="street1"
+              type="text"
+              {...register("street1")}
+            />
+            {errors?.street1?.message && (
+              <ErrorMessage>{errors.street1?.message}</ErrorMessage>
             )}
-          </>
-        )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="externalNumber">Numero exterior</Label>
+            </div>
+            <TextInput
+              data-testid="externalNumber"
+              id="externalNumber"
+              type="text"
+              defaultValue={formData.externalNumber}
+              inputMode="numeric"
+              {...register("externalNumber")}
+            />
+            {errors?.externalNumber?.message && (
+              <ErrorMessage>{errors.externalNumber?.message}</ErrorMessage>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="internalNumber">Numero interior (Opcional)</Label>
+            </div>
+            <TextInput
+              data-testid="internalNumber"
+              defaultValue={formData.internalNumber as string}
+              id="internalNumber"
+              type="text"
+              inputMode="numeric"
+              {...register("internalNumber")}
+            />
+            {errors?.internalNumber?.message && (
+              <ErrorMessage>{errors.internalNumber?.message}</ErrorMessage>
+            )}
+          </div>
+          <AddTag
+            label="towns"
+            text="Municipios"
+            tags={towns}
+            addTag={addTown}
+            removeTag={removeTown}
+            placeholder="Presiona enter para agregar municipios"
+            errorMessage={townsError}
+            setError={setTownsError}
+          />
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="reference">Referencia</Label>
+            </div>
+            <TextInput
+              data-testid="reference"
+              defaultValue={formData.reference as string}
+              id="reference"
+              type="text"
+              {...register("reference")}
+            />
+            {errors?.reference?.message && (
+              <ErrorMessage>{errors.reference?.message}</ErrorMessage>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="alias">Alias</Label>
+            </div>
+            <TextInput
+              data-testid="alias"
+              defaultValue={formData.alias}
+              id="alias"
+              type="text"
+              {...register("alias")}
+            />
+            {errors?.alias?.message && (
+              <ErrorMessage>{errors.alias?.message}</ErrorMessage>
+            )}
+          </div>
+          <ToggleSwitch
+            checked={shouldCreateGEAddress}
+            label="Crear dirección en GE"
+            onChange={handleShouldCreateGEAddress}
+          />
+          {!shouldCreateGEAddress && (
+            <>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="remember"
+                  checked={consentSkipGECreation}
+                  onChange={(e) =>
+                    handleConsentSkipGECreation(e.target.checked)
+                  }
+                />
+                <Label htmlFor="remember">
+                  Entiendo y acepto omitir en no crear esta dirección en GE
+                </Label>
+              </div>
+              {showConsentError && (
+                <div className="lg:col-start-2 lg:col-end-3 w-full flex justify-center">
+                  <ErrorMessage>
+                    Marque esta opcion para continuar.
+                  </ErrorMessage>
+                </div>
+              )}
+            </>
+          )}
+        </section>
         <div className="lg:col-span-2 flex justify-between mt-4">
           <Button
             color="red"
