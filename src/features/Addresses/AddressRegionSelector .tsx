@@ -7,6 +7,9 @@ interface AddressRegionSelectorProps {
   AutocompleteUI: ReactNode;
 }
 
+/**
+ * This component allows to switch between manual region fields and autocomplete region fields
+ */
 export const AddressRegionSelector = ({
   ManualFieldsUI,
   AutocompleteUI,

@@ -31,6 +31,7 @@ import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner";
 import { AutocompleteZipcode } from "./AutocompleteZipcode";
 import { AddressRegionFields } from "./AddressRegionFields";
+import { AddressRegionSelector } from "./AddressRegionSelector ";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -271,33 +272,33 @@ export const CreateAddressSubform = ({
             <ErrorMessage>{errors.internalNumber?.message}</ErrorMessage>
           )}
         </div>
-        <AddressRegionFields<CreateAddressFormValues>
-          CityField={
-            <AddTag
-              label="cities"
-              text="Ciudades"
-              tags={cities}
-              addTag={addCity}
-              removeTag={removeCity}
-              placeholder="Presiona enter para agregar ciudades"
-              errorMessage={citiesError}
-              setError={setCitiesError}
+        <AddressRegionSelector
+          ManualFieldsUI={
+            <AddressRegionFields<CreateAddressFormValues>
+              CityField={
+                <AddTag
+                  label="cities"
+                  text="Ciudades"
+                  tags={cities}
+                  addTag={addCity}
+                  removeTag={removeCity}
+                  placeholder="Presiona enter para agregar ciudades"
+                  errorMessage={citiesError}
+                  setError={setCitiesError}
+                />
+              }
+              addressData={formData}
+              errors={errors}
+              register={register}
             />
           }
-          addressData={formData}
-          errors={errors}
-          register={register}
+          AutocompleteUI={
+            <AutocompleteZipcode
+              zipcode={tempZipcode}
+              setZipcode={setTempZipcode}
+            />
+          }
         />
-        {/* <AddTag
-          label="cities"
-          text="Ciudades"
-          tags={cities}
-          addTag={addCity}
-          removeTag={removeCity}
-          placeholder="Presiona enter para agregar ciudades"
-          errorMessage={citiesError}
-          setError={setCitiesError}
-        /> */}
         <AddTag
           label="towns"
           text="Municipios"
@@ -362,10 +363,6 @@ export const CreateAddressSubform = ({
             )}
           </>
         )}
-        <AutocompleteZipcode
-          zipcode={tempZipcode}
-          setZipcode={setTempZipcode}
-        />
         <div className="lg:col-span-2 flex justify-between mt-4">
           <Button
             color="red"
