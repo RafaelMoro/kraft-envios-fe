@@ -18,6 +18,7 @@ import {
 } from "@/shared/constants/addresses.constants";
 import { onlyNumberRegex } from "@/shared/types/addresses.types";
 import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
+import { RiArrowDownSLine } from "@remixicon/react";
 
 type AddressInformationT = {
   zipcode: string;
@@ -139,15 +140,18 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
       <Dropdown
         label=""
         renderTrigger={() => (
-          <div className="flex flex-col gap-1">
-            <Label className="pl-1">Colonia</Label>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="neighborhood">Colonia</Label>
+            </div>
             <Button
-              className="hover:cursor-pointer flex justify-between"
+              className="hover:cursor-pointer flex justify-between w-full"
               data-testid="select-address-dropdown-button"
               color="light"
               disabled={isFetching || neighborhoods.length === 0}
             >
               {isFetching ? <Spinner /> : neighborhoodSelected}
+              <RiArrowDownSLine />
             </Button>
             {neighborhoodError?.message && (
               <ErrorMessage>{neighborhoodError?.message}</ErrorMessage>
