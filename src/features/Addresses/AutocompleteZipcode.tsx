@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Label, TextInput } from "flowbite-react";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  Label,
+  Spinner,
+  TextInput,
+} from "flowbite-react";
 import { FieldError, FieldErrors } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,7 +29,6 @@ interface AutocompleteZipcodeProps<T extends AddressInformationT> {
   addressData: T;
   hideCityField?: boolean;
   errors: FieldErrors<T>;
-  cities: string[];
   citiesError: string;
   zipcode: string;
   addCity: (newCity: string) => void;
@@ -38,7 +44,6 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
   addressData,
   hideCityField,
   errors,
-  cities,
   zipcode,
   addCity,
   removeCity,
@@ -51,6 +56,11 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
 
   const [zipcodeError, setZipcodeError] = useState<string>("");
   const [debouncedZipcode, setDebouncedZipcode] = useState<string>("");
+
+  const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [states, setStates] = useState<string[]>([]);
+  const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>("");
 
   // Debounce zipcode to avoid firing queries back to back
   useEffect(() => {
@@ -65,12 +75,29 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
     }
   }, [zipcode]);
 
-  const { data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["getAddressByZipcode", debouncedZipcode],
     queryFn: () => getAddressByZipcode(debouncedZipcode),
     enabled:
       debouncedZipcode.length === 5 && onlyNumberRegex.test(debouncedZipcode),
   });
+
+  useEffect(() => {
+    if (data?.neighborhoods) {
+      const onlyNeighborhoods = data.neighborhoods.map(
+        (item) => item.neighborhood,
+      );
+      const onlyCities = data.neighborhoods.map((item) => item.city);
+      const onlyStates = data.neighborhoods.map((item) => item.state);
+
+      setNeighborhoods(Array.from(new Set(onlyNeighborhoods)));
+      setCities(Array.from(new Set(onlyCities)));
+      setStates(Array.from(new Set(onlyStates)));
+
+      // Reset selected neighborhood when zipcode changes
+      setNeighborhoodSelected("");
+    }
+  }, [data]);
 
   const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -89,7 +116,6 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
     }
     setZipcode(value);
   };
-  console.log("data", data);
 
   return (
     <>
@@ -107,20 +133,38 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
         />
         {zipcodeError && <ErrorMessage>{zipcodeError}</ErrorMessage>}
       </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="neighborhood">Colonia</Label>
-        </div>
-        <TextInput
-          data-testid="neighborhood"
-          id="neighborhood"
-          defaultValue={addressData.neighborhood}
-          type="text"
-        />
-        {neighborhoodError?.message && (
-          <ErrorMessage>{neighborhoodError?.message}</ErrorMessage>
+      <Dropdown
+        label=""
+        renderTrigger={() => (
+          <div className="flex flex-col gap-1">
+            <Label className="pl-1">Colonia</Label>
+            <Button
+              className="hover:cursor-pointer flex justify-between"
+              data-testid="select-address-dropdown-button"
+              color="light"
+              disabled={isFetching || neighborhoods.length === 0}
+            >
+              {isFetching ? <Spinner /> : neighborhoodSelected}
+            </Button>
+            {neighborhoodError?.message && (
+              <ErrorMessage>{neighborhoodError?.message}</ErrorMessage>
+            )}
+          </div>
         )}
-      </div>
+      >
+        <div className="overflow-y-auto max-h-52">
+          {neighborhoods &&
+            neighborhoods.length > 0 &&
+            neighborhoods.map((item) => (
+              <DropdownItem
+                key={`neighborhood-${item}`}
+                onClick={() => setNeighborhoodSelected(item)}
+              >
+                {item}
+              </DropdownItem>
+            ))}
+        </div>
+      </Dropdown>
       <div>
         <div className="mb-2 block">
           <Label htmlFor="state">Estado de la República</Label>
