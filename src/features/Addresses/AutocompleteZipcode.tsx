@@ -114,6 +114,9 @@ export const AutocompleteZipcode = <T extends AddressInformationT>({
     if (value.length < 5 || value.length > 5) {
       setZipcodeError(ZIPCODE_LENGTH_ERROR);
     }
+    if (value.length === 5) {
+      setZipcodeError("");
+    }
     setZipcode(value);
   };
 
