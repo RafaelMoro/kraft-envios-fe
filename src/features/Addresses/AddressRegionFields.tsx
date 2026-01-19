@@ -1,10 +1,17 @@
+import { ReactNode } from "react";
 import { Label, TextInput } from "flowbite-react";
+
+interface AddressRegionFieldsProps {
+  CityField: ReactNode;
+}
 
 /**
  * This component contains the region fields: state, city and neighborhood
  * It's the counterpart of the component `AutocompleteZipcode` that helps the user to fill these fields
  */
-export const AddressRegionFields = () => {
+export const AddressRegionFields = ({
+  CityField,
+}: AddressRegionFieldsProps) => {
   return (
     <>
       <div>
@@ -53,6 +60,7 @@ export const AddressRegionFields = () => {
           <ErrorMessage>{errors.state?.message}</ErrorMessage>
         )} */}
       </div>
+      {CityField}
     </>
   );
 };
