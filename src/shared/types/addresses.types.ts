@@ -1,5 +1,6 @@
 import { object, ObjectSchema, string } from "yup";
 import {
+  ZIPCODE_EMPTY_ERROR,
   ZIPCODE_LENGTH_ERROR,
   ZIPCODE_ONLY_NUMBERS_ERROR,
 } from "../constants/addresses.constants";
@@ -120,7 +121,7 @@ export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> =
         .required("Colonia es requerida")
         .min(2, "La colonia debe tener al menos 2 caracteres"),
       zipcode: string()
-        .required("El código postal es requerido")
+        .required(ZIPCODE_EMPTY_ERROR)
         .matches(onlyNumberRegex, {
           excludeEmptyString: true,
           message: ZIPCODE_ONLY_NUMBERS_ERROR,
