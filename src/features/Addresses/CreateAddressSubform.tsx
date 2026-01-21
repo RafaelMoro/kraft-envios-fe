@@ -54,6 +54,7 @@ interface CreateAddressSubformProps {
   setError: UseFormSetError<CreateAddressFormValues>;
   setZipcodeError: (error: string) => void;
   clearErrors: UseFormClearErrors<CreateAddressFormValues>;
+  clearManualAddressRegionFields: () => void;
   setValue: UseFormSetValue<CreateAddressFormValues>;
   createAddressMutation: (payload: CreateAddressPayload) => void;
   editAddressMutation: (payload: CreateAddressPayload) => void;
@@ -84,6 +85,7 @@ export const CreateAddressSubform = ({
   setValue,
   setZipcodeError,
   clearErrors,
+  clearManualAddressRegionFields,
   isPending,
   isSuccess,
   isPendingEdit,
@@ -128,6 +130,14 @@ export const CreateAddressSubform = ({
 
   // State for address region selector
   const [showManualFields, setShowManualFields] = useState(false);
+  const toggleShowManualFields = () => {
+    setShowManualFields((prev) => {
+      if (prev === true) {
+        clearManualAddressRegionFields();
+      }
+      return !prev;
+    });
+  };
 
   const {
     tags: towns,
@@ -321,7 +331,7 @@ export const CreateAddressSubform = ({
               />
             }
             showManualFields={showManualFields}
-            setShowManualFields={setShowManualFields}
+            setShowManualFields={toggleShowManualFields}
           />
         </section>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">

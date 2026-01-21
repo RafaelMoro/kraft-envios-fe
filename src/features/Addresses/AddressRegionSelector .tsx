@@ -4,7 +4,7 @@ import { ToggleSwitch } from "flowbite-react";
 
 interface AddressRegionSelectorProps {
   showManualFields: boolean;
-  setShowManualFields: (value: boolean) => void;
+  setShowManualFields: () => void;
   ManualFieldsUI: ReactNode;
   AutocompleteUI: ReactNode;
 }

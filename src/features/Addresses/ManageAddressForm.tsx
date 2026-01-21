@@ -67,7 +67,11 @@ export const ManageAddressForm = ({
   const setZipcodeError = (error: string) => {
     setError("zipcode", { type: "manual", message: error });
   };
-  console.log("errors", errors);
+  const clearManualAddressRegionFields = () => {
+    setValue("zipcode", "");
+    setValue("neighborhood", "");
+    setValue("state", "");
+  };
   const actionText = isEdit ? "Editar" : "Crear";
 
   const onSuccess = async () => {
@@ -168,6 +172,7 @@ export const ManageAddressForm = ({
             dataAliases={dataAliases}
             isPendingFetchAlias={isPendingFetchAlias}
             errorAlias={errorAlias}
+            clearManualAddressRegionFields={clearManualAddressRegionFields}
           />
         )}
         {subscreen === "ADD_GE_INFORMATION" && (
