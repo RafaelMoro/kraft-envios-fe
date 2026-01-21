@@ -220,8 +220,9 @@ export const CreateAddressSubform = ({
 
     // Validate neighborhood selection
     if (
-      !neighborhoodSelected ||
-      neighborhoodSelected === INITIAL_STATE_SELECT_NEIGHBORHOOD
+      (!neighborhoodSelected ||
+        neighborhoodSelected === INITIAL_STATE_SELECT_NEIGHBORHOOD) &&
+      !showManualFields
     ) {
       setError("neighborhood", {
         type: "manual",
