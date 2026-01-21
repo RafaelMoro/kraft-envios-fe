@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Button,
   Dropdown,
@@ -58,6 +58,9 @@ export const AutocompleteZipcode = ({
   const [cities, setCities] = useState<string[]>([]);
   const [states, setStates] = useState<string[]>([]);
 
+  // Ref to track previous neighborhoods data
+  const prevNeighborhoodsDataRef = useRef<string | null>(null);
+
   // Debounce zipcode to avoid firing queries back to back
   useEffect(() => {
     if (zipcode.length === 5 && onlyNumberRegex.test(zipcode)) {
@@ -84,6 +87,17 @@ export const AutocompleteZipcode = ({
    */
   useEffect(() => {
     if (data?.neighborhoods) {
+      // Create a stringified version of the neighborhoods data to compare
+      const currentDataString = JSON.stringify(data.neighborhoods);
+
+      // Only process if the data has actually changed
+      if (prevNeighborhoodsDataRef.current === currentDataString) {
+        return;
+      }
+
+      // Update the ref with current data
+      prevNeighborhoodsDataRef.current = currentDataString;
+
       const onlyNeighborhoods = data.neighborhoods.map(
         (item) => item.neighborhood,
       );
@@ -111,11 +125,13 @@ export const AutocompleteZipcode = ({
           : INITIAL_STATE_SELECT_CITY;
 
       // Reset selected neighborhood when zipcode changes
+      console.log("reseting new neighborhood");
       setNeighborhood(newCurrentNeighborhood);
       setState(newSelectedState);
       setCity(newSelectedCity);
     }
-  }, [data, setNeighborhood, setState, setCity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, setState, setCity]);
 
   const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
