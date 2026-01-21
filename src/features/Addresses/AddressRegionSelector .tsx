@@ -1,8 +1,10 @@
 "use client";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { ToggleSwitch } from "flowbite-react";
 
 interface AddressRegionSelectorProps {
+  showManualFields: boolean;
+  setShowManualFields: (value: boolean) => void;
   ManualFieldsUI: ReactNode;
   AutocompleteUI: ReactNode;
 }
@@ -13,9 +15,9 @@ interface AddressRegionSelectorProps {
 export const AddressRegionSelector = ({
   ManualFieldsUI,
   AutocompleteUI,
+  showManualFields,
+  setShowManualFields,
 }: AddressRegionSelectorProps) => {
-  const [showManualFields, setShowManualFields] = useState(false);
-
   return (
     <>
       {showManualFields && ManualFieldsUI}

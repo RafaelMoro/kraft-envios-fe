@@ -113,6 +113,9 @@ export const CreateAddressSubform = ({
   const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
   const toggleErrorBanner = () => setShowErrorBanner((prev) => !prev);
 
+  // State for address region selector
+  const [showManualFields, setShowManualFields] = useState(false);
+
   const {
     tags: towns,
     addTag: addTown,
@@ -179,10 +182,12 @@ export const CreateAddressSubform = ({
     // Check if towns or cities are empty, if so, show error
     const townsEmpty = validateTownsEmpty();
     const citiesEmpty = validateCitiesEmpty();
-    if (townsEmpty || citiesEmpty) {
-      if (townsEmpty) setTownsError("Debe agregar al menos un municipio");
-      if (citiesEmpty) setCitiesError("Debe agregar al menos una ciudad");
+    if (citiesEmpty && showManualFields) {
+      setCitiesError("Debe agregar al menos una ciudad");
       return;
+    }
+    if (townsEmpty) {
+      setTownsError("Debe agregar al menos un municipio");
     }
 
     const formattedPayload = formatPayloadCreateAddress({
@@ -267,6 +272,8 @@ export const CreateAddressSubform = ({
                 setCity={setCitySelected}
               />
             }
+            showManualFields={showManualFields}
+            setShowManualFields={setShowManualFields}
           />
         </section>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
