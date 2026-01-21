@@ -34,6 +34,7 @@ import { AutocompleteZipcode } from "./AutocompleteZipcode";
 import { AddressRegionFields } from "./AddressRegionFields";
 import { AddressRegionSelector } from "./AddressRegionSelector ";
 import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode";
+import { INITIAL_STATE_SELECT_CITY } from "@/shared/constants/addresses.constants";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -146,6 +147,8 @@ export const CreateAddressSubform = ({
     setStateSelected,
     citySelected,
     setCitySelected,
+    cityError,
+    setCityError,
   } = useAutocompleteZipcode({
     setValue,
   });
@@ -195,6 +198,15 @@ export const CreateAddressSubform = ({
     }
     if (townsEmpty) {
       setTownsError("Debe agregar al menos un municipio");
+    }
+
+    // Validate city selection if not manual fields
+    if (
+      (!citySelected || citySelected === INITIAL_STATE_SELECT_CITY) &&
+      !showManualFields
+    ) {
+      setCityError("Debe seleccionar una ciudad");
+      return;
     }
 
     const formattedPayload = formatPayloadCreateAddress({
@@ -275,17 +287,18 @@ export const CreateAddressSubform = ({
             AutocompleteUI={
               <AutocompleteZipcode
                 zipcode={zipcode}
+                neighborhood={neighborhoodSelected}
+                state={stateSelected}
+                city={citySelected}
                 setZipcode={setZipcode}
+                setNeighborhood={setNeighborhoodSelected}
+                setState={setStateSelected}
+                setCity={setCitySelected}
                 zipcodeError={errors?.zipcode?.message ?? ""}
-                setZipcodeError={setZipcodeError}
                 neighborhoodError={errors?.neighborhood?.message ?? ""}
                 stateError={errors?.state?.message ?? ""}
-                neighborhood={neighborhoodSelected}
-                setNeighborhood={setNeighborhoodSelected}
-                state={stateSelected}
-                setState={setStateSelected}
-                city={citySelected}
-                setCity={setCitySelected}
+                cityError={cityError}
+                setZipcodeError={setZipcodeError}
               />
             }
             showManualFields={showManualFields}

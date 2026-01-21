@@ -42,6 +42,7 @@ export const useAutocompleteZipcode = ({
   const [citySelected, setCitySelected] = useState<string>(
     INITIAL_STATE_SELECT_CITY,
   );
+  const [cityError, setCityError] = useState<string>("");
 
   return {
     zipcode,
@@ -52,5 +53,7 @@ export const useAutocompleteZipcode = ({
     setStateSelected: handleStateChange,
     citySelected,
     setCitySelected,
+    cityError,
+    setCityError,
   };
 };

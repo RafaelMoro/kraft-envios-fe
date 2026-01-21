@@ -27,6 +27,7 @@ interface AutocompleteZipcodeProps {
   zipcodeError: string;
   neighborhoodError: string;
   stateError: string;
+  cityError: string;
   neighborhood: string;
   state: string;
   city: string;
@@ -46,6 +47,7 @@ export const AutocompleteZipcode = ({
   zipcodeError,
   neighborhoodError,
   stateError,
+  cityError,
   neighborhood,
   state,
   city,
@@ -258,7 +260,7 @@ export const AutocompleteZipcode = ({
                 {isFetching ? <Spinner /> : city}
                 <RiArrowDownSLine />
               </Button>
-              {stateError && <ErrorMessage>{stateError}</ErrorMessage>}
+              {cityError && <ErrorMessage>{cityError}</ErrorMessage>}
             </div>
           )}
         >
