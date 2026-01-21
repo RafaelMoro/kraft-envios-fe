@@ -63,6 +63,10 @@ export const ManageAddressForm = ({
   } = useForm<CreateAddressFormValues>({
     resolver: yupResolver(CreateAddressFormSchema),
   });
+  const setZipcodeError = (error: string) => {
+    setError("zipcode", { type: "manual", message: error });
+  };
+  console.log("errors", errors);
   const actionText = isEdit ? "Editar" : "Crear";
 
   const onSuccess = async () => {
@@ -149,6 +153,7 @@ export const ManageAddressForm = ({
             handleSubmit={handleSubmit}
             setError={setError}
             setValue={setValue}
+            setZipcodeError={setZipcodeError}
             isPending={isPending}
             isSuccess={isSuccess}
             isPendingEdit={isPendingEdit}

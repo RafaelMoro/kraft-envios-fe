@@ -46,6 +46,7 @@ interface CreateAddressSubformProps {
     CreateAddressFormValues
   >;
   setError: UseFormSetError<CreateAddressFormValues>;
+  setZipcodeError: (error: string) => void;
   setValue: UseFormSetValue<CreateAddressFormValues>;
   createAddressMutation: (payload: CreateAddressPayload) => void;
   editAddressMutation: (payload: CreateAddressPayload) => void;
@@ -74,6 +75,7 @@ export const CreateAddressSubform = ({
   handleSubmit,
   setError,
   setValue,
+  setZipcodeError,
   isPending,
   isSuccess,
   isPendingEdit,
@@ -274,6 +276,8 @@ export const CreateAddressSubform = ({
               <AutocompleteZipcode
                 zipcode={zipcode}
                 setZipcode={setZipcode}
+                zipcodeError={errors?.zipcode?.message ?? ""}
+                setZipcodeError={setZipcodeError}
                 neighborhood={neighborhoodSelected}
                 setNeighborhood={setNeighborhoodSelected}
                 state={stateSelected}

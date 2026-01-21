@@ -24,9 +24,11 @@ import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
 interface AutocompleteZipcodeProps {
   hideCityField?: boolean;
   zipcode: string;
+  zipcodeError: string;
   neighborhood: string;
   state: string;
   city: string;
+  setZipcodeError: (error: string) => void;
   setZipcode: (newZipcode: string) => void;
   setNeighborhood: (newNeighborhood: string) => void;
   setState: (newState: string) => void;
@@ -39,9 +41,11 @@ interface AutocompleteZipcodeProps {
 export const AutocompleteZipcode = ({
   hideCityField,
   zipcode,
+  zipcodeError,
   neighborhood,
   state,
   city,
+  setZipcodeError,
   setNeighborhood,
   setState,
   setCity,
@@ -51,7 +55,6 @@ export const AutocompleteZipcode = ({
   const neighborhoodError = "";
   const stateError = "";
 
-  const [zipcodeError, setZipcodeError] = useState<string>("");
   const [debouncedZipcode, setDebouncedZipcode] = useState<string>("");
 
   const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
