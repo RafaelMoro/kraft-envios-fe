@@ -501,28 +501,68 @@ describe("AutocompleteZipcode", () => {
     );
   }, 7000);
 
-  it.skip("auto-selects state when only one option is available", async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSetState = jest.fn();
+  it("auto-selects state when only one option is available", async () => {
+    const user = userEvent.setup();
     mockedGetAddressByZipcode.mockResolvedValue({
       neighborhoods: mockSingleNeighborhood,
       message: null,
     });
 
-    render(<AutocompleteZipcodeWrapper setState={mockSetState} />);
+    const TestWrapper = () => {
+      const [zipcode, setZipcode] = React.useState("");
+      const [neighborhood, setNeighborhood] = React.useState(
+        "Seleccione una colonia",
+      );
+      const [state, setState] = React.useState("Seleccione un estado");
+      const [city, setCity] = React.useState("Seleccione una ciudad");
+      const [zipcodeError, setZipcodeError] = React.useState("");
+
+      return (
+        <QueryProviderWrapper>
+          <AutocompleteZipcode
+            hideCityField={false}
+            zipcode={zipcode}
+            zipcodeError={zipcodeError}
+            neighborhoodError=""
+            stateError=""
+            cityError=""
+            neighborhood={neighborhood}
+            state={state}
+            city={city}
+            setZipcodeError={setZipcodeError}
+            setZipcode={setZipcode}
+            setNeighborhood={setNeighborhood}
+            setState={setState}
+            setCity={setCity}
+          />
+        </QueryProviderWrapper>
+      );
+    };
+
+    render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
     await user.type(zipcodeInput, "12345");
 
-    jest.advanceTimersByTime(2000);
-
+    // Wait for debounce, query, and auto-selection
     await waitFor(
       () => {
-        expect(mockSetState).toHaveBeenCalledWith("CDMX");
+        expect(mockedGetAddressByZipcode).toHaveBeenCalledWith("12345");
       },
-      { timeout: 3000 },
+      { timeout: 3500 },
     );
-  });
+
+    // Verify auto-selection happened
+    await waitFor(
+      () => {
+        const stateButton = screen.getByTestId(
+          "autocomplete-dropdown-state-button",
+        );
+        expect(stateButton).toHaveTextContent("CDMX");
+      },
+      { timeout: 1000 },
+    );
+  }, 7000);
 
   it.skip("auto-selects city when only one option is available", async () => {
     const user = userEvent.setup({ delay: null });
