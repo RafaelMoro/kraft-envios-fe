@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from "axios";
 import {
   CREATE_GUIDE_MN_ENDPOINT,
   CREATE_GUIDE_TONE_ENDPOINT,
@@ -9,8 +9,8 @@ import {
   GET_ALIAS_ADDRESSES_GE_ENDPOINT,
   CREATE_ADDRESS_GE_ENDPOINT,
   DEFAULT_RFC,
-  CREATE_GUIDE_GE_ENDPOINT
-} from '../constants/guides.constants'
+  CREATE_GUIDE_GE_ENDPOINT,
+} from "../constants/guides.constants";
 import {
   CreateGuideMnPayload,
   CreateGuideTonePayload,
@@ -34,96 +34,116 @@ import {
   AddressDataGEFormValues,
   PersonalDataGEFormValues,
   AddressGE,
-} from '../types/guides.types'
-import { CreateAddressFormValues } from '../types/addresses.types'
+} from "../types/guides.types";
+import { CreateAddressFormValues } from "../types/addresses.types";
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
   try {
-    const uri = `https://sat.api.hydraship.app/api/products?search=${replaceSpacesWithPlus(data.search)}`
-    const res: AxiosResponse<GetProductId>  = await axios.get(uri)
-    const products: SatProduct[] = res?.data?.data?.slice(0, 100) || []
+    const uri = `https://sat.api.hydraship.app/api/products?search=${replaceSpacesWithPlus(data.search)}`;
+    const res: AxiosResponse<GetProductId> = await axios.get(uri);
+    const products: SatProduct[] = res?.data?.data?.slice(0, 100) || [];
     const formattedProducts: SearchProduct[] = products.map((prod) => ({
       code: prod.code,
-      description: prod.description
-    }))
+      description: prod.description,
+    }));
     return {
       message: null,
-      products: formattedProducts
-    }
+      products: formattedProducts,
+    };
   } catch (error) {
-    console.log('error sat product id', error)
+    console.log("error sat product id", error);
     return {
       message: { error },
-      products: [] as SearchProduct[]
-    }
+      products: [] as SearchProduct[],
+    };
   }
-}
+};
 
 export const createGuideMnCb = async (data: CreateGuideMnPayload) => {
-  const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_MN_ENDPOINT, data)
-  console.log('res?.data from cb', res?.data)
-  return res?.data?.data?.guide
-}
+  const res: AxiosResponse<CreateMnGuideResponse> = await axios.post(
+    CREATE_GUIDE_MN_ENDPOINT,
+    data,
+  );
+  console.log("res?.data from cb", res?.data);
+  return res?.data?.data?.guide;
+};
 
 export const createGuideToneCb = async (data: CreateGuideTonePayload) => {
   try {
-    const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_TONE_ENDPOINT, data)
-    return res?.data?.data?.guide
+    const res: AxiosResponse<CreateMnGuideResponse> = await axios.post(
+      CREATE_GUIDE_TONE_ENDPOINT,
+      data,
+    );
+    return res?.data?.data?.guide;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 export const createGuidePkkCb = async (data: CreateGuidePkkPayload) => {
   try {
-    const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_PKK_ENDPOINT, data)
-    return res?.data?.data?.guide
+    const res: AxiosResponse<CreateMnGuideResponse> = await axios.post(
+      CREATE_GUIDE_PKK_ENDPOINT,
+      data,
+    );
+    return res?.data?.data?.guide;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 export const createGuideGECb = async (data: CreateGuideGEPayload) => {
   try {
-    const res: AxiosResponse<CreateMnGuideResponse>  = await axios.post(CREATE_GUIDE_GE_ENDPOINT, data)
-    return res?.data?.data?.guide
+    const res: AxiosResponse<CreateMnGuideResponse> = await axios.post(
+      CREATE_GUIDE_GE_ENDPOINT,
+      data,
+    );
+    return res?.data?.data?.guide;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-export const getGEAliasesCb = async (aliasesOnly?: boolean): Promise<string[]> => {
+export const getGEAliasesCb = async (
+  aliasesOnly?: boolean,
+): Promise<string[]> => {
   try {
-    const url = aliasesOnly !== undefined 
-      ? `${GET_ALIAS_ADDRESSES_GE_ENDPOINT}?aliasesOnly=${aliasesOnly}`
-      : GET_ALIAS_ADDRESSES_GE_ENDPOINT
-    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(url)
-    const aliases = res?.data?.aliases ?? []
-    return aliases
+    const url =
+      aliasesOnly !== undefined
+        ? `${GET_ALIAS_ADDRESSES_GE_ENDPOINT}?aliasesOnly=${aliasesOnly}`
+        : GET_ALIAS_ADDRESSES_GE_ENDPOINT;
+    const res: AxiosResponse<{ aliases: string[] }> = await axios.get(url);
+    const aliases = res?.data?.aliases ?? [];
+    return aliases;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 export const getGEAddressesCb = async (): Promise<AddressGE[]> => {
   try {
-    const res: AxiosResponse<{ addresses: AddressGE[] }> = await axios.get(GET_ALIAS_ADDRESSES_GE_ENDPOINT)
-    const addresses = res?.data?.addresses ?? []
-    return addresses
+    const res: AxiosResponse<{ addresses: AddressGE[] }> = await axios.get(
+      GET_ALIAS_ADDRESSES_GE_ENDPOINT,
+    );
+    const addresses = res?.data?.addresses ?? [];
+    return addresses;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 export const createAddressGECb = async (payload: CreateAddressGEPayload) => {
   try {
-    const res: AxiosResponse<CreateAddressGEResponse> = await axios.post(CREATE_ADDRESS_GE_ENDPOINT, payload)
-    const data = res?.data
-    return data
+    const res: AxiosResponse<CreateAddressGEResponse> = await axios.post(
+      CREATE_ADDRESS_GE_ENDPOINT,
+      payload,
+    );
+    const data = res?.data;
+    return data;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 /**
  * Replace whitespace characters with plus signs in a string.
@@ -133,63 +153,69 @@ export const createAddressGECb = async (payload: CreateAddressGEPayload) => {
  * @example replaceSpacesWithPlus('food and water') => 'food+and+water'
  */
 export const replaceSpacesWithPlus = (input: string): string => {
-  return input.replace(/\s+/g, '+')
-}
+  return input.replace(/\s+/g, "+");
+};
 
 /**
  * Verifies and updates address data by replacing empty optional fields with default values
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddressMn = (address: CreateGuideAddressFormValuesMn): CreateGuideAddressPayloadMn => {
-  const { lastName, ...restData } = address
+export const verifyAndUpdateAddressMn = (
+  address: CreateGuideAddressFormValuesMn,
+): CreateGuideAddressPayloadMn => {
+  const { lastName, ...restData } = address;
   const formattedAddress = {
     ...restData,
     name: `${address.name} ${lastName}`.trim(),
-  }
+  };
   return {
     ...formattedAddress,
     company: address.company?.trim() || DEFAULT_COMPANY,
     email: address.email?.trim() || DEFAULT_EMAIL,
-    reference: address.reference?.trim() || DEFAULT_REFERENCE
-  }
-}
+    reference: address.reference?.trim() || DEFAULT_REFERENCE,
+  };
+};
 
 /**
  * Verifies and updates address data by replacing empty optional fields with default values
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddressTone = (address: CreateGuideAddressFormValuesTone): CreateGuideAddressPayloadTone => {
+export const verifyAndUpdateAddressTone = (
+  address: CreateGuideAddressFormValuesTone,
+): CreateGuideAddressPayloadTone => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { lastName, company, ...restData } = address
+  const { lastName, company, ...restData } = address;
   const formattedAddress = {
     ...restData,
     name: `${address.name} ${lastName}`.trim(),
-  }
+  };
   return {
     ...formattedAddress,
     email: address.email?.trim() || DEFAULT_EMAIL,
-    reference: address.reference?.trim() || DEFAULT_REFERENCE
-  }
-}
+    reference: address.reference?.trim() || DEFAULT_REFERENCE,
+  };
+};
 
 /**
  * Verifies and updates address data by replacing empty optional fields with default values
  * @param address - The address object to verify and update
  * @returns Updated address object with default values for empty optional fields
  */
-export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk): CreateGuideAddressPayloadPkk => {
+export const verifyAndUpdateAddressPkk = (
+  address: CreateGuideAddressValuesPkk,
+): CreateGuideAddressPayloadPkk => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { phone, lastName, company, ...rest } = address
-  const newPhone = `+52${phone}`
+  const { phone, lastName, company, ...rest } = address;
+  const newPhone = `+52${phone}`;
   return {
     ...rest,
     phone: newPhone,
     name: `${address.name} ${lastName}`.trim(),
     email: address.email?.trim() || DEFAULT_EMAIL,
-  }
-}
+  };
+};
 
 /**
  * Converts CreateAddressFormValuesGE to CreateAddressGEPayload
@@ -197,7 +223,9 @@ export const verifyAndUpdateAddressPkk = (address: CreateGuideAddressValuesPkk):
  * @param formValues - The form values object to convert
  * @returns Converted payload object for the API
  */
-export const convertToCreateAddressGEPayload = (formValues: CreateAddressFormValuesGE): CreateAddressGEPayload => {
+export const convertToCreateAddressGEPayload = (
+  formValues: CreateAddressFormValuesGE,
+): CreateAddressGEPayload => {
   return {
     zipcode: formValues.zipcode,
     neighborhood: formValues.neighborhood,
@@ -212,8 +240,8 @@ export const convertToCreateAddressGEPayload = (formValues: CreateAddressFormVal
     number: formValues.external_number,
     reference: formValues.reference?.trim() || DEFAULT_REFERENCE,
     alias: formValues.alias,
-  }
-}
+  };
+};
 
 /**
  * Converts CreateAddressFormValues to AddressDataGEFormValues
@@ -222,21 +250,47 @@ export const convertToCreateAddressGEPayload = (formValues: CreateAddressFormVal
  * @param cities - Array of cities, will use the first element
  * @returns Converted payload object for GE address form
  */
-export const convertToAddressDataGEFormValues = (
-  formValues: CreateAddressFormValues,
-  cities: string[]
-): AddressDataGEFormValues => {
+export const convertToAddressDataGEFormValues = ({
+  formValues,
+  cities,
+  showManualFields,
+  automaticZipcode,
+  neighborhoodSelected,
+  stateSelected,
+  citySelected,
+}: {
+  formValues: CreateAddressFormValues;
+  cities: string[];
+  automaticZipcode: string;
+  neighborhoodSelected: string;
+  stateSelected: string;
+  citySelected: string;
+  showManualFields: boolean;
+}): AddressDataGEFormValues => {
+  if (!showManualFields) {
+    return {
+      street1: formValues.street1,
+      external_number: formValues.externalNumber,
+      neighborhood: neighborhoodSelected,
+      city: citySelected,
+      state: stateSelected,
+      zipcode: automaticZipcode,
+      reference: formValues.reference,
+      alias: formValues.alias,
+    };
+  }
+
   return {
     street1: formValues.street1,
     external_number: formValues.externalNumber,
     neighborhood: formValues.neighborhood,
-    city: cities[0] || '',
+    city: cities[0] || "",
     state: formValues.state,
     zipcode: formValues.zipcode,
     reference: formValues.reference,
     alias: formValues.alias,
-  }
-}
+  };
+};
 
 /**
  * Combines PersonalDataGEFormValues and AddressDataGEFormValues into CreateAddressGEPayload
@@ -248,7 +302,7 @@ export const convertToAddressDataGEFormValues = (
  */
 export const combineGEFormValues = (
   personalData: PersonalDataGEFormValues,
-  addressData: AddressDataGEFormValues
+  addressData: AddressDataGEFormValues,
 ): CreateAddressGEPayload => {
   return {
     name: personalData.name,
@@ -264,10 +318,14 @@ export const combineGEFormValues = (
     zipcode: addressData.zipcode,
     reference: addressData.reference?.trim() || DEFAULT_REFERENCE,
     alias: addressData.alias,
-  }
-}
+  };
+};
 
-export const b64toBlob = (b64Data: Base64URLString, contentType = '', sliceSize=512) => {
+export const b64toBlob = (
+  b64Data: Base64URLString,
+  contentType = "",
+  sliceSize = 512,
+) => {
   const byteCharacters = atob(b64Data);
   const byteArrays = [];
 
@@ -282,7 +340,7 @@ export const b64toBlob = (b64Data: Base64URLString, contentType = '', sliceSize=
     const byteArray = new Uint8Array(byteNumbers);
     byteArrays.push(byteArray);
   }
-    
-  const blob = new Blob(byteArrays, {type: contentType});
+
+  const blob = new Blob(byteArrays, { type: contentType });
   return blob;
-}
+};

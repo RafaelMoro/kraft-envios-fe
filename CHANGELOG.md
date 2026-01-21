@@ -1,3 +1,9 @@
+## v0.34.0 (2026-01-21)
+
+### Pull Requests
+[#77](https://github.com/RafaelMoro/kraft-envios-fe/pull/77) | Add autocomplete feature
+
+
 ## v0.33.0 (2026-01-16)
 
 ### Pull Requests
