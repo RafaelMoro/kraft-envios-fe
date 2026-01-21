@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
   
     const payload: CreateAddressGEPayload = await request.json()
-    const uri = `${process.env.BACKEND_URI}/quotes/create-address`
+    const uri = `${process.env.BACKEND_URI}/ge/create-address`
     const res: AxiosResponse<CreateAddressGEResponse> = await axios.post(uri, payload, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
