@@ -24,7 +24,13 @@ import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
 interface AutocompleteZipcodeProps {
   hideCityField?: boolean;
   zipcode: string;
+  neighborhood: string;
+  state: string;
+  city: string;
   setZipcode: (newZipcode: string) => void;
+  setNeighborhood: (newNeighborhood: string) => void;
+  setState: (newState: string) => void;
+  setCity: (newCity: string) => void;
 }
 
 /**
@@ -33,6 +39,12 @@ interface AutocompleteZipcodeProps {
 export const AutocompleteZipcode = ({
   hideCityField,
   zipcode,
+  neighborhood,
+  state,
+  city,
+  setNeighborhood,
+  setState,
+  setCity,
   setZipcode,
 }: AutocompleteZipcodeProps) => {
   // TODO: Change these errors
@@ -45,16 +57,6 @@ export const AutocompleteZipcode = ({
   const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [states, setStates] = useState<string[]>([]);
-
-  const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>(
-    INITIAL_STATE_SELECT_NEIGHBORHOOD,
-  );
-  const [stateSelected, setStateSelected] = useState<string>(
-    INITIAL_STATE_SELECT_STATE,
-  );
-  const [citySelected, setCitySelected] = useState<string>(
-    INITIAL_STATE_SELECT_CITY,
-  );
 
   // Debounce zipcode to avoid firing queries back to back
   useEffect(() => {
@@ -109,11 +111,11 @@ export const AutocompleteZipcode = ({
           : INITIAL_STATE_SELECT_CITY;
 
       // Reset selected neighborhood when zipcode changes
-      setNeighborhoodSelected(newCurrentNeighborhood);
-      setStateSelected(newSelectedState);
-      setCitySelected(newSelectedCity);
+      setNeighborhood(newCurrentNeighborhood);
+      setState(newSelectedState);
+      setCity(newSelectedCity);
     }
-  }, [data]);
+  }, [data, setNeighborhood, setState, setCity]);
 
   const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -165,7 +167,7 @@ export const AutocompleteZipcode = ({
               color="light"
               disabled={isFetching || neighborhoods.length === 0}
             >
-              {isFetching ? <Spinner /> : neighborhoodSelected}
+              {isFetching ? <Spinner /> : neighborhood}
               <RiArrowDownSLine />
             </Button>
             {neighborhoodError && (
@@ -180,7 +182,7 @@ export const AutocompleteZipcode = ({
             neighborhoods.map((item) => (
               <DropdownItem
                 key={`neighborhood-${item}`}
-                onClick={() => setNeighborhoodSelected(item)}
+                onClick={() => setNeighborhood(item)}
               >
                 {item}
               </DropdownItem>
@@ -200,7 +202,7 @@ export const AutocompleteZipcode = ({
               color="light"
               disabled={isFetching || states.length === 0}
             >
-              {isFetching ? <Spinner /> : stateSelected}
+              {isFetching ? <Spinner /> : state}
               <RiArrowDownSLine />
             </Button>
             {stateError && <ErrorMessage>{stateError}</ErrorMessage>}
@@ -213,7 +215,7 @@ export const AutocompleteZipcode = ({
             states.map((item) => (
               <DropdownItem
                 key={`state-${item}`}
-                onClick={() => setStateSelected(item)}
+                onClick={() => setState(item)}
               >
                 {item}
               </DropdownItem>
@@ -234,7 +236,7 @@ export const AutocompleteZipcode = ({
                 color="light"
                 disabled={isFetching || states.length === 0}
               >
-                {isFetching ? <Spinner /> : citySelected}
+                {isFetching ? <Spinner /> : city}
                 <RiArrowDownSLine />
               </Button>
               {stateError && <ErrorMessage>{stateError}</ErrorMessage>}
@@ -247,7 +249,7 @@ export const AutocompleteZipcode = ({
               cities.map((item) => (
                 <DropdownItem
                   key={`city-${item}`}
-                  onClick={() => setCitySelected(item)}
+                  onClick={() => setCity(item)}
                 >
                   {item}
                 </DropdownItem>

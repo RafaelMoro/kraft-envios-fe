@@ -32,6 +32,7 @@ import { ErrorBanner } from "@/shared/ui/atoms/ErrorBanner";
 import { AutocompleteZipcode } from "./AutocompleteZipcode";
 import { AddressRegionFields } from "./AddressRegionFields";
 import { AddressRegionSelector } from "./AddressRegionSelector ";
+import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -128,6 +129,16 @@ export const CreateAddressSubform = ({
     error: citiesError,
     setError: setCitiesError,
   } = useAddTag({ tagsInitState: formData?.city ?? [] });
+  const {
+    zipcode,
+    setZipcode,
+    neighborhoodSelected,
+    setNeighborhoodSelected,
+    stateSelected,
+    setStateSelected,
+    citySelected,
+    setCitySelected,
+  } = useAutocompleteZipcode();
 
   const submitButtonText = shouldCreateGEAddress
     ? "Siguiente"
@@ -214,8 +225,6 @@ export const CreateAddressSubform = ({
     createAddressMutation(formattedPayload);
   };
 
-  const [tempZipcode, setTempZipcode] = useState<string>("");
-
   return (
     <div className="flex flex-col gap-5">
       {errorFetchAlias && showErrorBanner && (
@@ -248,8 +257,14 @@ export const CreateAddressSubform = ({
             }
             AutocompleteUI={
               <AutocompleteZipcode
-                zipcode={tempZipcode}
-                setZipcode={setTempZipcode}
+                zipcode={zipcode}
+                setZipcode={setZipcode}
+                neighborhood={neighborhoodSelected}
+                setNeighborhood={setNeighborhoodSelected}
+                state={stateSelected}
+                setState={setStateSelected}
+                city={citySelected}
+                setCity={setCitySelected}
               />
             }
           />
