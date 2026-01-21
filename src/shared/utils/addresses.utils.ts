@@ -22,6 +22,18 @@ import { addToLocalStorage, getLocalStorageInfo } from "./local-storage.utils";
 import { PENDING_GE_ADDRESSES_KEY } from "../constants/local-storage.constants";
 import { Neighborhood } from "../types/quotes.types";
 
+export const selectAddressValue = (
+  formDataValue: string | string[] | undefined,
+  newValues: string[],
+  initialState: string,
+  hasExistingFormData: boolean,
+): string => {
+  if (hasExistingFormData && formDataValue) {
+    return Array.isArray(formDataValue) ? formDataValue[0] : formDataValue;
+  }
+  return newValues.length === 1 ? newValues[0] : initialState;
+};
+
 export const formatPayloadCreateAddress = ({
   payload,
   cities,

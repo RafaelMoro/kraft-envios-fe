@@ -22,7 +22,10 @@ import {
   onlyNumberRegex,
   CreateAddressPayload,
 } from "@/shared/types/addresses.types";
-import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
+import {
+  getAddressByZipcode,
+  selectAddressValue,
+} from "@/shared/utils/addresses.utils";
 
 interface AutocompleteZipcodeProps {
   hideCityField?: boolean;
@@ -129,33 +132,30 @@ export const AutocompleteZipcode = ({
         formData?.city,
       );
 
-      // Helper function to select the appropriate value
-      const selectValue = (
-        formDataValue: string | string[] | undefined,
-        newValues: string[],
-        initialState: string,
-      ): string => {
-        if (hasExistingFormData && formDataValue) {
-          return Array.isArray(formDataValue)
-            ? formDataValue[0]
-            : formDataValue;
-        }
-        return newValues.length === 1 ? newValues[0] : initialState;
-      };
-
       // Set selected values based on formData or auto-select single options
       setNeighborhood(
-        selectValue(
+        selectAddressValue(
           formData?.neighborhood,
           newNeighborhoods,
           INITIAL_STATE_SELECT_NEIGHBORHOOD,
+          hasExistingFormData,
         ),
       );
       setState(
-        selectValue(formData?.state, newStates, INITIAL_STATE_SELECT_STATE),
+        selectAddressValue(
+          formData?.state,
+          newStates,
+          INITIAL_STATE_SELECT_STATE,
+          hasExistingFormData,
+        ),
       );
       setCity(
-        selectValue(formData?.city, newCities, INITIAL_STATE_SELECT_CITY),
+        selectAddressValue(
+          formData?.city,
+          newCities,
+          INITIAL_STATE_SELECT_CITY,
+          hasExistingFormData,
+        ),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
