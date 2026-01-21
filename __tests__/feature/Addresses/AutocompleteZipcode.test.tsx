@@ -253,42 +253,56 @@ describe("AutocompleteZipcode", () => {
     );
   }, 7000);
 
-  it.skip("shows loading spinner in dropdowns while fetching data", async () => {
-    const user = userEvent.setup({ delay: null });
-    mockedGetAddressByZipcode.mockImplementation(
-      () => new Promise(() => {}), // Never resolves
-    );
-
-    render(<AutocompleteZipcodeWrapper />);
-
-    const zipcodeInput = screen.getByTestId("zipcode");
-    await user.type(zipcodeInput, "12345");
-
-    jest.advanceTimersByTime(2000);
-
-    await waitFor(() => {
-      const spinners = screen.getAllByRole("status");
-      expect(spinners.length).toBeGreaterThan(0);
-    });
-  });
-
-  it.skip("populates neighborhood dropdown with fetched data", async () => {
-    const user = userEvent.setup({ delay: null });
+  it("populates neighborhood dropdown with fetched data", async () => {
+    const user = userEvent.setup();
     mockedGetAddressByZipcode.mockResolvedValue({
       neighborhoods: mockNeighborhoods,
       message: null,
     });
 
-    render(<AutocompleteZipcodeWrapper />);
+    const TestWrapper = () => {
+      const [zipcode, setZipcode] = React.useState("");
+      const [neighborhood, setNeighborhood] = React.useState(
+        "Seleccione una colonia",
+      );
+      const [state, setState] = React.useState("Seleccione un estado");
+      const [city, setCity] = React.useState("Seleccione una ciudad");
+      const [zipcodeError, setZipcodeError] = React.useState("");
+
+      return (
+        <QueryProviderWrapper>
+          <AutocompleteZipcode
+            hideCityField={false}
+            zipcode={zipcode}
+            zipcodeError={zipcodeError}
+            neighborhoodError=""
+            stateError=""
+            cityError=""
+            neighborhood={neighborhood}
+            state={state}
+            city={city}
+            setZipcodeError={setZipcodeError}
+            setZipcode={setZipcode}
+            setNeighborhood={setNeighborhood}
+            setState={setState}
+            setCity={setCity}
+          />
+        </QueryProviderWrapper>
+      );
+    };
+
+    render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
     await user.type(zipcodeInput, "12345");
 
-    jest.advanceTimersByTime(2000);
-
-    await waitFor(() => {
-      expect(mockedGetAddressByZipcode).toHaveBeenCalled();
-    });
+    // Wait for debounce and query to execute
+    await waitFor(
+      () => {
+        expect(mockedGetAddressByZipcode).toHaveBeenCalledWith("12345");
+      },
+      { timeout: 3500 },
+    );
 
     const neighborhoodButton = screen.getByTestId(
       "autocomplete-dropdown-neighborhood-button",
@@ -300,7 +314,7 @@ describe("AutocompleteZipcode", () => {
       expect(screen.getByText("Roma Norte")).toBeInTheDocument();
       expect(screen.getByText("Condesa")).toBeInTheDocument();
     });
-  });
+  }, 7000);
 
   it.skip("calls setNeighborhood when neighborhood is selected", async () => {
     const user = userEvent.setup({ delay: null });
