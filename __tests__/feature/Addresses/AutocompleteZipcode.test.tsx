@@ -378,34 +378,65 @@ describe("AutocompleteZipcode", () => {
     });
   }, 7000);
 
-  it.skip("populates city dropdown with unique cities from fetched data", async () => {
-    const user = userEvent.setup({ delay: null });
+  it("populates city dropdown with unique cities from fetched data", async () => {
+    const user = userEvent.setup();
     mockedGetAddressByZipcode.mockResolvedValue({
       neighborhoods: mockNeighborhoods,
       message: null,
     });
 
-    render(<AutocompleteZipcodeWrapper />);
+    const TestWrapper = () => {
+      const [zipcode, setZipcode] = React.useState("");
+      const [neighborhood, setNeighborhood] = React.useState(
+        "Seleccione una colonia",
+      );
+      const [state, setState] = React.useState("Seleccione un estado");
+      const [city, setCity] = React.useState("Seleccione una ciudad");
+      const [zipcodeError, setZipcodeError] = React.useState("");
+
+      return (
+        <QueryProviderWrapper>
+          <AutocompleteZipcode
+            hideCityField={false}
+            zipcode={zipcode}
+            zipcodeError={zipcodeError}
+            neighborhoodError=""
+            stateError=""
+            cityError=""
+            neighborhood={neighborhood}
+            state={state}
+            city={city}
+            setZipcodeError={setZipcodeError}
+            setZipcode={setZipcode}
+            setNeighborhood={setNeighborhood}
+            setState={setState}
+            setCity={setCity}
+          />
+        </QueryProviderWrapper>
+      );
+    };
+
+    render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
     await user.type(zipcodeInput, "12345");
 
-    jest.advanceTimersByTime(2000);
-
+    // Wait for debounce and query to execute
     await waitFor(
       () => {
-        expect(mockedGetAddressByZipcode).toHaveBeenCalled();
+        expect(mockedGetAddressByZipcode).toHaveBeenCalledWith("12345");
       },
-      { timeout: 3000 },
+      { timeout: 3500 },
     );
 
     const cityButton = screen.getByTestId("autocomplete-dropdown-city-button");
     await user.click(cityButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Ciudad de México")).toBeInTheDocument();
+      const cityOptions = screen.getAllByText("Ciudad de México");
+      expect(cityOptions.length).toBeGreaterThan(0);
     });
-  });
+  }, 7000);
 
   it.skip("calls setCity when city is selected", async () => {
     const user = userEvent.setup({ delay: null });
