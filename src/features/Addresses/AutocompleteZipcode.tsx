@@ -25,6 +25,8 @@ interface AutocompleteZipcodeProps {
   hideCityField?: boolean;
   zipcode: string;
   zipcodeError: string;
+  neighborhoodError: string;
+  stateError: string;
   neighborhood: string;
   state: string;
   city: string;
@@ -42,6 +44,8 @@ export const AutocompleteZipcode = ({
   hideCityField,
   zipcode,
   zipcodeError,
+  neighborhoodError,
+  stateError,
   neighborhood,
   state,
   city,
@@ -51,10 +55,6 @@ export const AutocompleteZipcode = ({
   setCity,
   setZipcode,
 }: AutocompleteZipcodeProps) => {
-  // TODO: Change these errors
-  const neighborhoodError = "";
-  const stateError = "";
-
   const [debouncedZipcode, setDebouncedZipcode] = useState<string>("");
 
   const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
