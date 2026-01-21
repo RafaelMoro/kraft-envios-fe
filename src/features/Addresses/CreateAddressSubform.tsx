@@ -87,7 +87,6 @@ export const CreateAddressSubform = ({
   isPendingFetchAlias,
   errorAlias,
 }: CreateAddressSubformProps) => {
-  console.log("errors", errors);
   // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
   const [consentSkipGECreation, setConsentSkipGECreation] = useState(false);
