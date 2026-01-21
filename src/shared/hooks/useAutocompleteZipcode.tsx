@@ -40,6 +40,7 @@ export const useAutocompleteZipcode = ({
   const handleStateChange = (newState: string) => {
     setStateSelected(newState);
     setValue("state", newState);
+    clearErrors("state");
   };
 
   const [citySelected, setCitySelected] = useState<string>(
