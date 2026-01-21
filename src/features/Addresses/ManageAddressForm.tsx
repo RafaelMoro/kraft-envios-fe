@@ -1,11 +1,18 @@
-"use client"
+"use client";
 import { useRef, useState } from "react";
-import { Modal, ModalBody, ModalHeader, } from "flowbite-react"
+import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { AddressAliasResponse, CreateAddressFormSchema, CreateAddressFormValues, CreateAddressPayload, CreateAddressResponse, ManageAddressFormScreen } from "@/shared/types/addresses.types";
+import {
+  AddressAliasResponse,
+  CreateAddressFormSchema,
+  CreateAddressFormValues,
+  CreateAddressPayload,
+  CreateAddressResponse,
+  ManageAddressFormScreen,
+} from "@/shared/types/addresses.types";
 import { createAddressCb, editAddressCb } from "@/shared/utils/addresses.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { CreateAddressSubform } from "./CreateAddressSubform";
@@ -25,17 +32,26 @@ interface CreateAddressProps {
 }
 
 export const ManageAddressForm = ({
-  open, formData, isEdit, toggleModal, toggleNotification, updateNotificationMessage, refetchAddresses
+  open,
+  formData,
+  isEdit,
+  toggleModal,
+  toggleNotification,
+  updateNotificationMessage,
+  refetchAddresses,
 }: CreateAddressProps) => {
-  const [showErrorCreateAddressGe, setShowErrorCreateAddressGe] = useState(false)
-  const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>('CREATE_ADDRESS')
-  const goBack = () => setSubscreen('CREATE_ADDRESS')
-  const goResult = () => setSubscreen('SHOW_RESULT')
-  const addressDataGE = useRef<AddressDataGEFormValues | null>(null)
+  const [showErrorCreateAddressGe, setShowErrorCreateAddressGe] =
+    useState(false);
+  const [subscreen, setSubscreen] =
+    useState<ManageAddressFormScreen>("CREATE_ADDRESS");
+  const goBack = () => setSubscreen("CREATE_ADDRESS");
+  const goResult = () => setSubscreen("SHOW_RESULT");
 
+  // GE Address data
+  const addressDataGE = useRef<AddressDataGEFormValues | null>(null);
   const updateAddressDataGE = (data: AddressDataGEFormValues) => {
-    addressDataGE.current = data
-  }
+    addressDataGE.current = data;
+  };
 
   const {
     register,
@@ -43,71 +59,94 @@ export const ManageAddressForm = ({
     reset,
     formState: { errors },
     setError,
+    setValue,
+    clearErrors,
   } = useForm<CreateAddressFormValues>({
-    resolver: yupResolver(CreateAddressFormSchema)
-  })
-  const actionText = isEdit ? 'Editar' : 'Crear'
+    resolver: yupResolver(CreateAddressFormSchema),
+  });
+  const setZipcodeError = (error: string) => {
+    setError("zipcode", { type: "manual", message: error });
+  };
+  const clearManualAddressRegionFields = () => {
+    setValue("zipcode", "");
+    setValue("neighborhood", "");
+    setValue("state", "");
+  };
+  const actionText = isEdit ? "Editar" : "Crear";
 
   const onSuccess = async () => {
-    await refetchAddresses()
-    reset()
+    await refetchAddresses();
+    reset();
     // Do not close modal if GE address data is present meaning that the creation of address in GE is pending
     if (addressDataGE.current) {
       return;
     }
 
     setTimeout(() => {
-      toggleModal()
-    }, 1000)
-  }
+      toggleModal();
+    }, 1000);
+  };
 
   const onError = () => {
-    updateNotificationMessage(`Ocurrió un error al ${actionText} la dirección. Por favor, intenta de nuevo.`)
-    toggleNotification()
-    reset()
-    toggleModal()
-  }
+    updateNotificationMessage(
+      `Ocurrió un error al ${actionText} la dirección. Por favor, intenta de nuevo.`,
+    );
+    toggleNotification();
+    reset();
+    toggleModal();
+  };
 
   // This flag is to enable the fetching of alias in GE
   const [hasConsentedOnce, setHasConsentedOnce] = useState(false);
-  const { data: dataAliases, refetch,  isPending: isPendingFetchAlias, error: errorAlias } = useQuery({
-    queryKey: ['aliasAddresses'],
+  const {
+    data: dataAliases,
+    refetch,
+    isPending: isPendingFetchAlias,
+    error: errorAlias,
+  } = useQuery({
+    queryKey: ["aliasAddresses"],
     queryFn: () => getGEAliasesCb(true),
-    enabled: hasConsentedOnce
-  })
+    enabled: hasConsentedOnce,
+  });
   const refetchAddressesGE = async () => {
-    await refetch()
-  }
+    await refetch();
+  };
 
   const {
-    mutate: createAddressMutation, isPending, isSuccess
-  } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>({
-    mutationFn: createAddressCb,
-    onSuccess: async () => {
-      await onSuccess()
+    mutate: createAddressMutation,
+    isPending,
+    isSuccess,
+  } = useMutation<CreateAddressResponse, GeneralApiError, CreateAddressPayload>(
+    {
+      mutationFn: createAddressCb,
+      onSuccess: async () => {
+        await onSuccess();
+      },
+      onError: () => {
+        onError();
+      },
     },
-    onError: () => {
-      onError()
-    }
-  })
+  );
 
   const {
-    mutate: editAddressMutation, isPending: isPendingEdit, isSuccess: isSuccessEdit,
+    mutate: editAddressMutation,
+    isPending: isPendingEdit,
+    isSuccess: isSuccessEdit,
   } = useMutation<AddressAliasResponse, GeneralApiError, CreateAddressPayload>({
     mutationFn: editAddressCb,
     onSuccess: async () => {
-      await onSuccess()
+      await onSuccess();
     },
     onError: () => {
-      onError()
-    }
-  })
+      onError();
+    },
+  });
 
   return (
     <Modal show={open} onClose={toggleModal}>
       <ModalHeader>{actionText} dirección</ModalHeader>
       <ModalBody>
-        { subscreen === 'CREATE_ADDRESS' && (
+        {subscreen === "CREATE_ADDRESS" && (
           <CreateAddressSubform
             formData={formData}
             isEdit={isEdit}
@@ -118,6 +157,9 @@ export const ManageAddressForm = ({
             register={register}
             handleSubmit={handleSubmit}
             setError={setError}
+            clearErrors={clearErrors}
+            setValue={setValue}
+            setZipcodeError={setZipcodeError}
             isPending={isPending}
             isSuccess={isSuccess}
             isPendingEdit={isPendingEdit}
@@ -130,21 +172,25 @@ export const ManageAddressForm = ({
             dataAliases={dataAliases}
             isPendingFetchAlias={isPendingFetchAlias}
             errorAlias={errorAlias}
+            clearManualAddressRegionFields={clearManualAddressRegionFields}
           />
         )}
-        { subscreen === 'ADD_GE_INFORMATION' && (
+        {subscreen === "ADD_GE_INFORMATION" && (
           <AddPersonalInfoGESubform
             addressDataGE={addressDataGE.current}
             goBack={goBack}
             goResult={goResult}
             setShowErrorCreateAddressGe={setShowErrorCreateAddressGe}
             refetchAddressesGE={refetchAddressesGE}
-            />
+          />
         )}
-        { subscreen === 'SHOW_RESULT' && (
-          <ResultCreateAddress toggleModal={toggleModal} showErrorCreateAddressGe={showErrorCreateAddressGe}  />
+        {subscreen === "SHOW_RESULT" && (
+          <ResultCreateAddress
+            toggleModal={toggleModal}
+            showErrorCreateAddressGe={showErrorCreateAddressGe}
+          />
         )}
       </ModalBody>
     </Modal>
-  )
-}
+  );
+};
