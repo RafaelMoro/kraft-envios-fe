@@ -1,5 +1,6 @@
 import { object, ObjectSchema, string } from "yup";
 import {
+  NEIGHBORHOOD_EMPTY_ERROR,
   ZIPCODE_EMPTY_ERROR,
   ZIPCODE_LENGTH_ERROR,
   ZIPCODE_ONLY_NUMBERS_ERROR,
@@ -118,7 +119,7 @@ export const CreateAddressFormSchema: ObjectSchema<CreateAddressFormValues> =
               .min(1, "El número interior debe ser al menos de 1 dígito"),
         }),
       neighborhood: string()
-        .required("Colonia es requerida")
+        .required(NEIGHBORHOOD_EMPTY_ERROR)
         .min(2, "La colonia debe tener al menos 2 caracteres"),
       zipcode: string()
         .required(ZIPCODE_EMPTY_ERROR)

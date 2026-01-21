@@ -34,7 +34,11 @@ import { AutocompleteZipcode } from "./AutocompleteZipcode";
 import { AddressRegionFields } from "./AddressRegionFields";
 import { AddressRegionSelector } from "./AddressRegionSelector ";
 import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode";
-import { INITIAL_STATE_SELECT_CITY } from "@/shared/constants/addresses.constants";
+import {
+  INITIAL_STATE_SELECT_CITY,
+  INITIAL_STATE_SELECT_NEIGHBORHOOD,
+  NEIGHBORHOOD_EMPTY_ERROR,
+} from "@/shared/constants/addresses.constants";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -200,6 +204,17 @@ export const CreateAddressSubform = ({
       setTownsError("Debe agregar al menos un municipio");
     }
 
+    // Validate neighborhood selection
+    if (
+      !neighborhoodSelected ||
+      neighborhoodSelected === INITIAL_STATE_SELECT_NEIGHBORHOOD
+    ) {
+      setError("neighborhood", {
+        type: "manual",
+        message: NEIGHBORHOOD_EMPTY_ERROR,
+      });
+      return;
+    }
     // Validate city selection if not manual fields
     if (
       (!citySelected || citySelected === INITIAL_STATE_SELECT_CITY) &&
