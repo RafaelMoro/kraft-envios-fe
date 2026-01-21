@@ -274,7 +274,15 @@ export const CreateAddressSubform = ({
         return;
       }
 
-      const GEpayload = convertToAddressDataGEFormValues(data, cities);
+      const GEpayload = convertToAddressDataGEFormValues({
+        automaticZipcode: zipcode,
+        cities,
+        formValues: data,
+        citySelected,
+        neighborhoodSelected,
+        stateSelected,
+        showManualFields,
+      });
       updateAddressDataGE(GEpayload);
       setSubscreen("ADD_GE_INFORMATION");
     }
