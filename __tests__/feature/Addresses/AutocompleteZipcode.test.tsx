@@ -102,6 +102,38 @@ const AutocompleteZipcodeWrapper = ({
   );
 };
 
+// Stateful TestWrapper for tests that need state management
+const TestWrapper = () => {
+  const [zipcode, setZipcode] = React.useState("");
+  const [neighborhood, setNeighborhood] = React.useState(
+    "Seleccione una colonia",
+  );
+  const [state, setState] = React.useState("Seleccione un estado");
+  const [city, setCity] = React.useState("Seleccione una ciudad");
+  const [zipcodeError, setZipcodeError] = React.useState("");
+
+  return (
+    <QueryProviderWrapper>
+      <AutocompleteZipcode
+        hideCityField={false}
+        zipcode={zipcode}
+        zipcodeError={zipcodeError}
+        neighborhoodError=""
+        stateError=""
+        cityError=""
+        neighborhood={neighborhood}
+        state={state}
+        city={city}
+        setZipcodeError={setZipcodeError}
+        setZipcode={setZipcode}
+        setNeighborhood={setNeighborhood}
+        setState={setState}
+        setCity={setCity}
+      />
+    </QueryProviderWrapper>
+  );
+};
+
 describe("AutocompleteZipcode", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -208,37 +240,6 @@ describe("AutocompleteZipcode", () => {
       message: null,
     });
 
-    const TestWrapper = () => {
-      const [zipcode, setZipcode] = React.useState("");
-      const [neighborhood, setNeighborhood] = React.useState(
-        "Seleccione una colonia",
-      );
-      const [state, setState] = React.useState("Seleccione un estado");
-      const [city, setCity] = React.useState("Seleccione una ciudad");
-      const [zipcodeError, setZipcodeError] = React.useState("");
-
-      return (
-        <QueryProviderWrapper>
-          <AutocompleteZipcode
-            hideCityField={false}
-            zipcode={zipcode}
-            zipcodeError={zipcodeError}
-            neighborhoodError=""
-            stateError=""
-            cityError=""
-            neighborhood={neighborhood}
-            state={state}
-            city={city}
-            setZipcodeError={setZipcodeError}
-            setZipcode={setZipcode}
-            setNeighborhood={setNeighborhood}
-            setState={setState}
-            setCity={setCity}
-          />
-        </QueryProviderWrapper>
-      );
-    };
-
     render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
@@ -259,37 +260,6 @@ describe("AutocompleteZipcode", () => {
       neighborhoods: mockNeighborhoods,
       message: null,
     });
-
-    const TestWrapper = () => {
-      const [zipcode, setZipcode] = React.useState("");
-      const [neighborhood, setNeighborhood] = React.useState(
-        "Seleccione una colonia",
-      );
-      const [state, setState] = React.useState("Seleccione un estado");
-      const [city, setCity] = React.useState("Seleccione una ciudad");
-      const [zipcodeError, setZipcodeError] = React.useState("");
-
-      return (
-        <QueryProviderWrapper>
-          <AutocompleteZipcode
-            hideCityField={false}
-            zipcode={zipcode}
-            zipcodeError={zipcodeError}
-            neighborhoodError=""
-            stateError=""
-            cityError=""
-            neighborhood={neighborhood}
-            state={state}
-            city={city}
-            setZipcodeError={setZipcodeError}
-            setZipcode={setZipcode}
-            setNeighborhood={setNeighborhood}
-            setState={setState}
-            setCity={setCity}
-          />
-        </QueryProviderWrapper>
-      );
-    };
 
     render(<TestWrapper />);
 
@@ -323,37 +293,6 @@ describe("AutocompleteZipcode", () => {
       message: null,
     });
 
-    const TestWrapper = () => {
-      const [zipcode, setZipcode] = React.useState("");
-      const [neighborhood, setNeighborhood] = React.useState(
-        "Seleccione una colonia",
-      );
-      const [state, setState] = React.useState("Seleccione un estado");
-      const [city, setCity] = React.useState("Seleccione una ciudad");
-      const [zipcodeError, setZipcodeError] = React.useState("");
-
-      return (
-        <QueryProviderWrapper>
-          <AutocompleteZipcode
-            hideCityField={false}
-            zipcode={zipcode}
-            zipcodeError={zipcodeError}
-            neighborhoodError=""
-            stateError=""
-            cityError=""
-            neighborhood={neighborhood}
-            state={state}
-            city={city}
-            setZipcodeError={setZipcodeError}
-            setZipcode={setZipcode}
-            setNeighborhood={setNeighborhood}
-            setState={setState}
-            setCity={setCity}
-          />
-        </QueryProviderWrapper>
-      );
-    };
-
     render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
@@ -385,37 +324,6 @@ describe("AutocompleteZipcode", () => {
       message: null,
     });
 
-    const TestWrapper = () => {
-      const [zipcode, setZipcode] = React.useState("");
-      const [neighborhood, setNeighborhood] = React.useState(
-        "Seleccione una colonia",
-      );
-      const [state, setState] = React.useState("Seleccione un estado");
-      const [city, setCity] = React.useState("Seleccione una ciudad");
-      const [zipcodeError, setZipcodeError] = React.useState("");
-
-      return (
-        <QueryProviderWrapper>
-          <AutocompleteZipcode
-            hideCityField={false}
-            zipcode={zipcode}
-            zipcodeError={zipcodeError}
-            neighborhoodError=""
-            stateError=""
-            cityError=""
-            neighborhood={neighborhood}
-            state={state}
-            city={city}
-            setZipcodeError={setZipcodeError}
-            setZipcode={setZipcode}
-            setNeighborhood={setNeighborhood}
-            setState={setState}
-            setCity={setCity}
-          />
-        </QueryProviderWrapper>
-      );
-    };
-
     render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
@@ -444,37 +352,6 @@ describe("AutocompleteZipcode", () => {
       neighborhoods: mockSingleNeighborhood,
       message: null,
     });
-
-    const TestWrapper = () => {
-      const [zipcode, setZipcode] = React.useState("");
-      const [neighborhood, setNeighborhood] = React.useState(
-        "Seleccione una colonia",
-      );
-      const [state, setState] = React.useState("Seleccione un estado");
-      const [city, setCity] = React.useState("Seleccione una ciudad");
-      const [zipcodeError, setZipcodeError] = React.useState("");
-
-      return (
-        <QueryProviderWrapper>
-          <AutocompleteZipcode
-            hideCityField={false}
-            zipcode={zipcode}
-            zipcodeError={zipcodeError}
-            neighborhoodError=""
-            stateError=""
-            cityError=""
-            neighborhood={neighborhood}
-            state={state}
-            city={city}
-            setZipcodeError={setZipcodeError}
-            setZipcode={setZipcode}
-            setNeighborhood={setNeighborhood}
-            setState={setState}
-            setCity={setCity}
-          />
-        </QueryProviderWrapper>
-      );
-    };
 
     render(<TestWrapper />);
 
@@ -508,37 +385,6 @@ describe("AutocompleteZipcode", () => {
       message: null,
     });
 
-    const TestWrapper = () => {
-      const [zipcode, setZipcode] = React.useState("");
-      const [neighborhood, setNeighborhood] = React.useState(
-        "Seleccione una colonia",
-      );
-      const [state, setState] = React.useState("Seleccione un estado");
-      const [city, setCity] = React.useState("Seleccione una ciudad");
-      const [zipcodeError, setZipcodeError] = React.useState("");
-
-      return (
-        <QueryProviderWrapper>
-          <AutocompleteZipcode
-            hideCityField={false}
-            zipcode={zipcode}
-            zipcodeError={zipcodeError}
-            neighborhoodError=""
-            stateError=""
-            cityError=""
-            neighborhood={neighborhood}
-            state={state}
-            city={city}
-            setZipcodeError={setZipcodeError}
-            setZipcode={setZipcode}
-            setNeighborhood={setNeighborhood}
-            setState={setState}
-            setCity={setCity}
-          />
-        </QueryProviderWrapper>
-      );
-    };
-
     render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
@@ -570,37 +416,6 @@ describe("AutocompleteZipcode", () => {
       neighborhoods: mockSingleNeighborhood,
       message: null,
     });
-
-    const TestWrapper = () => {
-      const [zipcode, setZipcode] = React.useState("");
-      const [neighborhood, setNeighborhood] = React.useState(
-        "Seleccione una colonia",
-      );
-      const [state, setState] = React.useState("Seleccione un estado");
-      const [city, setCity] = React.useState("Seleccione una ciudad");
-      const [zipcodeError, setZipcodeError] = React.useState("");
-
-      return (
-        <QueryProviderWrapper>
-          <AutocompleteZipcode
-            hideCityField={false}
-            zipcode={zipcode}
-            zipcodeError={zipcodeError}
-            neighborhoodError=""
-            stateError=""
-            cityError=""
-            neighborhood={neighborhood}
-            state={state}
-            city={city}
-            setZipcodeError={setZipcodeError}
-            setZipcode={setZipcode}
-            setNeighborhood={setNeighborhood}
-            setState={setState}
-            setCity={setCity}
-          />
-        </QueryProviderWrapper>
-      );
-    };
 
     render(<TestWrapper />);
 
