@@ -34,6 +34,8 @@ For the unit tests, consider the following instructions:
 
 - When testing email validation, always include the @ sign in invalid email test values. Use something like 'invalid-email@a' rather than just 'invalid-email'. This ensures the validation logic properly triggers, as many email validators (like Yup's .email()) require the @ sign to be present before checking format validity.
 
+- Do not remove it.skip() or test.skip() statements from test files. If skip statements are found in tests, they should be preserved unless explicitly instructed to fix those specific tests. Skip statements indicate tests that are intentionally not being run, often due to known issues or work-in-progress.
+
 ## Mocks
 
 - Do not export them as default, use name exports
