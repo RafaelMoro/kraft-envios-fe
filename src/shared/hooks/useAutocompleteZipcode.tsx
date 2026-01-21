@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   INITIAL_STATE_SELECT_CITY,
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
@@ -24,11 +24,18 @@ export const useAutocompleteZipcode = ({
   setValue,
   clearErrors,
 }: UseAutocompleteZipcodeProps) => {
-  const [zipcode, setZipcode] = useState<string>(formData?.zipcode ?? "");
+  const [zipcode, setZipcode] = useState<string>("");
   const handleZipcodeChange = (newZipcode: string) => {
     setZipcode(newZipcode);
     setValue("zipcode", newZipcode);
   };
+
+  useEffect(() => {
+    if (formData?.zipcode) {
+      setZipcode(formData.zipcode);
+      setValue("zipcode", formData.zipcode);
+    }
+  }, [formData.zipcode, setValue]);
 
   const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>(
     formData?.neighborhood ?? INITIAL_STATE_SELECT_NEIGHBORHOOD,
