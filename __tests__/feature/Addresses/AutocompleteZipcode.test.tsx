@@ -12,6 +12,14 @@ import {
 // Mock the getAddressByZipcode utility function
 jest.mock("../../../src/shared/utils/addresses.utils", () => ({
   getAddressByZipcode: jest.fn(),
+  selectAddressValue: jest.fn(
+    (formDataValue, newValues, initialState, hasExistingFormData) => {
+      if (hasExistingFormData && formDataValue) {
+        return Array.isArray(formDataValue) ? formDataValue[0] : formDataValue;
+      }
+      return newValues.length === 1 ? newValues[0] : initialState;
+    },
+  ),
 }));
 
 import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
@@ -79,6 +87,7 @@ const AutocompleteZipcodeWrapper = ({
   setNeighborhood = jest.fn(),
   setState = jest.fn(),
   setCity = jest.fn(),
+  formData = {} as any,
 }: Partial<React.ComponentProps<typeof AutocompleteZipcode>>) => {
   return (
     <QueryProviderWrapper>
@@ -97,6 +106,7 @@ const AutocompleteZipcodeWrapper = ({
         setNeighborhood={setNeighborhood}
         setState={setState}
         setCity={setCity}
+        formData={formData}
       />
     </QueryProviderWrapper>
   );
@@ -129,6 +139,7 @@ const TestWrapper = () => {
         setNeighborhood={setNeighborhood}
         setState={setState}
         setCity={setCity}
+        formData={{} as any}
       />
     </QueryProviderWrapper>
   );
