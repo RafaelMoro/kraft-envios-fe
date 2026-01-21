@@ -18,7 +18,10 @@ import {
   ZIPCODE_LENGTH_ERROR,
   ZIPCODE_ONLY_NUMBERS_ERROR,
 } from "@/shared/constants/addresses.constants";
-import { onlyNumberRegex } from "@/shared/types/addresses.types";
+import {
+  onlyNumberRegex,
+  CreateAddressPayload,
+} from "@/shared/types/addresses.types";
 import { getAddressByZipcode } from "@/shared/utils/addresses.utils";
 
 interface AutocompleteZipcodeProps {
@@ -36,6 +39,7 @@ interface AutocompleteZipcodeProps {
   setNeighborhood: (newNeighborhood: string) => void;
   setState: (newState: string) => void;
   setCity: (newCity: string) => void;
+  formData: CreateAddressPayload;
 }
 
 /**
@@ -56,6 +60,7 @@ export const AutocompleteZipcode = ({
   setState,
   setCity,
   setZipcode,
+  formData,
 }: AutocompleteZipcodeProps) => {
   const [debouncedZipcode, setDebouncedZipcode] = useState<string>("");
 
@@ -116,21 +121,34 @@ export const AutocompleteZipcode = ({
       setCities(newCities);
       setStates(newStates);
 
-      const newCurrentNeighborhood =
-        newNeighborhoods.length === 1
+      // Check if formData has existing values
+      const hasExistingFormData = Boolean(
+        formData?.zipcode &&
+        formData?.neighborhood &&
+        formData?.state &&
+        formData?.city,
+      );
+
+      // If formData has existing values, preserve them; otherwise auto-select single options
+      const newCurrentNeighborhood = hasExistingFormData
+        ? (formData.neighborhood ?? INITIAL_STATE_SELECT_NEIGHBORHOOD)
+        : newNeighborhoods.length === 1
           ? (newNeighborhoods?.[0] ?? INITIAL_STATE_SELECT_NEIGHBORHOOD)
           : INITIAL_STATE_SELECT_NEIGHBORHOOD;
-      const newSelectedState =
-        newStates.length === 1
+
+      const newSelectedState = hasExistingFormData
+        ? (formData.state ?? INITIAL_STATE_SELECT_STATE)
+        : newStates.length === 1
           ? (newStates?.[0] ?? INITIAL_STATE_SELECT_STATE)
           : INITIAL_STATE_SELECT_STATE;
-      const newSelectedCity =
-        newCities.length === 1
+
+      const newSelectedCity = hasExistingFormData
+        ? (formData.city?.[0] ?? INITIAL_STATE_SELECT_CITY)
+        : newCities.length === 1
           ? (newCities?.[0] ?? INITIAL_STATE_SELECT_CITY)
           : INITIAL_STATE_SELECT_CITY;
 
-      // Reset selected neighborhood when zipcode changes
-      console.log("reseting new neighborhood");
+      // Set selected neighborhood, state, and city
       setNeighborhood(newCurrentNeighborhood);
       setState(newSelectedState);
       setCity(newSelectedCity);
