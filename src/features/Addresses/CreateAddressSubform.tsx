@@ -195,6 +195,11 @@ export const CreateAddressSubform = ({
       cities,
       towns,
       isGEAddress: shouldCreateGEAddress,
+      showManualFields,
+      automaticZipcode: zipcode,
+      neighborhoodSelected,
+      stateSelected,
+      citySelected,
     });
 
     // Edit address flow

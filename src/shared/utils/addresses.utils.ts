@@ -26,23 +26,48 @@ export const formatPayloadCreateAddress = ({
   payload,
   cities,
   towns,
+  automaticZipcode,
+  neighborhoodSelected,
+  stateSelected,
+  citySelected,
   isGEAddress = false,
+  showManualFields,
 }: {
   payload: CreateAddressFormValues;
   cities: string[];
   towns: string[];
+  automaticZipcode: string;
+  neighborhoodSelected: string;
+  stateSelected: string;
+  citySelected: string;
+  showManualFields: boolean;
   isGEAddress?: boolean;
 }): CreateAddressPayload => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { street1, ...rest } = payload;
+  if (showManualFields) {
+    return {
+      ...rest,
+      internalNumber: payload.internalNumber ?? "",
+      reference: payload.reference ?? "",
+      city: cities,
+      town: towns,
+      addressName: payload.street1,
+      isGEAddress,
+    };
+  }
+
   return {
     ...rest,
     internalNumber: payload.internalNumber ?? "",
     reference: payload.reference ?? "",
-    city: cities,
+    city: [citySelected],
     town: towns,
     addressName: payload.street1,
     isGEAddress,
+    zipcode: automaticZipcode,
+    neighborhood: neighborhoodSelected,
+    state: stateSelected,
   };
 };
 
