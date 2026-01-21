@@ -15,6 +15,7 @@ import {
   UseFormHandleSubmit,
   UseFormRegister,
   UseFormSetError,
+  UseFormSetValue,
 } from "react-hook-form";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
@@ -45,6 +46,7 @@ interface CreateAddressSubformProps {
     CreateAddressFormValues
   >;
   setError: UseFormSetError<CreateAddressFormValues>;
+  setValue: UseFormSetValue<CreateAddressFormValues>;
   createAddressMutation: (payload: CreateAddressPayload) => void;
   editAddressMutation: (payload: CreateAddressPayload) => void;
   isPending: boolean;
@@ -71,6 +73,7 @@ export const CreateAddressSubform = ({
   register,
   handleSubmit,
   setError,
+  setValue,
   isPending,
   isSuccess,
   isPendingEdit,
@@ -84,6 +87,7 @@ export const CreateAddressSubform = ({
   isPendingFetchAlias,
   errorAlias,
 }: CreateAddressSubformProps) => {
+  console.log("errors", errors);
   // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
   const [consentSkipGECreation, setConsentSkipGECreation] = useState(false);
@@ -141,7 +145,9 @@ export const CreateAddressSubform = ({
     setStateSelected,
     citySelected,
     setCitySelected,
-  } = useAutocompleteZipcode();
+  } = useAutocompleteZipcode({
+    setValue,
+  });
 
   const submitButtonText = shouldCreateGEAddress
     ? "Siguiente"

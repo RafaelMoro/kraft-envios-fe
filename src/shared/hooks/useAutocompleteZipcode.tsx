@@ -4,29 +4,52 @@ import {
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
   INITIAL_STATE_SELECT_STATE,
 } from "../constants/addresses.constants";
+import { UseFormSetValue } from "react-hook-form";
+import { CreateAddressFormValues } from "../types/addresses.types";
+
+interface UseAutocompleteZipcodeProps {
+  setValue: UseFormSetValue<CreateAddressFormValues>;
+}
 
 /**
  * This custom hook is to be used with the component `AutocompleteZipcode`
  */
-export const useAutocompleteZipcode = () => {
+export const useAutocompleteZipcode = ({
+  setValue,
+}: UseAutocompleteZipcodeProps) => {
   const [zipcode, setZipcode] = useState<string>("");
+  const handleZipcodeChange = (newZipcode: string) => {
+    setZipcode(newZipcode);
+    setValue("zipcode", newZipcode);
+  };
+
   const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>(
     INITIAL_STATE_SELECT_NEIGHBORHOOD,
   );
+  const handleNeighborhoodChange = (newNeighborhood: string) => {
+    setNeighborhoodSelected(newNeighborhood);
+    setValue("neighborhood", newNeighborhood);
+  };
+
   const [stateSelected, setStateSelected] = useState<string>(
     INITIAL_STATE_SELECT_STATE,
   );
+  const handleStateChange = (newState: string) => {
+    setStateSelected(newState);
+    setValue("state", newState);
+  };
+
   const [citySelected, setCitySelected] = useState<string>(
     INITIAL_STATE_SELECT_CITY,
   );
 
   return {
     zipcode,
-    setZipcode,
+    setZipcode: handleZipcodeChange,
     neighborhoodSelected,
-    setNeighborhoodSelected,
+    setNeighborhoodSelected: handleNeighborhoodChange,
     stateSelected,
-    setStateSelected,
+    setStateSelected: handleStateChange,
     citySelected,
     setCitySelected,
   };

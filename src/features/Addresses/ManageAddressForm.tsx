@@ -59,6 +59,7 @@ export const ManageAddressForm = ({
     reset,
     formState: { errors },
     setError,
+    setValue,
   } = useForm<CreateAddressFormValues>({
     resolver: yupResolver(CreateAddressFormSchema),
   });
@@ -147,6 +148,7 @@ export const ManageAddressForm = ({
             register={register}
             handleSubmit={handleSubmit}
             setError={setError}
+            setValue={setValue}
             isPending={isPending}
             isSuccess={isSuccess}
             isPendingEdit={isPendingEdit}
