@@ -99,6 +99,7 @@ export const CreateAddressSubform = ({
   isPendingFetchAlias,
   errorAlias,
 }: CreateAddressSubformProps) => {
+  console.log("formData", formData);
   // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
   const [consentSkipGECreation, setConsentSkipGECreation] = useState(false);
@@ -169,6 +170,7 @@ export const CreateAddressSubform = ({
   } = useAutocompleteZipcode({
     setValue,
     clearErrors,
+    formData,
   });
 
   const submitButtonText = shouldCreateGEAddress
