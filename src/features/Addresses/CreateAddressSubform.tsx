@@ -12,6 +12,7 @@ import {
 import {
   FieldErrors,
   SubmitHandler,
+  UseFormClearErrors,
   UseFormHandleSubmit,
   UseFormRegister,
   UseFormSetError,
@@ -52,6 +53,7 @@ interface CreateAddressSubformProps {
   >;
   setError: UseFormSetError<CreateAddressFormValues>;
   setZipcodeError: (error: string) => void;
+  clearErrors: UseFormClearErrors<CreateAddressFormValues>;
   setValue: UseFormSetValue<CreateAddressFormValues>;
   createAddressMutation: (payload: CreateAddressPayload) => void;
   editAddressMutation: (payload: CreateAddressPayload) => void;
@@ -81,6 +83,7 @@ export const CreateAddressSubform = ({
   setError,
   setValue,
   setZipcodeError,
+  clearErrors,
   isPending,
   isSuccess,
   isPendingEdit,
@@ -155,6 +158,7 @@ export const CreateAddressSubform = ({
     setCityError,
   } = useAutocompleteZipcode({
     setValue,
+    clearErrors,
   });
 
   const submitButtonText = shouldCreateGEAddress

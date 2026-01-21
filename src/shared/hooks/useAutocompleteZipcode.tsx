@@ -4,11 +4,12 @@ import {
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
   INITIAL_STATE_SELECT_STATE,
 } from "../constants/addresses.constants";
-import { UseFormSetValue } from "react-hook-form";
+import { UseFormClearErrors, UseFormSetValue } from "react-hook-form";
 import { CreateAddressFormValues } from "../types/addresses.types";
 
 interface UseAutocompleteZipcodeProps {
   setValue: UseFormSetValue<CreateAddressFormValues>;
+  clearErrors: UseFormClearErrors<CreateAddressFormValues>;
 }
 
 /**
@@ -16,6 +17,7 @@ interface UseAutocompleteZipcodeProps {
  */
 export const useAutocompleteZipcode = ({
   setValue,
+  clearErrors,
 }: UseAutocompleteZipcodeProps) => {
   const [zipcode, setZipcode] = useState<string>("");
   const handleZipcodeChange = (newZipcode: string) => {
@@ -29,6 +31,7 @@ export const useAutocompleteZipcode = ({
   const handleNeighborhoodChange = (newNeighborhood: string) => {
     setNeighborhoodSelected(newNeighborhood);
     setValue("neighborhood", newNeighborhood);
+    clearErrors("neighborhood");
   };
 
   const [stateSelected, setStateSelected] = useState<string>(
