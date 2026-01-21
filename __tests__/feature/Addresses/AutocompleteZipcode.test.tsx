@@ -146,22 +146,6 @@ describe("AutocompleteZipcode", () => {
     expect(zipcodeInput.value).toBe("12345");
   });
 
-  it.skip("calls setZipcode when valid zipcode is entered", async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSetZipcode = jest.fn();
-
-    render(<AutocompleteZipcodeWrapper setZipcode={mockSetZipcode} />);
-
-    const zipcodeInput = screen.getByTestId("zipcode");
-    await user.type(zipcodeInput, "12345");
-
-    expect(mockSetZipcode).toHaveBeenCalledWith("1");
-    expect(mockSetZipcode).toHaveBeenCalledWith("12");
-    expect(mockSetZipcode).toHaveBeenCalledWith("123");
-    expect(mockSetZipcode).toHaveBeenCalledWith("1234");
-    expect(mockSetZipcode).toHaveBeenCalledWith("12345");
-  });
-
   it("shows error when zipcode contains non-numeric characters", async () => {
     const user = userEvent.setup({ delay: null });
     const mockSetZipcodeError = jest.fn();
@@ -192,20 +176,6 @@ describe("AutocompleteZipcode", () => {
     expect(mockSetZipcodeError).toHaveBeenCalledWith(ZIPCODE_LENGTH_ERROR);
   });
 
-  it.skip("clears error when zipcode length is 5", async () => {
-    const user = userEvent.setup({ delay: null });
-    const mockSetZipcodeError = jest.fn();
-
-    render(
-      <AutocompleteZipcodeWrapper setZipcodeError={mockSetZipcodeError} />,
-    );
-
-    const zipcodeInput = screen.getByTestId("zipcode");
-    await user.type(zipcodeInput, "12345");
-
-    expect(mockSetZipcodeError).toHaveBeenCalledWith("");
-  });
-
   it("displays zipcode error message when provided", () => {
     render(<AutocompleteZipcodeWrapper zipcodeError={ZIPCODE_LENGTH_ERROR} />);
 
@@ -232,7 +202,7 @@ describe("AutocompleteZipcode", () => {
     expect(screen.getByText("Ciudad es requerida")).toBeInTheDocument();
   });
 
-  it.skip("fetches address data after debounce delay when valid zipcode is entered", async () => {
+  it("fetches address data after debounce delay when valid zipcode is entered", async () => {
     const user = userEvent.setup({ delay: null });
     mockedGetAddressByZipcode.mockResolvedValue({
       neighborhoods: mockNeighborhoods,
