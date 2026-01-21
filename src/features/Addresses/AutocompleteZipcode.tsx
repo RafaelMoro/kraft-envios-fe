@@ -121,7 +121,7 @@ export const AutocompleteZipcode = ({
       setCities(newCities);
       setStates(newStates);
 
-      // Check if formData has existing values
+      // Check if formData has existing values to preserve
       const hasExistingFormData = Boolean(
         formData?.zipcode &&
         formData?.neighborhood &&
@@ -129,29 +129,34 @@ export const AutocompleteZipcode = ({
         formData?.city,
       );
 
-      // If formData has existing values, preserve them; otherwise auto-select single options
-      const newCurrentNeighborhood = hasExistingFormData
-        ? (formData.neighborhood ?? INITIAL_STATE_SELECT_NEIGHBORHOOD)
-        : newNeighborhoods.length === 1
-          ? (newNeighborhoods?.[0] ?? INITIAL_STATE_SELECT_NEIGHBORHOOD)
-          : INITIAL_STATE_SELECT_NEIGHBORHOOD;
+      // Helper function to select the appropriate value
+      const selectValue = (
+        formDataValue: string | string[] | undefined,
+        newValues: string[],
+        initialState: string,
+      ): string => {
+        if (hasExistingFormData && formDataValue) {
+          return Array.isArray(formDataValue)
+            ? formDataValue[0]
+            : formDataValue;
+        }
+        return newValues.length === 1 ? newValues[0] : initialState;
+      };
 
-      const newSelectedState = hasExistingFormData
-        ? (formData.state ?? INITIAL_STATE_SELECT_STATE)
-        : newStates.length === 1
-          ? (newStates?.[0] ?? INITIAL_STATE_SELECT_STATE)
-          : INITIAL_STATE_SELECT_STATE;
-
-      const newSelectedCity = hasExistingFormData
-        ? (formData.city?.[0] ?? INITIAL_STATE_SELECT_CITY)
-        : newCities.length === 1
-          ? (newCities?.[0] ?? INITIAL_STATE_SELECT_CITY)
-          : INITIAL_STATE_SELECT_CITY;
-
-      // Set selected neighborhood, state, and city
-      setNeighborhood(newCurrentNeighborhood);
-      setState(newSelectedState);
-      setCity(newSelectedCity);
+      // Set selected values based on formData or auto-select single options
+      setNeighborhood(
+        selectValue(
+          formData?.neighborhood,
+          newNeighborhoods,
+          INITIAL_STATE_SELECT_NEIGHBORHOOD,
+        ),
+      );
+      setState(
+        selectValue(formData?.state, newStates, INITIAL_STATE_SELECT_STATE),
+      );
+      setCity(
+        selectValue(formData?.city, newCities, INITIAL_STATE_SELECT_CITY),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, setState, setCity]);
