@@ -165,6 +165,7 @@ export const CreateAddressSubform = ({
       return;
     }
 
+    // Check if towns or cities are empty, if so, show error
     const townsEmpty = validateTownsEmpty();
     const citiesEmpty = validateCitiesEmpty();
     if (townsEmpty || citiesEmpty) {
@@ -179,6 +180,8 @@ export const CreateAddressSubform = ({
       towns,
       isGEAddress: shouldCreateGEAddress,
     });
+
+    // Edit address flow
     if (isEdit) {
       editAddressMutation(formattedPayload);
       return;
