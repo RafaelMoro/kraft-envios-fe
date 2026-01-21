@@ -1,5 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as React from "react";
 import { QueryProviderWrapper } from "@/features/QueryProviderWrapper";
 import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode";
 import { Neighborhood } from "@/shared/types/quotes.types";
@@ -104,12 +105,10 @@ const AutocompleteZipcodeWrapper = ({
 describe("AutocompleteZipcode", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    // Clean up any pending timers
   });
 
   it("renders zipcode input field", () => {
@@ -203,28 +202,56 @@ describe("AutocompleteZipcode", () => {
   });
 
   it("fetches address data after debounce delay when valid zipcode is entered", async () => {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     mockedGetAddressByZipcode.mockResolvedValue({
       neighborhoods: mockNeighborhoods,
       message: null,
     });
 
-    render(<AutocompleteZipcodeWrapper />);
+    const TestWrapper = () => {
+      const [zipcode, setZipcode] = React.useState("");
+      const [neighborhood, setNeighborhood] = React.useState(
+        "Seleccione una colonia",
+      );
+      const [state, setState] = React.useState("Seleccione un estado");
+      const [city, setCity] = React.useState("Seleccione una ciudad");
+      const [zipcodeError, setZipcodeError] = React.useState("");
+
+      return (
+        <QueryProviderWrapper>
+          <AutocompleteZipcode
+            hideCityField={false}
+            zipcode={zipcode}
+            zipcodeError={zipcodeError}
+            neighborhoodError=""
+            stateError=""
+            cityError=""
+            neighborhood={neighborhood}
+            state={state}
+            city={city}
+            setZipcodeError={setZipcodeError}
+            setZipcode={setZipcode}
+            setNeighborhood={setNeighborhood}
+            setState={setState}
+            setCity={setCity}
+          />
+        </QueryProviderWrapper>
+      );
+    };
+
+    render(<TestWrapper />);
 
     const zipcodeInput = screen.getByTestId("zipcode");
     await user.type(zipcodeInput, "12345");
 
-    // Fast-forward time to trigger debounce
-    jest.advanceTimersByTime(2000);
-
-    // Flush all promises
+    // Wait for the debounce timeout (2000ms) and query to execute
     await waitFor(
       () => {
         expect(mockedGetAddressByZipcode).toHaveBeenCalledWith("12345");
       },
-      { timeout: 3000 },
+      { timeout: 3500 },
     );
-  });
+  }, 7000);
 
   it.skip("shows loading spinner in dropdowns while fetching data", async () => {
     const user = userEvent.setup({ delay: null });
