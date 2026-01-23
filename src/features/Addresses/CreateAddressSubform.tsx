@@ -260,7 +260,7 @@ export const CreateAddressSubform = ({
     }
 
     // Create address GE, then the create address mutation will be executed in that screen
-    if (shouldCreateGEAddress && !consentSkipGECreation) {
+    if (shouldCreateGEAddress && !consentSkipGECreation && !isEdit) {
       // Check if alias exists in GE
       if (
         (dataAliases ?? []).find((aliasFetched) => aliasFetched === data.alias)
