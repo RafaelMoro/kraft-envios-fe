@@ -133,6 +133,7 @@ export const AddPersonalInfoGESubform = ({
       <PersonalInfoAddressGESubform<PersonalDataGEFormValues>
         errors={errors}
         register={register}
+        addressToEditGE={addressToEditGE}
       />
       <div className="lg:col-span-2 flex justify-between mt-4">
         <Button

@@ -2,6 +2,7 @@ import { Label, TextInput } from "flowbite-react"
 import { FieldError, FieldErrors, Path, UseFormRegister } from "react-hook-form";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { AddressGE } from "@/shared/types/guides.types";
 
 type PersonalDataGET = {
   name: string;
@@ -13,11 +14,12 @@ type PersonalDataGET = {
 
 interface PersonalInfoAddressGESubformProps<T extends PersonalDataGET> {
   errors: FieldErrors<T>;
+  addressToEditGE: AddressGE | null
   register: UseFormRegister<T>
 }
 
 export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
-  errors, register
+  errors, register, addressToEditGE
 }: PersonalInfoAddressGESubformProps<T>) => {
   const nameError = errors?.name as FieldError | undefined;
   const phoneError = errors?.phone as FieldError | undefined;
@@ -35,6 +37,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="name"
           id="name"
           type="text"
+          defaultValue={addressToEditGE?.name ?? ""}
           {...register("name" as Path<T>)}
         />
         { nameError?.message && (
@@ -49,6 +52,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="phone"
           id="phone"
           type="text"
+          defaultValue={addressToEditGE?.phone ?? ""}
           inputMode="numeric"
           {...register("phone" as Path<T>)}
         />
@@ -63,6 +67,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
         <TextInput
           id="email"
           type="email"
+          defaultValue={addressToEditGE?.email ?? ""}
           {...register("email" as Path<T>)}
         />
         { emailError?.message && (
@@ -77,6 +82,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="company"
           id="company"
           type="text"
+          defaultValue={addressToEditGE?.company ?? ""}
           {...register("company" as Path<T>)}
         />
         { companyError?.message && (
@@ -91,6 +97,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="rfc"
           id="rfc"
           type="text"
+          defaultValue={addressToEditGE?.rfc ?? ""}
           {...register("rfc" as Path<T>)}
         />
         { rfcError?.message && (
