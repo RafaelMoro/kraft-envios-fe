@@ -99,7 +99,6 @@ export const CreateAddressSubform = ({
   isPendingFetchAlias,
   errorAlias,
 }: CreateAddressSubformProps) => {
-  console.log("formData", formData);
   // Create address in GE states
   const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(formData?.isGEAddress ?? false);
   const [consentSkipGECreation, setConsentSkipGECreation] = useState(false);
@@ -260,11 +259,10 @@ export const CreateAddressSubform = ({
     }
 
     // Create address GE, then the create address mutation will be executed in that screen
-    if (shouldCreateGEAddress && !consentSkipGECreation && !isEdit) {
-      // Check if alias exists in GE
-      if (
-        (dataAliases ?? []).find((aliasFetched) => aliasFetched === data.alias)
-      ) {
+    if (shouldCreateGEAddress && !consentSkipGECreation) {
+      // Check if alias exists in GE for create action
+      const aliasExist = (dataAliases ?? []).some((aliasFetched) => aliasFetched === data.alias)
+      if (aliasExist && !isEdit) {
         setError("alias", {
           type: "manual",
           message: "El alias ya existe en GE, por favor elija otro",

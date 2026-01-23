@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import {
   AddressDataGEFormValues,
+  AddressGE,
   CreateAddressGEPayload,
   CreateAddressGEResponse,
   PersonalDataGEFormValues,
@@ -22,8 +23,7 @@ import { saveAddressToLocalStorage } from "@/shared/utils/addresses.utils";
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
   isEdit: boolean;
-  addressId?: string;
-  currentAlias?: string;
+  addressToEditGE: AddressGE | null
   goBack: () => void;
   goResult: () => void;
   setShowErrorCreateAddressGe: (show: boolean) => void;
@@ -33,8 +33,7 @@ interface AddPersonalInfoGESubformProps {
 export const AddPersonalInfoGESubform = ({
   addressDataGE,
   isEdit,
-  addressId,
-  currentAlias,
+  addressToEditGE,
   goBack,
   goResult,
   setShowErrorCreateAddressGe,
@@ -110,11 +109,11 @@ export const AddPersonalInfoGESubform = ({
     
     if (isEdit) {
       // Fire mutation to edit address in GE
-      if (!addressId || !currentAlias) {
+      if (!addressToEditGE) {
         console.warn("Address ID and current alias are required for editing");
         return;
       }
-      editAddressGE({ payload: formattedPayload, addressId, currentAlias });
+      editAddressGE({ payload: formattedPayload, addressId: addressToEditGE.id, currentAlias: addressToEditGE.alias });
     } else {
       // Fire mutation to create address in GE
       createAddressGE(formattedPayload, {

@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -42,16 +42,31 @@ export const ManageAddressForm = ({
 }: CreateAddressProps) => {
   const [showErrorCreateAddressGe, setShowErrorCreateAddressGe] =
     useState(false);
-  const [subscreen, setSubscreen] =
-    useState<ManageAddressFormScreen>("CREATE_ADDRESS");
+  const [subscreen, setSubscreen] = useState<ManageAddressFormScreen>("CREATE_ADDRESS");
   const goBack = () => setSubscreen("CREATE_ADDRESS");
   const goResult = () => setSubscreen("SHOW_RESULT");
 
   // GE Address data
   const addressDataGE = useRef<AddressDataGEFormValues | null>(null);
+  console.log('addressDataGE', addressDataGE.current)
   const updateAddressDataGE = (data: AddressDataGEFormValues) => {
     addressDataGE.current = data;
   };
+
+  // Sync formData isGEAddress changes to addressDataGE
+  useEffect(() => {
+    if (formData.isGEAddress) {
+      addressDataGE.current = {
+        street1: formData.addressName,
+        external_number: formData.externalNumber,
+        neighborhood: formData.neighborhood,
+        city: formData.city?.[0] ?? '',
+        state: formData.state,
+        alias: formData.alias,
+        zipcode: formData.zipcode,
+      }
+    }
+  }, [formData]);
 
   const {
     register,
@@ -106,9 +121,10 @@ export const ManageAddressForm = ({
   } = useQuery({
     queryKey: ["GEAddresses"],
     queryFn: getGEAddressesCb,
-    enabled: hasConsentedOnce,
+    enabled: hasConsentedOnce || (formData?.isGEAddress && isEdit),
   });
   const dataAliases = useMemo(() => addressesGE?.map((addr) => addr.alias), [addressesGE]);
+  const addressToEditGE = useMemo(() => addressesGE?.find((addr) => addr.alias === formData.alias) ?? null, [addressesGE, formData]);
 
   const refetchAddressesGE = async () => {
     await refetch();
@@ -181,6 +197,7 @@ export const ManageAddressForm = ({
           <AddPersonalInfoGESubform
             addressDataGE={addressDataGE.current}
             isEdit={isEdit}
+            addressToEditGE={addressToEditGE}
             goBack={goBack}
             goResult={goResult}
             setShowErrorCreateAddressGe={setShowErrorCreateAddressGe}
