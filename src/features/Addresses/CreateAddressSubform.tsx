@@ -200,7 +200,7 @@ export const CreateAddressSubform = ({
     event?.preventDefault();
     if (showConsentError) setShowConsentError(false);
 
-    // Check if alias has been modified in edit mode
+    // Validation: Check if alias has been modified in edit mode
     if (isEdit && formData?.alias && data?.alias !== formData.alias) {
       setError("alias", {
         type: "manual",
@@ -253,18 +253,13 @@ export const CreateAddressSubform = ({
       citySelected,
     });
 
-    // Edit address flow
-    if (isEdit) {
-      editAddressMutation(formattedPayload);
-      return;
-    }
-
+    // Validation: Ensure that if the user opted to not create the address in GE, they have consented to skip GE creation
     if (!shouldCreateGEAddress && !consentSkipGECreation) {
       setShowConsentError(true);
       return;
     }
 
-    // If the address is created in GE, then the create address mutation will be executed in that screen
+    // Create address GE, then the create address mutation will be executed in that screen
     if (shouldCreateGEAddress && !consentSkipGECreation) {
       // Check if alias exists in GE
       if (
@@ -288,6 +283,12 @@ export const CreateAddressSubform = ({
       });
       updateAddressDataGE(GEpayload);
       setSubscreen("ADD_GE_INFORMATION");
+    }
+
+    // Edit address flow
+    if (isEdit) {
+      editAddressMutation(formattedPayload);
+      return;
     }
 
     // Create the address anyway
