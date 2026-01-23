@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,7 +19,7 @@ import { CreateAddressSubform } from "./CreateAddressSubform";
 import { AddPersonalInfoGESubform } from "./AddPersonalInfoGESubform";
 import { AddressDataGEFormValues } from "@/shared/types/guides.types";
 import { ResultCreateAddress } from "./ResultCreateAddress";
-import { getGEAliasesCb } from "@/shared/utils/guides.utils";
+import { getGEAddressesCb } from "@/shared/utils/guides.utils";
 
 interface CreateAddressProps {
   open: boolean;
@@ -99,15 +99,17 @@ export const ManageAddressForm = ({
   // This flag is to enable the fetching of alias in GE
   const [hasConsentedOnce, setHasConsentedOnce] = useState(false);
   const {
-    data: dataAliases,
+    data: addressesGE,
     refetch,
-    isPending: isPendingFetchAlias,
-    error: errorAlias,
+    isPending: isPendingFetchGeAddress,
+    error: errorFetchGeAddress,
   } = useQuery({
-    queryKey: ["aliasAddresses"],
-    queryFn: () => getGEAliasesCb(true),
+    queryKey: ["GEAddresses"],
+    queryFn: getGEAddressesCb,
     enabled: hasConsentedOnce,
   });
+  const dataAliases = useMemo(() => addressesGE?.map((addr) => addr.alias), [addressesGE]);
+
   const refetchAddressesGE = async () => {
     await refetch();
   };
@@ -170,8 +172,8 @@ export const ManageAddressForm = ({
             hasConsentedOnce={hasConsentedOnce}
             setHasConsentedOnce={setHasConsentedOnce}
             dataAliases={dataAliases}
-            isPendingFetchAlias={isPendingFetchAlias}
-            errorAlias={errorAlias}
+            isPendingFetchAlias={isPendingFetchGeAddress}
+            errorAlias={errorFetchGeAddress}
             clearManualAddressRegionFields={clearManualAddressRegionFields}
           />
         )}
