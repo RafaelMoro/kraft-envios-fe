@@ -14,12 +14,14 @@ import { PersonalInfoAddressGESubform } from "../Guides/GE/PersonalInfoAddressGE
 import {
   combineGEFormValues,
   createAddressGECb,
+  editAddressGECb,
 } from "@/shared/utils/guides.utils";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { saveAddressToLocalStorage } from "@/shared/utils/addresses.utils";
 
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
+  isEdit: boolean;
   goBack: () => void;
   goResult: () => void;
   setShowErrorCreateAddressGe: (show: boolean) => void;
@@ -28,11 +30,13 @@ interface AddPersonalInfoGESubformProps {
 
 export const AddPersonalInfoGESubform = ({
   addressDataGE,
+  isEdit,
   goBack,
   goResult,
   setShowErrorCreateAddressGe,
   refetchAddressesGE,
 }: AddPersonalInfoGESubformProps) => {
+  const action = isEdit ? "Editar" : "Crear";
   const {
     register,
     handleSubmit,
@@ -41,7 +45,6 @@ export const AddPersonalInfoGESubform = ({
   } = useForm<PersonalDataGEFormValues>({
     resolver: yupResolver(PersonalInformationGEFormSchema),
   });
-  console.log("addressDataGE", addressDataGE);
 
   const {
     mutate: createAddressGE,
@@ -66,6 +69,29 @@ export const AddPersonalInfoGESubform = ({
     },
   });
 
+  const {
+    mutate: editAddressGE,
+    isPending: isPendingEditGE,
+    isSuccess: isSuccessEditGE,
+  } = useMutation<
+    CreateAddressGEResponse,
+    GeneralApiError,
+    CreateAddressGEPayload
+  >({
+    mutationFn: editAddressGECb,
+    onSuccess: async () => {
+      reset();
+      await refetchAddressesGE();
+      setTimeout(() => {
+        goResult();
+      }, 1000);
+    },
+    onError: () => {
+      setShowErrorCreateAddressGe(true);
+      goResult();
+    },
+  });
+
   const onSubmit: SubmitHandler<PersonalDataGEFormValues> = (data, event) => {
     event?.preventDefault();
     event?.stopPropagation();
@@ -77,12 +103,18 @@ export const AddPersonalInfoGESubform = ({
 
     // Convert payload to GE
     const formattedPayload = combineGEFormValues(data, addressDataGE);
-    // Fire mutation to create address in GE
-    createAddressGE(formattedPayload, {
-      onError: async (error, variables) => {
-        await saveAddressToLocalStorage(variables);
-      },
-    });
+    
+    if (isEdit) {
+      // Fire mutation to edit address in GE
+      editAddressGE(formattedPayload);
+    } else {
+      // Fire mutation to create address in GE
+      createAddressGE(formattedPayload, {
+        onError: async (error, variables) => {
+          await saveAddressToLocalStorage(variables);
+        },
+      });
+    }
   };
 
   return (
@@ -101,7 +133,7 @@ export const AddPersonalInfoGESubform = ({
           outline
           data-testid="cancel-button-create-address-ge"
           className="hover:cursor-pointer"
-          disabled={isPending || isSuccess}
+          disabled={isPending || isSuccess || isPendingEditGE || isSuccessEditGE}
           onClick={goBack}
         >
           Cancelar
@@ -110,11 +142,11 @@ export const AddPersonalInfoGESubform = ({
           data-testid="submit-button-create-address-ge"
           type="submit"
           className="hover:cursor-pointer"
-          disabled={isPending || isSuccess}
+          disabled={isPending || isSuccess || isPendingEditGE || isSuccessEditGE}
         >
-          {isSuccess && <CheckIcon />}
-          {isPending && <Spinner aria-label="loading create address ge" />}
-          {!isSuccess && !isPending && "Crear dirección"}
+          {(isSuccess || isSuccessEditGE) && <CheckIcon />}
+          {(isPending || isPendingEditGE) && <Spinner aria-label={`loading ${action} address ge`} />}
+          {!isSuccess && !isPending && !isSuccessEditGE && !isPendingEditGE && `${action} dirección`}
         </Button>
       </div>
     </form>

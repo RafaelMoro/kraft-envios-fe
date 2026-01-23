@@ -178,6 +178,7 @@ export const ManageAddressForm = ({
         {subscreen === "ADD_GE_INFORMATION" && (
           <AddPersonalInfoGESubform
             addressDataGE={addressDataGE.current}
+            isEdit={isEdit}
             goBack={goBack}
             goResult={goResult}
             setShowErrorCreateAddressGe={setShowErrorCreateAddressGe}
