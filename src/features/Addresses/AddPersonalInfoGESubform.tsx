@@ -22,6 +22,8 @@ import { saveAddressToLocalStorage } from "@/shared/utils/addresses.utils";
 interface AddPersonalInfoGESubformProps {
   addressDataGE: AddressDataGEFormValues | null;
   isEdit: boolean;
+  addressId?: string;
+  currentAlias?: string;
   goBack: () => void;
   goResult: () => void;
   setShowErrorCreateAddressGe: (show: boolean) => void;
@@ -31,6 +33,8 @@ interface AddPersonalInfoGESubformProps {
 export const AddPersonalInfoGESubform = ({
   addressDataGE,
   isEdit,
+  addressId,
+  currentAlias,
   goBack,
   goResult,
   setShowErrorCreateAddressGe,
@@ -76,7 +80,7 @@ export const AddPersonalInfoGESubform = ({
   } = useMutation<
     CreateAddressGEResponse,
     GeneralApiError,
-    CreateAddressGEPayload
+    { payload: CreateAddressGEPayload; addressId: string; currentAlias: string }
   >({
     mutationFn: editAddressGECb,
     onSuccess: async () => {
@@ -106,7 +110,11 @@ export const AddPersonalInfoGESubform = ({
     
     if (isEdit) {
       // Fire mutation to edit address in GE
-      editAddressGE(formattedPayload);
+      if (!addressId || !currentAlias) {
+        console.warn("Address ID and current alias are required for editing");
+        return;
+      }
+      editAddressGE({ payload: formattedPayload, addressId, currentAlias });
     } else {
       // Fire mutation to create address in GE
       createAddressGE(formattedPayload, {
