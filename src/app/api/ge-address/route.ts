@@ -95,3 +95,39 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ message }, { status: 400 })
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const accessToken = await getAccessToken()
+    if (!accessToken) {
+      return NextResponse.json({ message: 'missing access token' }, { status: 400 })
+    }
+  
+    const { searchParams } = new URL(request.url)
+    const addressId = searchParams.get('addressId')
+    const currentAlias = searchParams.get('currentAlias')
+    if (!addressId) {
+      return NextResponse.json({ message: 'missing addressId' }, { status: 400 })
+    }
+    if (!currentAlias) {
+      return NextResponse.json({ message: 'missing currentAlias' }, { status: 400 })
+    }
+
+    const payload: CreateAddressGEPayload = await request.json()
+    if (payload.alias !== currentAlias) {
+      return NextResponse.json({ message: 'Alias cannot be edited' }, { status: 400 })
+    }
+
+    const uri = `${process.env.BACKEND_URI}/ge/address/${addressId}`
+    const res: AxiosResponse<CreateAddressGEResponse> = await axios.put(uri, payload, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+
+    return NextResponse.json(res.data, { status: 201 })
+  } catch (error) {
+    const message = (error as unknown as GeneralError)?.response?.data?.error?.message
+    return NextResponse.json({ message }, { status: 400 })
+  }
+}
