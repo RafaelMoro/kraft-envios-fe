@@ -101,7 +101,7 @@ export const CreateAddressSubform = ({
 }: CreateAddressSubformProps) => {
   console.log("formData", formData);
   // Create address in GE states
-  const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
+  const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(formData?.isGEAddress ?? false);
   const [consentSkipGECreation, setConsentSkipGECreation] = useState(false);
   const [showConsentError, setShowConsentError] = useState(false);
 
