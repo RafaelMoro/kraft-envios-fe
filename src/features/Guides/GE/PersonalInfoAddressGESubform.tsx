@@ -3,6 +3,7 @@ import { FieldError, FieldErrors, Path, UseFormRegister } from "react-hook-form"
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { AddressGE } from "@/shared/types/guides.types";
+import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE, DEFAULT_RFC_VALUE } from "@/shared/constants/addresses.constants";
 
 type PersonalDataGET = {
   name: string;
@@ -26,6 +27,10 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
   const emailError = errors?.email as FieldError | undefined;
   const companyError = errors?.company as FieldError | undefined;
   const rfcError = errors?.rfc as FieldError | undefined;
+
+  const defaultRFC = addressToEditGE?.rfc === DEFAULT_RFC_VALUE ? '' : addressToEditGE?.rfc ?? ''
+  const defaultEmail = addressToEditGE?.email === DEFAULT_EMAIL_VALUE ? '' : addressToEditGE?.email ?? ''
+  const defaultCompany = addressToEditGE?.company === DEFAULT_COMPANY_NAME ? '' : addressToEditGE?.company ?? ''
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -67,7 +72,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
         <TextInput
           id="email"
           type="email"
-          defaultValue={addressToEditGE?.email ?? ""}
+          defaultValue={defaultEmail}
           {...register("email" as Path<T>)}
         />
         { emailError?.message && (
@@ -82,7 +87,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="company"
           id="company"
           type="text"
-          defaultValue={addressToEditGE?.company ?? ""}
+          defaultValue={defaultCompany}
           {...register("company" as Path<T>)}
         />
         { companyError?.message && (
@@ -97,7 +102,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="rfc"
           id="rfc"
           type="text"
-          defaultValue={addressToEditGE?.rfc ?? ""}
+          defaultValue={defaultRFC}
           {...register("rfc" as Path<T>)}
         />
         { rfcError?.message && (
