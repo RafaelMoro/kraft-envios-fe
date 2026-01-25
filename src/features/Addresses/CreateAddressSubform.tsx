@@ -440,11 +440,17 @@ export const CreateAddressSubform = ({
               <ErrorMessage>{errors.alias?.message}</ErrorMessage>
             )}
           </div>
-          <ToggleSwitch
-            checked={shouldCreateGEAddress}
-            label="Crear dirección en GE"
-            onChange={handleShouldCreateGEAddress}
-          />
+          <div className="flex flex-col gap-2">
+            <ToggleSwitch
+              checked={shouldCreateGEAddress}
+              label="Crear dirección en GE"
+              disabled={isEdit}
+              onChange={handleShouldCreateGEAddress}
+            />
+            { isEdit && (
+              <p className="text-xs text-gray-600 dark:text-gray-400">La opción de crear dirección en GE no se puede modificar al editar.</p>
+            )}
+          </div>
           {!shouldCreateGEAddress && (
             <>
               <div className="flex items-center gap-2">
