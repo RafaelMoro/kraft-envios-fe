@@ -46,7 +46,7 @@ interface AutocompleteZipcodeProps {
 }
 
 /**
- * This component autocompletes neighborhood, state, and cities with zipocode
+ * This component autocompletes neighborhood, state, and cities with zipcode
  */
 export const AutocompleteZipcode = ({
   hideCityField,

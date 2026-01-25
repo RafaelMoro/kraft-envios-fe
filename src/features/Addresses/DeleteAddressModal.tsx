@@ -120,16 +120,18 @@ export const DeleteAddressModal = ({ open, toggleModal, addressToDelete, refetch
             <p className="text-red-600 dark:text-red-400 text-center">Esta acción no se puede deshacer.</p>
           </>
         )}
-        { showResult && isSuccess && isSuccessGeDeleteAddress && (
+        { showResult && isSuccess && (
           <ul className="flex flex-col gap-3 items-center">
             <li className="inline-flex gap-1">
               <RiCheckboxCircleFill className="text-blue-800 dark:text-blue-600" />
               Dirección eliminada en el sistema
             </li>
-            <li className="inline-flex gap-1">
-              <RiCheckboxCircleFill className="text-blue-800 dark:text-blue-600" />
-              Dirección eliminada en GE
-            </li>
+            { isSuccessGeDeleteAddress && (
+              <li className="inline-flex gap-1">
+                <RiCheckboxCircleFill className="text-blue-800 dark:text-blue-600" />
+                Dirección eliminada en GE
+              </li>
+            )}
           </ul>
         )}
         { showResult && (isErrorGeDeleteAddress || isError) && (

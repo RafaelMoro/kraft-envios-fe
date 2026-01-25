@@ -65,6 +65,7 @@ interface CreateAddressSubformProps {
   toggleModal: () => void;
   setSubscreen: (subscreen: ManageAddressFormScreen) => void;
   updateAddressDataGE: (data: AddressDataGEFormValues) => void;
+  resetAddressGE: () => void
   hasConsentedOnce: boolean;
   setHasConsentedOnce: (consented: boolean) => void;
   dataAliases: string[] | undefined;
@@ -86,6 +87,7 @@ export const CreateAddressSubform = ({
   setZipcodeError,
   clearErrors,
   clearManualAddressRegionFields,
+  resetAddressGE,
   isPending,
   isSuccess,
   isPendingEdit,
@@ -99,9 +101,8 @@ export const CreateAddressSubform = ({
   isPendingFetchAlias,
   errorAlias,
 }: CreateAddressSubformProps) => {
-  console.log("formData", formData);
   // Create address in GE states
-  const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(false);
+  const [shouldCreateGEAddress, setShouldCreateGEAddress] = useState(formData?.isGEAddress ?? false);
   const [consentSkipGECreation, setConsentSkipGECreation] = useState(false);
   const [showConsentError, setShowConsentError] = useState(false);
 
@@ -200,7 +201,7 @@ export const CreateAddressSubform = ({
     event?.preventDefault();
     if (showConsentError) setShowConsentError(false);
 
-    // Check if alias has been modified in edit mode
+    // Validation: Check if alias has been modified in edit mode
     if (isEdit && formData?.alias && data?.alias !== formData.alias) {
       setError("alias", {
         type: "manual",
@@ -253,23 +254,17 @@ export const CreateAddressSubform = ({
       citySelected,
     });
 
-    // Edit address flow
-    if (isEdit) {
-      editAddressMutation(formattedPayload);
-      return;
-    }
-
+    // Validation: Ensure that if the user opted to not create the address in GE, they have consented to skip GE creation
     if (!shouldCreateGEAddress && !consentSkipGECreation) {
       setShowConsentError(true);
       return;
     }
 
-    // If the address is created in GE, then the create address mutation will be executed in that screen
+    // Create address GE, then the create address mutation will be executed in that screen
     if (shouldCreateGEAddress && !consentSkipGECreation) {
-      // Check if alias exists in GE
-      if (
-        (dataAliases ?? []).find((aliasFetched) => aliasFetched === data.alias)
-      ) {
+      // Check if alias exists in GE for create action
+      const aliasExist = (dataAliases ?? []).some((aliasFetched) => aliasFetched === data.alias)
+      if (aliasExist && !isEdit) {
         setError("alias", {
           type: "manual",
           message: "El alias ya existe en GE, por favor elija otro",
@@ -288,6 +283,17 @@ export const CreateAddressSubform = ({
       });
       updateAddressDataGE(GEpayload);
       setSubscreen("ADD_GE_INFORMATION");
+    }
+
+    // Clear addressDataGE if user opted to skip GE creation
+    if (!shouldCreateGEAddress && consentSkipGECreation) {
+      resetAddressGE();
+    }
+
+    // Edit address flow
+    if (isEdit) {
+      editAddressMutation(formattedPayload);
+      return;
     }
 
     // Create the address anyway
@@ -434,11 +440,17 @@ export const CreateAddressSubform = ({
               <ErrorMessage>{errors.alias?.message}</ErrorMessage>
             )}
           </div>
-          <ToggleSwitch
-            checked={shouldCreateGEAddress}
-            label="Crear dirección en GE"
-            onChange={handleShouldCreateGEAddress}
-          />
+          <div className="flex flex-col gap-2">
+            <ToggleSwitch
+              checked={shouldCreateGEAddress}
+              label="Crear dirección en GE"
+              disabled={isEdit}
+              onChange={handleShouldCreateGEAddress}
+            />
+            { isEdit && (
+              <p className="text-xs text-gray-600 dark:text-gray-400">La opción de crear dirección en GE no se puede modificar al editar.</p>
+            )}
+          </div>
           {!shouldCreateGEAddress && (
             <>
               <div className="flex items-center gap-2">

@@ -2,6 +2,8 @@ import { Label, TextInput } from "flowbite-react"
 import { FieldError, FieldErrors, Path, UseFormRegister } from "react-hook-form";
 
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { AddressGE } from "@/shared/types/guides.types";
+import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE, DEFAULT_RFC_VALUE } from "@/shared/constants/addresses.constants";
 
 type PersonalDataGET = {
   name: string;
@@ -13,17 +15,22 @@ type PersonalDataGET = {
 
 interface PersonalInfoAddressGESubformProps<T extends PersonalDataGET> {
   errors: FieldErrors<T>;
+  addressToEditGE: AddressGE | null
   register: UseFormRegister<T>
 }
 
 export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
-  errors, register
+  errors, register, addressToEditGE
 }: PersonalInfoAddressGESubformProps<T>) => {
   const nameError = errors?.name as FieldError | undefined;
   const phoneError = errors?.phone as FieldError | undefined;
   const emailError = errors?.email as FieldError | undefined;
   const companyError = errors?.company as FieldError | undefined;
   const rfcError = errors?.rfc as FieldError | undefined;
+
+  const defaultRFC = addressToEditGE?.rfc === DEFAULT_RFC_VALUE ? '' : addressToEditGE?.rfc ?? ''
+  const defaultEmail = addressToEditGE?.email === DEFAULT_EMAIL_VALUE ? '' : addressToEditGE?.email ?? ''
+  const defaultCompany = addressToEditGE?.company === DEFAULT_COMPANY_NAME ? '' : addressToEditGE?.company ?? ''
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -35,6 +42,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="name"
           id="name"
           type="text"
+          defaultValue={addressToEditGE?.name ?? ""}
           {...register("name" as Path<T>)}
         />
         { nameError?.message && (
@@ -49,6 +57,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="phone"
           id="phone"
           type="text"
+          defaultValue={addressToEditGE?.phone ?? ""}
           inputMode="numeric"
           {...register("phone" as Path<T>)}
         />
@@ -63,6 +72,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
         <TextInput
           id="email"
           type="email"
+          defaultValue={defaultEmail}
           {...register("email" as Path<T>)}
         />
         { emailError?.message && (
@@ -77,6 +87,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="company"
           id="company"
           type="text"
+          defaultValue={defaultCompany}
           {...register("company" as Path<T>)}
         />
         { companyError?.message && (
@@ -91,6 +102,7 @@ export const PersonalInfoAddressGESubform = <T extends PersonalDataGET>({
           data-testid="rfc"
           id="rfc"
           type="text"
+          defaultValue={defaultRFC}
           {...register("rfc" as Path<T>)}
         />
         { rfcError?.message && (

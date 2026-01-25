@@ -3,13 +3,16 @@ import { Button } from "flowbite-react";
 
 interface ResultCreateAddressProps {
   toggleModal: () => void;
+  isEdit: boolean;
   showErrorCreateAddressGe?: boolean;
 }
 
-export const ResultCreateAddress = ({ toggleModal, showErrorCreateAddressGe }: ResultCreateAddressProps) => {
+export const ResultCreateAddress = ({ toggleModal, isEdit, showErrorCreateAddressGe }: ResultCreateAddressProps) => {
+  const action = isEdit ? 'editada' : 'añadida';
+  const actionVerb = isEdit ? 'editar' : 'añadir';
   const title = showErrorCreateAddressGe
-    ? '¡Ups! Ocurrió un problema al añadir la dirección.'
-    : '¡Perfecto! Dirección añadida correctamente.'
+    ? `¡Ups! Ocurrió un problema al ${actionVerb} la dirección.`
+    : `¡Perfecto! Dirección ${action} correctamente.`
 
   return (
     <section className="flex flex-col gap-10">
@@ -17,7 +20,7 @@ export const ResultCreateAddress = ({ toggleModal, showErrorCreateAddressGe }: R
       <ul className="flex flex-col gap-3 items-center">
         <li className="inline-flex gap-1">
           <RiCheckboxCircleFill className="text-blue-800 dark:text-blue-600" />
-          Dirección creada en el sistema
+          Dirección {action} en el sistema
         </li>
         <li className="inline-flex gap-1">
           { !showErrorCreateAddressGe ? (
@@ -25,7 +28,7 @@ export const ResultCreateAddress = ({ toggleModal, showErrorCreateAddressGe }: R
           ) : (
             <RiCloseCircleFill className="text-red-600 dark:text-red-700" />
           ) }
-          Dirección creada en GE
+          Dirección {action} en GE
         </li>
       </ul>
       { showErrorCreateAddressGe && (
