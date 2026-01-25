@@ -48,7 +48,6 @@ export const ManageAddressForm = ({
 
   // GE Address data
   const addressDataGE = useRef<AddressDataGEFormValues | null>(null);
-  console.log('addressDataGE', addressDataGE.current)
   const updateAddressDataGE = (data: AddressDataGEFormValues) => {
     addressDataGE.current = data;
   };
