@@ -164,7 +164,6 @@ export const ManageAddressForm = ({
       onError();
     },
   });
-  console.log('subscreen', subscreen)
 
   return (
     <Modal show={open} onClose={toggleModal}>
