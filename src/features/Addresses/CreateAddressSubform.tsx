@@ -65,6 +65,7 @@ interface CreateAddressSubformProps {
   toggleModal: () => void;
   setSubscreen: (subscreen: ManageAddressFormScreen) => void;
   updateAddressDataGE: (data: AddressDataGEFormValues) => void;
+  resetAddressGE: () => void
   hasConsentedOnce: boolean;
   setHasConsentedOnce: (consented: boolean) => void;
   dataAliases: string[] | undefined;
@@ -86,6 +87,7 @@ export const CreateAddressSubform = ({
   setZipcodeError,
   clearErrors,
   clearManualAddressRegionFields,
+  resetAddressGE,
   isPending,
   isSuccess,
   isPendingEdit,
@@ -281,6 +283,11 @@ export const CreateAddressSubform = ({
       });
       updateAddressDataGE(GEpayload);
       setSubscreen("ADD_GE_INFORMATION");
+    }
+
+    // Clear addressDataGE if user opted to skip GE creation
+    if (!shouldCreateGEAddress && consentSkipGECreation) {
+      resetAddressGE();
     }
 
     // Edit address flow

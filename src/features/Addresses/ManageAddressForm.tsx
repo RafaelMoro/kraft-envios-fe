@@ -52,6 +52,9 @@ export const ManageAddressForm = ({
   const updateAddressDataGE = (data: AddressDataGEFormValues) => {
     addressDataGE.current = data;
   };
+  const resetAddressGE = () => {
+    addressDataGE.current = null;
+  }
 
   // Sync formData isGEAddress changes to addressDataGE
   useEffect(() => {
@@ -65,6 +68,8 @@ export const ManageAddressForm = ({
         alias: formData.alias,
         zipcode: formData.zipcode,
       }
+    } else {
+      addressDataGE.current = null;
     }
   }, [formData]);
 
@@ -159,6 +164,7 @@ export const ManageAddressForm = ({
       onError();
     },
   });
+  console.log('subscreen', subscreen)
 
   return (
     <Modal show={open} onClose={toggleModal}>
@@ -191,6 +197,7 @@ export const ManageAddressForm = ({
             isPendingFetchAlias={isPendingFetchGeAddress}
             errorAlias={errorFetchGeAddress}
             clearManualAddressRegionFields={clearManualAddressRegionFields}
+            resetAddressGE={resetAddressGE}
           />
         )}
         {subscreen === "ADD_GE_INFORMATION" && (
