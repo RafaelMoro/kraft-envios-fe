@@ -9,8 +9,9 @@ interface ResultCreateAddressProps {
 
 export const ResultCreateAddress = ({ toggleModal, isEdit, showErrorCreateAddressGe }: ResultCreateAddressProps) => {
   const action = isEdit ? 'editada' : 'añadida';
+  const actionVerb = isEdit ? 'editar' : 'añadir';
   const title = showErrorCreateAddressGe
-    ? `¡Ups! Ocurrió un problema al ${action} la dirección.`
+    ? `¡Ups! Ocurrió un problema al ${actionVerb} la dirección.`
     : `¡Perfecto! Dirección ${action} correctamente.`
 
   return (
