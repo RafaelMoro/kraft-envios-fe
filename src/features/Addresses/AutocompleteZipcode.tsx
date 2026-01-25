@@ -5,7 +5,6 @@ import {
   DropdownItem,
   Label,
   Spinner,
-  TextInput,
 } from "flowbite-react";
 import { RiArrowDownSLine } from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +27,7 @@ import {
 } from "@/shared/utils/addresses.utils";
 import { NeighborhoodDropdown } from "../AutocompleteZipcode/NeighborhoodDropdown";
 import { CountryStateDropdown } from "../AutocompleteZipcode/CountryStateDropdown";
+import { AutocompleteZipcodeInput } from "../AutocompleteZipcode/AutocompleteZipcodeInput";
 
 interface AutocompleteZipcodeProps {
   hideCityField?: boolean;
@@ -186,20 +186,11 @@ export const AutocompleteZipcode = ({
 
   return (
     <>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="zipcode">Código Postal</Label>
-        </div>
-        <TextInput
-          data-testid="zipcode"
-          id="zipcode"
-          type="text"
-          inputMode="numeric"
-          value={zipcode}
-          onChange={handleZipcodeChange}
-        />
-        {zipcodeError && <ErrorMessage>{zipcodeError}</ErrorMessage>}
-      </div>
+      <AutocompleteZipcodeInput
+        zipcode={zipcode}
+        zipcodeError={zipcodeError}
+        handleZipcodeChange={handleZipcodeChange}
+      />
       <NeighborhoodDropdown
         isFetching={isFetching}
         neighborhood={neighborhood}
