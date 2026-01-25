@@ -38,6 +38,8 @@ For the unit tests, consider the following instructions:
 
 - Do not use 'any' or 'unknown' types. Always provide proper TypeScript types for variables, function parameters, return values, and mock data. Use specific interfaces, types, or utility types instead. For mocks, define explicit types that match the actual types from the codebase.
 
+- When mocking function responses, always verify the expected return type by checking the actual function implementation. Read the source code to see what the function returns, and ensure your mock data matches that exact structure. For example, if a function returns `{ neighborhoods: [...], message: string | null }`, don't mock it as `{ data: [...] }`. Incorrect mock structures will cause tests to fail silently or not test the actual behavior correctly.
+
 ## Mocks
 
 - Do not export them as default, use name exports
