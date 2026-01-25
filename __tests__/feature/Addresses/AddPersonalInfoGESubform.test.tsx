@@ -4,7 +4,8 @@ import { useMutation } from '@tanstack/react-query'
 
 import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
 import { AddPersonalInfoGESubform } from '@/features/Addresses/AddPersonalInfoGESubform'
-import { AddressDataGEFormValues } from '@/shared/types/guides.types'
+import { AddressDataGEFormValues, AddressGE, CreateAddressGEPayload } from '@/shared/types/guides.types'
+import { GeneralApiError } from '@/shared/types/global.types'
 import * as guidesUtils from '../../../src/shared/utils/guides.utils'
 import * as addressesUtils from '../../../src/shared/utils/addresses.utils'
 
@@ -39,7 +40,7 @@ const AddPersonalInfoGESubformWrapper = ({
 }: {
   addressDataGE?: AddressDataGEFormValues | null
   isEdit?: boolean
-  addressToEditGE?: any
+  addressToEditGE?: AddressGE | null
 }) => {
   return (
     <QueryProviderWrapper>
@@ -328,9 +329,9 @@ describe('Feature: Add Personal Information GE Subform', () => {
     it('Given the mutation fails, When the error callback is executed, Then it should show error and navigate to result', async () => {
       const user = userEvent.setup()
       
-      let capturedOnError: ((error: any, variables: any, context: any) => void) | undefined
+      let capturedOnError: ((error: GeneralApiError, variables: CreateAddressGEPayload, context: unknown) => void) | undefined
 
-      const mockMutate = jest.fn((payload, options) => {
+      const mockMutate = jest.fn((payload: CreateAddressGEPayload, options?: { onError?: (error: GeneralApiError, variables: CreateAddressGEPayload) => void }) => {
         // Capture the onError callback from the mutate options
         capturedOnError = options?.onError
       })
@@ -368,7 +369,7 @@ describe('Feature: Add Personal Information GE Subform', () => {
       const user = userEvent.setup()
       
       const mockError = { message: 'Network error' }
-      const mockPayload = {
+      const mockPayload: CreateAddressGEPayload = {
         zipcode: '12345',
         neighborhood: 'Centro',
         city: 'Ciudad de México',
@@ -384,9 +385,9 @@ describe('Feature: Add Personal Information GE Subform', () => {
         alias: 'Casa'
       }
 
-      let mutateOnErrorCallback: ((error: any, variables: any) => Promise<void>) | undefined
+      let mutateOnErrorCallback: ((error: GeneralApiError, variables: CreateAddressGEPayload) => Promise<void>) | undefined
 
-      const mockMutate = jest.fn((payload, options) => {
+      const mockMutate = jest.fn((payload: CreateAddressGEPayload, options?: { onError?: (error: GeneralApiError, variables: CreateAddressGEPayload) => Promise<void> }) => {
         mutateOnErrorCallback = options?.onError
       })
 
