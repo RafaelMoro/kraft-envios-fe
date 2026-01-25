@@ -30,21 +30,21 @@ import { CountryStateDropdown } from "../AutocompleteZipcode/CountryStateDropdow
 import { AutocompleteZipcodeInput } from "../AutocompleteZipcode/AutocompleteZipcodeInput";
 
 interface AutocompleteZipcodeProps {
-  hideCityField?: boolean;
-  zipcode: string;
-  zipcodeError: string;
-  neighborhoodError: string;
-  stateError: string;
-  cityError: string;
-  neighborhood: string;
-  state: string;
-  city: string;
-  setZipcodeError: (error: string) => void;
-  setZipcode: (newZipcode: string) => void;
-  setNeighborhood: (newNeighborhood: string) => void;
-  setState: (newState: string) => void;
-  setCity: (newCity: string) => void;
   formData: CreateAddressPayload;
+  zipcode: string;
+  setZipcode: (newZipcode: string) => void;
+  zipcodeError: string;
+  setZipcodeError: (error: string) => void;
+  neighborhood: string;
+  setNeighborhood: (newNeighborhood: string) => void;
+  neighborhoodError: string;
+  state: string;
+  setState: (newState: string) => void;
+  stateError: string;
+  city: string;
+  setCity: (newCity: string) => void;
+  cityError: string;
+  hideCityField?: boolean;
 }
 
 /**
