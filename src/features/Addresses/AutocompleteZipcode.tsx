@@ -27,6 +27,7 @@ import {
   selectAddressValue,
 } from "@/shared/utils/addresses.utils";
 import { NeighborhoodDropdown } from "../AutocompleteZipcode/NeighborhoodDropdown";
+import { CountryStateDropdown } from "../AutocompleteZipcode/CountryStateDropdown";
 
 interface AutocompleteZipcodeProps {
   hideCityField?: boolean;
@@ -206,39 +207,13 @@ export const AutocompleteZipcode = ({
         neighborhoodError={neighborhoodError}
         setNeighborhood={setNeighborhood}
       />
-      <Dropdown
-        label=""
-        renderTrigger={() => (
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="state">Estado de la República</Label>
-            </div>
-            <Button
-              className="hover:cursor-pointer flex justify-between w-full"
-              data-testid="autocomplete-dropdown-state-button"
-              color="light"
-              disabled={isFetching || states.length === 0}
-            >
-              {isFetching ? <Spinner /> : state}
-              <RiArrowDownSLine />
-            </Button>
-            {stateError && <ErrorMessage>{stateError}</ErrorMessage>}
-          </div>
-        )}
-      >
-        <div className="overflow-y-auto max-h-52">
-          {states &&
-            states.length > 0 &&
-            states.map((item) => (
-              <DropdownItem
-                key={`state-${item}`}
-                onClick={() => setState(item)}
-              >
-                {item}
-              </DropdownItem>
-            ))}
-        </div>
-      </Dropdown>
+      <CountryStateDropdown
+        isFetching={isFetching}
+        state={state}
+        states={states}
+        stateError={stateError}
+        setState={setState}
+      />
       {!hideCityField && (
         <Dropdown
           label=""
