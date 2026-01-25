@@ -36,6 +36,8 @@ For the unit tests, consider the following instructions:
 
 - Do not remove it.skip() or test.skip() statements from test files. If skip statements are found in tests, they should be preserved unless explicitly instructed to fix those specific tests. Skip statements indicate tests that are intentionally not being run, often due to known issues or work-in-progress.
 
+- Do not use 'any' or 'unknown' types. Always provide proper TypeScript types for variables, function parameters, return values, and mock data. Use specific interfaces, types, or utility types instead. For mocks, define explicit types that match the actual types from the codebase.
+
 ## Mocks
 
 - Do not export them as default, use name exports
