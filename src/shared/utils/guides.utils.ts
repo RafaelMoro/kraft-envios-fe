@@ -145,6 +145,22 @@ export const createAddressGECb = async (payload: CreateAddressGEPayload) => {
   }
 };
 
+export const editAddressGECb = async ({
+  payload, addressId, currentAlias
+}: { payload: CreateAddressGEPayload, addressId: string, currentAlias: string}) => {
+  try {
+    const uri = `${CREATE_ADDRESS_GE_ENDPOINT}?addressId=${addressId}&currentAlias=${currentAlias}`;
+    const res: AxiosResponse<CreateAddressGEResponse> = await axios.put(
+      uri,
+      payload,
+    );
+    const data = res?.data;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 /**
  * Replace whitespace characters with plus signs in a string.
  * Useful for URL encoding or API query formatting.
