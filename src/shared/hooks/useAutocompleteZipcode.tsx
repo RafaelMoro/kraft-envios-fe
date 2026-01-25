@@ -4,46 +4,51 @@ import {
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
   INITIAL_STATE_SELECT_STATE,
 } from "../constants/addresses.constants";
-import { UseFormClearErrors, UseFormSetValue } from "react-hook-form";
-import {
-  CreateAddressFormValues,
-  CreateAddressPayload,
-} from "../types/addresses.types";
+import { Path, UseFormClearErrors, UseFormSetValue } from "react-hook-form";
 
-interface UseAutocompleteZipcodeProps {
-  formData: CreateAddressPayload;
-  setValue: UseFormSetValue<CreateAddressFormValues>;
-  clearErrors: UseFormClearErrors<CreateAddressFormValues>;
+interface UseAutocompleteZipcodeProps<T extends Record<string, unknown>> {
+  formData?: {
+    zipcode?: string;
+    neighborhood?: string;
+    state?: string;
+    city?: string[] | string;
+  };
+  setValue: UseFormSetValue<T>;
+  clearErrors: UseFormClearErrors<T>;
 }
 
 /**
  * This custom hook is to be used with the component `AutocompleteZipcode`
+ * Generic hook that can work with any form type containing address fields
  */
-export const useAutocompleteZipcode = ({
+export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
   formData,
   setValue,
   clearErrors,
-}: UseAutocompleteZipcodeProps) => {
+}: UseAutocompleteZipcodeProps<T>) => {
   const [zipcode, setZipcode] = useState<string>("");
   const handleZipcodeChange = (newZipcode: string) => {
     setZipcode(newZipcode);
-    setValue("zipcode", newZipcode);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setValue("zipcode" as Path<T>, newZipcode as any);
   };
 
   useEffect(() => {
     if (formData?.zipcode) {
       setZipcode(formData.zipcode);
-      setValue("zipcode", formData.zipcode);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setValue("zipcode" as Path<T>, formData.zipcode as any);
     }
-  }, [formData.zipcode, setValue]);
+  }, [formData?.zipcode, setValue]);
 
   const [neighborhoodSelected, setNeighborhoodSelected] = useState<string>(
     formData?.neighborhood ?? INITIAL_STATE_SELECT_NEIGHBORHOOD,
   );
   const handleNeighborhoodChange = (newNeighborhood: string) => {
     setNeighborhoodSelected(newNeighborhood);
-    setValue("neighborhood", newNeighborhood);
-    clearErrors("neighborhood");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setValue("neighborhood" as Path<T>, newNeighborhood as any);
+    clearErrors("neighborhood" as Path<T>);
   };
 
   const [stateSelected, setStateSelected] = useState<string>(
@@ -51,12 +56,15 @@ export const useAutocompleteZipcode = ({
   );
   const handleStateChange = (newState: string) => {
     setStateSelected(newState);
-    setValue("state", newState);
-    clearErrors("state");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setValue("state" as Path<T>, newState as any);
+    clearErrors("state" as Path<T>);
   };
 
   const [citySelected, setCitySelected] = useState<string>(
-    formData?.city?.[0] ?? INITIAL_STATE_SELECT_CITY,
+    Array.isArray(formData?.city)
+      ? formData?.city[0] ?? INITIAL_STATE_SELECT_CITY
+      : formData?.city ?? INITIAL_STATE_SELECT_CITY,
   );
   const [cityError, setCityError] = useState<string>("");
 
