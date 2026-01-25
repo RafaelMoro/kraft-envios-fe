@@ -207,6 +207,7 @@ export const ManageAddressForm = ({
         {subscreen === "SHOW_RESULT" && (
           <ResultCreateAddress
             toggleModal={toggleModal}
+            isEdit={isEdit}
             showErrorCreateAddressGe={showErrorCreateAddressGe}
           />
         )}
