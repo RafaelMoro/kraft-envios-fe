@@ -33,14 +33,20 @@ const mockSetShowErrorCreateAddressGe = jest.fn()
 const mockRefetchAddressesGE = jest.fn()
 
 const AddPersonalInfoGESubformWrapper = ({
-  addressDataGE = mockAddressDataGE
+  addressDataGE = mockAddressDataGE,
+  isEdit = false,
+  addressToEditGE = null
 }: {
   addressDataGE?: AddressDataGEFormValues | null
+  isEdit?: boolean
+  addressToEditGE?: any
 }) => {
   return (
     <QueryProviderWrapper>
       <AddPersonalInfoGESubform
         addressDataGE={addressDataGE}
+        isEdit={isEdit}
+        addressToEditGE={addressToEditGE}
         goBack={mockGoBack}
         goResult={mockGoResult}
         setShowErrorCreateAddressGe={mockSetShowErrorCreateAddressGe}
@@ -54,11 +60,12 @@ describe('Feature: Add Personal Information GE Subform', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.clearAllTimers()
-    ;(useMutation as jest.Mock).mockReturnValue({
+    // Reset the mock to ensure clean state and default behavior for all tests
+    ;(useMutation as jest.Mock).mockImplementation(() => ({
       mutate: jest.fn(),
       isPending: false,
       isSuccess: false
-    })
+    }))
   })
 
   afterEach(() => {
@@ -100,11 +107,11 @@ describe('Feature: Add Personal Information GE Subform', () => {
     it('Given the user fills all required fields, When the form is submitted, Then it should call the mutation', async () => {
       const user = userEvent.setup()
       const mockMutate = jest.fn()
-      ;(useMutation as jest.Mock).mockReturnValue({
+      ;(useMutation as jest.Mock).mockImplementation(() => ({
         mutate: mockMutate,
         isPending: false,
         isSuccess: false
-      })
+      }))
       
       const mockCombinedPayload = {
         zipcode: '12345',
@@ -144,11 +151,11 @@ describe('Feature: Add Personal Information GE Subform', () => {
     it('Given the user fills all fields including optional ones, When the form is submitted, Then it should combine form values correctly', async () => {
       const user = userEvent.setup()
       const mockMutate = jest.fn()
-      ;(useMutation as jest.Mock).mockReturnValue({
+      ;(useMutation as jest.Mock).mockImplementation(() => ({
         mutate: mockMutate,
         isPending: false,
         isSuccess: false
-      })
+      }))
 
       render(<AddPersonalInfoGESubformWrapper />)
 
@@ -263,11 +270,11 @@ describe('Feature: Add Personal Information GE Subform', () => {
   describe('Scenario: Mutation is successful', () => {
 
     it('Given the mutation is successful, When the form is in success state, Then it should display check icon', () => {
-      ;(useMutation as jest.Mock).mockReturnValue({
+      ;(useMutation as jest.Mock).mockImplementation(() => ({
         mutate: jest.fn(),
         isPending: false,
         isSuccess: true
-      })
+      }))
 
       render(<AddPersonalInfoGESubformWrapper />)
 
@@ -277,11 +284,11 @@ describe('Feature: Add Personal Information GE Subform', () => {
     })
 
     it('Given the mutation is successful, When the form is in success state, Then buttons should be disabled', () => {
-      ;(useMutation as jest.Mock).mockReturnValue({
+      ;(useMutation as jest.Mock).mockImplementation(() => ({
         mutate: jest.fn(),
         isPending: false,
         isSuccess: true
-      })
+      }))
 
       render(<AddPersonalInfoGESubformWrapper />)
 
@@ -292,23 +299,23 @@ describe('Feature: Add Personal Information GE Subform', () => {
 
   describe('Scenario: Mutation is pending', () => {
     it('Given the mutation is in progress, When the form is in pending state, Then it should display spinner', () => {
-      ;(useMutation as jest.Mock).mockReturnValue({
+      ;(useMutation as jest.Mock).mockImplementation(() => ({
         mutate: jest.fn(),
         isPending: true,
         isSuccess: false
-      })
+      }))
 
       render(<AddPersonalInfoGESubformWrapper />)
 
-      expect(screen.getByLabelText(/loading create address ge/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/loading crear address ge/i)).toBeInTheDocument()
     })
 
     it('Given the mutation is in progress, When the form is in pending state, Then buttons should be disabled', () => {
-      ;(useMutation as jest.Mock).mockReturnValue({
+      ;(useMutation as jest.Mock).mockImplementation(() => ({
         mutate: jest.fn(),
         isPending: true,
         isSuccess: false
-      })
+      }))
 
       render(<AddPersonalInfoGESubformWrapper />)
 
@@ -420,11 +427,11 @@ describe('Feature: Add Personal Information GE Subform', () => {
       const mockMutate = jest.fn()
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
 
-      ;(useMutation as jest.Mock).mockReturnValue({
+      ;(useMutation as jest.Mock).mockImplementation(() => ({
         mutate: mockMutate,
         isPending: false,
         isSuccess: false
-      })
+      }))
 
       render(<AddPersonalInfoGESubformWrapper addressDataGE={null} />)
 
