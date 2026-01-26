@@ -4,7 +4,7 @@ import {
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
   INITIAL_STATE_SELECT_STATE,
 } from "../constants/addresses.constants";
-import { Path, UseFormClearErrors, UseFormSetValue } from "react-hook-form";
+import { Path, UseFormClearErrors, UseFormSetError, UseFormSetValue } from "react-hook-form";
 
 interface UseAutocompleteZipcodeProps<T extends Record<string, unknown>> {
   formData?: {
@@ -15,6 +15,7 @@ interface UseAutocompleteZipcodeProps<T extends Record<string, unknown>> {
   };
   syncCityForm?: boolean;
   setValue: UseFormSetValue<T>;
+  setError: UseFormSetError<T>;
   clearErrors: UseFormClearErrors<T>;
 }
 
@@ -27,6 +28,7 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
   formData,
   syncCityForm = false,
   setValue,
+  setError,
   clearErrors,
 }: UseAutocompleteZipcodeProps<T>) => {
   const [zipcode, setZipcode] = useState<string>("");
@@ -53,6 +55,17 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
     setValue("neighborhood" as Path<T>, newNeighborhood as any);
     clearErrors("neighborhood" as Path<T>);
   };
+
+  /**
+   * It returns boolean whether is valid the neighborhood or not. It also sets the error in react hook form
+   */
+  const isValidNeighborhood = () => {
+    if (neighborhoodSelected === INITIAL_STATE_SELECT_NEIGHBORHOOD || !neighborhoodSelected) {
+      setError("neighborhood" as Path<T>, { type: "manual", message: INITIAL_STATE_SELECT_NEIGHBORHOOD });
+      return false
+    }
+    return true
+  }
 
   const [stateSelected, setStateSelected] = useState<string>(
     formData?.state ?? INITIAL_STATE_SELECT_STATE,
@@ -83,6 +96,7 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
     setZipcode: handleZipcodeChange,
     neighborhoodSelected,
     setNeighborhoodSelected: handleNeighborhoodChange,
+    isValidNeighborhood,
     stateSelected,
     setStateSelected: handleStateChange,
     citySelected,

@@ -57,17 +57,24 @@ export const AddTempAddressPkk = ({
     setStateSelected,
     citySelected,
     setCitySelected,
+    isValidNeighborhood,
   } = useAutocompleteZipcode({
     setValue,
     clearErrors,
     formData: addressData,
     syncCityForm: true,
+    setError,
   });
   const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+
+    const isNeighborhoodValid = isValidNeighborhood()
+    if (!isNeighborhoodValid) {
+      return
+    }
 
     const updatedData: CreateGuideAddressValuesPkk = { ...data, isResidential }
     updateOriginAddress(updatedData)

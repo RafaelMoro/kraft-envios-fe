@@ -161,6 +161,7 @@ export const CreateAddressSubform = ({
   } = useAutocompleteZipcode({
     setValue,
     clearErrors,
+    setError,
     formData,
   });
   const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
