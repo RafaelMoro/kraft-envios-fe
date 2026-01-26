@@ -40,6 +40,7 @@ import {
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
   NEIGHBORHOOD_EMPTY_ERROR,
 } from "@/shared/constants/addresses.constants";
+import { useAddressRegionSelector } from "@/shared/hooks/useAddressRegionSelector";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -130,17 +131,6 @@ export const CreateAddressSubform = ({
   const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
   const toggleErrorBanner = () => setShowErrorBanner((prev) => !prev);
 
-  // State for address region selector
-  const [showManualFields, setShowManualFields] = useState(false);
-  const toggleShowManualFields = () => {
-    setShowManualFields((prev) => {
-      if (prev === true) {
-        clearManualAddressRegionFields();
-      }
-      return !prev;
-    });
-  };
-
   const {
     tags: towns,
     addTag: addTown,
@@ -173,6 +163,7 @@ export const CreateAddressSubform = ({
     clearErrors,
     formData,
   });
+  const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
   const submitButtonText = shouldCreateGEAddress
     ? "Siguiente"
