@@ -167,6 +167,7 @@ export const AddTempAddressPkk = ({
           <AddressRegionSelector
             showManualFields={showManualFields}
             setShowManualFields={toggleShowManualFields}
+            placeButton="bottom"
             ManualFieldsUI={
               <AddressRegionFields<CreateGuideAddressFormValuesPkk>
                 CityField={
