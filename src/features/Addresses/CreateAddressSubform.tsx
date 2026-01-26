@@ -40,6 +40,7 @@ import {
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
   NEIGHBORHOOD_EMPTY_ERROR,
 } from "@/shared/constants/addresses.constants";
+import { useAddressRegionSelector } from "@/shared/hooks/useAddressRegionSelector";
 
 interface CreateAddressSubformProps {
   formData: CreateAddressPayload;
@@ -130,17 +131,6 @@ export const CreateAddressSubform = ({
   const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
   const toggleErrorBanner = () => setShowErrorBanner((prev) => !prev);
 
-  // State for address region selector
-  const [showManualFields, setShowManualFields] = useState(false);
-  const toggleShowManualFields = () => {
-    setShowManualFields((prev) => {
-      if (prev === true) {
-        clearManualAddressRegionFields();
-      }
-      return !prev;
-    });
-  };
-
   const {
     tags: towns,
     addTag: addTown,
@@ -171,8 +161,10 @@ export const CreateAddressSubform = ({
   } = useAutocompleteZipcode({
     setValue,
     clearErrors,
+    setError,
     formData,
   });
+  const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
   const submitButtonText = shouldCreateGEAddress
     ? "Siguiente"
@@ -333,18 +325,18 @@ export const CreateAddressSubform = ({
             AutocompleteUI={
               <AutocompleteZipcode
                 zipcode={zipcode}
-                neighborhood={neighborhoodSelected}
-                state={stateSelected}
-                city={citySelected}
                 setZipcode={setZipcode}
-                setNeighborhood={setNeighborhoodSelected}
-                setState={setStateSelected}
-                setCity={setCitySelected}
                 zipcodeError={errors?.zipcode?.message ?? ""}
-                neighborhoodError={errors?.neighborhood?.message ?? ""}
-                stateError={errors?.state?.message ?? ""}
-                cityError={cityError}
                 setZipcodeError={setZipcodeError}
+                neighborhood={neighborhoodSelected}
+                setNeighborhood={setNeighborhoodSelected}
+                neighborhoodError={errors?.neighborhood?.message ?? ""}
+                state={stateSelected}
+                setState={setStateSelected}
+                stateError={errors?.state?.message ?? ""}
+                city={citySelected}
+                setCity={setCitySelected}
+                cityError={cityError}
                 formData={formData}
               />
             }
