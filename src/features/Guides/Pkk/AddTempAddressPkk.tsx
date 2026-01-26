@@ -12,6 +12,9 @@ import {
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode"
 import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode"
+import { useAddressRegionSelector } from "@/shared/hooks/useAddressRegionSelector"
+import { AddressRegionSelector } from "@/features/Addresses/AddressRegionSelector "
+import { AddressRegionFields } from "@/features/Addresses/AddressRegionFields"
 
 interface AddTempAddressPkkProps {
   addressData: CreateGuideAddressValuesPkk;
@@ -38,22 +41,29 @@ export const AddTempAddressPkk = ({
   const setZipcodeError = (error: string) => {
     setError("zipcode", { type: "manual", message: error });
   };
+  const clearManualAddressRegionFields = () => {
+    setValue("zipcode", "");
+    setValue("neighborhood", "");
+    setValue("state", "");
+    setValue("city", "");
+  };
 
   const {
-      zipcode,
-      setZipcode,
-      neighborhoodSelected,
-      setNeighborhoodSelected,
-      stateSelected,
-      setStateSelected,
-      citySelected,
-      setCitySelected,
-    } = useAutocompleteZipcode({
-      setValue,
-      clearErrors,
-      formData: addressData,
-      syncCityForm: true,
-    });
+    zipcode,
+    setZipcode,
+    neighborhoodSelected,
+    setNeighborhoodSelected,
+    stateSelected,
+    setStateSelected,
+    citySelected,
+    setCitySelected,
+  } = useAutocompleteZipcode({
+    setValue,
+    clearErrors,
+    formData: addressData,
+    syncCityForm: true,
+  });
+  const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesPkk> = (data, event) => {
     event?.preventDefault()
@@ -154,21 +164,51 @@ export const AddTempAddressPkk = ({
               <ErrorMessage>{errors.street1?.message}</ErrorMessage>
             )}
           </div>
-          <AutocompleteZipcode
-            zipcode={zipcode}
-            setZipcode={setZipcode}
-            zipcodeError={errors?.zipcode?.message ?? ""}
-            setZipcodeError={setZipcodeError}
-            neighborhood={neighborhoodSelected}
-            setNeighborhood={setNeighborhoodSelected}
-            neighborhoodError={errors?.neighborhood?.message ?? ""}
-            state={stateSelected}
-            setState={setStateSelected}
-            stateError={errors?.state?.message ?? ""}
-            city={citySelected}
-            setCity={setCitySelected}
-            cityError={errors?.city?.message ?? ""}
-            formData={addressData}
+          <AddressRegionSelector
+            showManualFields={showManualFields}
+            setShowManualFields={toggleShowManualFields}
+            ManualFieldsUI={
+              <AddressRegionFields<CreateGuideAddressFormValuesPkk>
+                CityField={
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="town">Ciudad</Label>
+                    </div>
+                    <TextInput
+                      data-testid="city"
+                      defaultValue={addressData.city}
+                      id="city"
+                      type="text"
+                      {...register("city")}
+                    />
+                    { errors?.city?.message && (
+                      <ErrorMessage>{errors.city?.message}</ErrorMessage>
+                    )}
+                  </div>
+                }
+                addressData={addressData}
+                errors={errors}
+                register={register}
+              />
+            }
+            AutocompleteUI={
+              <AutocompleteZipcode
+                zipcode={zipcode}
+                setZipcode={setZipcode}
+                zipcodeError={errors?.zipcode?.message ?? ""}
+                setZipcodeError={setZipcodeError}
+                neighborhood={neighborhoodSelected}
+                setNeighborhood={setNeighborhoodSelected}
+                neighborhoodError={errors?.neighborhood?.message ?? ""}
+                state={stateSelected}
+                setState={setStateSelected}
+                stateError={errors?.state?.message ?? ""}
+                city={citySelected}
+                setCity={setCitySelected}
+                cityError={errors?.city?.message ?? ""}
+                formData={addressData}
+              />
+            }
           />
           <div className="justify-self-start self-center">
             <ToggleSwitch checked={isResidential} label="Es residencial" onChange={setIsResidential} />
