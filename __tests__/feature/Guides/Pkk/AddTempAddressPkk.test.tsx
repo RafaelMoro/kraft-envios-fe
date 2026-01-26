@@ -4,6 +4,24 @@ import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
 import { AddTempAddressPkk } from '@/features/Guides/Pkk/AddTempAddressPkk'
 import { CreateGuideAddressValuesPkk, AddressType } from '@/shared/types/guides.types'
 
+// Mock the getAddressByZipcode utility function
+jest.mock('../../../../src/shared/utils/addresses.utils', () => ({
+  getAddressByZipcode: jest.fn(),
+  selectAddressValue: jest.fn(
+    (formDataValue, newValues, initialState, hasExistingFormData) => {
+      if (hasExistingFormData && formDataValue) {
+        return Array.isArray(formDataValue) ? formDataValue[0] : formDataValue;
+      }
+      return newValues.length === 1 ? newValues[0] : initialState;
+    },
+  ),
+}));
+
+import { getAddressByZipcode } from '@/shared/utils/addresses.utils';
+const mockedGetAddressByZipcode = getAddressByZipcode as jest.MockedFunction<
+  typeof getAddressByZipcode
+>;
+
 describe('Feature: Add Temporary Address for Pkk', () => {
   const mockAddressData: CreateGuideAddressValuesPkk = {
     name: 'John',
@@ -129,7 +147,20 @@ describe('Feature: Add Temporary Address for Pkk', () => {
   })
 
   describe('Scenario: Submit form with valid data', () => {
-    it.only('Given valid form data, When user submits the form, Then it should call updateAddress and goNext', async () => {
+    it('Given valid form data, When user submits the form, Then it should call updateAddress and goNext', async () => {
+      // Mock the getAddressByZipcode response
+      mockedGetAddressByZipcode.mockResolvedValue({
+        neighborhoods: [
+          {
+            neighborhood: 'Test Neighborhood',
+            zipcode: '12345',
+            state: 'Test State',
+            city: 'Test City',
+          },
+        ],
+        message: null,
+      });
+
       // Given valid form data
       const user = userEvent.setup()
       renderComponent()
@@ -155,20 +186,44 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       await user.clear(zipcodeInput)
       await user.type(zipcodeInput, '12345')
 
+      // Wait for the debounce and API call to complete
+      await waitFor(
+        () => {
+          expect(mockedGetAddressByZipcode).toHaveBeenCalledWith('12345');
+        },
+        { timeout: 3500 }
+      );
+
+      // Wait for the neighborhood to be auto-selected
+      await waitFor(
+        () => {
+          const neighborhoodButton = screen.getByTestId('autocomplete-dropdown-neighborhood-button');
+          expect(neighborhoodButton).toHaveTextContent('Test Neighborhood');
+        },
+        { timeout: 1000 }
+      );
+
       // When user submits the form
       const submitButton = screen.getByTestId('origin-address-next-button')
       await user.click(submitButton)
 
-      screen.debug(undefined, 10000000)
-      // Then it should display neighborhood error since we didn't interact with the dropdown
-      await waitFor(() => {
-        expect(screen.getByText(/seleccione una colonia/i)).toBeInTheDocument()
-      })
+      // Then it should call updateAddress with the data including lastName and email  
+      expect(mockUpdateAddress).toHaveBeenCalledWith(expect.objectContaining({
+        name: 'John',
+        lastName: 'Doe',
+        phone: '5551234567',
+        email: 'john@example.com',
+        street1: 'Test Street',
+        neighborhood: 'Test Neighborhood',
+        city: 'Test City',
+        state: 'Test State',
+        zipcode: '12345',
+        isResidential: false
+      }))
 
-      // And updateAddress and goNext should not be called
-      expect(mockUpdateAddress).not.toHaveBeenCalled()
-      expect(mockGoNext).not.toHaveBeenCalled()
-    })
+      // And it should call goNext
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    }, 7000)
   })
 
   describe('Scenario: Display validation errors for required fields', () => {
