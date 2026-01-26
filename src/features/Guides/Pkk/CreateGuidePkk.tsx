@@ -32,7 +32,6 @@ export const CreateGuidePkk = ({
   const { aliasesPkk, updateOriginAliasPkk, updateDestinationAliasPkk, resetAliases } = useSaveAlias()
 
   const formData = useRef<CreateGuideFormValuesPkk>({...initialStateFormPkk})
-  console.log('formData', formData.current)
   const resetFormData = () => {
     formData.current = {...initialStateFormPkk}
   }
