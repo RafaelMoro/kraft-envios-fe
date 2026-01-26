@@ -11,7 +11,7 @@ interface UseDebouncedAutocompleteZipcodeProps {
     zipcode?: string;
     neighborhood?: string
     state?: string;
-    city?: string[];
+    city?: string[] | string;
   };
   setNeighborhood: (newNeighborhood: string) => void;
   setState: (newState: string) => void;

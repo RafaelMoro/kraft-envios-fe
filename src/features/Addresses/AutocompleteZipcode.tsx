@@ -1,6 +1,3 @@
-import {
-  CreateAddressPayload,
-} from "@/shared/types/addresses.types";
 import { NeighborhoodDropdown } from "../AutocompleteZipcode/NeighborhoodDropdown";
 import { CountryStateDropdown } from "../AutocompleteZipcode/CountryStateDropdown";
 import { AutocompleteZipcodeInput } from "../AutocompleteZipcode/AutocompleteZipcodeInput";
@@ -8,7 +5,12 @@ import { CityDropdown } from "../AutocompleteZipcode/CityDropdown";
 import { useDebouncedAutocompleteZipcode } from "@/shared/hooks/useDebouncedAutocompleteZipcode";
 
 interface AutocompleteZipcodeProps {
-  formData: CreateAddressPayload;
+  formData?: {
+    zipcode?: string;
+    neighborhood?: string
+    state?: string;
+    city?: string[] | string;  
+  };
   zipcode: string;
   setZipcode: (newZipcode: string) => void;
   zipcodeError: string;
