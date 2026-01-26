@@ -5,8 +5,6 @@ import {
   INITIAL_STATE_SELECT_CITY,
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
   INITIAL_STATE_SELECT_STATE,
-  ZIPCODE_LENGTH_ERROR,
-  ZIPCODE_ONLY_NUMBERS_ERROR,
 } from "@/shared/constants/addresses.constants";
 import {
   onlyNumberRegex,
@@ -155,33 +153,13 @@ export const AutocompleteZipcode = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, setState, setCity]);
 
-  const handleZipcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    if (!value) {
-      setZipcode("");
-      return;
-    }
-    if (!onlyNumberRegex.test(value)) {
-      setZipcodeError(ZIPCODE_ONLY_NUMBERS_ERROR);
-      // We return here because we don't want to update the zipcode state with invalid value
-      return;
-    }
-    if (value.length < 5 || value.length > 5) {
-      setZipcodeError(ZIPCODE_LENGTH_ERROR);
-    }
-    if (value.length === 5) {
-      setZipcodeError("");
-    }
-    setZipcode(value);
-  };
-
   return (
     <>
       <AutocompleteZipcodeInput
         zipcode={zipcode}
         zipcodeError={zipcodeError}
-        handleZipcodeChange={handleZipcodeChange}
+        setZipcode={setZipcode}
+        setZipcodeError={setZipcodeError}
       />
       <NeighborhoodDropdown
         isFetching={isFetching}
