@@ -29,6 +29,9 @@ interface AutocompleteZipcodeProps {
 
 /**
  * This component autocompletes neighborhood, state, and cities with zipcode
+ * Errors are managed with react hook forms for state, neighborhood and zipcode
+ * City Error can be managed with react state optionally or with react hook forms
+ * Use this component with the custom hook `useAutocompleteZipcode`
  */
 export const AutocompleteZipcode = ({
   hideCityField,
