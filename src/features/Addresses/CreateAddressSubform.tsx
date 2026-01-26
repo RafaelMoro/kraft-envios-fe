@@ -333,18 +333,18 @@ export const CreateAddressSubform = ({
             AutocompleteUI={
               <AutocompleteZipcode
                 zipcode={zipcode}
-                neighborhood={neighborhoodSelected}
-                state={stateSelected}
-                city={citySelected}
                 setZipcode={setZipcode}
-                setNeighborhood={setNeighborhoodSelected}
-                setState={setStateSelected}
-                setCity={setCitySelected}
                 zipcodeError={errors?.zipcode?.message ?? ""}
-                neighborhoodError={errors?.neighborhood?.message ?? ""}
-                stateError={errors?.state?.message ?? ""}
-                cityError={cityError}
                 setZipcodeError={setZipcodeError}
+                neighborhood={neighborhoodSelected}
+                setNeighborhood={setNeighborhoodSelected}
+                neighborhoodError={errors?.neighborhood?.message ?? ""}
+                state={stateSelected}
+                setState={setStateSelected}
+                stateError={errors?.state?.message ?? ""}
+                city={citySelected}
+                setCity={setCitySelected}
+                cityError={cityError}
                 formData={formData}
               />
             }
