@@ -13,16 +13,19 @@ interface UseAutocompleteZipcodeProps<T extends Record<string, unknown>> {
     state?: string;
     city?: string[] | string;
   };
+  syncCityForm?: boolean;
   setValue: UseFormSetValue<T>;
   clearErrors: UseFormClearErrors<T>;
 }
 
 /**
  * This custom hook is to be used with the component `AutocompleteZipcode`
- * Generic hook that can work with any form type containing address fields
+ * The errors and form state are handled with react hook form for state, city, neighborhood and zipcode
+ * The error management of city can be handled with react state optionally
  */
 export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
   formData,
+  syncCityForm = false,
   setValue,
   clearErrors,
 }: UseAutocompleteZipcodeProps<T>) => {
@@ -66,6 +69,13 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
       ? formData?.city[0] ?? INITIAL_STATE_SELECT_CITY
       : formData?.city ?? INITIAL_STATE_SELECT_CITY,
   );
+  const handleCityChange = (newCity: string) => {
+    if (syncCityForm) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setValue("city" as Path<T>, newCity as any);
+    }
+    setCitySelected(newCity);
+  }
   const [cityError, setCityError] = useState<string>("");
 
   return {
@@ -76,7 +86,7 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
     stateSelected,
     setStateSelected: handleStateChange,
     citySelected,
-    setCitySelected,
+    setCitySelected: handleCityChange,
     cityError,
     setCityError,
   };
