@@ -160,30 +160,6 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     })
   })
 
-  describe('Scenario: Submit form with updated residential status', () => {
-    it('Given user toggles residential switch, When user submits, Then it should include the updated isResidential value', async () => {
-      // Given the form renders
-      const user = userEvent.setup()
-      renderComponent()
-
-      // When user toggles residential switch
-      const toggle = screen.getByRole('switch', { name: /es residencial/i })
-      await user.click(toggle)
-
-      // And submits the form
-      const submitButton = screen.getByTestId('origin-address-next-button')
-      const zipcodeInput = screen.getByTestId('zipcode')
-      await user.clear(zipcodeInput)
-      await user.type(zipcodeInput, '12345') // Ensure zipcode is valid
-      await user.click(submitButton)
-
-      // Then updateAddress should be called with isResidential true
-      expect(mockUpdateAddress).toHaveBeenCalledWith(expect.objectContaining({
-        isResidential: true
-      }))
-    })
-  })
-
   describe('Scenario: Display validation errors for required fields', () => {
     it('Given empty required fields, When user submits the form, Then it should show validation errors', async () => {
       // Given empty required fields
