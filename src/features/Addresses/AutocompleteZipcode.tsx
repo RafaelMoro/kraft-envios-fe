@@ -1,15 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  Label,
-  Spinner,
-} from "flowbite-react";
-import { RiArrowDownSLine } from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
 
-import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
 import {
   INITIAL_STATE_SELECT_CITY,
   INITIAL_STATE_SELECT_NEIGHBORHOOD,
@@ -28,6 +19,7 @@ import {
 import { NeighborhoodDropdown } from "../AutocompleteZipcode/NeighborhoodDropdown";
 import { CountryStateDropdown } from "../AutocompleteZipcode/CountryStateDropdown";
 import { AutocompleteZipcodeInput } from "../AutocompleteZipcode/AutocompleteZipcodeInput";
+import { CityDropdown } from "../AutocompleteZipcode/CityDropdown";
 
 interface AutocompleteZipcodeProps {
   formData: CreateAddressPayload;
@@ -206,39 +198,13 @@ export const AutocompleteZipcode = ({
         setState={setState}
       />
       {!hideCityField && (
-        <Dropdown
-          label=""
-          renderTrigger={() => (
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="city">Ciudad</Label>
-              </div>
-              <Button
-                className="hover:cursor-pointer flex justify-between w-full"
-                data-testid="autocomplete-dropdown-city-button"
-                color="light"
-                disabled={isFetching || states.length === 0}
-              >
-                {isFetching ? <Spinner /> : city}
-                <RiArrowDownSLine />
-              </Button>
-              {cityError && <ErrorMessage>{cityError}</ErrorMessage>}
-            </div>
-          )}
-        >
-          <div className="overflow-y-auto max-h-52">
-            {cities &&
-              cities.length > 0 &&
-              cities.map((item) => (
-                <DropdownItem
-                  key={`city-${item}`}
-                  onClick={() => setCity(item)}
-                >
-                  {item}
-                </DropdownItem>
-              ))}
-          </div>
-        </Dropdown>
+        <CityDropdown
+          isFetching={isFetching}
+          city={city}
+          cities={cities}
+          cityError={cityError}
+          setCity={setCity}
+        />
       )}
     </>
   );
