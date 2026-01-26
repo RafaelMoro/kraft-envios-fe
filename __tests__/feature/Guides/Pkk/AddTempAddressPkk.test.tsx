@@ -1,5 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
 import { AddTempAddressPkk } from '@/features/Guides/Pkk/AddTempAddressPkk'
 import { CreateGuideAddressValuesPkk, AddressType } from '@/shared/types/guides.types'
 
@@ -23,6 +24,20 @@ describe('Feature: Add Temporary Address for Pkk', () => {
   const mockUpdateAddress = jest.fn()
   const addressType: AddressType = 'origin'
 
+  const renderComponent = (addressData: CreateGuideAddressValuesPkk = mockAddressData, type: AddressType = addressType) => {
+    return render(
+      <QueryProviderWrapper>
+        <AddTempAddressPkk
+          addressData={addressData}
+          addressType={type}
+          goNext={mockGoNext}
+          toggleTempAddress={mockToggleTempAddress}
+          updateAddress={mockUpdateAddress}
+        />
+      </QueryProviderWrapper>
+    )
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -30,41 +45,27 @@ describe('Feature: Add Temporary Address for Pkk', () => {
   describe('Scenario: Display all form fields with default values', () => {
     it('Given address data is provided, When the form renders, Then it should display all fields with their default values', () => {
       // Given address data is provided and When the form renders
-      render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
-      )
+      renderComponent()
 
       // Then personal data fields should be displayed with default values
       expect(screen.getByLabelText(/^nombre$/i)).toHaveValue('John')
+      expect(screen.getByLabelText(/^apellido$/i)).toHaveValue('Doe')
       expect(screen.getByLabelText(/correo electrónico \(opcional\)/i)).toHaveValue('john@example.com')
       expect(screen.getByLabelText(/^teléfono$/i)).toHaveValue('5551234567')
 
       // And address fields should be displayed with default values
       expect(screen.getByLabelText(/^calle$/i)).toHaveValue('Test Street')
-      expect(screen.getByLabelText(/^colonia$/i)).toHaveValue('Test Neighborhood')
-      expect(screen.getByTestId('city')).toHaveValue('Test City')
-      expect(screen.getByTestId('state')).toHaveValue('Test State')
+      // Autocomplete fields (neighborhood, state, city) are dropdowns with button triggers
+      expect(screen.getByTestId('autocomplete-dropdown-neighborhood-button')).toHaveTextContent('Test Neighborhood')
+      expect(screen.getByTestId('autocomplete-dropdown-state-button')).toHaveTextContent('Test State')
+      expect(screen.getByTestId('autocomplete-dropdown-city-button')).toHaveTextContent('Test City')
     })
   })
 
   describe('Scenario: Display residential toggle switch', () => {
     it('Given isResidential is false, When the form renders, Then the toggle switch should be unchecked', () => {
       // Given isResidential is false and When the form renders
-      render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
-      )
+      renderComponent()
 
       // Then the toggle should be unchecked
       const toggle = screen.getByRole('switch', { name: /es residencial/i })
@@ -76,15 +77,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       const residentialAddress = { ...mockAddressData, isResidential: true }
       
       // When the form renders
-      render(
-        <AddTempAddressPkk
-          addressData={residentialAddress}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
-      )
+      renderComponent(residentialAddress)
 
       // Then the toggle should be checked
       const toggle = screen.getByRole('switch', { name: /es residencial/i })
@@ -96,15 +89,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given the form renders, When user clicks the residential toggle, Then it should change state', async () => {
       // Given the form renders
       const user = userEvent.setup()
-      render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
-      )
+      renderComponent()
 
       const toggle = screen.getByRole('switch', { name: /es residencial/i })
       expect(toggle).not.toBeChecked()
@@ -121,15 +106,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given the form renders, When user types in text fields, Then the values should update', async () => {
       // Given the form renders
       const user = userEvent.setup()
-      render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
-      )
+      renderComponent()
 
       // When user clears and types in name field
       const nameInput = screen.getByTestId('name')
@@ -155,15 +132,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given valid form data, When user submits the form, Then it should call updateAddress and goNext', async () => {
       // Given valid form data
       const user = userEvent.setup()
-      render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
-      )
+      renderComponent()
 
       // When user submits the form
       const submitButton = screen.getByTestId('origin-address-next-button')
@@ -195,15 +164,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given user toggles residential switch, When user submits, Then it should include the updated isResidential value', async () => {
       // Given the form renders
       const user = userEvent.setup()
-      render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
-      )
+      renderComponent()
 
       // When user toggles residential switch
       const toggle = screen.getByRole('switch', { name: /es residencial/i })
@@ -242,13 +203,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       }
 
       render(
-        <AddTempAddressPkk
-          addressData={emptyAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={emptyAddressData}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // When user submits the form
@@ -257,6 +220,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
 
       // Then validation errors should be displayed
       expect(await screen.findByText(/nombre es requerido/i)).toBeInTheDocument()
+      expect(await screen.findByText(/apellido es requerido/i)).toBeInTheDocument()
       expect(await screen.findByText(/el teléfono es requerido/i)).toBeInTheDocument()
       expect(await screen.findByText(/calle es requerida/i)).toBeInTheDocument()
       expect(await screen.findByText(/colonia es requerida/i)).toBeInTheDocument()
@@ -277,13 +241,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       const invalidPhoneData = { ...mockAddressData, phone: '123' }
 
       render(
-        <AddTempAddressPkk
-          addressData={invalidPhoneData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={invalidPhoneData}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // When user submits the form
@@ -304,17 +270,19 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       // Given zipcode with less than 5 digits
       const user = userEvent.setup()
       render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={mockAddressData}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // Clear and enter invalid zipcode
-      const zipcodeInput = screen.getByLabelText(/código postal/i)
+      const zipcodeInput = screen.getByTestId('zipcode')
       await user.clear(zipcodeInput)
       await user.type(zipcodeInput, '123')
 
@@ -336,13 +304,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       // Given the form is rendered
       const user = userEvent.setup()
       render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={mockAddressData}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // When user clicks cancel button
@@ -362,13 +332,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given addressType is origin, When the form renders, Then cancel button should have origin test ID', () => {
       // Given addressType is origin and When the form renders
       render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType="origin"
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={mockAddressData}
+            addressType="origin"
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // Then cancel button should have origin test ID
@@ -378,13 +350,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given addressType is destination, When the form renders, Then cancel button should have destination test ID', () => {
       // Given addressType is destination and When the form renders
       render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType="destination"
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={mockAddressData}
+            addressType="destination"
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // Then cancel button should have destination test ID
@@ -396,13 +370,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given the form renders, When checking headers, Then it should show personal data and address section headers', () => {
       // Given the form renders and When checking headers
       render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={mockAddressData}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // Then section headers should be displayed
@@ -416,13 +392,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given the form renders, When checking input types, Then email should be email type and others should be text', () => {
       // Given the form renders and When checking input types
       render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={mockAddressData}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // Then email field should have type email
@@ -439,18 +417,20 @@ describe('Feature: Add Temporary Address for Pkk', () => {
     it('Given the form renders, When checking input modes, Then phone and zipcode should have numeric inputMode', () => {
       // Given the form renders and When checking input modes
       render(
-        <AddTempAddressPkk
-          addressData={mockAddressData}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={mockAddressData}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // Then phone and zipcode should have numeric inputMode
       expect(screen.getByTestId('phone')).toHaveAttribute('inputMode', 'numeric')
-      expect(screen.getByLabelText(/código postal/i)).toHaveAttribute('inputMode', 'numeric')
+      expect(screen.getByTestId('zipcode')).toHaveAttribute('inputMode', 'numeric')
     })
   })
 
@@ -461,13 +441,15 @@ describe('Feature: Add Temporary Address for Pkk', () => {
 
       // When the form renders
       render(
-        <AddTempAddressPkk
-          addressData={addressWithNullEmail}
-          addressType={addressType}
-          goNext={mockGoNext}
-          toggleTempAddress={mockToggleTempAddress}
-          updateAddress={mockUpdateAddress}
-        />
+        <QueryProviderWrapper>
+          <AddTempAddressPkk
+            addressData={addressWithNullEmail}
+            addressType={addressType}
+            goNext={mockGoNext}
+            toggleTempAddress={mockToggleTempAddress}
+            updateAddress={mockUpdateAddress}
+          />
+        </QueryProviderWrapper>
       )
 
       // Then email field should show empty string
