@@ -2,7 +2,7 @@ import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
 import { ProviderSource } from "./quotes.types";
 import { Address } from "./addresses.types";
-import { ZIPCODE_EMPTY_ERROR, ZIPCODE_ERROR_EMPTY, ZIPCODE_LENGTH_ERROR, ZIPCODE_ONLY_NUMBERS_ERROR } from "../constants/addresses.constants";
+import { zipcodeValidation } from "./global.types";
 
 export type GetProductSatIdPayload = {
   search: string;
@@ -542,14 +542,7 @@ export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFor
       state: string()
         .required("Estado es requerido")
         .min(2, "El estado debe tener al menos 2 caracteres"),
-      zipcode: string()
-        .required(ZIPCODE_ERROR_EMPTY)
-        .matches(/^\d+$/, {
-          excludeEmptyString: true,
-          message: ZIPCODE_ONLY_NUMBERS_ERROR,
-        })
-        .min(5, ZIPCODE_LENGTH_ERROR)
-        .max(5, ZIPCODE_LENGTH_ERROR),
+      zipcode: zipcodeValidation,
     }),
   );
 
@@ -620,14 +613,7 @@ export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> =
         state: string()
           .required("Estado es requerido")
           .min(2, "El estado debe tener al menos 2 caracteres"),
-        zipcode: string()
-          .required(ZIPCODE_EMPTY_ERROR)
-          .matches(/^\d+$/, {
-            excludeEmptyString: true,
-            message: ZIPCODE_ONLY_NUMBERS_ERROR,
-          })
-          .min(5, ZIPCODE_LENGTH_ERROR)
-          .max(5, ZIPCODE_LENGTH_ERROR),
+        zipcode: zipcodeValidation,
         alias: string()
           .required("El alias del domicilio es requerido")
           .min(2, "El alias del domicilio debe tener al menos 2 caracteres"),
