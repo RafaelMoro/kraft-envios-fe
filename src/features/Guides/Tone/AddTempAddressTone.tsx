@@ -64,13 +64,12 @@ export const AddTempAddressTone = ({
     event?.preventDefault()
     event?.stopPropagation()
 
+    // We need to validate showManualFields because if user is using manual fields these validations are not necessary
     const isZipcodeValid = validateZipcodeErrors()
-    if (!isZipcodeValid) return
+    if (!isZipcodeValid && !showManualFields) return
 
     const isNeighborhoodValid = isValidNeighborhood()
-    if (!isNeighborhoodValid) {
-      return
-    }
+    if (!isNeighborhoodValid && !showManualFields) return
 
     updateAddress(data)
     goNext()
