@@ -5,6 +5,7 @@ import {
   INITIAL_STATE_SELECT_STATE,
 } from "../constants/addresses.constants";
 import { Path, UseFormClearErrors, UseFormSetError, UseFormSetValue } from "react-hook-form";
+import { zipcodeValidation } from "../types/global.types";
 
 interface UseAutocompleteZipcodeProps<T extends Record<string, unknown>> {
   formData?: {
@@ -68,6 +69,22 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
     return true
   }
 
+  /**
+   * This function only is used if zipcode does not exist in react hook form
+   */
+  const validateZipcodeErrors = () => {
+    try {
+      zipcodeValidation.validateSync(zipcode);
+      setZipcodeError("");
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        setZipcodeError(error.message);
+      }
+      return false;
+    }
+  };
+
   const [stateSelected, setStateSelected] = useState<string>(
     formData?.state ?? INITIAL_STATE_SELECT_STATE,
   );
@@ -97,6 +114,7 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
     setZipcode: handleZipcodeChange,
     zipcodeError,
     setZipcodeError,
+    validateZipcodeErrors,
     neighborhoodSelected,
     setNeighborhoodSelected: handleNeighborhoodChange,
     isValidNeighborhood,

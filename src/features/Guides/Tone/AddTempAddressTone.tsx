@@ -41,8 +41,8 @@ export const AddTempAddressTone = ({
     setCitySelected,
     // TODO: Check zipcode error on submit
     zipcodeError,
+    validateZipcodeErrors,
     setZipcodeError,
-    // TODO: Check this function to apply on submit
     isValidNeighborhood,
   } = useAutocompleteZipcode({
     setValue,
@@ -55,6 +55,15 @@ export const AddTempAddressTone = ({
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesTone> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+
+    const isZipcodeValid = validateZipcodeErrors()
+    if (!isZipcodeValid) return
+
+    const isNeighborhoodValid = isValidNeighborhood()
+    if (!isNeighborhoodValid) {
+      return
+    }
+
     updateAddress(data)
     goNext()
   }
