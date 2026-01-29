@@ -32,6 +32,7 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
   clearErrors,
 }: UseAutocompleteZipcodeProps<T>) => {
   const [zipcode, setZipcode] = useState<string>("");
+  const [zipcodeError, setZipcodeError] = useState<string>("");
   const handleZipcodeChange = (newZipcode: string) => {
     setZipcode(newZipcode);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,6 +95,8 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
   return {
     zipcode,
     setZipcode: handleZipcodeChange,
+    zipcodeError,
+    setZipcodeError,
     neighborhoodSelected,
     setNeighborhoodSelected: handleNeighborhoodChange,
     isValidNeighborhood,
