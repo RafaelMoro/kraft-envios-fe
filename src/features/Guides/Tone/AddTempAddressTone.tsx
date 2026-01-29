@@ -7,6 +7,9 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataForm } from "../PersonalDataForm"
 import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode"
 import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode"
+import { AddressRegionSelector } from "@/features/Addresses/AddressRegionSelector "
+import { useAddressRegionSelector } from "@/shared/hooks/useAddressRegionSelector"
+import { ManualFieldsTone } from "./ManualFieldsTone"
 
 interface AddTempAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
@@ -29,6 +32,10 @@ export const AddTempAddressTone = ({
   } = useForm<CreateGuideAddressFormValuesTone>({
     resolver: yupResolver(CreateGuideAddressFormSchemaTone)
   })
+  const clearManualAddressRegionFields = () => {
+    setValue("neighborhood", "");
+    setValue("state", "");
+  };
 
   const {
     zipcode,
@@ -51,6 +58,7 @@ export const AddTempAddressTone = ({
     syncCityForm: true,
     setError,
   });
+  const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesTone> = (data, event) => {
     event?.preventDefault()
@@ -116,22 +124,36 @@ export const AddTempAddressTone = ({
               <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
             )}
           </div>
-          <AutocompleteZipcode
-            zipcode={zipcode}
-            setZipcode={setZipcode}
-            zipcodeError={zipcodeError}
-            setZipcodeError={setZipcodeError}
-            neighborhood={neighborhoodSelected}
-            setNeighborhood={setNeighborhoodSelected}
-            neighborhoodError={errors?.neighborhood?.message ?? ""}
-            state={stateSelected}
-            setState={setStateSelected}
-            stateError={errors?.state?.message ?? ""}
-            city={citySelected}
-            setCity={setCitySelected}
-            cityError=""
-            formData={addressData}
-            hideCityField
+          <AddressRegionSelector
+            showManualFields={showManualFields}
+            setShowManualFields={toggleShowManualFields}
+            placeButton="bottom"
+            ManualFieldsUI={
+              <ManualFieldsTone
+                addressData={addressData}
+                errors={errors}
+                register={register}
+              />
+            }
+            AutocompleteUI={
+              <AutocompleteZipcode
+                zipcode={zipcode}
+                setZipcode={setZipcode}
+                zipcodeError={zipcodeError}
+                setZipcodeError={setZipcodeError}
+                neighborhood={neighborhoodSelected}
+                setNeighborhood={setNeighborhoodSelected}
+                neighborhoodError={errors?.neighborhood?.message ?? ""}
+                state={stateSelected}
+                setState={setStateSelected}
+                stateError={errors?.state?.message ?? ""}
+                city={citySelected}
+                setCity={setCitySelected}
+                cityError=""
+                formData={addressData}
+                hideCityField
+              />
+            }
           />
           <div>
             <div className="mb-2 block">
