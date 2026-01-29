@@ -46,7 +46,6 @@ export const AddTempAddressTone = ({
     setStateSelected,
     citySelected,
     setCitySelected,
-    // TODO: Check zipcode error on submit
     zipcodeError,
     validateZipcodeErrors,
     setZipcodeError,
