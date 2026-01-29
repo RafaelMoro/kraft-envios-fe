@@ -5,6 +5,8 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { AddressType, CreateGuideAddressFormSchemaTone, CreateGuideAddressFormValuesTone } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataForm } from "../PersonalDataForm"
+import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode"
+import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode"
 
 interface AddTempAddressToneProps {
   addressData: CreateGuideAddressFormValuesTone
@@ -21,9 +23,34 @@ export const AddTempAddressTone = ({
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    clearErrors,
+    setError,
   } = useForm<CreateGuideAddressFormValuesTone>({
     resolver: yupResolver(CreateGuideAddressFormSchemaTone)
   })
+
+  const {
+    zipcode,
+    setZipcode,
+    neighborhoodSelected,
+    setNeighborhoodSelected,
+    stateSelected,
+    setStateSelected,
+    citySelected,
+    setCitySelected,
+    // TODO: Check zipcode error on submit
+    zipcodeError,
+    setZipcodeError,
+    // TODO: Check this function to apply on submit
+    isValidNeighborhood,
+  } = useAutocompleteZipcode({
+    setValue,
+    clearErrors,
+    formData: addressData,
+    syncCityForm: true,
+    setError,
+  });
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesTone> = (data, event) => {
     event?.preventDefault()
@@ -80,21 +107,23 @@ export const AddTempAddressTone = ({
               <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
             )}
           </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="neighborhood">Colonia</Label>
-            </div>
-            <TextInput
-              data-testid="neighborhood"
-              defaultValue={addressData.neighborhood}
-              id="neighborhood"
-              type="text"
-              {...register("neighborhood")}
-            />
-            { errors?.neighborhood?.message && (
-              <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-            )}
-          </div>
+          <AutocompleteZipcode
+            zipcode={zipcode}
+            setZipcode={setZipcode}
+            zipcodeError={zipcodeError}
+            setZipcodeError={setZipcodeError}
+            neighborhood={neighborhoodSelected}
+            setNeighborhood={setNeighborhoodSelected}
+            neighborhoodError={errors?.neighborhood?.message ?? ""}
+            state={stateSelected}
+            setState={setStateSelected}
+            stateError={errors?.state?.message ?? ""}
+            city={citySelected}
+            setCity={setCitySelected}
+            cityError=""
+            formData={addressData}
+            hideCityField
+          />
           <div>
             <div className="mb-2 block">
               <Label htmlFor="town">Municipio</Label>
@@ -108,21 +137,6 @@ export const AddTempAddressTone = ({
             />
             { errors?.town?.message && (
               <ErrorMessage>{errors.town?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="state">Estado de la República</Label>
-            </div>
-            <TextInput
-              data-testid="state"
-              defaultValue={addressData.state}
-              id="state"
-              type="text"
-              {...register("state")}
-            />
-            { errors?.state?.message && (
-              <ErrorMessage>{errors.state?.message}</ErrorMessage>
             )}
           </div>
           <div>
