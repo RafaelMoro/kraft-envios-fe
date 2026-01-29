@@ -124,6 +124,36 @@ export const AddTempAddressTone = ({
               <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
             )}
           </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="town">Municipio</Label>
+            </div>
+            <TextInput
+              data-testid="town"
+              defaultValue={addressData.town}
+              id="town"
+              type="text"
+              {...register("town")}
+            />
+            { errors?.town?.message && (
+              <ErrorMessage>{errors.town?.message}</ErrorMessage>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
+            </div>
+            <TextInput
+              data-testid="reference"
+              defaultValue={addressData.reference ?? ''}
+              id="reference"
+              type="text"
+              {...register("reference")}
+            />
+            { errors?.reference?.message && (
+              <ErrorMessage>{errors.reference?.message}</ErrorMessage>
+            )}
+          </div>
           <AddressRegionSelector
             showManualFields={showManualFields}
             setShowManualFields={toggleShowManualFields}
@@ -155,36 +185,6 @@ export const AddTempAddressTone = ({
               />
             }
           />
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="town">Municipio</Label>
-            </div>
-            <TextInput
-              data-testid="town"
-              defaultValue={addressData.town}
-              id="town"
-              type="text"
-              {...register("town")}
-            />
-            { errors?.town?.message && (
-              <ErrorMessage>{errors.town?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
-            </div>
-            <TextInput
-              data-testid="reference"
-              defaultValue={addressData.reference ?? ''}
-              id="reference"
-              type="text"
-              {...register("reference")}
-            />
-            { errors?.reference?.message && (
-              <ErrorMessage>{errors.reference?.message}</ErrorMessage>
-            )}
-          </div>
         </div>
       </section>
       <div className="flex justify-between mt-4">
