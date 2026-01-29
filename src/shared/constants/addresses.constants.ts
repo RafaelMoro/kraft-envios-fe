@@ -14,6 +14,7 @@ export const initialStateAddressForm: CreateAddressPayload = {
   isGEAddress: false,
 };
 
+export const ZIPCODE_ERROR_EMPTY = 'El código postal es requerido'
 export const ZIPCODE_LENGTH_ERROR = "El código postal debe tener 5 caracteres";
 export const ZIPCODE_ONLY_NUMBERS_ERROR =
   "El código postal solo puede contener dígitos";

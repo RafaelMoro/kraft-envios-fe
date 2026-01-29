@@ -2,7 +2,7 @@ import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
 import { ProviderSource } from "./quotes.types";
 import { Address } from "./addresses.types";
-import { ZIPCODE_EMPTY_ERROR } from "../constants/addresses.constants";
+import { ZIPCODE_EMPTY_ERROR, ZIPCODE_ERROR_EMPTY, ZIPCODE_LENGTH_ERROR, ZIPCODE_ONLY_NUMBERS_ERROR } from "../constants/addresses.constants";
 
 export type GetProductSatIdPayload = {
   search: string;
@@ -543,13 +543,13 @@ export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFor
         .required("Estado es requerido")
         .min(2, "El estado debe tener al menos 2 caracteres"),
       zipcode: string()
-        .required("La dirección postal es requerida")
+        .required(ZIPCODE_ERROR_EMPTY)
         .matches(/^\d+$/, {
           excludeEmptyString: true,
-          message: "El código postal solo puede contener dígitos",
+          message: ZIPCODE_ONLY_NUMBERS_ERROR,
         })
-        .min(5, "La dirección postal debe tener 5 caracteres")
-        .max(5, "La dirección postal debe tener 5 caracteres"),
+        .min(5, ZIPCODE_LENGTH_ERROR)
+        .max(5, ZIPCODE_LENGTH_ERROR),
     }),
   );
 
@@ -624,10 +624,10 @@ export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> =
           .required(ZIPCODE_EMPTY_ERROR)
           .matches(/^\d+$/, {
             excludeEmptyString: true,
-            message: "El código postal solo puede contener dígitos",
+            message: ZIPCODE_ONLY_NUMBERS_ERROR,
           })
-          .min(5, "El código postal debe tener 5 caracteres")
-          .max(5, "El código postal debe tener 5 caracteres"),
+          .min(5, ZIPCODE_LENGTH_ERROR)
+          .max(5, ZIPCODE_LENGTH_ERROR),
         alias: string()
           .required("El alias del domicilio es requerido")
           .min(2, "El alias del domicilio debe tener al menos 2 caracteres"),
