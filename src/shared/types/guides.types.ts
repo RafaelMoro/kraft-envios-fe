@@ -2,7 +2,7 @@ import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
 import { ProviderSource } from "./quotes.types";
 import { Address } from "./addresses.types";
-import { ZIPCODE_EMPTY_ERROR } from "../constants/addresses.constants";
+import { zipcodeValidation } from "./global.types";
 
 export type GetProductSatIdPayload = {
   search: string;
@@ -542,14 +542,7 @@ export const CreateGuideAddressFormSchemaPkk: ObjectSchema<CreateGuideAddressFor
       state: string()
         .required("Estado es requerido")
         .min(2, "El estado debe tener al menos 2 caracteres"),
-      zipcode: string()
-        .required("La dirección postal es requerida")
-        .matches(/^\d+$/, {
-          excludeEmptyString: true,
-          message: "El código postal solo puede contener dígitos",
-        })
-        .min(5, "La dirección postal debe tener 5 caracteres")
-        .max(5, "La dirección postal debe tener 5 caracteres"),
+      zipcode: zipcodeValidation,
     }),
   );
 
@@ -620,14 +613,7 @@ export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> =
         state: string()
           .required("Estado es requerido")
           .min(2, "El estado debe tener al menos 2 caracteres"),
-        zipcode: string()
-          .required(ZIPCODE_EMPTY_ERROR)
-          .matches(/^\d+$/, {
-            excludeEmptyString: true,
-            message: "El código postal solo puede contener dígitos",
-          })
-          .min(5, "El código postal debe tener 5 caracteres")
-          .max(5, "El código postal debe tener 5 caracteres"),
+        zipcode: zipcodeValidation,
         alias: string()
           .required("El alias del domicilio es requerido")
           .min(2, "El alias del domicilio debe tener al menos 2 caracteres"),
