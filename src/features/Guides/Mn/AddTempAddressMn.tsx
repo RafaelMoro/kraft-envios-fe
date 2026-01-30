@@ -7,6 +7,9 @@ import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataForm } from "../PersonalDataForm"
 import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode"
 import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode"
+import { useAddressRegionSelector } from "@/shared/hooks/useAddressRegionSelector"
+import { AddressRegionSelector } from "@/features/Addresses/AddressRegionSelector "
+import { ManualFieldsMn } from "./ManualFieldsMn"
 
 interface OriginAddressFormProps {
   title: string
@@ -55,10 +58,19 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
     syncCityForm: true,
     setError,
   });
+  const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesMn> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+
+    // We need to validate showManualFields because if user is using manual fields these validations are not necessary
+    const isZipcodeValid = validateZipcodeErrors()
+    if (!isZipcodeValid && !showManualFields) return
+
+    const isNeighborhoodValid = isValidNeighborhood()
+    if (!isNeighborhoodValid && !showManualFields) return
+
     updateAddress(data)
     goNext()
   }
@@ -125,21 +137,35 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
               <ErrorMessage>{errors.reference?.message}</ErrorMessage>
             )}
           </div>
-          <AutocompleteZipcode
-            zipcode={zipcode}
-            setZipcode={setZipcode}
-            zipcodeError={zipcodeError}
-            setZipcodeError={setZipcodeError}
-            neighborhood={neighborhoodSelected}
-            setNeighborhood={setNeighborhoodSelected}
-            neighborhoodError={errors?.neighborhood?.message ?? ""}
-            state={stateSelected}
-            setState={setStateSelected}
-            stateError={errors?.state?.message ?? ""}
-            city={citySelected}
-            setCity={setCitySelected}
-            cityError={errors?.city?.message ?? ""}
-            formData={addressData}
+          <AddressRegionSelector
+            showManualFields={showManualFields}
+            setShowManualFields={toggleShowManualFields}
+            placeButton="bottom"
+            ManualFieldsUI={
+              <ManualFieldsMn
+                addressData={addressData}
+                errors={errors}
+                register={register}
+              />
+            }
+            AutocompleteUI={
+              <AutocompleteZipcode
+                zipcode={zipcode}
+                setZipcode={setZipcode}
+                zipcodeError={zipcodeError}
+                setZipcodeError={setZipcodeError}
+                neighborhood={neighborhoodSelected}
+                setNeighborhood={setNeighborhoodSelected}
+                neighborhoodError={errors?.neighborhood?.message ?? ""}
+                state={stateSelected}
+                setState={setStateSelected}
+                stateError={errors?.state?.message ?? ""}
+                city={citySelected}
+                setCity={setCitySelected}
+                cityError={errors?.city?.message ?? ""}
+                formData={addressData}
+              />
+            }
           />
         </section>
       </div>
