@@ -5,6 +5,8 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { AddressType, CreateGuideAddressFormSchemaMn, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataForm } from "../PersonalDataForm"
+import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode"
+import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode"
 
 interface OriginAddressFormProps {
   title: string
@@ -21,9 +23,38 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    clearErrors,
+    setError,
   } = useForm<CreateGuideAddressFormValuesMn>({
     resolver: yupResolver(CreateGuideAddressFormSchemaMn)
   })
+  const clearManualAddressRegionFields = () => {
+    setValue("neighborhood", "");
+    setValue("state", "");
+    setValue("city", "");
+  };
+
+  const {
+    zipcode,
+    setZipcode,
+    neighborhoodSelected,
+    setNeighborhoodSelected,
+    stateSelected,
+    setStateSelected,
+    citySelected,
+    setCitySelected,
+    zipcodeError,
+    validateZipcodeErrors,
+    setZipcodeError,
+    isValidNeighborhood,
+  } = useAutocompleteZipcode({
+    setValue,
+    clearErrors,
+    formData: addressData,
+    syncCityForm: true,
+    setError,
+  });
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesMn> = (data, event) => {
     event?.preventDefault()
@@ -81,51 +112,6 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
           </div>
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="neighborhood">Colonia</Label>
-            </div>
-            <TextInput
-              data-testid="neighborhood"
-              defaultValue={addressData.neighborhood}
-              id="neighborhood"
-              type="text"
-              {...register("neighborhood")}
-            />
-            { errors?.neighborhood?.message && (
-              <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="city">Ciudad</Label>
-            </div>
-            <TextInput
-              data-testid="city"
-              defaultValue={addressData.city}
-              id="city"
-              type="text"
-              {...register("city")}
-            />
-            { errors?.city?.message && (
-              <ErrorMessage>{errors.city?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="state">Estado de la República</Label>
-            </div>
-            <TextInput
-              data-testid="state"
-              defaultValue={addressData.state}
-              id="state"
-              type="text"
-              {...register("state")}
-            />
-            { errors?.state?.message && (
-              <ErrorMessage>{errors.state?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
               <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
             </div>
             <TextInput
@@ -139,6 +125,22 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
               <ErrorMessage>{errors.reference?.message}</ErrorMessage>
             )}
           </div>
+          <AutocompleteZipcode
+            zipcode={zipcode}
+            setZipcode={setZipcode}
+            zipcodeError={zipcodeError}
+            setZipcodeError={setZipcodeError}
+            neighborhood={neighborhoodSelected}
+            setNeighborhood={setNeighborhoodSelected}
+            neighborhoodError={errors?.neighborhood?.message ?? ""}
+            state={stateSelected}
+            setState={setStateSelected}
+            stateError={errors?.state?.message ?? ""}
+            city={citySelected}
+            setCity={setCitySelected}
+            cityError={errors?.city?.message ?? ""}
+            formData={addressData}
+          />
         </section>
       </div>
       <div className="flex justify-between mt-4">
