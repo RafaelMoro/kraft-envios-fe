@@ -1,3 +1,9 @@
+## v0.37.0 (2026-01-30)
+
+### Pull Requests
+[#83](https://github.com/RafaelMoro/kraft-envios-fe/pull/83) | Add autocomplete create guide tone
+
+
 ## v0.36.0 (2026-01-26)
 
 ### Pull Requests
