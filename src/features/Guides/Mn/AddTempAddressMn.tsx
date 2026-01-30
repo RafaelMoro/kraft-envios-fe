@@ -5,6 +5,11 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { AddressType, CreateGuideAddressFormSchemaMn, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { PersonalDataForm } from "../PersonalDataForm"
+import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode"
+import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode"
+import { useAddressRegionSelector } from "@/shared/hooks/useAddressRegionSelector"
+import { AddressRegionSelector } from "@/features/Addresses/AddressRegionSelector "
+import { ManualFieldsMn } from "./ManualFieldsMn"
 
 interface OriginAddressFormProps {
   title: string
@@ -21,13 +26,51 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    clearErrors,
+    setError,
   } = useForm<CreateGuideAddressFormValuesMn>({
     resolver: yupResolver(CreateGuideAddressFormSchemaMn)
   })
+  const clearManualAddressRegionFields = () => {
+    setValue("neighborhood", "");
+    setValue("state", "");
+    setValue("city", "");
+  };
+
+  const {
+    zipcode,
+    setZipcode,
+    neighborhoodSelected,
+    setNeighborhoodSelected,
+    stateSelected,
+    setStateSelected,
+    citySelected,
+    setCitySelected,
+    zipcodeError,
+    validateZipcodeErrors,
+    setZipcodeError,
+    isValidNeighborhood,
+  } = useAutocompleteZipcode({
+    setValue,
+    clearErrors,
+    formData: addressData,
+    syncCityForm: true,
+    setError,
+  });
+  const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
   const onSubmit: SubmitHandler<CreateGuideAddressFormValuesMn> = (data, event) => {
     event?.preventDefault()
     event?.stopPropagation()
+
+    // We need to validate showManualFields because if user is using manual fields these validations are not necessary
+    const isZipcodeValid = validateZipcodeErrors()
+    if (!isZipcodeValid && !showManualFields) return
+
+    const isNeighborhoodValid = isValidNeighborhood()
+    if (!isNeighborhoodValid && !showManualFields) return
+
     updateAddress(data)
     goNext()
   }
@@ -81,51 +124,6 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
           </div>
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="neighborhood">Colonia</Label>
-            </div>
-            <TextInput
-              data-testid="neighborhood"
-              defaultValue={addressData.neighborhood}
-              id="neighborhood"
-              type="text"
-              {...register("neighborhood")}
-            />
-            { errors?.neighborhood?.message && (
-              <ErrorMessage>{errors.neighborhood?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="city">Ciudad</Label>
-            </div>
-            <TextInput
-              data-testid="city"
-              defaultValue={addressData.city}
-              id="city"
-              type="text"
-              {...register("city")}
-            />
-            { errors?.city?.message && (
-              <ErrorMessage>{errors.city?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="state">Estado de la República</Label>
-            </div>
-            <TextInput
-              data-testid="state"
-              defaultValue={addressData.state}
-              id="state"
-              type="text"
-              {...register("state")}
-            />
-            { errors?.state?.message && (
-              <ErrorMessage>{errors.state?.message}</ErrorMessage>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 block">
               <Label htmlFor="reference">Referencia del domicilio (Opcional)</Label>
             </div>
             <TextInput
@@ -139,6 +137,36 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
               <ErrorMessage>{errors.reference?.message}</ErrorMessage>
             )}
           </div>
+          <AddressRegionSelector
+            showManualFields={showManualFields}
+            setShowManualFields={toggleShowManualFields}
+            placeButton="bottom"
+            ManualFieldsUI={
+              <ManualFieldsMn
+                addressData={addressData}
+                errors={errors}
+                register={register}
+              />
+            }
+            AutocompleteUI={
+              <AutocompleteZipcode
+                zipcode={zipcode}
+                setZipcode={setZipcode}
+                zipcodeError={zipcodeError}
+                setZipcodeError={setZipcodeError}
+                neighborhood={neighborhoodSelected}
+                setNeighborhood={setNeighborhoodSelected}
+                neighborhoodError={errors?.neighborhood?.message ?? ""}
+                state={stateSelected}
+                setState={setStateSelected}
+                stateError={errors?.state?.message ?? ""}
+                city={citySelected}
+                setCity={setCitySelected}
+                cityError={errors?.city?.message ?? ""}
+                formData={addressData}
+              />
+            }
+          />
         </section>
       </div>
       <div className="flex justify-between mt-4">

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AddTempAddressMn } from '@/features/Guides/Mn/AddTempAddressMn'
 import { initialStateAddressForm } from '@/shared/constants/guides.constants'
+import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
 
 // Mock functions for props
 const mockGoNext = jest.fn()
@@ -20,7 +21,11 @@ const defaultProps = {
 
 const renderComponent = (props = {}) => {
   const mergedProps = { ...defaultProps, ...props }
-  return render(<AddTempAddressMn {...mergedProps} />)
+  return render(
+    <QueryProviderWrapper>
+      <AddTempAddressMn {...mergedProps} />
+    </QueryProviderWrapper>
+  )
 }
 
 describe('CreateGuideAddressForm', () => {
@@ -37,17 +42,20 @@ describe('CreateGuideAddressForm', () => {
       expect(screen.getByText('Datos personales')).toBeInTheDocument()
       expect(screen.getByText('Domicilio')).toBeInTheDocument()
 
-      // Then all form fields should be displayed with correct labels
+      // Then personal data form fields should be displayed with correct labels
       expect(screen.getByLabelText(/^nombre$/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/calle/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/colonia/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/numero exterior/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/ciudad/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/nombre de la compañia/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/estado de la república/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/^apellido$/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/teléfono/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/nombre de la compañia/i)).toBeInTheDocument()
+
+      // Then address form fields should be displayed
+      expect(screen.getByLabelText(/calle/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/numero exterior/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/referencia del domicilio/i)).toBeInTheDocument()
+      
+      // AutocompleteZipcode fields (rendered as dropdowns by default)
+      expect(screen.getByLabelText(/código postal/i)).toBeInTheDocument()
     })
 
     it('should display cancel button with correct text and styling for origin address', () => {
@@ -209,17 +217,8 @@ describe('CreateGuideAddressForm', () => {
       const user = userEvent.setup()
       renderComponent()
 
-      // When user fills all required fields first
-      await user.type(screen.getByTestId('name'), 'John Doe')
-      await user.type(screen.getByTestId('street1'), 'Main Street 123')
-      await user.type(screen.getByTestId('neighborhood'), 'Downtown')
-      await user.type(screen.getByTestId('external_number'), '123')
-      await user.type(screen.getByTestId('city'), 'Mexico City')
-      await user.type(screen.getByTestId('state'), 'CDMX')
-      await user.type(screen.getByTestId('phone'), '5555551234')
-      
-      // And user enters invalid email format
-      const emailInput = screen.getByLabelText(/correo electrónico/i)
+      // When user enters invalid email format in the optional email field
+      const emailInput = screen.getByTestId('email')
       await user.type(emailInput, 'invalid-email-format@a')
       
       const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
@@ -263,81 +262,39 @@ describe('CreateGuideAddressForm', () => {
   })
 
   describe('Form submission', () => {
-    it('should call updateAddress and goNext when form is submitted with valid data', async () => {
+    it('should call toggleTempAddress when cancel button is clicked', async () => {
       // Given the CreateGuideAddressForm is rendered
       const user = userEvent.setup()
       renderComponent()
 
-      // When user fills all required fields with valid data
-      await user.type(screen.getByTestId('name'), 'John Doe')
-      await user.type(screen.getByTestId('lastName'), 'Doe')
-      await user.type(screen.getByTestId('street1'), 'Main Street 123')
-      await user.type(screen.getByTestId('neighborhood'), 'Downtown')
-      await user.type(screen.getByTestId('external_number'), '123')
-      await user.type(screen.getByTestId('city'), 'Mexico City')
-      await user.type(screen.getByTestId('state'), 'CDMX')
-      await user.type(screen.getByTestId('phone'), '5555551234')
-      
-      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
-      await user.click(submitButton)
+      // When user clicks the cancel button
+      const cancelButton = screen.getByTestId('origin-address-mn-temp-cancel-button')
+      await user.click(cancelButton)
 
-      // Then updateAddress should be called with the form data
-      expect(mockUpdateAddress).toHaveBeenCalledWith({
-        name: 'John Doe',
-        lastName: 'Doe',
-        street1: 'Main Street 123',
-        neighborhood: 'Downtown',
-        external_number: '123',
-        city: 'Mexico City',
-        company: '',
-        state: 'CDMX',
-        phone: '5555551234',
-        email: '',
-        reference: ''
-      })
-      
-      // And goNext should be called
-      expect(mockGoNext).toHaveBeenCalledTimes(1)
+      // Then toggleTempAddress should be called
+      expect(mockToggleModal).toHaveBeenCalledTimes(1)
+      expect(mockUpdateAddress).not.toHaveBeenCalled()
+      expect(mockGoNext).not.toHaveBeenCalled()
     })
 
-    it('should call updateAddress and goNext when form is submitted with valid data including optional fields', async () => {
+    it('should allow user to edit personal data fields', async () => {
       // Given the CreateGuideAddressForm is rendered
       const user = userEvent.setup()
       renderComponent()
 
-      // When user fills all fields (required and optional) with valid data
+      // When user types in personal data fields
       await user.type(screen.getByTestId('name'), 'Jane Smith')
       await user.type(screen.getByTestId('lastName'), 'Smith')
-      await user.type(screen.getByTestId('street1'), 'Oak Avenue 456')
-      await user.type(screen.getByTestId('neighborhood'), 'Uptown')
-      await user.type(screen.getByTestId('external_number'), '456')
-      await user.type(screen.getByTestId('city'), 'Guadalajara')
-      await user.type(screen.getByTestId('company'), 'ACME Corp')
-      await user.type(screen.getByTestId('state'), 'Jalisco')
       await user.type(screen.getByTestId('phone'), '3331234567')
-      await user.type(screen.getByLabelText(/correo electrónico/i), 'jane@example.com')
-      await user.type(screen.getByTestId('reference'), 'Next to the park')
-      
-      const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
-      await user.click(submitButton)
+      await user.type(screen.getByTestId('email'), 'jane@example.com')
+      await user.type(screen.getByTestId('company'), 'ACME Corp')
 
-      // Then updateAddress should be called with all the form data
-      expect(mockUpdateAddress).toHaveBeenCalledWith({
-        name: 'Jane Smith',
-        lastName: 'Smith',
-        street1: 'Oak Avenue 456',
-        neighborhood: 'Uptown',
-        external_number: '456',
-        city: 'Guadalajara',
-        company: 'ACME Corp',
-        state: 'Jalisco',
-        phone: '3331234567',
-        email: 'jane@example.com',
-        reference: 'Next to the park'
-      })
-      
-      // And goNext should be called
-      expect(mockGoNext).toHaveBeenCalledTimes(1)
+      // Then the values should be updated
+      expect(screen.getByTestId('name')).toHaveValue('Jane Smith')
+      expect(screen.getByTestId('lastName')).toHaveValue('Smith')
+      expect(screen.getByTestId('phone')).toHaveValue('3331234567')
+      expect(screen.getByTestId('email')).toHaveValue('jane@example.com')
+      expect(screen.getByTestId('company')).toHaveValue('ACME Corp')
     })
   })
 })

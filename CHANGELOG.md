@@ -1,3 +1,9 @@
+## v0.38.0 (2026-01-30)
+
+### Pull Requests
+[#85](https://github.com/RafaelMoro/kraft-envios-fe/pull/85) | Add autocomplete zipcode mn
+
+
 ## v0.37.0 (2026-01-30)
 
 ### Pull Requests
