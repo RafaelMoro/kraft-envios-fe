@@ -268,7 +268,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       expect(await screen.findByText(/colonia es requerida/i)).toBeInTheDocument()
       expect(await screen.findByText(/ciudad es requerida/i)).toBeInTheDocument()
       expect(await screen.findByText(/estado es requerido/i)).toBeInTheDocument()
-      expect(await screen.findByText(/la dirección postal es requerida/i)).toBeInTheDocument()
+      expect(await screen.findByText(/el código postal es requerido/i)).toBeInTheDocument()
 
       // And updateAddress and goNext should not be called
       expect(mockUpdateAddress).not.toHaveBeenCalled()
@@ -333,7 +333,7 @@ describe('Feature: Add Temporary Address for Pkk', () => {
       await user.click(submitButton)
 
       // Then validation error should be displayed
-      expect(await screen.findByText(/la dirección postal debe tener 5 caracteres/i)).toBeInTheDocument()
+      expect(await screen.findByText(/el código postal debe tener 5 caracteres/i)).toBeInTheDocument()
 
       // And updateAddress and goNext should not be called
       expect(mockUpdateAddress).not.toHaveBeenCalled()
