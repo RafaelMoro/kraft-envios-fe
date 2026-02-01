@@ -109,7 +109,7 @@ export const ConfirmGuideDataTone = ({ formData, selectedQuotes, isPending, goPr
         <Button color="light" data-testid="confirm-guide-cancel-button" className="hover:cursor-pointer" onClick={goPrev}>
           Regresar
         </Button>
-        <Button onClick={handleSubmit} data-testid="confirm-guide-send-button" className="hover:cursor-pointer">
+        <Button onClick={handleSubmit} data-testid="confirm-guide-send-button" className="hover:cursor-pointer" disabled={isPending}>
           { isPending ? (<Spinner aria-label="loading create guide Kraft" />) : "Crear guia" }
         </Button>
       </footer>

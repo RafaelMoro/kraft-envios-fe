@@ -199,16 +199,13 @@ export const verifyAndUpdateAddressMn = (
  * @returns Updated address object with default values for empty optional fields
  */
 export const verifyAndUpdateAddressTone = (
-  address: CreateGuideAddressFormValuesTone,
+  // It may contain zipcode and city because of the autocomplete zipcode feature
+  address: CreateGuideAddressFormValuesTone & { zipcode?: string; city?: string} ,
 ): CreateGuideAddressPayloadTone => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { lastName, company, ...restData } = address;
-  const formattedAddress = {
-    ...restData,
-    name: `${address.name} ${lastName}`.trim(),
-  };
+  const { company, zipcode, city, ...restData } = address;
   return {
-    ...formattedAddress,
+    ...restData,
     email: address.email?.trim() || DEFAULT_EMAIL,
     reference: address.reference?.trim() || DEFAULT_REFERENCE,
   };

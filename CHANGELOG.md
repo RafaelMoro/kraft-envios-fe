@@ -1,3 +1,9 @@
+## v0.38.1 (2026-02-01)
+
+### Pull Requests
+[#88](https://github.com/RafaelMoro/kraft-envios-fe/pull/88) | Add Fix Create guide tone add fields
+
+
 ## v0.38.0 (2026-01-30)
 
 ### Pull Requests
