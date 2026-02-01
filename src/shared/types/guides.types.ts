@@ -140,7 +140,11 @@ export type CreateGuideAddressDataToneFormValues = {
 };
 
 export type CreateGuideAddressFormValuesTone = PersonalDataFormValues &
-  CreateGuideAddressDataToneFormValues;
+  CreateGuideAddressDataToneFormValues & {
+    zipcode?: string | null | undefined;
+    city?: string | null | undefined;
+  };
+
 /**
  * Type for payload to create a guide address in Tone
  */

@@ -9,10 +9,10 @@ import { zipcodeValidation } from "../types/global.types";
 
 interface UseAutocompleteZipcodeProps<T extends Record<string, unknown>> {
   formData?: {
-    zipcode?: string;
+    zipcode?: string | null | undefined;
     neighborhood?: string;
     state?: string;
-    city?: string[] | string;
+    city?: string[] | string | null | undefined;
   };
   syncCityForm?: boolean;
   setValue: UseFormSetValue<T>;

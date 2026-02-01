@@ -70,6 +70,8 @@ export const AddTempAddressTone = ({
     const isNeighborhoodValid = isValidNeighborhood()
     if (!isNeighborhoodValid && !showManualFields) return
 
+    delete data?.zipcode
+    delete data?.city
     updateAddress(data)
     goNext()
   }

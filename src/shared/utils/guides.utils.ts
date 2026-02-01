@@ -201,6 +201,7 @@ export const verifyAndUpdateAddressMn = (
 export const verifyAndUpdateAddressTone = (
   address: CreateGuideAddressFormValuesTone,
 ): CreateGuideAddressPayloadTone => {
+  console.log('address', address)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { lastName, company, ...restData } = address;
   const formattedAddress = {
