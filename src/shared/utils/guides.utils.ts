@@ -203,13 +203,9 @@ export const verifyAndUpdateAddressTone = (
 ): CreateGuideAddressPayloadTone => {
   console.log('address', address)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { lastName, company, ...restData } = address;
-  const formattedAddress = {
-    ...restData,
-    name: `${address.name} ${lastName}`.trim(),
-  };
+  const { company, ...restData } = address;
   return {
-    ...formattedAddress,
+    ...restData,
     email: address.email?.trim() || DEFAULT_EMAIL,
     reference: address.reference?.trim() || DEFAULT_REFERENCE,
   };
