@@ -6,9 +6,7 @@ import { replaceSpacesWithPlus } from "@/shared/utils/guides.utils";
 
 export async function POST(request: NextRequest): Promise<NextResponse<unknown>> {
   try {
-    const {
-      NEXT_PUBLIC_GET_SAT_PRODUCT_URI: satUri
-    } = process.env
+    const satUri = process.env.NEXT_PUBLIC_GET_SAT_PRODUCT_URI
     if (!satUri) {
       return NextResponse.json({ message: 'missing SAT products URI', products: [] }, { status: 400 })
     }

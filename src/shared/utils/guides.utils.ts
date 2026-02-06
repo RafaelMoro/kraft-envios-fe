@@ -39,9 +39,7 @@ import { CreateAddressFormValues } from "../types/addresses.types";
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
   try {
-    const {
-      NEXT_PUBLIC_GET_SAT_PRODUCT_URI: satUri
-    } = process.env
+    const satUri = process.env.NEXT_PUBLIC_GET_SAT_PRODUCT_URI
     if (!satUri) {
       return {
         products: [],
