@@ -39,7 +39,17 @@ import { CreateAddressFormValues } from "../types/addresses.types";
 
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
   try {
-    const uri = `https://sat.api.hydraship.app/api/products?search=${replaceSpacesWithPlus(data.search)}`;
+    const {
+      NEXT_PUBLIC_GET_SAT_PRODUCT_URI: satUri
+    } = process.env
+    if (!satUri) {
+      return {
+        products: [],
+        message: 'missing SAT products URI'
+      }
+    }
+
+    const uri = `${satUri}?search=${replaceSpacesWithPlus(data.search)}`;
     const res: AxiosResponse<GetProductId> = await axios.get(uri);
     const products: SatProduct[] = res?.data?.data?.slice(0, 100) || [];
     const formattedProducts: SearchProduct[] = products.map((prod) => ({
