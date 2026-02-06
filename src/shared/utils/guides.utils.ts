@@ -45,7 +45,9 @@ export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
     if (!satUri) {
       return {
         products: [],
-        message: 'missing SAT products URI'
+        message: {
+          error: 'missing SAT products URI'
+        }
       }
     }
 
