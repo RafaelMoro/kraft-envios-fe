@@ -26,4 +26,4 @@ export const INITIAL_STATE_SELECT_CITY = "Seleccione una ciudad";
 
 export const DEFAULT_RFC_VALUE = 'XAXX010101000'
 export const DEFAULT_COMPANY_NAME = 'Kraft Envios'
-export const DEFAULT_EMAIL_VALUE = 'j.temix33@gmail.com'
+export const DEFAULT_EMAIL_VALUE = process.env.NEXT_PUBLIC_DEFAULT_EMAIL ?? 'placeholder@example.com'
