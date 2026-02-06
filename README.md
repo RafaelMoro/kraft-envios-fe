@@ -2,7 +2,28 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Environment Setup
+
+First, create a `.env.local` file in the root directory and configure the required environment variables. You can use `.env.example` as a template:
+
+```bash
+cp .env.example .env.local
+```
+
+Then, update the values in `.env.local`:
+
+- `BACKEND_URI`: URL of your backend API server
+- `SESSION_SECRET_KEY`: A secure random string for JWT encryption (generate using a secure method)
+- `NEXT_PUBLIC_LOCAL_STORAGE`: Local storage key prefix (default: KRAFT_ENVIOS_LOCAL)
+- `FRONTEND_URI`: URL of your frontend application
+- `NEXT_PUBLIC_GET_SAT_PRODUCT_URI`: SAT Product API endpoint URL
+- `NEXT_PUBLIC_DEFAULT_EMAIL`: This is the default email used to be filled in the external APIs
+
+**Important:** Never commit your `.env.local` file to version control. It contains sensitive information.
+
+### Development Server
+
+Then, run the development server:
 
 ```bash
 npm run dev

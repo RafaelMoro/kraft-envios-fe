@@ -1,3 +1,9 @@
+## v0.39.0 (2026-02-06)
+
+### Pull Requests
+[#90](https://github.com/RafaelMoro/kraft-envios-fe/pull/90) | Make respective changes for security concerns
+
+
 ## v0.38.1 (2026-02-01)
 
 ### Pull Requests
