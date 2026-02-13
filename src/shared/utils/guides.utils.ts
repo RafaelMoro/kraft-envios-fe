@@ -16,7 +16,6 @@ import {
   CreateGuideMnPayload,
   CreateGuideTonePayload,
   CreateMnGuideResponse,
-  // FetchSatProductsResponse,
   GetProductSatIdPayload,
   CreateGuideAddressFormValuesMn,
   CreateGuideAddressFormValuesTone,
@@ -35,7 +34,7 @@ import {
   AddressDataGEFormValues,
   PersonalDataGEFormValues,
   AddressGE,
-  GetGuidesResponse,
+  GetGuidesData,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
 
@@ -176,7 +175,7 @@ export const editAddressGECb = async ({
 
 export const getGuidesCb = async() => {
   try {
-    const res: AxiosResponse<GetGuidesResponse> = await axios.get(
+    const res: AxiosResponse<GetGuidesData[]> = await axios.get(
       GET_GUIDES_ENDPOINT,
     );
     const data = res?.data;

@@ -17,7 +17,8 @@ export async function GET() {
         'Authorization': `Bearer ${accessToken}`
       }
     })
-    return NextResponse.json(res.data, { status: 200 })
+    const data = res?.data?.data?.guides || [];
+    return NextResponse.json(data, { status: 200 })
   } catch (error) {
     const message = (error as unknown as GeneralError)?.response?.data?.error?.message
     return NextResponse.json({ message }, { status: 400 })
