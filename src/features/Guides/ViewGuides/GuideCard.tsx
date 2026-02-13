@@ -1,5 +1,6 @@
+import { primaryButtonCSS } from "@/shared/constants/global.constants";
 import { GetGuidesData } from "@/shared/types/guides.types"
-import { RiHome9Line } from "@remixicon/react"
+import { RiArticleLine, RiHome9Line } from "@remixicon/react"
 import { Badge, Card } from "flowbite-react"
 
 interface GuideCardProps {
@@ -42,6 +43,12 @@ export const GuideCard = ({ guide }: GuideCardProps) => {
           <p className="font-semibold text-ellipsis">{guide.destination.name}</p>
           <p className="text-xs text-gray-600 dark:text-gray-400">{guide.destination.city}</p>
         </div>
+      </div>
+      <div className={primaryButtonCSS}>
+        <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer" className="inline-flex gap-2">
+          <RiArticleLine size={18} />
+          Ver etiqueta
+        </a>
       </div>
     </Card>
   )
