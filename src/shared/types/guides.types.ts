@@ -321,6 +321,7 @@ export interface FetchSatProductsResponse {
 
 export interface GlobalCreateGuideResponse {
   trackingNumber: string;
+  shipmentNumber?: string | null;
   carrier: string;
   source: ProviderSource;
   price: string;
@@ -388,6 +389,19 @@ export interface CreateAddressGEResponse {
   reference: string;
   alias: string;
 }
+
+export interface GetGuidesData extends GlobalCreateGuideResponse {
+  status: string;
+}
+
+export interface GetGuidesResponse {
+  version: string;
+  error: null;
+  messages: string[];
+  data: {
+    guides: GetGuidesData[];
+  };
+} 
 
 //#region Schemas
 
