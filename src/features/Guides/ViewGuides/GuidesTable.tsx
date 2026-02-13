@@ -1,5 +1,5 @@
 import { GetGuidesData } from "@/shared/types/guides.types"
-import { RiInfoCardLine, RiMapPinLine } from "@remixicon/react"
+import { RiAttachmentLine, RiInfoCardLine, RiMapPinLine } from "@remixicon/react"
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react"
 
 interface GuidesTableProps {
@@ -32,7 +32,7 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
                     <p>{guide?.origin?.alias}</p>
                   </div>
                   <div className="inline-flex gap-2">
-                    <RiMapPinLine size={38} />
+                    <RiMapPinLine size={25} />
                     <p>{guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}</p>
                   </div>
                 </div>
@@ -44,7 +44,7 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
                     <p>{guide?.destination?.alias}</p>
                   </div>
                   <div className="inline-flex gap-2">
-                    <RiMapPinLine size={38} />
+                    <RiMapPinLine size={20} />
                     <p>{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
                   </div>
                 </div>
@@ -56,7 +56,11 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
               <TableCell>{guide.trackingNumber}</TableCell>
               <TableCell>{guide?.shipmentNumber}</TableCell>
               <TableCell>{guide.status}</TableCell>
-              <TableCell>{guide.labelUrl}</TableCell>
+              <TableCell>
+                <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer">
+                  <RiAttachmentLine />
+                </a>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
