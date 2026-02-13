@@ -10,6 +10,7 @@ import {
   CREATE_ADDRESS_GE_ENDPOINT,
   DEFAULT_RFC,
   CREATE_GUIDE_GE_ENDPOINT,
+  GET_GUIDES_ENDPOINT,
 } from "../constants/guides.constants";
 import {
   CreateGuideMnPayload,
@@ -34,9 +35,11 @@ import {
   AddressDataGEFormValues,
   PersonalDataGEFormValues,
   AddressGE,
+  GetGuidesResponse,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
 
+//#region Callbacks
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
   try {
     const satUri = process.env.NEXT_PUBLIC_GET_SAT_PRODUCT_URI
@@ -171,6 +174,19 @@ export const editAddressGECb = async ({
   }
 }
 
+export const getGuidesCb = async() => {
+  try {
+    const res: AxiosResponse<GetGuidesResponse> = await axios.get(
+      GET_GUIDES_ENDPOINT,
+    );
+    const data = res?.data;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+//#region Utils Fn
 /**
  * Replace whitespace characters with plus signs in a string.
  * Useful for URL encoding or API query formatting.
