@@ -11,7 +11,7 @@ export async function GET() {
     if (!accessToken) {
       return NextResponse.json({ message: 'missing access token' }, { status: 400 })
     }
-    const uri = `${process.env.BACKEND_URI}/addresses`
+    const uri = `${process.env.BACKEND_URI}/guides`
     const res: AxiosResponse<GetGuidesResponse> = await axios.get(uri, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
