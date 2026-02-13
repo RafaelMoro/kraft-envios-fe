@@ -1,4 +1,5 @@
 import { GetGuidesData } from "@/shared/types/guides.types"
+import { RiInfoCardLine, RiMapPinLine } from "@remixicon/react"
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react"
 
 interface GuidesTableProps {
@@ -8,12 +9,12 @@ interface GuidesTableProps {
 export const GuidesTable = ({ guides }: GuidesTableProps) => {
   return (
     <div className="overflow-x-auto">
-      <Table>
+      <Table striped>
         <TableHead>
           <TableRow>
-            <TableHeadCell>Remitente</TableHeadCell>
-            <TableHeadCell>Destinatario</TableHeadCell>
-            <TableHeadCell>Proveedor</TableHeadCell>
+            <TableHeadCell className="min-w-52">Remitente</TableHeadCell>
+            <TableHeadCell className="min-w-52">Destinatario</TableHeadCell>
+            <TableHeadCell className="min-w-40">Proveedor</TableHeadCell>
             <TableHeadCell>Origen</TableHeadCell>
             <TableHeadCell>Número de guia</TableHeadCell>
             <TableHeadCell>Número de envio</TableHeadCell>
@@ -25,16 +26,30 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
           { guides.map((guide) => (
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={guide.trackingNumber}>
               <TableCell>
-                Nombre: {guide?.origin?.name}
-                Alias: {guide?.origin?.alias}
-                Direccion: {guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}
+                <div className="flex flex-col gap-3">
+                  <div className="inline-flex gap-2">
+                    <RiInfoCardLine size={18} /> 
+                    <p>{guide?.origin?.alias}</p>
+                  </div>
+                  <div className="inline-flex gap-2">
+                    <RiMapPinLine size={38} />
+                    <p>{guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}</p>
+                  </div>
+                </div>
               </TableCell>
               <TableCell>
-                Nombre: {guide?.destination?.name}
-                Alias: {guide?.destination?.alias}
-                Direccion: {guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}
+                <div className="flex flex-col gap-3">
+                  <div className="inline-flex gap-2">
+                    <RiInfoCardLine size={18} /> 
+                    <p>{guide?.destination?.alias}</p>
+                  </div>
+                  <div className="inline-flex gap-2">
+                    <RiMapPinLine size={38} />
+                    <p>{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
+                  </div>
+                </div>
               </TableCell>
-              <TableCell className="whitespace-nowrap font-medium">
+              <TableCell>
                 {guide.carrier}
               </TableCell>
               <TableCell>{guide.source}</TableCell>
