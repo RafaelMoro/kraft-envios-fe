@@ -1,6 +1,6 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
-import { ProviderSource } from "./quotes.types";
+import { ProviderSource, QuoteCourier, QuoteImage } from "./quotes.types";
 import { Address } from "./addresses.types";
 import { zipcodeValidation } from "./global.types";
 
@@ -403,7 +403,12 @@ export interface AddressGuide {
 export interface GetGuidesData extends GlobalCreateGuideResponse {
   status: string;
   origin: AddressGuide;
+  courier: QuoteCourier | null;
   destination: AddressGuide;
+}
+
+export interface GuideUI extends GetGuidesData {
+  logoSrc: QuoteImage;
 }
 
 export interface GetGuidesResponse {

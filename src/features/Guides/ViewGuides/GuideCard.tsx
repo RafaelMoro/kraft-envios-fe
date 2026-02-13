@@ -1,19 +1,41 @@
 import { primaryButtonCSS } from "@/shared/constants/global.constants";
-import { GetGuidesData } from "@/shared/types/guides.types"
+import { GuideUI } from "@/shared/types/guides.types"
+import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon";
 import { RiArticleLine, RiHome9Line } from "@remixicon/react"
 import { Badge, Card } from "flowbite-react"
+import Image from "next/image";
 
 interface GuideCardProps {
-  guide: GetGuidesData;
+  guide: GuideUI;
 }
 
 export const GuideCard = ({ guide }: GuideCardProps) => {
+  const isOtherProvider = guide.logoSrc.provider === 'other'
+  const isPaquetExpProvider = guide.logoSrc.provider === 'paquetexpres'
+  const is99Provider = guide.courier === 'NextDay'
+  const isFedexProvider = guide.logoSrc.provider === 'fedex'
+
   return (
     <Card href="#" className="max-w-sm">
       { /** Preheader */}
       <div className="flex justify-between">
         <Badge color="success">{guide.status}</Badge>
-        <p className="text-sm font-bold">Logo pending</p>
+        <div data-testid="quote-logo-image-box" className="md:col-span-3 lg:col-span-3 row-span-2 place-self-center">
+          { isPaquetExpProvider && (<PaqueteExpressIcon />) }
+          { isFedexProvider && (
+            <picture className="flex h-18 lg:h-24 w-18 lg:w-24 bg-gray-800 rounded-full justify-center items-center">
+              <Image src={guide.logoSrc.source} alt="Fedex provider" width={guide.logoSrc.width} height={guide.logoSrc.height} />
+            </picture>
+          ) }
+          { (isOtherProvider || is99Provider) && (
+            <picture className="flex h-16 w-16 md:h-24 md:w-24 dark:bg-gray-100 rounded-full justify-center items-center">
+              <Image src={guide.logoSrc.source} alt="Other provider" width={guide.logoSrc.width} height={guide.logoSrc.height} />
+            </picture>
+          ) }
+          { (!isPaquetExpProvider && !isOtherProvider && !isFedexProvider && !is99Provider) && (
+            <Image src={guide.logoSrc.source} alt="Quote provider" width={guide.logoSrc.width} height={guide.logoSrc.height} />
+          )}
+        </div>
       </div>
 
       { /** Header */}
