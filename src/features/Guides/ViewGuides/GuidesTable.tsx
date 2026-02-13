@@ -9,17 +9,17 @@ interface GuidesTableProps {
 export const GuidesTable = ({ guides }: GuidesTableProps) => {
   return (
     <div className="overflow-x-auto">
-      <Table striped>
+      <Table striped hoverable>
         <TableHead>
           <TableRow>
-            <TableHeadCell className="min-w-52">Remitente</TableHeadCell>
-            <TableHeadCell className="min-w-52">Destinatario</TableHeadCell>
-            <TableHeadCell className="min-w-40">Proveedor</TableHeadCell>
-            <TableHeadCell>Origen</TableHeadCell>
-            <TableHeadCell>Número de guia</TableHeadCell>
-            <TableHeadCell>Número de envio</TableHeadCell>
-            <TableHeadCell>Estado</TableHeadCell>
-            <TableHeadCell>Etiqueta</TableHeadCell>
+            <TableHeadCell className="min-w-52 text-base">Remitente</TableHeadCell>
+            <TableHeadCell className="min-w-52 text-base">Destinatario</TableHeadCell>
+            <TableHeadCell className="min-w-40 text-base">Proveedor</TableHeadCell>
+            <TableHeadCell className="text-base">Origen</TableHeadCell>
+            <TableHeadCell className="text-base">Número de guia</TableHeadCell>
+            <TableHeadCell className="text-base">Número de envio</TableHeadCell>
+            <TableHeadCell className="text-base">Estado</TableHeadCell>
+            <TableHeadCell className="text-base">Etiqueta</TableHeadCell>
           </TableRow>
         </TableHead>
         <TableBody className="divide-y">
