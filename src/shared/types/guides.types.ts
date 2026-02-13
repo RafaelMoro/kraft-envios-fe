@@ -390,8 +390,20 @@ export interface CreateAddressGEResponse {
   alias: string;
 }
 
+export interface AddressGuide {
+  name: string;
+  alias: string;
+  street: string;
+  streetNumber: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
 export interface GetGuidesData extends GlobalCreateGuideResponse {
   status: string;
+  origin: AddressGuide;
+  destination: AddressGuide;
 }
 
 export interface GetGuidesResponse {
