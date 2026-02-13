@@ -11,6 +11,8 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
       <Table>
         <TableHead>
           <TableRow>
+            <TableHeadCell>Remitente</TableHeadCell>
+            <TableHeadCell>Destinatario</TableHeadCell>
             <TableHeadCell>Proveedor</TableHeadCell>
             <TableHeadCell>Origen</TableHeadCell>
             <TableHeadCell>Número de guia</TableHeadCell>
@@ -22,7 +24,17 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
         <TableBody className="divide-y">
           { guides.map((guide) => (
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={guide.trackingNumber}>
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+              <TableCell>
+                Nombre: {guide?.origin?.name}
+                Alias: {guide?.origin?.alias}
+                Direccion: {guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}
+              </TableCell>
+              <TableCell>
+                Nombre: {guide?.destination?.name}
+                Alias: {guide?.destination?.alias}
+                Direccion: {guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}
+              </TableCell>
+              <TableCell className="whitespace-nowrap font-medium">
                 {guide.carrier}
               </TableCell>
               <TableCell>{guide.source}</TableCell>
