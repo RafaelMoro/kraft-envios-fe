@@ -50,6 +50,8 @@ export const GuideCard = ({ guide }: GuideCardProps) => {
           <p className="text-xs text-gray-600 dark:text-gray-400">{guide.destination.city}</p>
         </div>
       </div>
+
+      { /** Footer with label link */ }
       <div className={primaryButtonCSS}>
         <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer" className="inline-flex gap-2">
           <RiArticleLine size={18} />
