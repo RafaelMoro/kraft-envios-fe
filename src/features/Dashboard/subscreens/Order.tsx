@@ -34,7 +34,17 @@ export const Order = ({ userInfo }: OrderProps) => {
   return (
     <main className='w-full p-4 flex flex-col gap-5'>
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
-      { isMobileTablet && (
+      { isError && (
+        <div className="flex flex-col gap-5">
+          <h2 className="text-2xl font-bold text-center tracking-tight md:col-span-2 lg:col-span-3">
+            Oops!
+          </h2>
+          <p className="text-center text-gray-600 dark:text-gray-400 md:col-span-2 lg:col-span-3">
+            Ha sucedido un error. Intentelo nuevamente
+          </p>
+        </div>
+      )}
+      { isMobileTablet && !isError && (
         <div className="grid md:grid-cols-2 gap-5">
           { !isPending && guides.map((guide => (
             <GuideCard key={guide.trackingNumber} guide={guide} isPending={isPending} />
@@ -44,7 +54,7 @@ export const Order = ({ userInfo }: OrderProps) => {
           ))}
         </div>
       ) }
-      { !isMobileTablet && (
+      { !isMobileTablet && !isError && (
         <GuidesTable guides={guides ?? []} isPending={isPending} />
       )}
     </main>
