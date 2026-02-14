@@ -26,7 +26,7 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
           { guides.map((guide) => (
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={guide.trackingNumber}>
               <TableCell>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 text-gray-950">
                   <div className="inline-flex gap-2">
                     <RiInfoCardLine size={18} /> 
                     <p>{guide?.origin?.alias}</p>
@@ -49,13 +49,13 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="text-gray-950">
                 {guide.carrier}
               </TableCell>
               <TableCell>{guide.source}</TableCell>
-              <TableCell>{guide.trackingNumber}</TableCell>
+              <TableCell className="text-gray-950">{guide.trackingNumber}</TableCell>
               <TableCell>{guide?.shipmentNumber}</TableCell>
-              <TableCell className="px-2">{guide.status}</TableCell>
+              <TableCell className="px-2 text-gray-950">{guide.status}</TableCell>
               <TableCell className="px-2">
                 <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer">
                   <RiAttachmentLine />
