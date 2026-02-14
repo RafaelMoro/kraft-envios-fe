@@ -42,7 +42,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         </div>
       ) }
       { !isMobileTablet && (
-        <GuidesTable guides={guides ?? []} />
+        <GuidesTable guides={guides ?? []} isPending={isPending} />
       )}
     </main>
   )

@@ -4,9 +4,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 
 
 interface GuidesTableProps {
   guides: GetGuidesData[]
+  isPending: boolean;
 }
 
-export const GuidesTable = ({ guides }: GuidesTableProps) => {
+export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
   return (
     <div className="overflow-x-auto">
       <Table striped hoverable>
@@ -23,7 +24,35 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
           </TableRow>
         </TableHead>
         <TableBody className="divide-y">
-          { guides.map((guide) => (
+          { isPending && Array.from({ length: 5 }).map((_, index) => (
+            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={index}>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+              <TableCell>
+                <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
+              </TableCell>
+            </TableRow>
+          ))}
+          { !isPending && guides.map((guide) => (
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={guide.trackingNumber}>
               <TableCell>
                 <div className="flex flex-col gap-3 text-gray-950">
