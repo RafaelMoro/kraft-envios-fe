@@ -36,9 +36,12 @@ export const Order = ({ userInfo }: OrderProps) => {
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       { isMobileTablet && (
         <div className="grid md:grid-cols-2 gap-5">
-          { guides.map((guide => (
-            <GuideCard key={guide.trackingNumber} guide={guide} />
+          { !isPending && guides.map((guide => (
+            <GuideCard key={guide.trackingNumber} guide={guide} isPending={isPending} />
           )))}
+          { isPending && Array.from({ length: 2 }).map((_, index) => (
+            <GuideCard key={index} guide={null} isPending={true} />
+          ))}
         </div>
       ) }
       { !isMobileTablet && (
