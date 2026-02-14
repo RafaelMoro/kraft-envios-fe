@@ -14,7 +14,7 @@ interface GuideCardProps {
 export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
   if (isPending && !guide) {
     return (
-      <Card href="#" className="max-w-sm">
+      <Card href="#" className="max-w-sm" data-testid="guide-card-skeleton">
         <div className="flex justify-between">
           <div className="bg-slate-400 rounded animate-pulse h-8 w-16" />
           <div className="bg-slate-400 rounded animate-pulse h-8 w-16" />

@@ -25,7 +25,7 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
         </TableHead>
         <TableBody className="divide-y">
           { isPending && Array.from({ length: 5 }).map((_, index) => (
-            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={index}>
+            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={index} data-testid="guide-table-skeleton-row">
               <TableCell>
                 <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
               </TableCell>
