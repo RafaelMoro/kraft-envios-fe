@@ -15,11 +15,11 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
             <TableHeadCell className="min-w-52 text-base">Remitente</TableHeadCell>
             <TableHeadCell className="min-w-52 text-base">Destinatario</TableHeadCell>
             <TableHeadCell className="min-w-40 text-base">Proveedor</TableHeadCell>
-            <TableHeadCell className="text-base">Origen</TableHeadCell>
+            <TableHeadCell className="text-base px-2">Origen</TableHeadCell>
             <TableHeadCell className="text-base">Número de guia</TableHeadCell>
             <TableHeadCell className="text-base">Número de envio</TableHeadCell>
-            <TableHeadCell className="text-base">Estado</TableHeadCell>
-            <TableHeadCell className="text-base">Etiqueta</TableHeadCell>
+            <TableHeadCell className="text-base px-2">Estado</TableHeadCell>
+            <TableHeadCell className="text-base px-2">Etiqueta</TableHeadCell>
           </TableRow>
         </TableHead>
         <TableBody className="divide-y">
@@ -55,8 +55,8 @@ export const GuidesTable = ({ guides }: GuidesTableProps) => {
               <TableCell>{guide.source}</TableCell>
               <TableCell>{guide.trackingNumber}</TableCell>
               <TableCell>{guide?.shipmentNumber}</TableCell>
-              <TableCell>{guide.status}</TableCell>
-              <TableCell>
+              <TableCell className="px-2">{guide.status}</TableCell>
+              <TableCell className="px-2">
                 <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer">
                   <RiAttachmentLine />
                 </a>
