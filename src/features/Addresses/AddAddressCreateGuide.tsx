@@ -7,6 +7,14 @@ interface AddAddressCreateGuideProps {
   children: ReactNode;
 }
 
+/**
+ * General component that shows the personal data form (name, last name, phone, email etc)
+ * followed by a section for address data with title, description, create temporal address button and submit buttons
+ * @param PersonalDataUI - The UI component that shows the personal data form to render name, last name, phone, email inputs
+ * @param CreateTempAddressButton - The UI component that shows the button to create a temporary address
+ * @param SubmitFormUI - The UI component that shows the submit button for the form to continue with the guide creation
+ * @param children - The UI components that belongs to the select address dropdown
+ */
 export const AddAddressCreateGuide = ({ PersonalDataUI, CreateTempAddressButton, SubmitFormUI, children }: AddAddressCreateGuideProps) => {
   return (
     <div>
