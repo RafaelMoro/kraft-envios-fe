@@ -1,10 +1,9 @@
 import { Button, Checkbox } from "flowbite-react"
 import { RiArrowRightFill, RiBuilding3Line } from "@remixicon/react"
-import Image from "next/image"
 import clsx from "clsx"
 
 import { QuoteTypeService, QuoteUI } from "@/shared/types/quotes.types"
-import { PaqueteExpressIcon } from "@/shared/ui/icons/PaqueteExpressIcon"
+import { CourierImage } from "@/shared/ui/atoms/CourierImage"
 
 interface QuoteProps {
   quote: QuoteUI;
@@ -16,8 +15,6 @@ interface QuoteProps {
 
 export const QuoteCard = ({ quote, isMobile = false, addSelectedQuote, removeSelectedQuote, handleCreateGuide }: QuoteProps) => {
   const isOtherProvider = quote.logoSrc.provider === 'other'
-  const isPaquetExpProvider = quote.logoSrc.provider === 'paquetexpres'
-  const is99Provider = quote.courier === 'NextDay'
   const isFedexProvider = quote.logoSrc.provider === 'fedex'
 
   const titleStyles = clsx(
@@ -49,22 +46,12 @@ export const QuoteCard = ({ quote, isMobile = false, addSelectedQuote, removeSel
         <div className="row-span-2 flex justify-center items-center cursor-pointer">
           <Checkbox className="cursor-pointer" onChange={(event) => handleCheckboxChange(event)} />
         </div>
-        <div data-testid="quote-logo-image-box" className="md:col-span-3 lg:col-span-3 row-span-2 place-self-center">
-          { isPaquetExpProvider && (<PaqueteExpressIcon />) }
-          { isFedexProvider && (
-            <picture className="flex h-18 lg:h-24 w-18 lg:w-24 bg-gray-800 rounded-full justify-center items-center">
-              <Image src={quote.logoSrc.source} alt="Fedex provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
-            </picture>
-          ) }
-          { (isOtherProvider || is99Provider) && (
-            <picture className="flex h-16 w-16 md:h-24 md:w-24 dark:bg-gray-100 rounded-full justify-center items-center">
-              <Image src={quote.logoSrc.source} alt="Other provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
-            </picture>
-          ) }
-          { (!isPaquetExpProvider && !isOtherProvider && !isFedexProvider && !is99Provider) && (
-            <Image src={quote.logoSrc.source} alt="Quote provider" width={quote.logoSrc.width} height={quote.logoSrc.height} />
-          )}
-        </div>
+        <CourierImage
+          dataTestId="quote-logo-image-box"
+          cssImgContainer="md:col-span-3 lg:col-span-3 row-span-2 place-self-center"
+          image={quote.logoSrc}
+          courier={quote.courier}
+        />
         <div data-testid="quote-title" className="col-span-2 md:col-span-4 lg:col-span-8">
           <span className="text-xs font-light text-blue-700 dark:text-blue-600">Paquetería</span>
           <h5 className={titleStyles}>

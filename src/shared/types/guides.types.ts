@@ -1,6 +1,6 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
-import { ProviderSource } from "./quotes.types";
+import { ProviderSource, QuoteCourier, QuoteImage } from "./quotes.types";
 import { Address } from "./addresses.types";
 import { zipcodeValidation } from "./global.types";
 
@@ -321,6 +321,7 @@ export interface FetchSatProductsResponse {
 
 export interface GlobalCreateGuideResponse {
   trackingNumber: string;
+  shipmentNumber?: string | null;
   carrier: string;
   source: ProviderSource;
   price: string;
@@ -388,6 +389,36 @@ export interface CreateAddressGEResponse {
   reference: string;
   alias: string;
 }
+
+export interface AddressGuide {
+  name: string;
+  alias: string;
+  street: string;
+  streetNumber: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
+export interface GetGuidesData extends GlobalCreateGuideResponse {
+  status: string;
+  origin: AddressGuide;
+  courier: QuoteCourier | null;
+  destination: AddressGuide;
+}
+
+export interface GuideUI extends GetGuidesData {
+  logoSrc: QuoteImage;
+}
+
+export interface GetGuidesResponse {
+  version: string;
+  error: null;
+  messages: string[];
+  data: {
+    guides: GetGuidesData[];
+  };
+} 
 
 //#region Schemas
 
