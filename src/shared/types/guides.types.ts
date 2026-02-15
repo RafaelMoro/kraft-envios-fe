@@ -470,9 +470,9 @@ export const CreateGuideAddressFormSchemaMn: ObjectSchema<CreateGuideAddressForm
           .min(2, "La colonia debe tener al menos 2 caracteres"),
         external_number: string()
           .required("Número exterior es requerido")
-          .matches(/^\d+$/, {
+          .matches(/^[a-zA-Z0-9]+$/, {
             excludeEmptyString: true,
-            message: "El número exterior solo puede contener dígitos",
+            message: "El número exterior solo puede contener letras y números",
           })
           .min(1, "El número exterior debe tener al menos 1 carácter"),
         city: string()
@@ -524,9 +524,9 @@ export const CreateGuideAddressFormSchemaTone: ObjectSchema<CreateGuideAddressFo
           .min(2, "La colonia debe tener al menos 2 caracteres"),
         external_number: string()
           .required("Número exterior es requerido")
-          .matches(/^\d+$/, {
+          .matches(/^[a-zA-Z0-9]+$/, {
             excludeEmptyString: true,
-            message: "El número exterior solo puede contener dígitos",
+            message: "El número exterior solo puede contener letras y números",
           })
           .min(1, "El número exterior debe tener al menos 1 carácter"),
         town: string()
@@ -633,9 +633,9 @@ export const CreateAddressGESchema: ObjectSchema<CreateAddressFormValuesGE> =
           .min(2, "La colonia debe tener al menos 2 caracteres"),
         external_number: string()
           .required("Número exterior es requerido")
-          .matches(/^\d+$/, {
+          .matches(/^[a-zA-Z0-9]+$/, {
             excludeEmptyString: true,
-            message: "El número exterior solo puede contener dígitos",
+            message: "El número exterior solo puede contener letras y números",
           })
           .min(1, "El número exterior debe tener al menos 1 carácter"),
         city: string()
