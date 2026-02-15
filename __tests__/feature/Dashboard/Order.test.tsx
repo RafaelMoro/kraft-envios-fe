@@ -5,6 +5,7 @@ import { Order } from '@/features/Dashboard/subscreens/Order';
 import { LoginData } from '@/shared/types/login.types';
 import { GetGuidesData } from '@/shared/types/guides.types';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { UserRoles } from '@/shared/types/global.types';
 
 // Mock dependencies
 jest.mock('../../../src/shared/hooks/useMediaQuery');
@@ -49,14 +50,14 @@ describe('Order', () => {
       user: {
         name: 'Juan Pérez',
         email: 'juan@example.com',
-        id: '123',
-        confirmed: true,
-        isStaff: false,
+        lastName: 'Pérez',
+        role: ['user']
       },
-      token: 'mock-token',
     },
     error: null,
-    messages: [],
+    message: null,
+    success: true,
+    version: '1.0',
   };
 
   const mockGuides: GetGuidesData[] = [
