@@ -148,20 +148,20 @@ describe('CreateGuideAddressForm', () => {
   })
 
   describe('Form validation for field formats', () => {
-    it('should display validation error for non-numeric external_number', async () => {
+    it('should display validation error for external_number with special characters', async () => {
       // Given the CreateGuideAddressForm is rendered
       const user = userEvent.setup()
       renderComponent()
 
-      // When user enters non-numeric characters in external_number field
+      // When user enters special characters in external_number field
       const externalNumberInput = screen.getByTestId('external_number')
-      await user.type(externalNumberInput, 'abc123')
+      await user.type(externalNumberInput, '123-A#')
       
       const submitButton = screen.getByTestId('origin-address-mn-temp-next-button')
       await user.click(submitButton)
 
       // Then appropriate format validation error should be displayed
-      expect(await screen.findByText('El número exterior solo puede contener dígitos')).toBeInTheDocument()
+      expect(await screen.findByText('El número exterior solo puede contener letras y números')).toBeInTheDocument()
     })
 
     it('should display validation error for non-numeric phone', async () => {
