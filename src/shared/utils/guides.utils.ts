@@ -76,7 +76,6 @@ export const createGuideMnCb = async (data: CreateGuideMnPayload) => {
     CREATE_GUIDE_MN_ENDPOINT,
     data,
   );
-  console.log("res?.data from cb", res?.data);
   return res?.data?.data?.guide;
 };
 
