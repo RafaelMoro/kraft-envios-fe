@@ -1,3 +1,9 @@
+## v0.40.1 (2026-02-15)
+
+### Pull Requests
+[#94](https://github.com/RafaelMoro/kraft-envios-fe/pull/94) | Allow characters on external number field to create guide
+
+
 ## v0.40.0 (2026-02-15)
 
 ### Pull Requests
