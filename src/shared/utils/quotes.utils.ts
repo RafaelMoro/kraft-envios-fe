@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { GetQuoteForm, ProviderImg, QuoteCourier, QuoteImage, QuoteImgDict, ProviderSource, QuoteTypeService, QuoteUI } from "../types/quotes.types"
 import { GET_QUOTE_API_ENDPOINT } from '../constants/global.constants'
+import { DEFAULT_IMAGE_LOGO_PROVIDER } from '../constants/quotes.constants'
 
 export const getQuoteMutationCb = (data: GetQuoteForm) => {
   return axios.post(GET_QUOTE_API_ENDPOINT, data)
@@ -73,12 +74,7 @@ export const getQuoteImg = ({
       width: isMobile ? 90 : 120,
       height: isMobile ? 90 : 120
     },
-    "other": {
-      source: "/kraft-logo.svg",
-      provider: "other",
-      width: 100,
-      height: 50
-    }
+    "other": DEFAULT_IMAGE_LOGO_PROVIDER
   }
 
   if (provider === 'dhl') return quoteImgDict["dhl"]
