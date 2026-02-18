@@ -31,6 +31,7 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   setAliasSelected, updateAddressInfo, setErrorMessage, setTownError, setCityError,
 }: SelectAddressDropdownProps<T>) => {
   const { data: addresses, isPending, isError } = useGetAddress()
+  const [filteredAddresses, setFilteredAddresses] = useState<Address[]>([])
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(aliasSaved?.address);
 
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
@@ -50,6 +51,13 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
     const inputValue = e.target.value
     setSearchTextAlias(inputValue)
   }
+
+  // When addresses are fetched, set them to the state. If there is a search term, filter them by the term.
+  useEffect(() => {
+    if (addresses && addresses.length > 0 && !isPending) {
+      setFilteredAddresses(addresses)
+    }
+  }, [addresses, isPending])
 
   // Set the placeholder based on the state of fetching addresses and the saved alias
   useEffect(() => {
@@ -166,7 +174,7 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
         />
         { showDropdown && (
           <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
-            { (addresses && addresses.length > 0) && addresses.map((address) => (
+            { (filteredAddresses.length > 0) && filteredAddresses.map((address) => (
               <li key={`alias-${address.alias}`} onClick={() => handleSelectAlias(address)} className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">{address.alias}</li>
             ))}
           </ul>
