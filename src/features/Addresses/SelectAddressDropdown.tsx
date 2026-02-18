@@ -1,6 +1,7 @@
-import { useState } from "react"
-import { Button, Dropdown, DropdownItem, Label, Spinner } from "flowbite-react"
+import { useEffect, useState } from "react"
+import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
 import { RiArrowDownSLine } from "@remixicon/react"
+import { HiChevronDown } from "react-icons/hi"
 
 import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
@@ -31,6 +32,47 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
 }: SelectAddressDropdownProps<T>) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(aliasSaved?.address);
+
+  const [showDropdown, setShowDropdown] = useState<boolean>(false)
+  const [aliasPlaceholder, setAliasPlaceholder] = useState<string>("Alias de dirección");
+  const handleInputFocus = () => {
+    setShowDropdown(true)
+  }
+  const handleInputBlur = () => {
+    // Add a small delay to allow option selection to complete before closing dropdown
+    setTimeout(() => {
+      setShowDropdown(false)
+    }, 150)
+  }
+
+  const [searchTextAlias, setSearchTextAlias] = useState<string>(aliasSaved?.alias || "");
+  const handleChangeAliasTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value
+    setSearchTextAlias(inputValue)
+  }
+
+  // Set the placeholder based on the state of fetching addresses and the saved alias
+  useEffect(() => {
+    if (isPending) {
+      setAliasPlaceholder("Cargando alias...")
+    }
+    if (isError && !isPending) {
+      setAliasPlaceholder("No se han podido cargar los alias")
+    }
+    if (!isPending && addresses && addresses.length > 0 && !aliasSaved.alias) {
+      setAliasPlaceholder("Alias de dirección")
+    }
+    if (Array.isArray(addresses) && addresses.length === 0 && !isPending) {
+      setAliasPlaceholder("No tienes alias guardados")
+    }
+  }, [isPending, isError, addresses, aliasSaved.alias])
+
+  // If there is an alias already saved, set it as selected.
+  useEffect(() => {
+    if (!isPending && addresses && addresses.length > 0 && aliasSaved.alias) {
+      setSearchTextAlias(aliasSaved.alias)
+    }
+  }, [addresses, aliasSaved.alias, isPending])
 
   const [showTownSelector, setShowTownSelector] = useState(aliasSaved?.address?.town.length > 1 || false);
   const [townSelected, setTownSelected] = useState<string>(aliasSaved.town);
@@ -97,9 +139,40 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
     updateAddressInfo({ newAddress: selectedAddress, town: townSelected, city })
   }
 
+  // TODO: Change these
+  const error = ''
+
   return (
     <div className="flex flex-col gap-3">
-      <Dropdown
+      <div className="relative">
+        <div className="mb-2 flex flex-col gap-2">
+          <Label htmlFor="select-address-dropdown-button">Alias:</Label>
+          { error && (
+            <ErrorMessage>{error}</ErrorMessage>
+          )}
+        </div>
+        <TextInput
+          data-testid="select-address-dropdown-button"
+          id="select-address-dropdown-button"
+          type="text"
+          value={searchTextAlias}
+          onChange={handleChangeAliasTerm}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
+          placeholder={aliasPlaceholder}
+          rightIcon={HiChevronDown}
+          disabled={isPending || isError || !addresses || addresses.length === 0}
+          autoComplete="off"
+        />
+        { showDropdown && (
+          <ul className="bg-gray-200 dark:bg-gray-800 w-full absolute z-50 border border-gray-300 dark:border-gray-500 p-2.5 rounded-lg max-h-52 overflow-y-auto">
+            { (addresses && addresses.length > 0) && addresses.map((address) => (
+              <li key={`alias-${address.alias}`} onClick={() => handleSelectAlias(address)} className="hover:bg-gray-300 dark:hover:bg-gray-900 p-2 rounded-lg">{address.alias}</li>
+            ))}
+          </ul>
+        ) }
+      </div>
+      {/* <Dropdown
         label=""
         renderTrigger={() => (
           <div className="flex flex-col gap-1">
@@ -129,7 +202,7 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
             </DropdownItem>
           )) }
         </div>
-      </Dropdown>
+      </Dropdown> */}
       { !hideTownDropdown && (
         <Dropdown
           label=""
