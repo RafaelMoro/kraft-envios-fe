@@ -22,6 +22,12 @@ export const ResultGuideScreen = ({ guide, isSuccess, isError, errorMessage, clo
   const title = isSuccess ? "Guía creada con éxito" : "Error al crear la guía"
   const formattedPrice = formatNumberToCurrency((Number(guide?.price ?? 0)))
 
+  const errorMessages = {
+    'No cuenta con saldo suficiente': 'Saldo insuficiente en TONE. Por favor, recarga tu cuenta e intenta nuevamente.',
+    'Endpoint request timed out': 'Hubo un problema de conexión y no recibimos respuesta a tiempo. Por favor, intente nuevamente.',
+    "La cotización ya tiene guía generada": 'Ya existe una guía generada para esta cotización. Por favor, selecciona otra opción.'
+  }
+
   useEffect(() => {
     // Only Pkk returns the file in base64 format
     if (guide?.source === 'Pkk' && (guide?.file)) {
@@ -62,10 +68,7 @@ export const ResultGuideScreen = ({ guide, isSuccess, isError, errorMessage, clo
       { isError && !isSuccess && (
         <div className="flex flex-col gap-6">
           <p className="text-red-600 text-center">
-            { errorMessage === 'No cuenta con saldo suficiente'
-              ? 'Saldo insuficiente en TONE. Por favor, recarga tu cuenta e intenta nuevamente.'
-              : 'Ocurrió un error al crear la guía. Por favor, intente nuevamente.'
-            }
+            {errorMessages[errorMessage as keyof typeof errorMessages] || 'Ocurrió un error al crear la guía. Por favor, intente nuevamente.'}
           </p>
           <Button color="red" onClick={closeModal} outline>
             Finalizar

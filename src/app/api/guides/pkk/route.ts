@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log('res?.data route pkk', res?.data)
     return NextResponse.json(res.data, { status: 201 })
 
   } catch (error) {
