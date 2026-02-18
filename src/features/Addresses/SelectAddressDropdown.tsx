@@ -159,16 +159,14 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
     updateAddressInfo({ newAddress: selectedAddress, town: townSelected, city })
   }
 
-  // TODO: Change these
-  const error = ''
 
   return (
     <div className="flex flex-col gap-3">
       <div className="relative">
         <div className="mb-2 flex flex-col gap-2">
           <Label htmlFor="select-address-dropdown-button">Alias:</Label>
-          { error && (
-            <ErrorMessage>{error}</ErrorMessage>
+          { errorMessage && (
+            <ErrorMessage>{errorMessage}</ErrorMessage>
           )}
         </div>
         <TextInput
