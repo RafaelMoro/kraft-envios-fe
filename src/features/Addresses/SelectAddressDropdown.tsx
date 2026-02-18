@@ -50,6 +50,18 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   const handleChangeAliasTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
     setSearchTextAlias(inputValue)
+
+    // Filter addresses based on search input
+    if (addresses && addresses.length > 0) {
+      if (inputValue.trim() === "") {
+        setFilteredAddresses(addresses)
+      } else {
+        const filtered = addresses.filter((address) =>
+          address.alias.toLowerCase().includes(inputValue.toLowerCase())
+        )
+        setFilteredAddresses(filtered)
+      }
+    }
   }
 
   // When addresses are fetched, set them to the state. If there is a search term, filter them by the term.
