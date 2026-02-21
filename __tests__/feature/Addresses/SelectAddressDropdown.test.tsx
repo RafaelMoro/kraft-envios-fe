@@ -104,7 +104,7 @@ describe('Feature: Select Address Dropdown', () => {
   })
 
   describe('Scenario: Display address dropdown when loading', () => {
-    it('Given addresses are being loaded, When the component renders, Then it should show a spinner', () => {
+    it('Given addresses are being loaded, When the component renders, Then it should show loading placeholder', () => {
       mockedUseGetAddress.mockReturnValue({
         data: undefined,
         aliases: [],
@@ -117,12 +117,12 @@ describe('Feature: Select Address Dropdown', () => {
 
       const aliasButton = screen.getByTestId('select-address-dropdown-button')
       expect(aliasButton).toBeDisabled()
-      expect(screen.getByRole('status')).toBeInTheDocument()
+      expect(aliasButton).toHaveAttribute('placeholder', 'Cargando alias...')
     })
   })
 
   describe('Scenario: Display error message when addresses fail to load', () => {
-    it('Given addresses failed to load, When the component renders, Then it should display an error message', () => {
+    it('Given addresses failed to load, When the component renders, Then it should display an error placeholder', () => {
       mockedUseGetAddress.mockReturnValue({
         data: undefined,
         aliases: [],
@@ -135,7 +135,7 @@ describe('Feature: Select Address Dropdown', () => {
 
       const aliasButton = screen.getByTestId('select-address-dropdown-button')
       expect(aliasButton).toBeDisabled()
-      expect(screen.getByText(/no se han podido cargar los alias/i)).toBeInTheDocument()
+      expect(aliasButton).toHaveAttribute('placeholder', 'No se han podido cargar los alias')
     })
   })
 
@@ -153,7 +153,7 @@ describe('Feature: Select Address Dropdown', () => {
 
       const aliasButton = screen.getByTestId('select-address-dropdown-button')
       expect(aliasButton).not.toBeDisabled()
-      expect(screen.getByText(/alias de dirección/i)).toBeInTheDocument()
+      expect(aliasButton).toHaveAttribute('placeholder', 'Alias de dirección')
     })
 
     it('Given addresses are loaded and an alias is saved, When the component renders, Then it should display the saved alias', () => {
@@ -345,6 +345,164 @@ describe('Feature: Select Address Dropdown', () => {
     })
   })
 
+  describe('Scenario: Select town from dropdown', () => {
+    it('Given an address with multiple towns is selected, When user selects a town, Then it should call updateAddressInfo with the selected town', async () => {
+      const user = userEvent.setup()
+      const updateAddressInfo = jest.fn()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(<SelectAddressDropdownWrapper updateAddressInfo={updateAddressInfo} />)
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+
+      const oficinaOption = await screen.findByText('Oficina')
+      await user.click(oficinaOption)
+
+      await waitFor(() => {
+        const townButton = screen.getByTestId('select-town-dropdown-button')
+        expect(townButton).not.toBeDisabled()
+      })
+
+      const townButton = screen.getByTestId('select-town-dropdown-button')
+      await user.click(townButton)
+
+      const northOption = await screen.findByText('Norte')
+      await user.click(northOption)
+
+      expect(updateAddressInfo).toHaveBeenCalledWith({
+        newAddress: mockAddresses[1],
+        town: 'Norte',
+        city: ''
+      })
+    })
+
+    it('Given a townError is displayed, When user selects a town, Then it should clear the error', async () => {
+      const user = userEvent.setup()
+      const setTownError = jest.fn()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(
+        <SelectAddressDropdownWrapper 
+          townError="Debe seleccionar un municipio"
+          setTownError={setTownError}
+        />
+      )
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+
+      const oficinaOption = await screen.findByText('Oficina')
+      await user.click(oficinaOption)
+
+      await waitFor(() => {
+        const townButton = screen.getByTestId('select-town-dropdown-button')
+        expect(townButton).not.toBeDisabled()
+      })
+
+      const townButton = screen.getByTestId('select-town-dropdown-button')
+      await user.click(townButton)
+
+      const centroOption = await screen.findByText('Centro')
+      await user.click(centroOption)
+
+      expect(setTownError).toHaveBeenCalledWith('')
+    })
+  })
+
+  describe('Scenario: Select city from dropdown', () => {
+    it('Given an address with multiple cities is selected, When user selects a city, Then it should call updateAddressInfo with the selected city', async () => {
+      const user = userEvent.setup()
+      const updateAddressInfo = jest.fn()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(<SelectAddressDropdownWrapper updateAddressInfo={updateAddressInfo} />)
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+
+      const oficinaOption = await screen.findByText('Oficina')
+      await user.click(oficinaOption)
+
+      await waitFor(() => {
+        const cityButton = screen.getByTestId('select-city-dropdown-button')
+        expect(cityButton).not.toBeDisabled()
+      })
+
+      const cityButton = screen.getByTestId('select-city-dropdown-button')
+      await user.click(cityButton)
+
+      const sanPedroOption = await screen.findByText('San Pedro')
+      await user.click(sanPedroOption)
+
+      expect(updateAddressInfo).toHaveBeenCalledWith({
+        newAddress: mockAddresses[1],
+        town: '',
+        city: 'San Pedro'
+      })
+    })
+
+    it('Given a cityError is displayed, When user selects a city, Then it should clear the error', async () => {
+      const user = userEvent.setup()
+      const setCityError = jest.fn()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(
+        <SelectAddressDropdownWrapper 
+          cityError="Debe seleccionar una ciudad"
+          setCityError={setCityError}
+        />
+      )
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+
+      const oficinaOption = await screen.findByText('Oficina')
+      await user.click(oficinaOption)
+
+      await waitFor(() => {
+        const cityButton = screen.getByTestId('select-city-dropdown-button')
+        expect(cityButton).not.toBeDisabled()
+      })
+
+      const cityButton = screen.getByTestId('select-city-dropdown-button')
+      await user.click(cityButton)
+
+      const monterreyOption = await screen.findByText('Monterrey')
+      await user.click(monterreyOption)
+
+      expect(setCityError).toHaveBeenCalledWith('')
+    })
+  })
+
   describe('Scenario: Hide town dropdown when prop is set', () => {
     it('Given hideTownDropdown is true, When the component renders, Then it should not display the town dropdown', () => {
       mockedUseGetAddress.mockReturnValue({
@@ -460,6 +618,146 @@ describe('Feature: Select Address Dropdown', () => {
 
       const aliasButton = screen.getByTestId('select-address-dropdown-button')
       expect(aliasButton).toBeDisabled()
+    })
+  })
+
+  describe('Scenario: Search and filter addresses', () => {
+    it('Given addresses are loaded, When user types in the search input, Then it should filter the addresses by alias', async () => {
+      const user = userEvent.setup()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(<SelectAddressDropdownWrapper />)
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+      await user.type(aliasInput, 'Casa')
+
+      await waitFor(() => {
+        expect(screen.getByText('Casa')).toBeInTheDocument()
+        expect(screen.queryByText('Oficina')).not.toBeInTheDocument()
+      })
+    })
+
+    it('Given addresses are loaded and user types a non-matching search term, When the dropdown opens, Then it should show no results', async () => {
+      const user = userEvent.setup()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(<SelectAddressDropdownWrapper />)
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+      await user.type(aliasInput, 'xyz')
+
+      await waitFor(() => {
+        expect(screen.queryByText('Casa')).not.toBeInTheDocument()
+        expect(screen.queryByText('Oficina')).not.toBeInTheDocument()
+      })
+    })
+
+    it('Given user has typed a search term, When the search input is cleared, Then it should show all addresses', async () => {
+      const user = userEvent.setup()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(<SelectAddressDropdownWrapper />)
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+      await user.type(aliasInput, 'Casa')
+      
+      await waitFor(() => {
+        expect(screen.queryByText('Oficina')).not.toBeInTheDocument()
+      })
+
+      await user.clear(aliasInput)
+      
+      await waitFor(() => {
+        expect(screen.getByText('Casa')).toBeInTheDocument()
+        expect(screen.getByText('Oficina')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Scenario: Display AddressPreview when address is selected', () => {
+    it('Given an address is selected, When the component renders, Then it should display the AddressPreview component', async () => {
+      const user = userEvent.setup()
+
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(<SelectAddressDropdownWrapper />)
+
+      const aliasInput = screen.getByTestId('select-address-dropdown-button')
+      await user.click(aliasInput)
+
+      const casaOption = await screen.findByText('Casa')
+      await user.click(casaOption)
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Casa' })).toBeInTheDocument()
+        expect(screen.getByText(/Calle Principal.*123.*Int\. 4.*Centro/)).toBeInTheDocument()
+      })
+    })
+
+    it('Given no address is selected, When the component renders, Then it should not display the AddressPreview component', () => {
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      render(<SelectAddressDropdownWrapper />)
+
+      expect(screen.queryByRole('heading', { name: 'Casa' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Oficina' })).not.toBeInTheDocument()
+    })
+
+    it('Given an alias is already saved, When the component renders, Then it should display the AddressPreview component with the saved address', () => {
+      mockedUseGetAddress.mockReturnValue({
+        data: mockAddresses,
+        aliases: ['Casa', 'Oficina'],
+        refetch: jest.fn(),
+        isPending: false,
+        isError: false
+      })
+
+      const aliasSaved: AliasSavedTone = {
+        ...emptyAliasSaved,
+        alias: 'Casa',
+        address: mockAddresses[0]
+      }
+
+      render(<SelectAddressDropdownWrapper aliasSaved={aliasSaved} />)
+
+      expect(screen.getByRole('heading', { name: 'Casa' })).toBeInTheDocument()
+      expect(screen.getByText(/Calle Principal.*123.*Int\. 4.*Centro/)).toBeInTheDocument()
     })
   })
 })
