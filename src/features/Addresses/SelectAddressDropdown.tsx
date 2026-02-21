@@ -24,7 +24,8 @@ interface SelectAddressDropdownProps<T extends AliasSaved> {
 }
 
 /**
- * This component renders a dropdown to select an address alias, town, and city. It's used with Pkk, Mn and TONE
+ * This component renders an input to search from the addresses the one that matches the search criteria to select an address alias, town, and city.
+ * It's used with Pkk, Mn and TONE
  * For GE, it has its own SelectAliasGE component.
  */
 export const SelectAddressDropdown = <T extends AliasSaved>({
@@ -34,7 +35,6 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   const { data: addresses, isPending, isError } = useGetAddress()
   const [filteredAddresses, setFilteredAddresses] = useState<Address[]>([])
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(aliasSaved?.address);
-  console.log('selectedAddress', selectedAddress)
 
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
   const [aliasPlaceholder, setAliasPlaceholder] = useState<string>("Alias de dirección");
@@ -197,37 +197,6 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
           </ul>
         ) }
       </div>
-      {/* <Dropdown
-        label=""
-        renderTrigger={() => (
-          <div className="flex flex-col gap-1">
-            <Label className="pl-1">Alias</Label>
-            <Button
-              className="hover:cursor-pointer flex justify-between"
-              data-testid="select-address-dropdown-button"
-              color="light"
-              disabled={isPending || isError || !addresses || addresses.length === 0}
-            >
-              { isPending && (<Spinner />)}
-              { (isError && !isPending) && ("No se han podido cargar los alias")}
-              { (!isPending && addresses && addresses.length > 0 && !aliasSaved.alias) && 'Alias de dirección'}
-              { (!isPending && addresses && addresses.length > 0 && aliasSaved.alias) && aliasSaved.alias}
-              <RiArrowDownSLine />
-            </Button>
-            { errorMessage && (
-              <ErrorMessage>{errorMessage}</ErrorMessage>
-            )}
-          </div>
-        )}
-      >
-        <div className="overflow-y-auto max-h-52">
-          { (addresses && addresses.length > 0 )&& addresses.map((address) => (
-            <DropdownItem key={`alias-${address.alias}`} onClick={() => handleSelectAlias(address)}>
-              {address.alias}
-            </DropdownItem>
-          )) }
-        </div>
-      </Dropdown> */}
       { !hideTownDropdown && (
         <Dropdown
           label=""
