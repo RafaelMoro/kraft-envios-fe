@@ -9,8 +9,8 @@ interface AddressPreviewProps {
 export const AddressPreview = ({ address }: AddressPreviewProps) => {
   return (
     <Card>
-      <div className="grid grid-cols-2 grid-rows-2">
-        <div className="row-span-2">
+      <div className="grid grid-cols-[auto_1fr] gap-2 grid-rows-[auto_1fr]">
+        <div className="row-span-2 self-center">
           <RiMapPin2Line />
         </div>
           <h5 className="text-lg font-bold">
