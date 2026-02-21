@@ -1,3 +1,9 @@
+## v0.41.0 (2026-02-21)
+
+### Pull Requests
+[#96](https://github.com/RafaelMoro/kraft-envios-fe/pull/96) | Change dropdown of select alias for a search input
+
+
 ## v0.40.1 (2026-02-15)
 
 ### Pull Requests
