@@ -7,6 +7,7 @@ import { useGetAddress } from "@/shared/hooks/useGetAddress"
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
 import { AliasSaved } from "@/shared/types/guides.types"
+import { AddressPreview } from "./AddressPreview"
 
 interface SelectAddressDropdownProps<T extends AliasSaved> {
   aliasSaved: T;
@@ -33,6 +34,7 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   const { data: addresses, isPending, isError } = useGetAddress()
   const [filteredAddresses, setFilteredAddresses] = useState<Address[]>([])
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(aliasSaved?.address);
+  console.log('selectedAddress', selectedAddress)
 
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
   const [aliasPlaceholder, setAliasPlaceholder] = useState<string>("Alias de dirección");
@@ -163,6 +165,11 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   return (
     <div className="flex flex-col gap-3">
       <div className="relative">
+        { selectedAddress?.addressName && (
+          <div className="mb-5">
+            <AddressPreview address={selectedAddress} />
+          </div>
+        )}
         <div className="mb-2 flex flex-col gap-2">
           <Label htmlFor="select-address-dropdown-button">Alias:</Label>
           { errorMessage && (
