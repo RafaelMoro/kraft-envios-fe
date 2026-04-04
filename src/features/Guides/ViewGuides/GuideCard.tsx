@@ -74,21 +74,23 @@ export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
       </div>
 
       { /** Address info */}
-      <div className="grid grid-cols-2 mt-5">
-        <div className="text-gray-600 dark:text-gray-400">
-          <div className="inline-flex gap-2">
-            <RiHome9Line size={18} />
-            <p className="text-xs">Remitente</p>
+      <div className="grid grid-cols-2 gap-1 mt-5">
+        { Boolean(guide?.origin) && (
+          <div className="text-gray-600 dark:text-gray-400">
+            <div className="inline-flex gap-2">
+              <RiHome9Line size={18} />
+              <p className="text-xs">Remitente</p>
+            </div>
+            <p className="font-semibold text-ellipsis capitalize">{guide?.origin?.name?.toLowerCase()}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.origin?.city}</p>
           </div>
-          <p className="font-semibold text-ellipsis">{guide?.origin?.name}</p>
-          <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.origin?.city}</p>
-        </div>
+        )}
         <div className="text-gray-600 dark:text-gray-400">
           <div className="inline-flex gap-2">
             <RiHome9Line size={18} />
             <p className="text-xs">Destinatario</p>
           </div>
-          <p className="font-semibold text-ellipsis">{guide?.destination?.name}</p>
+          <p className="font-semibold text-ellipsis capitalize">{guide?.destination?.name?.toLowerCase()}</p>
           <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.destination?.city}</p>
         </div>
       </div>
