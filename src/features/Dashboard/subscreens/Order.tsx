@@ -1,13 +1,17 @@
+import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { LoginData } from "@/shared/types/login.types"
-import { getGuidesCb } from "@/shared/utils/guides.utils"
-import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
-import { GuideUI } from "@/shared/types/guides.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
-import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
-import { useEffect, useState } from "react"
+import { useNotification } from "@/shared/hooks/useNotification"
+import { getGuidesCb } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
+import { GuideUI } from "@/shared/types/guides.types"
+
+import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
+import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
+import { Notification } from "@/shared/ui/atoms/Notification"
+import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_TONE_GUIDES_USER_MESSAGE } from "@/shared/constants/guides.constants"
 
 interface OrderProps {
   userInfo: LoginData | null
@@ -15,12 +19,19 @@ interface OrderProps {
 
 export const Order = ({ userInfo }: OrderProps) => {
   const { isMobileTablet } = useMediaQuery()
+  const {
+    notificationMessage,
+    openNotification,
+    toggleNotification,
+    updateNotificationMessage,
+  } = useNotification();
+
   const [guides, setGuides] = useState<GuideUI[]>([])
   const { data, isPending, isError } = useQuery({
     queryKey: ['guides'],
     queryFn: getGuidesCb
   })
-  console.log('data', data)
+  const messages = data?.messages
 
   useEffect(() => {
     if (data) {
@@ -32,8 +43,21 @@ export const Order = ({ userInfo }: OrderProps) => {
     }
   }, [data, isMobileTablet])
 
+  useEffect(() => {
+    if (messages && messages.length > 0 && messages.includes(ERROR_TONE_GUIDES_SERVER_MESSAGE)) {
+      updateNotificationMessage(ERROR_TONE_GUIDES_USER_MESSAGE)
+      toggleNotification()
+    }
+  }, [messages])
+
   return (
     <main className='w-full p-4 flex flex-col gap-5'>
+      {openNotification && (
+        <Notification
+          message={notificationMessage}
+          toggleNotification={toggleNotification}
+        />
+      )}
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
       { isError && (
         <div className="flex flex-col gap-5">
