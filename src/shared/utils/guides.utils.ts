@@ -174,7 +174,7 @@ export const editAddressGECb = async ({
 
 export const getGuidesCb = async() => {
   try {
-    const res: AxiosResponse<GetGuidesData[]> = await axios.get(
+    const res: AxiosResponse<{ guides: GetGuidesData[], messages: string[]}> = await axios.get(
       GET_GUIDES_ENDPOINT,
     );
     const data = res?.data;

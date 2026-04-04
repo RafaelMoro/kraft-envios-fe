@@ -20,10 +20,11 @@ export const Order = ({ userInfo }: OrderProps) => {
     queryKey: ['guides'],
     queryFn: getGuidesCb
   })
+  console.log('data', data)
 
   useEffect(() => {
     if (data) {
-      const transformedGuides = data.map((guide) => ({
+      const transformedGuides = data.guides.map((guide) => ({
         ...guide,
         logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
       }))
