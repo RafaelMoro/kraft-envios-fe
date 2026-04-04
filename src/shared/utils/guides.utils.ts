@@ -11,6 +11,7 @@ import {
   DEFAULT_RFC,
   CREATE_GUIDE_GE_ENDPOINT,
   GET_GUIDES_ENDPOINT,
+  GUIDE_STATUS,
 } from "../constants/guides.constants";
 import {
   CreateGuideMnPayload,
@@ -381,3 +382,16 @@ export const b64toBlob = (
   const blob = new Blob(byteArrays, { type: contentType });
   return blob;
 };
+
+export const getGuideStatus = (status: string) => {
+  if (status.match(/created/i)) {
+    return GUIDE_STATUS.created
+  }
+  if (status.match(/in process/i)) {
+    return GUIDE_STATUS.inProcess
+  }
+  if (status.match(/transit/i)) {
+    return GUIDE_STATUS.transit
+  }
+  return GUIDE_STATUS.inProcess
+}
