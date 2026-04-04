@@ -7,6 +7,30 @@ interface GuidesTableProps {
   isPending: boolean;
 }
 
+const SenderInfoUnavailablePopover = () => (
+ <Popover
+    aria-labelledby="sender-info-unavailable"
+    trigger="hover"
+    content={
+      <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
+        <div className="border-b border-gray-200 bg-gray-100 px-3 py-2 dark:border-gray-600 dark:bg-gray-700">
+          <h3 id="sender-info-unavailable" className="font-semibold">
+            Información no disponible
+          </h3>
+        </div>
+        <div className="px-3 py-2">
+          <p>Esta información no está disponible para las guías obtenidas con TONE.</p>
+        </div>
+      </div>
+    }
+  >
+    <div className="inline-flex gap-2">
+      <RiErrorWarningFill />
+      <p>Datos del remitente no disponible</p>
+    </div>
+  </Popover>
+)
+
 export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
   return (
     <div className="overflow-x-auto">
@@ -68,29 +92,7 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
                   </div>
                 )}
                 { !guide?.origin && (
-                  <div>
-                    <Popover
-                      aria-labelledby="sender-info-unavailable"
-                      trigger="hover"
-                      content={
-                        <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
-                          <div className="border-b border-gray-200 bg-gray-100 px-3 py-2 dark:border-gray-600 dark:bg-gray-700">
-                            <h3 id="sender-info-unavailable" className="font-semibold">
-                              Información no disponible
-                            </h3>
-                          </div>
-                          <div className="px-3 py-2">
-                            <p>Esta información no está disponible para las guías obtenidas con TONE.</p>
-                          </div>
-                        </div>
-                      }
-                    >
-                      <div className="inline-flex gap-2">
-                        <RiErrorWarningFill />
-                        <p>Datos del remitente no disponible</p>
-                      </div>
-                    </Popover>
-                  </div>
+                  <SenderInfoUnavailablePopover />
                 )}
               </TableCell>
               <TableCell>
