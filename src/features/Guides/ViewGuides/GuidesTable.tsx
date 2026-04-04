@@ -32,6 +32,8 @@ const SenderInfoUnavailablePopover = () => (
 )
 
 export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
+  const isDestinationOnlyStreet = (guide: GetGuidesData) => !guide?.destination?.streetNumber && !guide?.destination?.neighborhood && !guide?.destination?.city && !guide?.destination?.state
+
   return (
     <div className="overflow-x-auto">
       <Table striped hoverable>
@@ -103,7 +105,11 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
                   </div>
                   <div className="inline-flex gap-2">
                     <RiMapPinLine size={20} />
-                    <p>{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
+                    { (isDestinationOnlyStreet(guide))
+                      ? (<p>{guide?.destination?.street}</p>) 
+                      : (
+                      <p>{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
+                    )}
                   </div>
                 </div>
               </TableCell>
