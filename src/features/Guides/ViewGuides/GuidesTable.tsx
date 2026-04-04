@@ -56,9 +56,9 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={guide.trackingNumber}>
               <TableCell>
                 <div className="flex flex-col gap-3 text-gray-950">
-                  <div className="inline-flex gap-2">
+                  <div className="inline-flex gap-2 capitalize">
                     <RiInfoCardLine size={18} /> 
-                    <p>{guide?.origin?.alias}</p>
+                    <p>{guide?.origin?.name?.toLowerCase()}</p>
                   </div>
                   <div className="inline-flex gap-2">
                     <RiMapPinLine size={25} />
@@ -68,9 +68,9 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
               </TableCell>
               <TableCell>
                 <div className="flex flex-col gap-3">
-                  <div className="inline-flex gap-2">
+                  <div className="inline-flex gap-2 capitalize">
                     <RiInfoCardLine size={18} /> 
-                    <p>{guide?.destination?.alias}</p>
+                    <p>{guide?.destination?.name?.toLowerCase()}</p>
                   </div>
                   <div className="inline-flex gap-2">
                     <RiMapPinLine size={20} />

@@ -43,6 +43,7 @@ export const Order = ({ userInfo }: OrderProps) => {
     }
   }, [data, isMobileTablet])
 
+  // Handle error messages if any provider failed to fetch guides
   useEffect(() => {
     if (messages && messages.length > 0 && messages.includes(ERROR_TONE_GUIDES_SERVER_MESSAGE)) {
       updateNotificationMessage(ERROR_TONE_GUIDES_USER_MESSAGE)
