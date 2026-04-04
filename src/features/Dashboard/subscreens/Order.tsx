@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { GuideUI } from "@/shared/types/guides.types"
 
@@ -35,10 +35,20 @@ export const Order = ({ userInfo }: OrderProps) => {
 
   useEffect(() => {
     if (data) {
-      const transformedGuides = data.guides.map((guide) => ({
+      const transformedGuides = data.guides.map((guide) => {
+        if (guide.source === 'TONE') {
+          return {
+            ...guide,
+            status: getGuideStatus(guide.status),
+            logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
+          }
+        }
+
+        return {
         ...guide,
         logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
-      }))
+      }
+    })
       setGuides(transformedGuides)
     }
   }, [data, isMobileTablet])
