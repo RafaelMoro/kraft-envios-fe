@@ -17,6 +17,9 @@ export async function GET() {
         'Authorization': `Bearer ${accessToken}`
       }
     })
+    // TODO: Get the message in case T1 guides are not present and show a message when that happens
+    const responseGotten = res?.data
+    console.log('responseGotten', responseGotten)
     const data = res?.data?.data?.guides || [];
     return NextResponse.json(data, { status: 200 })
   } catch (error) {
