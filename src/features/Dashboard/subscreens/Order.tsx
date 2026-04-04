@@ -11,7 +11,7 @@ import { GuideUI } from "@/shared/types/guides.types"
 import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { Notification } from "@/shared/ui/atoms/Notification"
-import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_TONE_GUIDES_USER_MESSAGE } from "@/shared/constants/guides.constants"
+import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE } from "@/shared/constants/guides.constants"
 
 interface OrderProps {
   userInfo: LoginData | null
@@ -55,11 +55,23 @@ export const Order = ({ userInfo }: OrderProps) => {
 
   // Handle error messages if any provider failed to fetch guides
   useEffect(() => {
-    if (messages && messages.length > 0 && messages.includes(ERROR_TONE_GUIDES_SERVER_MESSAGE)) {
-      updateNotificationMessage(ERROR_TONE_GUIDES_USER_MESSAGE)
-      toggleNotification()
+    if (messages && messages.length > 0) {
+      const courierNames: string[] = []
+      
+      if (messages.includes(ERROR_TONE_GUIDES_SERVER_MESSAGE)) {
+        courierNames.push('TONE')
+      }
+      if (messages.includes(ERROR_GE_GUIDES_SERVER_MESSAGE)) {
+        courierNames.push('GE')
+      }
+      
+      if (courierNames.length > 0) {
+        const courierList = courierNames.join(' y ')
+        updateNotificationMessage(`${ERROR_GUIDES_USER_MESSAGE_BASE} ${courierList}.`)
+        toggleNotification()
+      }
     }
-  }, [messages])
+  }, [messages, updateNotificationMessage, toggleNotification])
 
   return (
     <main className='w-full p-4 flex flex-col gap-5'>
