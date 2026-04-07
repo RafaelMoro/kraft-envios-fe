@@ -1,13 +1,39 @@
 import { GetGuidesData } from "@/shared/types/guides.types"
-import { RiAttachmentLine, RiInfoCardLine, RiMapPinLine } from "@remixicon/react"
-import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react"
+import { RiAttachmentLine, RiErrorWarningFill } from "@remixicon/react"
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Popover } from "flowbite-react"
 
 interface GuidesTableProps {
   guides: GetGuidesData[]
   isPending: boolean;
 }
 
+const SenderInfoUnavailablePopover = () => (
+ <Popover
+    aria-labelledby="sender-info-unavailable"
+    trigger="hover"
+    content={
+      <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
+        <div className="border-b border-gray-200 bg-gray-100 px-3 py-2 dark:border-gray-600 dark:bg-gray-700">
+          <h3 id="sender-info-unavailable" className="font-semibold">
+            Información no disponible
+          </h3>
+        </div>
+        <div className="px-3 py-2">
+          <p>Esta información no está disponible para las guías obtenidas con TONE.</p>
+        </div>
+      </div>
+    }
+  >
+    <div className="inline-flex gap-2">
+      <RiErrorWarningFill />
+      <p>Datos del remitente no disponible</p>
+    </div>
+  </Popover>
+)
+
 export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
+  const isDestinationOnlyStreet = (guide: GetGuidesData) => !guide?.destination?.streetNumber && !guide?.destination?.neighborhood && !guide?.destination?.city && !guide?.destination?.state
+
   return (
     <div className="overflow-x-auto">
       <Table striped hoverable>
@@ -55,27 +81,24 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
           { !isPending && guides.map((guide) => (
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={guide.trackingNumber}>
               <TableCell>
-                <div className="flex flex-col gap-3 text-gray-950">
-                  <div className="inline-flex gap-2">
-                    <RiInfoCardLine size={18} /> 
-                    <p>{guide?.origin?.alias}</p>
+                { Boolean(guide?.origin) && (
+                  <div className="flex flex-col gap-1">
+                    <p className="capitalize text-lg font-semibold text-gray-950">{guide?.origin?.name?.toLowerCase()}</p>
+                    <p className="text-gray-600">{guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}</p>
                   </div>
-                  <div className="inline-flex gap-2">
-                    <RiMapPinLine size={25} />
-                    <p>{guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}</p>
-                  </div>
-                </div>
+                )}
+                { !guide?.origin && (
+                  <SenderInfoUnavailablePopover />
+                )}
               </TableCell>
               <TableCell>
                 <div className="flex flex-col gap-3">
-                  <div className="inline-flex gap-2">
-                    <RiInfoCardLine size={18} /> 
-                    <p>{guide?.destination?.alias}</p>
-                  </div>
-                  <div className="inline-flex gap-2">
-                    <RiMapPinLine size={20} />
-                    <p>{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
-                  </div>
+                  <p className="capitalize text-lg font-semibold text-gray-950">{guide?.destination?.name?.toLowerCase()}</p>
+                  { (isDestinationOnlyStreet(guide))
+                    ? (<p className="text-gray-600">{guide?.destination?.street}</p>) 
+                    : (
+                    <p className="text-gray-600">{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
+                  )}
                 </div>
               </TableCell>
               <TableCell className="text-gray-950">

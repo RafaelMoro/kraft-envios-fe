@@ -5,7 +5,6 @@ import { Order } from '@/features/Dashboard/subscreens/Order';
 import { LoginData } from '@/shared/types/login.types';
 import { GetGuidesData } from '@/shared/types/guides.types';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
-import { UserRoles } from '@/shared/types/global.types';
 
 // Mock dependencies
 jest.mock('../../../src/shared/hooks/useMediaQuery');
@@ -123,7 +122,8 @@ describe('Order', () => {
     },
   ];
 
-  const createMockQueryResult = (overrides = {}): ReturnType<typeof useQuery> => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const createMockQueryResult = (overrides = {}): any => ({
     data: undefined,
     dataUpdatedAt: 0,
     error: null,
@@ -169,7 +169,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -192,7 +192,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -265,7 +265,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -289,7 +289,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -337,7 +337,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -362,7 +362,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -387,7 +387,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -439,7 +439,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: mockGuides,
+          data: { guides: mockGuides, messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -467,7 +467,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: [],
+          data: { guides: [], messages: [] },
           isSuccess: true,
           isPending: false,
         })
@@ -491,7 +491,7 @@ describe('Order', () => {
 
       mockedUseQuery.mockReturnValue(
         createMockQueryResult({
-          data: [],
+          data: { guides: [], messages: [] },
           isSuccess: true,
           isPending: false,
         })

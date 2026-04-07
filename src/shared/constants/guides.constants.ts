@@ -15,6 +15,19 @@ export const DEFAULT_RFC = 'XAXX010101000'
 
 export const CREATE_GUIDE_STEPS = ["Remitente", "Destinatario", "Paquete", "Confirmar"]
 
+export const GUIDE_STATUS = {
+  created: 'Creado',
+  inProcess: 'En proceso',
+  transit: 'En tránsito'
+} as const;
+
+export const ERROR_TONE_GUIDES_SERVER_MESSAGE = 'T1 failed to get guides'
+export const ERROR_GE_GUIDES_SERVER_MESSAGE = 'GE Error'
+
+export const ERROR_TONE_GUIDES_USER_MESSAGE = 'No se pudo obtener las guías de TONE.'
+export const ERROR_GE_GUIDES_USER_MESSAGE = 'No se pudo obtener las guías de GE.'
+export const ERROR_GUIDES_USER_MESSAGE_BASE = 'No se pudo obtener las guías de'
+
 const defaultAddress: Address = {
   addressName: "",
   externalNumber: "",

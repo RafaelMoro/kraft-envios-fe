@@ -100,29 +100,29 @@ describe('GuidesTable', () => {
     it('Then should display all guides', () => {
       render(<GuidesTable guides={mockGuides} isPending={false} />);
 
-      expect(screen.getByText('Casa Juan')).toBeInTheDocument();
-      expect(screen.getByText('Oficina María')).toBeInTheDocument();
-      expect(screen.getByText('Bodega Carlos')).toBeInTheDocument();
-      expect(screen.getByText('Casa Ana')).toBeInTheDocument();
+      expect(screen.getByText('juan pérez')).toBeInTheDocument();
+      expect(screen.getByText('maría garcía')).toBeInTheDocument();
+      expect(screen.getByText('carlos lópez')).toBeInTheDocument();
+      expect(screen.getByText('ana martínez')).toBeInTheDocument();
     });
 
     it('Then should display origin information for each guide', () => {
       render(<GuidesTable guides={mockGuides} isPending={false} />);
 
-      expect(screen.getByText('Casa Juan')).toBeInTheDocument();
+      expect(screen.getByText('juan pérez')).toBeInTheDocument();
       expect(screen.getByText(/Av\. Principal 123, Centro, CDMX, Ciudad de México/)).toBeInTheDocument();
       
-      expect(screen.getByText('Bodega Carlos')).toBeInTheDocument();
+      expect(screen.getByText('carlos lópez')).toBeInTheDocument();
       expect(screen.getByText(/Av\. Industrial 789, Industrial, Monterrey, Nuevo León/)).toBeInTheDocument();
     });
 
     it('Then should display destination information for each guide', () => {
       render(<GuidesTable guides={mockGuides} isPending={false} />);
 
-      expect(screen.getByText('Oficina María')).toBeInTheDocument();
+      expect(screen.getByText('maría garcía')).toBeInTheDocument();
       expect(screen.getByText(/Calle Secundaria 456, Polanco, CDMX, Ciudad de México/)).toBeInTheDocument();
       
-      expect(screen.getByText('Casa Ana')).toBeInTheDocument();
+      expect(screen.getByText('ana martínez')).toBeInTheDocument();
       expect(screen.getByText(/Calle Residencial 321, Residencial, Guadalajara, Jalisco/)).toBeInTheDocument();
     });
 
@@ -187,7 +187,7 @@ describe('GuidesTable', () => {
       render(<GuidesTable guides={guidesWithNullLabel} isPending={false} />);
 
       // Verify the guide data is still displayed correctly
-      expect(screen.getByText('Casa Juan')).toBeInTheDocument();
+      expect(screen.getByText('juan pérez')).toBeInTheDocument();
       expect(screen.getByText('TRK123456')).toBeInTheDocument();
       expect(screen.getByText('Estafeta')).toBeInTheDocument();
       expect(screen.getByText('En tránsito')).toBeInTheDocument();
@@ -202,8 +202,51 @@ describe('GuidesTable', () => {
       expect(screen.getByText('Destinatario')).toBeInTheDocument();
       expect(screen.getByText('Proveedor')).toBeInTheDocument();
       
-      expect(screen.queryByText('Casa Juan')).not.toBeInTheDocument();
+      expect(screen.queryByText('juan pérez')).not.toBeInTheDocument();
       expect(screen.queryByText('TRK123456')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('When origin is null', () => {
+    it('Then should display unavailable sender info message', () => {
+      const guidesWithoutOrigin: GetGuidesData[] = [
+        {
+          ...mockGuides[0],
+          origin: null,
+        },
+      ];
+
+      render(<GuidesTable guides={guidesWithoutOrigin} isPending={false} />);
+
+      expect(screen.getByText('Datos del remitente no disponible')).toBeInTheDocument();
+      expect(screen.getByText('maría garcía')).toBeInTheDocument();
+    });
+  });
+
+  describe('When destination has only street', () => {
+    it('Then should display only street information', () => {
+      const guidesWithOnlyStreet: GetGuidesData[] = [
+        {
+          ...mockGuides[0],
+          destination: {
+            name: 'Pedro García',
+            alias: 'Casa Pedro',
+            street: 'Calle Principal',
+            streetNumber: '',
+            neighborhood: '',
+            city: '',
+            state: '',
+          },
+        },
+      ];
+
+      render(<GuidesTable guides={guidesWithOnlyStreet} isPending={false} />);
+
+      expect(screen.getByText('pedro garcía')).toBeInTheDocument();
+      
+      const streetElement = screen.getByText('Calle Principal');
+      expect(streetElement).toBeInTheDocument();
+      expect(streetElement.textContent).toBe('Calle Principal');
     });
   });
 });

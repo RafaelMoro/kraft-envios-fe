@@ -85,7 +85,7 @@ describe('GuideCard', () => {
       render(<GuideCard guide={mockGuideComplete} isPending={false} />)
 
       expect(screen.getByText('Remitente')).toBeInTheDocument()
-      expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
+      expect(screen.getByText('juan pérez')).toBeInTheDocument()
       const cities = screen.getAllByText('Ciudad de México')
       expect(cities.length).toBeGreaterThan(0)
     })
@@ -94,7 +94,7 @@ describe('GuideCard', () => {
       render(<GuideCard guide={mockGuideComplete} isPending={false} />)
 
       expect(screen.getByText('Destinatario')).toBeInTheDocument()
-      expect(screen.getByText('María García')).toBeInTheDocument()
+      expect(screen.getByText('maría garcía')).toBeInTheDocument()
       const cities = screen.getAllByText('Ciudad de México')
       expect(cities.length).toBeGreaterThanOrEqual(2)
     })
@@ -183,6 +183,20 @@ describe('GuideCard', () => {
 
       const cities = screen.getAllByText('Ciudad de México')
       expect(cities).toHaveLength(2)
+    })
+  })
+
+  describe('Given guide without origin', () => {
+    it('When origin is null, Then it does not display sender section', () => {
+      const guideWithoutOrigin = {
+        ...mockGuideComplete,
+        origin: null
+      } as unknown as GuideUI
+      render(<GuideCard guide={guideWithoutOrigin} isPending={false} />)
+
+      expect(screen.queryByText('Remitente')).not.toBeInTheDocument()
+      expect(screen.getByText('Destinatario')).toBeInTheDocument()
+      expect(screen.getByText('maría garcía')).toBeInTheDocument()
     })
   })
 })

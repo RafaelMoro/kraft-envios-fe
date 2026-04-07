@@ -1,3 +1,9 @@
+## v0.42.0 (2026-04-07)
+
+### Pull Requests
+[#98](https://github.com/RafaelMoro/kraft-envios-fe/pull/98) | Feat/see guides t1
+
+
 ## v0.41.0 (2026-02-21)
 
 ### Pull Requests
