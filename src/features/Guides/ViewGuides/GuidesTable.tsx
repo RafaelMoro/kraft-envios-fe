@@ -1,5 +1,5 @@
 import { GetGuidesData } from "@/shared/types/guides.types"
-import { RiAttachmentLine, RiErrorWarningFill, RiInfoCardLine, RiMapPinLine } from "@remixicon/react"
+import { RiAttachmentLine, RiErrorWarningFill } from "@remixicon/react"
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Popover } from "flowbite-react"
 
 interface GuidesTableProps {
