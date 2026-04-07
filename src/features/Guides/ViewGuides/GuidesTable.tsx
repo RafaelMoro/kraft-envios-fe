@@ -82,15 +82,9 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800" key={guide.trackingNumber}>
               <TableCell>
                 { Boolean(guide?.origin) && (
-                  <div className="flex flex-col gap-3 text-gray-950">
-                    <div className="inline-flex gap-2 capitalize">
-                      <RiInfoCardLine size={18} /> 
-                      <p>{guide?.origin?.name?.toLowerCase()}</p>
-                    </div>
-                    <div className="inline-flex gap-2">
-                      <RiMapPinLine size={25} />
-                      <p>{guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}</p>
-                    </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="capitalize text-lg font-semibold text-gray-950">{guide?.origin?.name?.toLowerCase()}</p>
+                    <p className="text-gray-600">{guide?.origin?.street} {guide?.origin?.streetNumber}, {guide?.origin?.neighborhood}, {guide?.origin?.city}, {guide?.origin?.state}</p>
                   </div>
                 )}
                 { !guide?.origin && (
@@ -99,18 +93,12 @@ export const GuidesTable = ({ guides, isPending }: GuidesTableProps) => {
               </TableCell>
               <TableCell>
                 <div className="flex flex-col gap-3">
-                  <div className="inline-flex gap-2 capitalize">
-                    <RiInfoCardLine size={18} /> 
-                    <p>{guide?.destination?.name?.toLowerCase()}</p>
-                  </div>
-                  <div className="inline-flex gap-2">
-                    <RiMapPinLine size={20} />
-                    { (isDestinationOnlyStreet(guide))
-                      ? (<p>{guide?.destination?.street}</p>) 
-                      : (
-                      <p>{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
-                    )}
-                  </div>
+                  <p className="capitalize text-lg font-semibold text-gray-950">{guide?.destination?.name?.toLowerCase()}</p>
+                  { (isDestinationOnlyStreet(guide))
+                    ? (<p className="text-gray-600">{guide?.destination?.street}</p>) 
+                    : (
+                    <p className="text-gray-600">{guide?.destination?.street} {guide?.destination?.streetNumber}, {guide?.destination?.neighborhood}, {guide?.destination?.city}, {guide?.destination?.state}</p>
+                  )}
                 </div>
               </TableCell>
               <TableCell className="text-gray-950">
