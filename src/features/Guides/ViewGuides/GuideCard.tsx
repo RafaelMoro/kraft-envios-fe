@@ -53,10 +53,13 @@ export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
   }
 
   return (
-    <Card href="#" className="max-w-sm">
+    <Card className="max-w-sm">
       { /** Preheader */}
       <div className="flex justify-between">
-        <Badge color="success">{guide?.status}</Badge>
+        <div className="inline-flex gap-1">
+          <Badge color="purple">{guide?.source}</Badge>
+          <Badge color="success">{guide?.status}</Badge>
+        </div>
         <CourierImage
           dataTestId="guide-logo-image-box"
           image={guide?.logoSrc ?? DEFAULT_IMAGE_LOGO_PROVIDER}
