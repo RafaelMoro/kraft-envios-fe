@@ -71,7 +71,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         toggleNotification()
       }
     }
-  }, [messages, updateNotificationMessage, toggleNotification])
+  }, [messages])
 
   return (
     <main className='w-full p-4 flex flex-col gap-5'>
