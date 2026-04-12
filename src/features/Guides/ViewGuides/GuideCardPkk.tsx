@@ -1,9 +1,13 @@
-import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
-import { GuideUI } from "@/shared/types/guides.types";
-import { CourierImage } from "@/shared/ui/atoms/CourierImage";
-import { formatDateToSpanish, getGuideStatusLabel } from "@/shared/utils/guides.utils";
-import { RiCalendarLine, RiFileDownloadLine, RiFileTextLine, RiHome9Line } from "@remixicon/react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Badge, Button } from "flowbite-react";
+import { RiCalendarLine, RiFileDownloadLine, RiFileTextLine, RiHome9Line } from "@remixicon/react";
+
+import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
+import { GeneralApiError } from "@/shared/types/global.types";
+import { GetGuidesData, GuideUI } from "@/shared/types/guides.types";
+import { formatDateToSpanish, getGuideStatusLabel, getPkkGuide } from "@/shared/utils/guides.utils";
+import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 
 interface GuideCardPkkProps {
   guide: GuideUI | null;
@@ -18,8 +22,25 @@ interface GuideCardPkkProps {
  * @returns A styled article element with guide information and an action button
  */
 export const GuideCardPkk = ({ guide }: GuideCardPkkProps) => {
+  const [fetchGuide, setFetchGuide] = useState(false)
+  const {
+    data,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery<{ guide: GetGuidesData }, GeneralApiError>({
+    queryKey: [`get-pkk-guide/${guide?.shipmentNumber}`],
+    queryFn: () => getPkkGuide(guide?.shipmentNumber ?? ''),
+    enabled: fetchGuide
+  })
+  console.log('data from getPkkGuide', data)
+
+  const handleGetInformation = () => {
+    setFetchGuide(true)
+  }
+
   return (
-    <article className="flex rounded-lg border-dashed border-2 border-amber-950 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col max-w-sm">
+    <article className="flex rounded-lg border-dashed border-2 border-amber-950 bg-white shadow-md dark:border-amber-700 dark:bg-gray-800 flex-col max-w-sm">
         <div className="flex h-full flex-col justify-center gap-4 p-6">
           { /** Preheader */}
           <div className="flex justify-between">
@@ -86,7 +107,7 @@ export const GuideCardPkk = ({ guide }: GuideCardPkkProps) => {
           </div>
 
           { /** Footer with label link */ }
-          <Button color="light" className="inline-flex gap-2">
+          <Button color="light" className="inline-flex gap-2" onClick={handleGetInformation}>
             <RiFileDownloadLine size={18} />
             Obtener información
           </Button>
