@@ -450,3 +450,13 @@ export const getGuideStatus = (status: string) => {
   }
   return GUIDE_STATUS.inProcess
 }
+
+/**
+ * Generates a unique identifier for a guide based on its source and tracking number
+ * @param guide - The guide object containing source and tracking information
+ * @returns A unique string identifier in the format "SOURCE-TRACKING_NUMBER"
+ * @example generateGuideId({ source: 'Pkk', trackingNumber: '123456' }) => 'Pkk-123456'
+ */
+export const generateGuideId = (guide: GetGuidesData): string => {
+  return `${guide.source}-${guide.trackingNumber}`;
+};

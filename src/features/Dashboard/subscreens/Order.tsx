@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb, getGuideStatus } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus, generateGuideId } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { GuideUI } from "@/shared/types/guides.types"
 
@@ -27,6 +27,7 @@ export const Order = ({ userInfo }: OrderProps) => {
   } = useNotification();
 
   const [guides, setGuides] = useState<GuideUI[]>([])
+  console.log('guides', guides)
   const { data, isPending, isError } = useQuery({
     queryKey: ['guides'],
     queryFn: getGuidesCb
@@ -39,6 +40,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         if (guide.source === 'TONE') {
           return {
             ...guide,
+            id: generateGuideId(guide),
             status: getGuideStatus(guide.status),
             logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
           }
@@ -46,6 +48,7 @@ export const Order = ({ userInfo }: OrderProps) => {
 
         return {
         ...guide,
+        id: generateGuideId(guide),
         logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
       }
     })
@@ -96,7 +99,7 @@ export const Order = ({ userInfo }: OrderProps) => {
       { isMobileTablet && !isError && (
         <div className="grid md:grid-cols-2 gap-5">
           { !isPending && guides.map((guide => (
-            <GuideCard key={guide.trackingNumber} guide={guide} isPending={isPending} />
+            <GuideCard key={guide.id} guide={guide} isPending={isPending} />
           )))}
           { isPending && Array.from({ length: 2 }).map((_, index) => (
             <GuideCard key={index} guide={null} isPending={true} />

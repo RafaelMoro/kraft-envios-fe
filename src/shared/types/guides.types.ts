@@ -410,6 +410,7 @@ export interface GetGuidesData extends GlobalCreateGuideResponse {
 }
 
 export interface GuideUI extends GetGuidesData {
+  id: string;
   logoSrc: QuoteImage;
 }
 
