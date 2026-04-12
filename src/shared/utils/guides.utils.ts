@@ -185,6 +185,17 @@ export const getGuidesCb = async() => {
   }
 }
 
+export const getPkkGuide = async (guide: string) => {
+  try {
+    const uri = `${CREATE_GUIDE_PKK_ENDPOINT}?guide=${guide}`;
+    const res: AxiosResponse<{ guide: GetGuidesData }> = await axios.get(uri);
+    const data = res?.data;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 //#region Utils Fn
 /**
  * Formats a Date object to a Spanish localized string with abbreviated month
