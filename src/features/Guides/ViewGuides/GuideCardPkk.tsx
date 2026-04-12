@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Badge, Button } from "flowbite-react";
 import { RiCalendarLine, RiFileDownloadLine, RiFileTextLine, RiHome9Line } from "@remixicon/react";
@@ -11,6 +11,10 @@ import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 
 interface GuideCardPkkProps {
   guide: GuideUI | null;
+  updatePkkGuide: ({ guideId, guideUpdated }: {
+      guideId: string;
+      guideUpdated: GetGuidesData;
+  }) => void
 }
 
 /**
@@ -21,18 +25,27 @@ interface GuideCardPkkProps {
  * @param guide - The guide data to display, or null if no guide is available
  * @returns A styled article element with guide information and an action button
  */
-export const GuideCardPkk = ({ guide }: GuideCardPkkProps) => {
+export const GuideCardPkk = ({ guide, updatePkkGuide }: GuideCardPkkProps) => {
   const [fetchGuide, setFetchGuide] = useState(false)
+  const isGuideUpdated = useRef(false)
   const {
     data,
-    isPending,
-    isError,
-    refetch,
   } = useQuery<{ guide: GetGuidesData }, GeneralApiError>({
     queryKey: [`get-pkk-guide/${guide?.shipmentNumber}`],
     queryFn: () => getPkkGuide(guide?.shipmentNumber ?? ''),
     enabled: fetchGuide
   })
+
+  useEffect(() => {
+    if (data?.guide?.origin && !isGuideUpdated.current) {
+      const fetchedGuide = data?.guide
+      if (fetchedGuide) {
+        isGuideUpdated.current = true
+        updatePkkGuide({ guideId: guide?.id ?? '', guideUpdated: fetchedGuide })
+        console.log('updated', fetchedGuide)
+      }
+    }
+  }, [data?.guide, guide?.id, updatePkkGuide])
 
   const handleGetInformation = () => {
     setFetchGuide(true)

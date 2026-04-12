@@ -6,7 +6,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
 import { getGuidesCb, getGuideStatus, generateGuideId } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
-import { GuideUI } from "@/shared/types/guides.types"
+import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 
 import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
@@ -56,6 +56,20 @@ export const Order = ({ userInfo }: OrderProps) => {
     }
   }, [data, isMobileTablet])
 
+  const updatePkkGuide = ({ guideId, guideUpdated}: { guideId: string, guideUpdated: GetGuidesData}) => {
+    const updatedGuides = guides.map((guide) => {
+      if (guide.id === guideId) {
+        const formattedGuide = {
+          ...guide,
+          ...guideUpdated,
+        }
+        return formattedGuide
+      }
+      return guide
+    })
+    setGuides(updatedGuides)
+  }
+
   // Handle error messages if any provider failed to fetch guides
   useEffect(() => {
     if (messages && messages.length > 0) {
@@ -99,10 +113,10 @@ export const Order = ({ userInfo }: OrderProps) => {
       { isMobileTablet && !isError && (
         <div className="grid md:grid-cols-2 gap-5">
           { !isPending && guides.map((guide => (
-            <GuideCard key={guide.id} guide={guide} isPending={isPending} />
+            <GuideCard key={guide.id} guide={guide} isPending={isPending} updatePkkGuide={updatePkkGuide} />
           )))}
           { isPending && Array.from({ length: 2 }).map((_, index) => (
-            <GuideCard key={index} guide={null} isPending={true} />
+            <GuideCard key={index} guide={null} isPending={true} updatePkkGuide={updatePkkGuide} />
           ))}
         </div>
       ) }

@@ -2,7 +2,7 @@ import { RiArticleLine, RiHome9Line } from "@remixicon/react"
 import { Badge, Card } from "flowbite-react"
 
 import { primaryButtonCSS } from "@/shared/constants/global.constants";
-import { GuideUI } from "@/shared/types/guides.types"
+import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
 import { getGuideStatusLabel } from "@/shared/utils/guides.utils";
@@ -10,10 +10,14 @@ import { GuideCardPkk } from "./GuideCardPkk";
 
 interface GuideCardProps {
   guide: GuideUI | null;
+  updatePkkGuide: ({ guideId, guideUpdated }: {
+      guideId: string;
+      guideUpdated: GetGuidesData;
+  }) => void
   isPending: boolean;
 }
 
-export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
+export const GuideCard = ({ guide, isPending, updatePkkGuide }: GuideCardProps) => {
   if (isPending && !guide) {
     return (
       <Card href="#" className="max-w-sm" data-testid="guide-card-skeleton">
@@ -56,7 +60,7 @@ export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
 
   if (guide?.source === 'Pkk') {
     return (
-      <GuideCardPkk guide={guide} />
+      <GuideCardPkk guide={guide} updatePkkGuide={updatePkkGuide} />
     )
   }
 
