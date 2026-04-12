@@ -420,7 +420,16 @@ export interface GetGuidesResponse {
   data: {
     guides: GetGuidesData[];
   };
-} 
+}
+
+export interface GetSingleGuideResponse {
+  version: string;
+  error: null;
+  messages: string[];
+  data: {
+    guide: GetGuidesData;
+  };
+}
 
 //#region Schemas
 
