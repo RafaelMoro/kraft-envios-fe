@@ -111,12 +111,14 @@ export const GuideCard = ({ guide, isPending, updatePkkGuide }: GuideCardProps) 
       </div>
 
       { /** Footer with label link */ }
-      <div className={primaryButtonCSS}>
-        <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer" className="inline-flex gap-2">
-          <RiArticleLine size={18} />
-          Ver etiqueta
-        </a>
-      </div>
+      { Boolean(guide?.labelUrl) && (
+        <div className={primaryButtonCSS}>
+          <a href={guide?.labelUrl ?? ''} target="_blank" rel="noopener noreferrer" className="inline-flex gap-2">
+            <RiArticleLine size={18} />
+            Ver etiqueta
+          </a>
+        </div>
+      )}
     </Card>
   )
 }
