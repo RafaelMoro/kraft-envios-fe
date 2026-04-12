@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Badge, Button } from "flowbite-react";
-import { RiCalendarLine, RiFileDownloadLine, RiFileTextLine, RiHome9Line } from "@remixicon/react";
+import { RiCalendarLine, RiFileDownloadLine, RiFileTextLine } from "@remixicon/react";
 
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
 import { GeneralApiError } from "@/shared/types/global.types";
@@ -77,26 +77,6 @@ export const GuideCardPkk = ({ guide, updatePkkGuide }: GuideCardPkkProps) => {
 
           { /** Address info */}
           <div className="grid grid-cols-2 gap-1 mt-5">
-            { Boolean(guide?.origin) && (
-              <div className="text-gray-600 dark:text-gray-400">
-                <div className="inline-flex gap-2">
-                  <RiHome9Line size={18} />
-                  <p className="text-xs">Remitente</p>
-                </div>
-                <p className="font-semibold text-ellipsis capitalize">{guide?.origin?.name?.toLowerCase()}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.origin?.city}</p>
-              </div>
-            )}
-            { Boolean(guide?.destination) && (
-              <div className="text-gray-600 dark:text-gray-400">
-                <div className="inline-flex gap-2">
-                  <RiHome9Line size={18} />
-                  <p className="text-xs">Destinatario</p>
-                </div>
-                <p className="font-semibold text-ellipsis capitalize">{guide?.destination?.name?.toLowerCase()}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.destination?.city}</p>
-              </div>
-            )}
             { guide?.content && (
               <div className="text-gray-600 dark:text-gray-400">
                 <div className="inline-flex gap-2">
