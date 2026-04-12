@@ -1,10 +1,11 @@
-import { RiArticleLine, RiHome9Line } from "@remixicon/react"
-import { Badge, Card } from "flowbite-react"
+import { RiArticleLine, RiCalendarLine, RiFileDownloadLine, RiFileTextLine, RiHome9Line } from "@remixicon/react"
+import { Badge, Button, Card } from "flowbite-react"
 
 import { primaryButtonCSS } from "@/shared/constants/global.constants";
 import { GuideUI } from "@/shared/types/guides.types"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
+import { formatDateToSpanish } from "@/shared/utils/guides.utils";
 
 interface GuideCardProps {
   guide: GuideUI | null;
@@ -49,6 +50,84 @@ export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
 
         <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
       </Card>
+    )
+  }
+
+  if (guide?.source === 'Pkk') {
+    return (
+      <article className="flex rounded-lg border-dashed border-2 border-amber-950 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col max-w-sm">
+        <div className="flex h-full flex-col justify-center gap-4 p-6">
+          { /** Preheader */}
+          <div className="flex justify-between">
+            <div className="inline-flex gap-1">
+              <Badge color="purple">{guide?.source}</Badge>
+              <Badge color="success">{guide?.status}</Badge>
+            </div>
+            <CourierImage
+              dataTestId="guide-logo-image-box"
+              image={guide?.logoSrc ?? DEFAULT_IMAGE_LOGO_PROVIDER}
+              courier={guide?.courier ?? null}
+            />
+          </div>
+
+          { /** Header */}
+          <div>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Número de Guia</span>
+            <h1 className="text-xl font-semibold">{guide?.trackingNumber}</h1>
+            <div>
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Envío: {guide?.shipmentNumber}</span>
+            </div>
+          </div>
+
+          { /** Address info */}
+          <div className="grid grid-cols-2 gap-1 mt-5">
+            { Boolean(guide?.origin) && (
+              <div className="text-gray-600 dark:text-gray-400">
+                <div className="inline-flex gap-2">
+                  <RiHome9Line size={18} />
+                  <p className="text-xs">Remitente</p>
+                </div>
+                <p className="font-semibold text-ellipsis capitalize">{guide?.origin?.name?.toLowerCase()}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.origin?.city}</p>
+              </div>
+            )}
+            { Boolean(guide?.destination) && (
+              <div className="text-gray-600 dark:text-gray-400">
+                <div className="inline-flex gap-2">
+                  <RiHome9Line size={18} />
+                  <p className="text-xs">Destinatario</p>
+                </div>
+                <p className="font-semibold text-ellipsis capitalize">{guide?.destination?.name?.toLowerCase()}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.destination?.city}</p>
+              </div>
+            )}
+            { guide?.content && (
+              <div className="text-gray-600 dark:text-gray-400">
+                <div className="inline-flex gap-2">
+                  <RiFileTextLine size={18} />
+                  <p className="text-xs">Contenido</p>
+                </div>
+                <p className="font-semibold text-ellipsis capitalize">{guide?.content?.toLowerCase()}</p>
+              </div>
+            )}
+            { guide?.startDate && (
+              <div className="text-gray-600 dark:text-gray-400">
+                <div className="inline-flex gap-2">
+                  <RiCalendarLine size={18} />
+                  <p className="text-xs">Fecha de inicio</p>
+                </div>
+                <p className="font-semibold text-ellipsis capitalize">{formatDateToSpanish(new Date(guide.startDate))}</p>
+              </div>
+            )}
+          </div>
+
+          { /** Footer with label link */ }
+          <Button color="light" className="inline-flex gap-2">
+            <RiFileDownloadLine size={18} />
+            Obtener información
+          </Button>
+        </div>
+      </article>
     )
   }
 
