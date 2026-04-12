@@ -5,7 +5,7 @@ import { primaryButtonCSS } from "@/shared/constants/global.constants";
 import { GuideUI } from "@/shared/types/guides.types"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
-import { formatDateToSpanish } from "@/shared/utils/guides.utils";
+import { formatDateToSpanish, getGuideStatusLabel } from "@/shared/utils/guides.utils";
 
 interface GuideCardProps {
   guide: GuideUI | null;
@@ -61,7 +61,7 @@ export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
           <div className="flex justify-between">
             <div className="inline-flex gap-1">
               <Badge color="purple">{guide?.source}</Badge>
-              <Badge color="success">{guide?.status}</Badge>
+              <Badge color="success">{getGuideStatusLabel(guide?.status ?? '')}</Badge>
             </div>
             <CourierImage
               dataTestId="guide-logo-image-box"
@@ -137,7 +137,7 @@ export const GuideCard = ({ guide, isPending }: GuideCardProps) => {
       <div className="flex justify-between">
         <div className="inline-flex gap-1">
           <Badge color="purple">{guide?.source}</Badge>
-          <Badge color="success">{guide?.status}</Badge>
+          <Badge color="success">{getGuideStatusLabel(guide?.status ?? '')}</Badge>
         </div>
         <CourierImage
           dataTestId="guide-logo-image-box"

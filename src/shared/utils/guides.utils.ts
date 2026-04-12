@@ -215,6 +215,22 @@ export const formatDateToSpanish = (date: Date): string => {
 };
 
 /**
+ * Maps guide status values to their Spanish display labels
+ * @param status - The status value from the guide
+ * @returns Spanish label for the status
+ * @example getGuideStatusLabel('WAITING') => 'En espera'
+ */
+export const getGuideStatusLabel = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    'WAITING': 'En espera',
+    'ON_DELIVERY': 'En tránsito',
+    'DELIVERED': 'Entregado',
+  };
+  
+  return statusMap[status] || status;
+};
+
+/**
  * Replace whitespace characters with plus signs in a string.
  * Useful for URL encoding or API query formatting.
  * @param input - The input string to process
