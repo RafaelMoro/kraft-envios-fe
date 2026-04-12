@@ -33,7 +33,6 @@ export const GuideCardPkk = ({ guide }: GuideCardPkkProps) => {
     queryFn: () => getPkkGuide(guide?.shipmentNumber ?? ''),
     enabled: fetchGuide
   })
-  console.log('data from getPkkGuide', data)
 
   const handleGetInformation = () => {
     setFetchGuide(true)
