@@ -187,6 +187,34 @@ export const getGuidesCb = async() => {
 
 //#region Utils Fn
 /**
+ * Formats a Date object to a Spanish localized string with abbreviated month
+ * @param date - The date to format
+ * @returns Formatted string in the pattern "MMM DD, HH:MM am/pm" (e.g., "Mar 13, 01:13 pm")
+ * @example formatDateToSpanish(new Date('2024-03-13T13:13:00')) => 'Mar 13, 01:13 pm'
+ */
+export const formatDateToSpanish = (date: Date): string => {
+  const months = [
+    'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+  ];
+  
+  const month = months[date.getMonth()];
+  const day = date.getDate();
+  
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 should be 12
+  
+  const formattedHours = hours.toString().padStart(2, '0');
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+  
+  return `${month} ${day}, ${formattedHours}:${formattedMinutes} ${ampm}`;
+};
+
+/**
  * Replace whitespace characters with plus signs in a string.
  * Useful for URL encoding or API query formatting.
  * @param input - The input string to process
