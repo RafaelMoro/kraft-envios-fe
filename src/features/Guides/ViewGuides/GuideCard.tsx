@@ -58,7 +58,7 @@ export const GuideCard = ({ guide, isPending, updatePkkGuide }: GuideCardProps) 
     )
   }
 
-  if (guide?.source === 'Pkk') {
+  if (guide?.source === 'Pkk' && guide.hasBeenFetched === false) {
     return (
       <GuideCardPkk guide={guide} updatePkkGuide={updatePkkGuide} />
     )

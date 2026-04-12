@@ -42,7 +42,6 @@ export const GuideCardPkk = ({ guide, updatePkkGuide }: GuideCardPkkProps) => {
       if (fetchedGuide) {
         isGuideUpdated.current = true
         updatePkkGuide({ guideId: guide?.id ?? '', guideUpdated: fetchedGuide })
-        console.log('updated', fetchedGuide)
       }
     }
   }, [data?.guide, guide?.id, updatePkkGuide])

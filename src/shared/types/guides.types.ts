@@ -412,6 +412,7 @@ export interface GetGuidesData extends GlobalCreateGuideResponse {
 export interface GuideUI extends GetGuidesData {
   id: string;
   logoSrc: QuoteImage;
+  hasBeenFetched: boolean; // state to fetch guide from Pkk
 }
 
 export interface GetGuidesResponse {

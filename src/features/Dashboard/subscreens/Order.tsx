@@ -27,7 +27,6 @@ export const Order = ({ userInfo }: OrderProps) => {
   } = useNotification();
 
   const [guides, setGuides] = useState<GuideUI[]>([])
-  console.log('guides', guides)
   const { data, isPending, isError } = useQuery({
     queryKey: ['guides'],
     queryFn: getGuidesCb
@@ -42,6 +41,7 @@ export const Order = ({ userInfo }: OrderProps) => {
             ...guide,
             id: generateGuideId(guide),
             status: getGuideStatus(guide.status),
+            hasBeenFetched: true,
             logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
           }
         }
@@ -49,6 +49,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         return {
         ...guide,
         id: generateGuideId(guide),
+        hasBeenFetched: guide.source === 'Pkk' ? false : true, // Only guides from Pkk will be marked as not fetched initially
         logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
       }
     })
@@ -62,6 +63,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         const formattedGuide = {
           ...guide,
           ...guideUpdated,
+          hasBeenFetched: true
         }
         return formattedGuide
       }
