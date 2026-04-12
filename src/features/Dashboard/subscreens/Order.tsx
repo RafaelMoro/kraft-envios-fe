@@ -71,6 +71,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         toggleNotification()
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages])
 
   return (
