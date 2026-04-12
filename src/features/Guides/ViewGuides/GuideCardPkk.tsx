@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Badge, Button } from "flowbite-react";
+import { Badge, Button, Spinner } from "flowbite-react";
 import { RiCalendarLine, RiFileDownloadLine, RiFileTextLine } from "@remixicon/react";
 
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
@@ -30,6 +30,7 @@ export const GuideCardPkk = ({ guide, updatePkkGuide }: GuideCardPkkProps) => {
   const isGuideUpdated = useRef(false)
   const {
     data,
+    isFetching
   } = useQuery<{ guide: GetGuidesData }, GeneralApiError>({
     queryKey: [`get-pkk-guide/${guide?.shipmentNumber}`],
     queryFn: () => getPkkGuide(guide?.shipmentNumber ?? ''),
@@ -99,8 +100,14 @@ export const GuideCardPkk = ({ guide, updatePkkGuide }: GuideCardPkkProps) => {
 
           { /** Footer with label link */ }
           <Button color="light" className="inline-flex gap-2" onClick={handleGetInformation}>
-            <RiFileDownloadLine size={18} />
-            Obtener información
+            { !isFetching ? (
+              <>
+                <RiFileDownloadLine size={18} />
+                Obtener información
+              </>
+            ) : (
+              <Spinner aria-label={`loading guide ${guide?.trackingNumber}`} />
+            )}
           </Button>
         </div>
       </article>
