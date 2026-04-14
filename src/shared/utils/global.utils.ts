@@ -37,8 +37,10 @@ const formatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 2,
 });
 
-export const formatNumberToCurrency = (amount: number): string =>
-  formatter.format(amount);
+export const formatNumberToCurrency = (amount: number | null): string => {
+  if (!amount) return ''
+  return formatter.format(amount);
+}
 
 export const createUniqueId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)

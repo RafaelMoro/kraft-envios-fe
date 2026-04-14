@@ -113,7 +113,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         </div>
       )}
       { !isError && (
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-5">
           { !isPending && guides.map((guide => (
             <GuideCard key={guide.id} guide={guide} isPending={isPending} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           )))}
