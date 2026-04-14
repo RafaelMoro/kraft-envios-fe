@@ -11,6 +11,7 @@ import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 
 interface GuideCardPkkProps {
   guide: GuideUI | null;
+  isDesktop: boolean;
   updatePkkGuide: ({ guideId, guideUpdated }: {
       guideId: string;
       guideUpdated: GetGuidesData;
@@ -25,7 +26,7 @@ interface GuideCardPkkProps {
  * @param guide - The guide data to display, or null if no guide is available
  * @returns A styled article element with guide information and an action button
  */
-export const GuideCardPkk = ({ guide, updatePkkGuide }: GuideCardPkkProps) => {
+export const GuideCardPkk = ({ guide, updatePkkGuide, isDesktop }: GuideCardPkkProps) => {
   const [fetchGuide, setFetchGuide] = useState(false)
   const isGuideUpdated = useRef(false)
   const {
@@ -49,6 +50,69 @@ export const GuideCardPkk = ({ guide, updatePkkGuide }: GuideCardPkkProps) => {
 
   const handleGetInformation = () => {
     setFetchGuide(true)
+  }
+
+  if (isDesktop) {
+    return (
+      <article className="p-4 flex rounded-lg border-dashed border-2 border-amber-950 bg-white shadow-md dark:border-amber-700 dark:bg-gray-800 flex-col">
+        { /** Header */}
+        <div className="flex justify-between items-center">
+          <div className="flex gap-4 items-center">
+            <CourierImage
+              dataTestId="guide-logo-image-box"
+              image={guide?.logoSrc ?? DEFAULT_IMAGE_LOGO_PROVIDER}
+              courier={guide?.courier ?? null}
+            />
+            <div className="flex flex-col gap-2">
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Número de Guia</span>
+              <h4 className="text-xl font-semibold">{guide?.trackingNumber}</h4>
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Envío: {guide?.shipmentNumber}</span>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Badge color="purple">{guide?.source}</Badge>
+            <Badge color="success">{getGuideStatusLabel(guide?.status ?? '')}</Badge>
+          </div>
+        </div>
+        <hr className="text-gray-300" />
+
+        { /** Address info */}
+          <div className="grid grid-cols-2 gap-1 mt-5">
+            { guide?.content && (
+              <div className="text-gray-600 dark:text-gray-400">
+                <div className="inline-flex gap-2">
+                  <RiFileTextLine size={18} />
+                  <p className="text-xs">Contenido</p>
+                </div>
+                <p className="font-semibold text-ellipsis capitalize">{guide?.content?.toLowerCase()}</p>
+              </div>
+            )}
+            { guide?.startDate && (
+              <div className="text-gray-600 dark:text-gray-400">
+                <div className="inline-flex gap-2">
+                  <RiCalendarLine size={18} />
+                  <p className="text-xs">Fecha de inicio</p>
+                </div>
+                <p className="font-semibold text-ellipsis capitalize">{formatDateToSpanish(new Date(guide.startDate))}</p>
+              </div>
+            )}
+          </div>
+
+          { /** Footer with label link */ }
+          <div className="mt-7 w-full flex justify-center">
+            <Button color="light" className="inline-flex gap-2 w-fit" onClick={handleGetInformation}>
+              { !isFetching ? (
+                <>
+                  <RiFileDownloadLine size={18} />
+                  Obtener información
+                </>
+              ) : (
+                <Spinner aria-label={`loading guide ${guide?.trackingNumber}`} />
+              )}
+            </Button>
+          </div>
+      </article>
+    )
   }
 
   return (
