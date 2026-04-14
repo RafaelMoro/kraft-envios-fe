@@ -8,7 +8,7 @@ import { getGuidesCb, getGuideStatus, generateGuideId } from "@/shared/utils/gui
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 
-import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
+// import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE } from "@/shared/constants/guides.constants"
@@ -18,7 +18,7 @@ interface OrderProps {
 }
 
 export const Order = ({ userInfo }: OrderProps) => {
-  const { isMobileTablet } = useMediaQuery()
+  const { isMobileTablet, isDesktop } = useMediaQuery()
   const {
     notificationMessage,
     openNotification,
@@ -112,19 +112,16 @@ export const Order = ({ userInfo }: OrderProps) => {
           </p>
         </div>
       )}
-      { isMobileTablet && !isError && (
+      { !isError && (
         <div className="grid md:grid-cols-2 gap-5">
           { !isPending && guides.map((guide => (
-            <GuideCard key={guide.id} guide={guide} isPending={isPending} updatePkkGuide={updatePkkGuide} />
+            <GuideCard key={guide.id} guide={guide} isPending={isPending} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           )))}
           { isPending && Array.from({ length: 2 }).map((_, index) => (
-            <GuideCard key={index} guide={null} isPending={true} updatePkkGuide={updatePkkGuide} />
+            <GuideCard key={index} guide={null} isPending={true} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           ))}
         </div>
       ) }
-      { !isMobileTablet && !isError && (
-        <GuidesTable guides={guides ?? []} isPending={isPending} />
-      )}
     </main>
   )
 }
