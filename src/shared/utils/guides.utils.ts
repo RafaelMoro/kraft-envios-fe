@@ -234,7 +234,8 @@ export const formatDateToSpanish = (date: Date): string => {
 export const getGuideStatusLabel = (status: string): string => {
   const statusMap: Record<string, string> = {
     'WAITING': 'En espera',
-    'ON_DELIVERY': 'En tránsito',
+    'ON_DELIVERY': 'En proceso de entrega',
+    'IN_TRANSIT': 'En tránsito',
     'DELIVERED': 'Entregado',
   };
   
