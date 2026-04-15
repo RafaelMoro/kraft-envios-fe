@@ -54,52 +54,49 @@ export const GuideCardPkk = ({ guide, updatePkkGuide, isDesktop }: GuideCardPkkP
 
   if (isDesktop) {
     return (
-      <article className="p-4 flex rounded-lg border-dashed border-2 border-amber-950 bg-white shadow-md dark:border-amber-700 dark:bg-gray-800 flex-col">
-        { /** Header */}
-        <div className="flex justify-between items-center">
-          <div className="flex gap-4 items-center">
-            <CourierImage
-              dataTestId="guide-logo-image-box"
-              image={guide?.logoSrc ?? DEFAULT_IMAGE_LOGO_PROVIDER}
-              courier={guide?.courier ?? null}
-            />
-            <div className="flex flex-col gap-2">
-              <span className="text-gray-600 dark:text-gray-400 text-sm">Número de Guia</span>
-              <h4 className="text-xl font-semibold">{guide?.trackingNumber}</h4>
-              <span className="text-gray-600 dark:text-gray-400 text-sm">Envío: {guide?.shipmentNumber}</span>
-            </div>
-          </div>
-          <div className="flex gap-2">
+      <article className="p-4 rounded-lg border-dashed border-2 border-amber-950 bg-white shadow-md dark:border-amber-700 dark:bg-gray-800 grid grid-cols-12 gap-3">
+        { /** Image */}
+        <div className="col-span-2 flex justify-between items-center">
+          <CourierImage
+            dataTestId="guide-logo-image-box"
+            image={guide?.logoSrc ?? DEFAULT_IMAGE_LOGO_PROVIDER}
+            courier={guide?.courier ?? null}
+          />
+        </div>
+
+        { /** Guide and Shipment Info */}
+        <div className="col-span-3 flex flex-col gap-3">
+          <span className="text-gray-600 dark:text-gray-400 text-sm">Número de Guia</span>
+          <h4 className="text-xl font-semibold">{guide?.trackingNumber}</h4>
+          <span className="text-gray-600 dark:text-gray-400 text-sm">Envío: {guide?.shipmentNumber}</span>
+          <div className="w-fit flex gap-2">
             <Badge color="purple">{guide?.source}</Badge>
             <Badge color="success">{getGuideStatusLabel(guide?.status ?? '')}</Badge>
           </div>
         </div>
-        <hr className="text-gray-300" />
 
         { /** Address info */}
-          <div className="grid grid-cols-2 gap-1 mt-5">
-            { guide?.content && (
-              <div className="text-gray-600 dark:text-gray-400">
-                <div className="inline-flex gap-2">
-                  <RiFileTextLine size={18} />
-                  <p className="text-xs">Contenido</p>
-                </div>
-                <p className="font-semibold text-ellipsis capitalize">{guide?.content?.toLowerCase()}</p>
+          { guide?.content && (
+            <div className="col-span-2 text-gray-600 dark:text-gray-400">
+              <div className="inline-flex gap-2">
+                <RiFileTextLine size={18} />
+                <p className="text-xs">Contenido</p>
               </div>
-            )}
-            { guide?.startDate && (
-              <div className="text-gray-600 dark:text-gray-400">
-                <div className="inline-flex gap-2">
-                  <RiCalendarLine size={18} />
-                  <p className="text-xs">Fecha de inicio</p>
-                </div>
-                <p className="font-semibold text-ellipsis capitalize">{formatDateToSpanish(new Date(guide.startDate))}</p>
+              <p className="font-semibold text-ellipsis capitalize">{guide?.content?.toLowerCase()}</p>
+            </div>
+          )}
+          { guide?.startDate && (
+            <div className="col-span-2 text-gray-600 dark:text-gray-400">
+              <div className="inline-flex gap-2">
+                <RiCalendarLine size={18} />
+                <p className="text-xs">Fecha de inicio</p>
               </div>
-            )}
-          </div>
+              <p className="font-semibold text-ellipsis capitalize">{formatDateToSpanish(new Date(guide.startDate))}</p>
+            </div>
+          )}
 
           { /** Footer with label link */ }
-          <div className="mt-7 w-full flex justify-center">
+          <div className="col-span-2 w-full flex justify-center">
             <Button color="light" className="inline-flex gap-2 w-fit" onClick={handleGetInformation}>
               { !isFetching ? (
                 <>
