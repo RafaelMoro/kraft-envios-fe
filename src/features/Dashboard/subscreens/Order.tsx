@@ -117,7 +117,7 @@ export const Order = ({ userInfo }: OrderProps) => {
           { !isPending && guides.map((guide => (
             <GuideCard key={guide.id} guide={guide} isPending={isPending} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           )))}
-          { isPending && Array.from({ length: 2 }).map((_, index) => (
+          { isPending && Array.from({ length: 4 }).map((_, index) => (
             <GuideCard key={index} guide={null} isPending={true} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           ))}
         </div>
