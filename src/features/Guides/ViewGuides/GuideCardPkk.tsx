@@ -51,6 +51,8 @@ export const GuideCardPkk = ({ guide, updatePkkGuide, isDesktop }: GuideCardPkkP
   const handleGetInformation = () => {
     setFetchGuide(true)
   }
+  const dateTimeFormatted = guide?.startDate ? formatDateToSpanish(new Date(guide.startDate)) : { fullDateTime: null }
+  const { fullDateTime } = dateTimeFormatted
 
   if (isDesktop) {
     return (
@@ -91,7 +93,7 @@ export const GuideCardPkk = ({ guide, updatePkkGuide, isDesktop }: GuideCardPkkP
                 <RiCalendarLine size={18} />
                 <p className="text-xs">Fecha de inicio</p>
               </div>
-              <p className="font-semibold text-ellipsis capitalize">{formatDateToSpanish(new Date(guide.startDate))}</p>
+              <p className="font-semibold text-ellipsis capitalize">{fullDateTime}</p>
             </div>
           )}
 
@@ -154,7 +156,7 @@ export const GuideCardPkk = ({ guide, updatePkkGuide, isDesktop }: GuideCardPkkP
                   <RiCalendarLine size={18} />
                   <p className="text-xs">Fecha de inicio</p>
                 </div>
-                <p className="font-semibold text-ellipsis capitalize">{formatDateToSpanish(new Date(guide.startDate))}</p>
+                <p className="font-semibold text-ellipsis capitalize">{fullDateTime}</p>
               </div>
             )}
           </div>

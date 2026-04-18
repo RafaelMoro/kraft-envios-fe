@@ -203,7 +203,7 @@ export const getPkkGuide = async (guide: string) => {
  * @returns Formatted string in the pattern "MMM DD, HH:MM am/pm" (e.g., "Mar 13, 01:13 pm")
  * @example formatDateToSpanish(new Date('2024-03-13T13:13:00')) => 'Mar 13, 01:13 pm'
  */
-export const formatDateToSpanish = (date: Date): string => {
+export const formatDateToSpanish = (date: Date) => {
   const months = [
     'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
     'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
@@ -221,8 +221,14 @@ export const formatDateToSpanish = (date: Date): string => {
   
   const formattedHours = hours.toString().padStart(2, '0');
   const formattedMinutes = minutes.toString().padStart(2, '0');
+  const dateFormatted = `${month} ${day}`
+  const timeFormatted = `${formattedHours}:${formattedMinutes} ${ampm}`;
   
-  return `${month} ${day}, ${formattedHours}:${formattedMinutes} ${ampm}`;
+  return {
+    fullDateTime: `${dateFormatted}, ${timeFormatted}`,
+    date: dateFormatted,
+    time: timeFormatted
+  };
 };
 
 /**

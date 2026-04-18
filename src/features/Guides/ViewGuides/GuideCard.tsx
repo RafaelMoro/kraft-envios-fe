@@ -1,4 +1,4 @@
-import { RiArticleLine, RiHome9Line } from "@remixicon/react"
+import { RiArticleLine, RiCalendarLine, RiFileTextLine, RiHome9Line } from "@remixicon/react"
 import { Badge, Card } from "flowbite-react"
 import clsx from "clsx"
 
@@ -6,7 +6,7 @@ import { primaryButtonCSS } from "@/shared/constants/global.constants";
 import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
-import { getGuideStatusLabel } from "@/shared/utils/guides.utils";
+import { formatDateToSpanish, getGuideStatusLabel } from "@/shared/utils/guides.utils";
 import { formatNumberToCurrency } from "@/shared/utils/global.utils";
 import { GuideCardPkk } from "./GuideCardPkk";
 
@@ -73,11 +73,13 @@ export const GuideCard = ({ guide, isPending, updatePkkGuide, isDesktop }: Guide
     primaryButtonCSS,
     "w-fit inline-flex gap-2"
   )
+  const dateTimeFormatted = guide?.startDate ? formatDateToSpanish(new Date(guide.startDate)) : { date: null, time: null }
+  const { date, time } = dateTimeFormatted
 
   if (isDesktop) {
     return (
       <Card>
-        <div className="grid grid-cols-12 gap-2">
+        <div className="grid grid-cols-12 gap-3">
           { /** Image */}
           <div className="flex items-center justify-center">
             <CourierImage
@@ -126,6 +128,26 @@ export const GuideCard = ({ guide, isPending, updatePkkGuide, isDesktop }: Guide
             <p className="font-semibold text-ellipsis capitalize">{guide?.destination?.name?.toLowerCase()}</p>
             <p className="text-xs text-gray-600 dark:text-gray-400">{guide?.destination?.city}</p>
           </div>
+
+          { (guide?.source === 'Pkk' && guide?.content) && (
+            <div className="text-gray-600 dark:text-gray-400">
+              <div className="inline-flex gap-2">
+                <RiFileTextLine size={18} />
+                <p className="text-xs">Contenido</p>
+              </div>
+              <p className="font-semibold text-ellipsis capitalize">{guide?.content?.toLowerCase()}</p>
+            </div>
+          )}
+          { (guide?.source === 'Pkk' && guide?.startDate) && (
+            <div className="text-gray-600 dark:text-gray-400">
+              <div className="inline-flex gap-2">
+                <RiCalendarLine size={18} />
+                <p className="text-xs">Fecha de inicio</p>
+              </div>
+              <p className="font-semibold text-ellipsis capitalize">{date}</p>
+              <p className="font-semibold text-ellipsis capitalize">{time}</p>
+            </div>
+          )}
 
           { /** Footer with label link */ }
           { Boolean(guide?.labelUrl) && (
