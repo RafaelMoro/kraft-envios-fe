@@ -198,10 +198,15 @@ export const getPkkGuide = async (guide: string) => {
 
 //#region Utils Fn
 /**
- * Formats a Date object to a Spanish localized string with abbreviated month
+ * Formats a Date object to Spanish localized date and time components with abbreviated month
  * @param date - The date to format
- * @returns Formatted string in the pattern "MMM DD, HH:MM am/pm" (e.g., "Mar 13, 01:13 pm")
- * @example formatDateToSpanish(new Date('2024-03-13T13:13:00')) => 'Mar 13, 01:13 pm'
+ * @returns An object containing three formatted strings:
+ *   - fullDateTime: Complete date and time in "MMM DD, HH:MM am/pm" format
+ *   - date: Date only in "MMM DD" format
+ *   - time: Time only in "HH:MM am/pm" format
+ * @example 
+ * formatDateToSpanish(new Date('2024-03-13T13:13:00'))
+ * // Returns: { fullDateTime: 'Mar 13, 01:13 pm', date: 'Mar 13', time: '01:13 pm' }
  */
 export const formatDateToSpanish = (date: Date) => {
   const months = [
