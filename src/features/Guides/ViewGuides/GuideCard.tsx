@@ -4,11 +4,13 @@ import clsx from "clsx"
 
 import { primaryButtonCSS } from "@/shared/constants/global.constants";
 import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
-import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
 import { formatDateToSpanish, getGuideStatusLabel } from "@/shared/utils/guides.utils";
 import { formatNumberToCurrency } from "@/shared/utils/global.utils";
+
+import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 import { GuideCardPkk } from "./GuideCardPkk";
+import { GuideCardSkeleton } from "./GuideCardSkeleton";
 
 interface GuideCardProps {
   guide: GuideUI | null;
@@ -26,41 +28,7 @@ export const GuideCard = ({ guide, isPending, updatePkkGuide, isDesktop }: Guide
 
   if (isPending && !guide) {
     return (
-      <Card href="#" className="max-w-sm" data-testid="guide-card-skeleton">
-        <div className="flex justify-between">
-          <div className="bg-slate-400 rounded animate-pulse h-8 w-16" />
-          <div className="bg-slate-400 rounded animate-pulse h-8 w-16" />
-        </div>
-
-        <div>
-          <span className="text-gray-600 dark:text-gray-400 text-sm">Número de Guia</span>
-          <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
-          <div>
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Envío:</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 mt-5">
-          <div className="text-gray-600 dark:text-gray-400">
-            <div className="inline-flex gap-2">
-              <RiHome9Line size={18} />
-              <p className="text-xs">Remitente</p>
-            </div>
-            <div className="bg-slate-400 rounded animate-pulse h-8 w-24" />
-            <div className="bg-slate-400 rounded animate-pulse h-8 w-24 mt-2" />
-          </div>
-          <div className="text-gray-600 dark:text-gray-400">
-            <div className="inline-flex gap-2">
-              <RiHome9Line size={18} />
-              <p className="text-xs">Destinatario</p>
-            </div>
-            <div className="bg-slate-400 rounded animate-pulse h-8 w-24" />
-            <div className="bg-slate-400 rounded animate-pulse h-8 w-24 mt-2" />
-          </div>
-        </div>
-
-        <div className="bg-slate-400 rounded animate-pulse h-8 w-full" />
-      </Card>
+      <GuideCardSkeleton isDesktop={isDesktop} />
     )
   }
 
