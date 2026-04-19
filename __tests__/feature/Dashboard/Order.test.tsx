@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { Order } from '@/features/Dashboard/subscreens/Order';
 import { LoginData } from '@/shared/types/login.types';
-import { GetGuidesData } from '@/shared/types/guides.types';
+import { GetGuidesData, GuideUI } from '@/shared/types/guides.types';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 // Mock dependencies
@@ -21,20 +21,20 @@ jest.mock('../../../src/shared/utils/quotes.utils', () => ({
   })),
 }));
 
-// Mock child components to avoid testing their internals
-jest.mock('../../../src/features/Guides/ViewGuides/GuidesTable', () => ({
-  GuidesTable: ({ guides, isPending }: { guides: GetGuidesData[]; isPending: boolean }) => (
-    <div data-testid="guides-table">
-      <div data-testid="guides-table-pending">{String(isPending)}</div>
-      <div data-testid="guides-table-count">{guides.length}</div>
-    </div>
-  ),
-}));
-
 jest.mock('../../../src/features/Guides/ViewGuides/GuideCard', () => ({
-  GuideCard: ({ guide, isPending }: { guide: GetGuidesData | null; isPending: boolean }) => (
+  GuideCard: ({ 
+    guide, 
+    isPending, 
+    isDesktop 
+  }: { 
+    guide: GuideUI | null; 
+    isPending: boolean;
+    updatePkkGuide: ({ guideId, guideUpdated }: { guideId: string; guideUpdated: GetGuidesData }) => void;
+    isDesktop: boolean;
+  }) => (
     <div data-testid="guide-card">
       <div data-testid="guide-card-pending">{String(isPending)}</div>
+      <div data-testid="guide-card-desktop">{String(isDesktop)}</div>
       {guide && <div data-testid="guide-card-tracking">{guide.trackingNumber}</div>}
     </div>
   ),
@@ -247,13 +247,12 @@ describe('Order', () => {
 
       render(<Order userInfo={mockUserInfo} />);
 
-      expect(screen.queryByTestId('guides-table')).not.toBeInTheDocument();
       expect(screen.queryByTestId('guide-card')).not.toBeInTheDocument();
     });
   });
 
-  describe('When on desktop view', () => {
-    it('Then should render GuidesTable component', () => {
+  describe('When rendering guides', () => {
+    it('Then should render GuideCard components with correct data', () => {
       mockedUseMediaQuery.mockReturnValue({
         isMobile: false,
         isTablet: false,
@@ -273,11 +272,11 @@ describe('Order', () => {
 
       render(<Order userInfo={mockUserInfo} />);
 
-      expect(screen.getByTestId('guides-table')).toBeInTheDocument();
-      expect(screen.queryByTestId('guide-card')).not.toBeInTheDocument();
+      const guideCards = screen.getAllByTestId('guide-card');
+      expect(guideCards).toHaveLength(2);
     });
 
-    it('Then should pass correct data to GuidesTable', () => {
+    it('Then should pass isDesktop true when on desktop', () => {
       mockedUseMediaQuery.mockReturnValue({
         isMobile: false,
         isTablet: false,
@@ -297,11 +296,39 @@ describe('Order', () => {
 
       render(<Order userInfo={mockUserInfo} />);
 
-      expect(screen.getByTestId('guides-table-pending')).toHaveTextContent('false');
-      expect(screen.getByTestId('guides-table-count')).toHaveTextContent('2');
+      const desktopStates = screen.getAllByTestId('guide-card-desktop');
+      desktopStates.forEach((state) => {
+        expect(state).toHaveTextContent('true');
+      });
     });
 
-    it('Then should pass isPending true to GuidesTable when loading', () => {
+    it('Then should pass isDesktop false when on mobile', () => {
+      mockedUseMediaQuery.mockReturnValue({
+        isMobile: true,
+        isTablet: false,
+        isTabletDesktop: false,
+        isMobileTablet: true,
+        isDesktop: false,
+        isDesktopX2: false,
+      });
+
+      mockedUseQuery.mockReturnValue(
+        createMockQueryResult({
+          data: { guides: mockGuides, messages: [] },
+          isSuccess: true,
+          isPending: false,
+        })
+      );
+
+      render(<Order userInfo={mockUserInfo} />);
+
+      const desktopStates = screen.getAllByTestId('guide-card-desktop');
+      desktopStates.forEach((state) => {
+        expect(state).toHaveTextContent('false');
+      });
+    });
+
+    it('Then should render 4 skeleton GuideCards when loading', () => {
       mockedUseMediaQuery.mockReturnValue({
         isMobile: false,
         isTablet: false,
@@ -320,7 +347,39 @@ describe('Order', () => {
 
       render(<Order userInfo={mockUserInfo} />);
 
-      expect(screen.getByTestId('guides-table-pending')).toHaveTextContent('true');
+      const guideCards = screen.getAllByTestId('guide-card');
+      expect(guideCards).toHaveLength(4);
+      
+      const pendingStates = screen.getAllByTestId('guide-card-pending');
+      pendingStates.forEach((state) => {
+        expect(state).toHaveTextContent('true');
+      });
+    });
+  });
+
+  describe('When on desktop view', () => {
+    it('Then should render GuideCard components', () => {
+      mockedUseMediaQuery.mockReturnValue({
+        isMobile: false,
+        isTablet: false,
+        isTabletDesktop: true,
+        isMobileTablet: false,
+        isDesktop: true,
+        isDesktopX2: false,
+      });
+
+      mockedUseQuery.mockReturnValue(
+        createMockQueryResult({
+          data: { guides: mockGuides, messages: [] },
+          isSuccess: true,
+          isPending: false,
+        })
+      );
+
+      render(<Order userInfo={mockUserInfo} />);
+
+      const guideCards = screen.getAllByTestId('guide-card');
+      expect(guideCards).toHaveLength(2);
     });
   });
 
@@ -347,7 +406,6 @@ describe('Order', () => {
 
       const guideCards = screen.getAllByTestId('guide-card');
       expect(guideCards).toHaveLength(2);
-      expect(screen.queryByTestId('guides-table')).not.toBeInTheDocument();
     });
 
     it('Then should render GuideCard components for tablet', () => {
@@ -372,7 +430,6 @@ describe('Order', () => {
 
       const guideCards = screen.getAllByTestId('guide-card');
       expect(guideCards).toHaveLength(2);
-      expect(screen.queryByTestId('guides-table')).not.toBeInTheDocument();
     });
 
     it('Then should display guide tracking numbers in cards', () => {
@@ -397,34 +454,6 @@ describe('Order', () => {
 
       expect(screen.getByText('TRK123456')).toBeInTheDocument();
       expect(screen.getByText('TRK654321')).toBeInTheDocument();
-    });
-
-    it('Then should render 2 skeleton GuideCards when loading', () => {
-      mockedUseMediaQuery.mockReturnValue({
-        isMobile: true,
-        isTablet: false,
-        isTabletDesktop: false,
-        isMobileTablet: true,
-        isDesktop: false,
-        isDesktopX2: false,
-      });
-
-      mockedUseQuery.mockReturnValue(
-        createMockQueryResult({
-          data: undefined,
-          isPending: true,
-        })
-      );
-
-      render(<Order userInfo={mockUserInfo} />);
-
-      const guideCards = screen.getAllByTestId('guide-card');
-      expect(guideCards).toHaveLength(2);
-      
-      const pendingStates = screen.getAllByTestId('guide-card-pending');
-      pendingStates.forEach((state) => {
-        expect(state).toHaveTextContent('true');
-      });
     });
 
     it('Then should not render skeleton cards when data is loaded', () => {
@@ -455,7 +484,7 @@ describe('Order', () => {
   });
 
   describe('When guides data is empty', () => {
-    it('Then should render GuidesTable with empty array on desktop', () => {
+    it('Then should not render GuideCards when no data', () => {
       mockedUseMediaQuery.mockReturnValue({
         isMobile: false,
         isTablet: false,
@@ -475,8 +504,7 @@ describe('Order', () => {
 
       render(<Order userInfo={mockUserInfo} />);
 
-      expect(screen.getByTestId('guides-table')).toBeInTheDocument();
-      expect(screen.getByTestId('guides-table-count')).toHaveTextContent('0');
+      expect(screen.queryByTestId('guide-card')).not.toBeInTheDocument();
     });
 
     it('Then should not render GuideCards on mobile when no data', () => {

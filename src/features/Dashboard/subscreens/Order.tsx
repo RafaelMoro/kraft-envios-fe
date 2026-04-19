@@ -8,7 +8,6 @@ import { getGuidesCb, getGuideStatus, generateGuideId } from "@/shared/utils/gui
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 
-// import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE } from "@/shared/constants/guides.constants"
