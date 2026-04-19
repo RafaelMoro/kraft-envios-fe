@@ -404,11 +404,15 @@ export interface GetGuidesData extends GlobalCreateGuideResponse {
   status: string;
   origin: AddressGuide;
   courier: QuoteCourier | null;
+  content?: string | null; // Used in Pkk as it returns first not enough data.
+  startDate?: Date | null; // Used in Pkk as it returns first not enough data.
   destination: AddressGuide;
 }
 
 export interface GuideUI extends GetGuidesData {
+  id: string;
   logoSrc: QuoteImage;
+  hasBeenFetched: boolean; // state to fetch guide from Pkk
 }
 
 export interface GetGuidesResponse {
@@ -418,7 +422,16 @@ export interface GetGuidesResponse {
   data: {
     guides: GetGuidesData[];
   };
-} 
+}
+
+export interface GetSingleGuideResponse {
+  version: string;
+  error: null;
+  messages: string[];
+  data: {
+    guide: GetGuidesData;
+  };
+}
 
 //#region Schemas
 

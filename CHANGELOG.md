@@ -1,3 +1,9 @@
+## v0.43.0 (2026-04-19)
+
+### Pull Requests
+[#100](https://github.com/RafaelMoro/kraft-envios-fe/pull/100) | Feat/add see pkk guides
+
+
 ## v0.42.0 (2026-04-07)
 
 ### Pull Requests

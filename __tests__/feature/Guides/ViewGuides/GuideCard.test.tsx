@@ -3,6 +3,9 @@ import '@testing-library/jest-dom'
 
 import { GuideCard } from '@/features/Guides/ViewGuides/GuideCard'
 import { GuideUI } from '@/shared/types/guides.types'
+import { GetGuidesData } from '@/shared/types/guides.types'
+
+const mockUpdatePkkGuide = jest.fn<void, [{ guideId: string; guideUpdated: GetGuidesData }]>()
 
 const mockGuideComplete: GuideUI = {
   trackingNumber: '1234567890',
@@ -38,7 +41,9 @@ const mockGuideComplete: GuideUI = {
     provider: 'dhl',
     width: 90,
     height: 30
-  }
+  },
+  id: 'generated-id-123',
+  hasBeenFetched: true,
 }
 
 const mockGuideWithNulls: GuideUI = {
@@ -53,36 +58,49 @@ const mockGuideWithNulls: GuideUI = {
 }
 
 describe('GuideCard', () => {
-  describe('Given the GuideCard component is in loading state', () => {
-    it('When isPending is true and guide is null, Then it displays the skeleton loader', () => {
-      render(<GuideCard guide={null} isPending={true} />)
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
 
-      expect(screen.getByTestId('guide-card-skeleton')).toBeInTheDocument()
+  describe('Given the GuideCard component is in loading state', () => {
+    it('When isPending is true and guide is null in mobile, Then it displays the skeleton loader', () => {
+      render(<GuideCard guide={null} isPending={true} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
+
+      expect(screen.getByTestId('guide-card-skeleton-mobile')).toBeInTheDocument()
       expect(screen.getByText('Número de Guia')).toBeInTheDocument()
       expect(screen.getByText('Envío:')).toBeInTheDocument()
       expect(screen.getAllByText('Remitente')).toHaveLength(1)
       expect(screen.getAllByText('Destinatario')).toHaveLength(1)
     })
 
-    it('When isPending is true and guide is null, Then it shows animated skeleton elements', () => {
-      render(<GuideCard guide={null} isPending={true} />)
+    it('When isPending is true and guide is null in desktop, Then it displays the skeleton loader', () => {
+      render(<GuideCard guide={null} isPending={true} updatePkkGuide={mockUpdatePkkGuide} isDesktop={true} />)
 
-      const skeletonElements = document.querySelectorAll('.animate-pulse')
-      expect(skeletonElements.length).toBeGreaterThan(0)
+      expect(screen.getByTestId('guide-card-skeleton-desktop')).toBeInTheDocument()
     })
   })
 
   describe('Given the GuideCard component has guide data', () => {
-    it('When guide is provided with all data, Then it displays all guide information', () => {
-      render(<GuideCard guide={mockGuideComplete} isPending={false} />)
+    it('When guide is provided with all data in mobile, Then it displays all guide information', () => {
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.getByText('Entregado')).toBeInTheDocument()
       expect(screen.getByText('1234567890')).toBeInTheDocument()
       expect(screen.getByText(/Envío: SH-001/)).toBeInTheDocument()
     })
 
+    it('When guide is provided with all data in desktop, Then it displays all guide information including price', () => {
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={true} />)
+
+      expect(screen.getByText('Entregado')).toBeInTheDocument()
+      expect(screen.getByText('1234567890')).toBeInTheDocument()
+      expect(screen.getByText(/Envío: SH-001/)).toBeInTheDocument()
+      expect(screen.getAllByText('DHL').length).toBeGreaterThan(0)
+      expect(screen.getByText('$250.00')).toBeInTheDocument()
+    })
+
     it('When guide has origin information, Then it displays sender details', () => {
-      render(<GuideCard guide={mockGuideComplete} isPending={false} />)
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.getByText('Remitente')).toBeInTheDocument()
       expect(screen.getByText('juan pérez')).toBeInTheDocument()
@@ -91,7 +109,7 @@ describe('GuideCard', () => {
     })
 
     it('When guide has destination information, Then it displays recipient details', () => {
-      render(<GuideCard guide={mockGuideComplete} isPending={false} />)
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.getByText('Destinatario')).toBeInTheDocument()
       expect(screen.getByText('maría garcía')).toBeInTheDocument()
@@ -100,13 +118,25 @@ describe('GuideCard', () => {
     })
 
     it('When guide has courier logo, Then it displays the CourierImage component', () => {
-      render(<GuideCard guide={mockGuideComplete} isPending={false} />)
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.getByTestId('guide-logo-image-box')).toBeInTheDocument()
     })
 
-    it('When guide has label URL, Then it displays a link to view the label', () => {
-      render(<GuideCard guide={mockGuideComplete} isPending={false} />)
+    it('When guide has label URL in mobile, Then it displays a link to view the label', () => {
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
+
+      const verEtiquetaText = screen.getByText('Ver etiqueta')
+      const labelLink = verEtiquetaText.closest('a')
+      
+      expect(labelLink).toBeTruthy()
+      expect(labelLink).toHaveAttribute('href', 'https://example.com/label.pdf')
+      expect(labelLink).toHaveAttribute('target', '_blank')
+      expect(labelLink).toHaveAttribute('rel', 'noopener noreferrer')
+    })
+
+    it('When guide has label URL in desktop, Then it displays a link to view the label', () => {
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={true} />)
 
       const verEtiquetaText = screen.getByText('Ver etiqueta')
       const labelLink = verEtiquetaText.closest('a')
@@ -118,41 +148,37 @@ describe('GuideCard', () => {
     })
 
     it('When guide has null courier, Then it still renders successfully', () => {
-      render(<GuideCard guide={mockGuideWithNulls} isPending={false} />)
+      render(<GuideCard guide={mockGuideWithNulls} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.getByText('1234567890')).toBeInTheDocument()
       expect(screen.getByTestId('guide-logo-image-box')).toBeInTheDocument()
     })
 
-    it('When labelUrl is null, Then the link href is empty', () => {
+    it('When labelUrl is null, Then the link is not rendered', () => {
       const guideWithoutLabelUrl: GuideUI = {
         ...mockGuideComplete,
         labelUrl: null
       }
-      render(<GuideCard guide={guideWithoutLabelUrl} isPending={false} />)
+      render(<GuideCard guide={guideWithoutLabelUrl} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
-      const verEtiquetaText = screen.getByText('Ver etiqueta')
-      const labelLink = verEtiquetaText.closest('a')
-      
-      expect(labelLink).toBeTruthy()
-      expect(labelLink).toHaveAttribute('href', '')
+      expect(screen.queryByText('Ver etiqueta')).not.toBeInTheDocument()
     })
   })
 
   describe('Given the GuideCard component transitions from loading to loaded', () => {
     it('When guide data becomes available, Then it switches from skeleton to full card', () => {
-      const { rerender } = render(<GuideCard guide={null} isPending={true} />)
+      const { rerender } = render(<GuideCard guide={null} isPending={true} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
-      expect(screen.getByTestId('guide-card-skeleton')).toBeInTheDocument()
+      expect(screen.getByTestId('guide-card-skeleton-mobile')).toBeInTheDocument()
 
-      rerender(<GuideCard guide={mockGuideComplete} isPending={false} />)
+      rerender(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
-      expect(screen.queryByTestId('guide-card-skeleton')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('guide-card-skeleton-mobile')).not.toBeInTheDocument()
       expect(screen.getByText('1234567890')).toBeInTheDocument()
     })
 
     it('When isPending is false with guide data, Then it shows the full card even if isPending changes', () => {
-      render(<GuideCard guide={mockGuideComplete} isPending={true} />)
+      render(<GuideCard guide={mockGuideComplete} isPending={true} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.queryByTestId('guide-card-skeleton')).not.toBeInTheDocument()
       expect(screen.getByText('1234567890')).toBeInTheDocument()
@@ -172,14 +198,14 @@ describe('GuideCard', () => {
           city: 'Monterrey'
         }
       }
-      render(<GuideCard guide={guideWithDifferentCities} isPending={false} />)
+      render(<GuideCard guide={guideWithDifferentCities} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.getByText('Guadalajara')).toBeInTheDocument()
       expect(screen.getByText('Monterrey')).toBeInTheDocument()
     })
 
     it('When origin and destination have same city, Then city name appears twice', () => {
-      render(<GuideCard guide={mockGuideComplete} isPending={false} />)
+      render(<GuideCard guide={mockGuideComplete} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       const cities = screen.getAllByText('Ciudad de México')
       expect(cities).toHaveLength(2)
@@ -192,7 +218,7 @@ describe('GuideCard', () => {
         ...mockGuideComplete,
         origin: null
       } as unknown as GuideUI
-      render(<GuideCard guide={guideWithoutOrigin} isPending={false} />)
+      render(<GuideCard guide={guideWithoutOrigin} isPending={false} updatePkkGuide={mockUpdatePkkGuide} isDesktop={false} />)
 
       expect(screen.queryByText('Remitente')).not.toBeInTheDocument()
       expect(screen.getByText('Destinatario')).toBeInTheDocument()

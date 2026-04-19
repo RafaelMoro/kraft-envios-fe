@@ -4,11 +4,10 @@ import { useQuery } from "@tanstack/react-query"
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb, getGuideStatus } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus, generateGuideId } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
-import { GuideUI } from "@/shared/types/guides.types"
+import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 
-import { GuidesTable } from "@/features/Guides/ViewGuides/GuidesTable"
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE } from "@/shared/constants/guides.constants"
@@ -18,7 +17,7 @@ interface OrderProps {
 }
 
 export const Order = ({ userInfo }: OrderProps) => {
-  const { isMobileTablet } = useMediaQuery()
+  const { isMobileTablet, isDesktop } = useMediaQuery()
   const {
     notificationMessage,
     openNotification,
@@ -39,19 +38,38 @@ export const Order = ({ userInfo }: OrderProps) => {
         if (guide.source === 'TONE') {
           return {
             ...guide,
+            id: generateGuideId(guide),
             status: getGuideStatus(guide.status),
+            hasBeenFetched: true,
             logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
           }
         }
 
         return {
         ...guide,
+        id: generateGuideId(guide),
+        hasBeenFetched: guide.source === 'Pkk' ? false : true, // Only guides from Pkk will be marked as not fetched initially
         logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
       }
     })
       setGuides(transformedGuides)
     }
   }, [data, isMobileTablet])
+
+  const updatePkkGuide = ({ guideId, guideUpdated}: { guideId: string, guideUpdated: GetGuidesData}) => {
+    const updatedGuides = guides.map((guide) => {
+      if (guide.id === guideId) {
+        const formattedGuide = {
+          ...guide,
+          ...guideUpdated,
+          hasBeenFetched: true
+        }
+        return formattedGuide
+      }
+      return guide
+    })
+    setGuides(updatedGuides)
+  }
 
   // Handle error messages if any provider failed to fetch guides
   useEffect(() => {
@@ -71,6 +89,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         toggleNotification()
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages])
 
   return (
@@ -92,19 +111,16 @@ export const Order = ({ userInfo }: OrderProps) => {
           </p>
         </div>
       )}
-      { isMobileTablet && !isError && (
-        <div className="grid md:grid-cols-2 gap-5">
+      { !isError && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-5">
           { !isPending && guides.map((guide => (
-            <GuideCard key={guide.trackingNumber} guide={guide} isPending={isPending} />
+            <GuideCard key={guide.id} guide={guide} isPending={isPending} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           )))}
-          { isPending && Array.from({ length: 2 }).map((_, index) => (
-            <GuideCard key={index} guide={null} isPending={true} />
+          { isPending && Array.from({ length: 4 }).map((_, index) => (
+            <GuideCard key={index} guide={null} isPending={true} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           ))}
         </div>
       ) }
-      { !isMobileTablet && !isError && (
-        <GuidesTable guides={guides ?? []} isPending={isPending} />
-      )}
     </main>
   )
 }
