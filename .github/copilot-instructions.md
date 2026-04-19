@@ -20,6 +20,16 @@ For the unit tests, consider the following instructions:
 
 - Do not use jest.mock() to mock internal components from the same project (components from @/features, @/shared, etc.). This approach can cause module resolution errors and makes tests brittle. Instead, test the actual component behavior or use integration testing approaches that test the full component tree.
 
+- **CRITICAL: Avoid mocking components and dependencies whenever possible.** Only mock when absolutely necessary:
+  - **DO NOT MOCK**: Internal React components (from @/features, @/shared, etc.) - test them as-is
+  - **DO NOT MOCK**: Simple utility functions that don't have side effects - import and use them directly
+  - **DO MOCK**: External API calls, database connections, or network requests
+  - **DO MOCK**: Browser APIs that aren't available in test environment (window.matchMedia, IntersectionObserver, etc.)
+  - **DO MOCK**: Third-party hooks that manage complex state or have side effects (useQuery, useMutation from @tanstack/react-query)
+  - **DO MOCK**: Custom hooks that use browser APIs or have side effects (useMediaQuery, useRouter from Next.js)
+  - When mocking is necessary, use relative imports (../../../src/...) instead of path aliases (@/) for jest.mock()
+  - Keep mocked components as simple test doubles that accept props and render minimal output for verification
+
 - Do not use document.querySelector() or document.getElementById() in tests. These methods break the testing library abstraction and make tests brittle. Instead, use testing-library queries like getByRole, getByText, getByLabelText, or add data-testid attributes to components and use getByTestId for elements that are hard to query semantically.
 
 - Do not test CSS classes directly using toHaveClass() unless absolutely necessary for critical functionality. CSS classes are implementation details that can change frequently and make tests brittle. Instead, focus on testing user-visible behavior, accessibility, and component functionality. If you need to verify styling, consider testing the visual outcome or behavior rather than the specific CSS classes applied.
