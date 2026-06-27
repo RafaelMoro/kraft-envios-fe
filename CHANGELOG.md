@@ -1,3 +1,9 @@
+## v0.44.0 (2026-06-27)
+
+### Pull Requests
+[#102](https://github.com/RafaelMoro/kraft-envios-fe/pull/102) | Add AI worklows
+
+
 ## v0.43.0 (2026-04-19)
 
 ### Pull Requests
