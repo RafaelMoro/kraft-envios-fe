@@ -1,22 +1,24 @@
 # /research - Research Workflow
 
-You are running the **research phase** (Next.js 14 App Router + React 18 + TypeScript, pnpm, Zustand, TanStack Query, Tailwind v4 + flowbite-react, Jest). Your goal is to gather information, ask clarifying questions, and write a research document under `ai-research/`.
+You are running the **research phase** for `kraft-envios-fe` (Next.js 14 App Router + React 18 + TypeScript, pnpm, TanStack Query, Tailwind v4 + Flowbite React, Jest). Your goal is to gather information, ask clarifying questions, and write a research document under `ai-research/`.
 
 ## Inputs the user may provide
 
 - A free-form description of the work
-- Neither (ask for at least one before proceeding)
+- Neither, in which case ask for at least one before proceeding
 
 Parse whatever the user supplied.
 
 ## Step 1 - Load shared context first
 
-Before any codebase exploration, read these files (do not re-discover what is already documented):
+Before any codebase exploration, read these files and do not re-discover what is already documented:
 
-1. `REPO_CONTEXT.md` - full architecture map: directory layout, BFF/auth flow, route handler inventory, state strategy, backend-discovery procedure, conventions, open questions
-2. `AGENTS.md` - toolchain, commands, architecture overview, env vars, branch flow
-3. `.github/copilot-instructions.md` - unit test conventions and reference test files
-4. `package.json` - dependencies and npm scripts (`pnpm dev | build | start | lint | test | test:watch`)
+1. `REPO_CONTEXT.md` - architecture map, route handler inventory, auth/cookie flow, conventions, open questions
+2. `AGENTS.md` - compact toolchain, commands, env, tests, and structure guidance
+3. `package.json` - dependencies and scripts (`pnpm dev | build | start | lint | test`)
+4. Relevant executable config: `next.config.mjs`, `jest.config.ts`, `tsconfig.json`, `postcss.config.mjs`
+
+There is no `.github/copilot-instructions.md` or CI workflow directory in this checkout. Do not assume branch, label, release, or deployment rules unless the user provides them.
 
 ## Step 2 - Story quality check
 
@@ -34,106 +36,103 @@ If any flag fires, ask the user before continuing. Do not invent answers.
 
 Before deep exploration, assess whether this is:
 
-- **Single story** - 1-3 phases, clear ACs (e.g. add a new chart variant, fix a form validation bug)
-- **Multiple stories** - needs to be broken down into separate deliverables
-- **Epic** - complex initiative spanning several features (e.g. introducing a new domain like `Goals` requires routing + store + UI + tests)
+- **Single story** - 1-3 phases, clear ACs, e.g. fix a quote form bug or add one validation
+- **Multiple stories** - separate deliverables across different screens or flows
+- **Epic** - complex initiative spanning several features, API routes, UI flows, and tests
 
 If the requirement is too broad or complex:
 
-1. Break it into an **epic** with multiple stories
-2. Each story should have 2-5 acceptance criteria
-3. Each story should be independently deliverable
-4. Ask the user which story to research first
+1. Break it into an epic with multiple stories.
+2. Give each story 2-5 acceptance criteria.
+3. Keep each story independently deliverable.
+4. Ask the user which story to research first.
 
 ## Step 4 - Scope discipline
 
 Apply these constraints **before** exploration:
 
-- Only research what the story explicitly requests
-- Don't explore tangential refactors or "while we're here" cleanups
-- Don't invent features the story doesn't mention
-- If scope seems unclear, ask before exploring
-- Respect the feature-sliced layout: changes belong in `src/features/<Domain>/` unless they are genuinely cross-cutting (in which case they go in `src/shared/`)
-- **Do not clone or shell into the backend repo** (`BE_Personal_Finances`). It is private and lives outside this workspace. When the story needs backend info you cannot infer from the BFF code or `REPO_CONTEXT.md`, use the delegation procedure in `REPO_CONTEXT.md` → "When you need to learn more or add a proxied endpoint" and the template at `.github/prompts/backend-research.prompt.md` (opencode equivalent: `.opencode/command/backend-research.md`). Draft the prompt, hand it to the user, and **wait** for their response — do not invent answers.
+- Only research what the story explicitly requests.
+- Do not explore tangential refactors or "while we're here" cleanups.
+- Do not invent features the story does not mention.
+- If scope seems unclear, ask before exploring.
+- Respect the current layout: domain UI belongs in `src/features/<Domain>/`; cross-cutting code belongs in `src/shared/`.
+- Backend knowledge must come from this repo's route handlers, types, constants, and env docs unless the user provides backend details. Do not clone or shell into an external backend repo.
 
 ## Step 5 - Ask about scope and complexity
 
 Use `vscode_askQuestions` to resolve at minimum:
 
-1. **Quick or full research?** Estimate complexity. For a small bug fix or one-line behavioral change:
+1. **Quick or full research?** Estimate complexity. For a small bug fix or one-line behavior change, ask:
 
-   > "This looks small. Want a quick research note (~200 lines, lightweight template) or the full template (300-1000 lines)?"
-   > Default to **full template** if unclear.
+   > "This looks small. Want a quick research note (~100-200 lines, lightweight template) or the full template (~200-500 lines)?"
+   > Default to full template if unclear.
 
-2. **Cross-feature or single-feature?** If the story seems to touch multiple features or areas:
+2. **Cross-feature or single-feature?** If the story seems to touch multiple features or areas, ask:
 
-   > "This looks like it might touch multiple features or areas of the codebase. Is that right? If so, I can do a more comprehensive research note that covers all relevant areas."
-   > Default to **single feature** if unclear.
+   > "This looks like it might touch multiple features or areas of the codebase. Is that right? If so, I can cover all relevant areas in the research note."
+   > Default to single feature if unclear.
 
 3. **Specific areas to focus on?** If the story is complex, ask:
 
-   > "Are there any specific areas of the codebase or specific questions you want me to focus on during the research? This can help me prioritize and tailor the research note to your needs."
+   > "Are there specific code areas or questions you want prioritized during research?"
 
-4. **Other story-specific clarifications** - e.g. UI library choices (flowbite vs custom atoms/molecules/organisms), accessibility expectations, i18n, date handling (`date-fns` vs `dayjs` vs `@internationalized/date`).
+4. **Other story-specific clarifications** - e.g. courier behavior, backend contract uncertainty, Flowbite vs local shared UI, accessibility expectations, mobile/desktop behavior, cookie/local-storage expectations.
 
-Batch all of these into a single `vscode_askQuestions` call to minimize back-and-forth. Do not invent answers. Default to the most comprehensive research if unclear.
+Batch all of these into a single `vscode_askQuestions` call. Do not invent answers.
 
 ## Step 6 - Write the research doc
 
 File path: `ai-research/{story-name}.md` (create the directory if it does not exist).
-Length target: **300-1000 lines** for full mode, **~200 lines** for quick mode.
+
+Length target: **~200-500 lines** for full mode, **~100-200 lines** for quick mode. Cut aggressively for small stories.
 
 The research doc must include:
 
 ### Story Definition
 
 - Story title and description
-- Acceptance Criteria (ACs) - 2-5 clear, testable criteria
-- Task breakdown - if complex, break into subtasks
-- Epic structure - if scope is too large, define constituent stories
+- Acceptance criteria - 2-5 clear, testable criteria
+- Task breakdown if complex
+- Epic structure if scope is too large
 
 ### Technical Research
 
-- **Affected areas** - reference the existing layout:
-  - Routes / pages: `src/app/**` (note `export const dynamic = 'force-dynamic'` in `layout.tsx`)
-  - API route handlers (proxy to backend via `process.env.BACKEND_URI`, auth via `jose` session cookie): `src/app/api/**`
-  - Feature UI: `src/features/<Domain>/` (Accounts, Budgets, Categories, Charts, Dashboard, Login, Records)
-  - Shared UI: `src/shared/ui/{atoms,molecules,organisms,tremor,icons}` (the last two are excluded from coverage)
-  - Cross-cutting: `src/shared/{hooks,lib,utils,constants,types}`
-  - State: `src/zustand/{store,provider}/` (components using `useDashboardStore` MUST be inside `DashboardStoreProvider`)
-  - Tests: `__tests__/` mirroring `src/`; `__tests__/mocks/` and `__tests__/utils-test/` are ignored by the runner
-- **Existing patterns to follow** - feature-sliced components, Zustand store + provider, TanStack Query via `QueryProviderWrapper`, Tailwind v4 + flowbite-react
-- **Dependencies / integration points** - new deps must be added to `package.json` (pnpm); remember the env vars in `AGENTS.md` (CI only sets `REACT_APP_LOCAL_STORAGE=BUDGET_MASTER`)
-- **Edge cases and constraints** - SSR vs client components (`'use client'`), `force-dynamic` layout, httpOnly session cookie flow, coverage always collected on test runs
+- **Affected areas**, referencing this repo's layout:
+  - Routes/pages: `src/app/**`
+  - API route handlers: `src/app/api/**/route.ts`
+  - Feature UI: `src/features/{Login,Dashboard,Quotes,Addresses,AutocompleteZipcode,Guides,ProfitMargin}`
+  - Shared code: `src/shared/{ui,hooks,lib,utils,constants,types}`
+  - Tests: `__tests__/feature/*`, `__tests__/components/*`, `__tests__/home.test.tsx`; helper dirs `__tests__/mocks/` and `__tests__/utils-test/` are ignored by Jest
+- **Existing patterns to follow** - App Router server/client split, TanStack Query via `features/QueryProviderWrapper`, Flowbite React, Tailwind v4, `react-hook-form` + `yup`, route-handler proxy style
+- **Dependencies / integration points** - new deps require `package.json` and pnpm lockfile changes; env vars are listed in `.env.example` and `AGENTS.md`
+- **Edge cases and constraints** - httpOnly session cookies, mixed API response shapes, mobile/tablet dashboard branch, coverage always collected on tests, `product-sat` external SAT URI instead of `BACKEND_URI`
 
 ### Open Questions
 
-- List unresolved decisions
-- Flag ambiguous requirements
-- Note missing information
+- List unresolved decisions.
+- Flag ambiguous requirements.
+- Note missing backend/API contract information.
 
-Focus on **high-level actions** needed to accomplish the task. No implementation details, no code snippets beyond illustrative file references.
+Focus on **high-level actions** needed to accomplish the task. Do not include implementation code beyond illustrative file references.
 
-## Step 7 - Capture non-obvious findings to memory
+## Step 7 - Capture non-obvious findings
 
-If research surfaces a non-obvious constraint, conflict or domain fact that future work would benefit from, write a short note under a memory location the project uses (skip this step if there is no established memory directory - the repo does not ship with one). Focus on insights that would not be easily discovered through code exploration alone (e.g. "the `next.config.mjs` is wrapped by the flowbite-react plugin, so any `next.config` edits must remain compatible").
+If research surfaces a non-obvious constraint or domain fact future work would benefit from, add it to `REPO_CONTEXT.md` only if it is verified and broadly useful. Skip this for story-specific details.
 
 ## Step 8 - Present for review
 
 End the turn with:
 
 1. The path to the research doc
-2. Story / Epic structure (if broken down)
+2. Story / epic structure if broken down
 3. A bullet list of unresolved open questions
 4. A bullet list of assumptions made
-5. A reminder that PRs target `develop` and must carry exactly one of `major | minor | patch` label
 
 Do **not** start planning or writing code. Wait for human sign-off.
 
 ## Don'ts
 
-- Don't propose implementation - that is the planning phase
-- Don't write or modify source files (other than the research doc)
-- Don't run tests, builds, or `pnpm install`
-- Don't write a 1,000-line research doc when the story is small; cut sections aggressively
-- Don't suggest edits to `CHANGELOG.md` or a manual version bump in `package.json` - `develop-pipeline.yml` handles that on merge to `develop`
+- Do not propose implementation; that is the planning phase.
+- Do not write or modify source files other than the research doc, except for a verified broadly useful `REPO_CONTEXT.md` note.
+- Do not run tests, builds, or `pnpm install` during research.
+- Do not assume Zustand, finance domains, CI labels, branch flow, changelog automation, or external backend repository access; those are not present in this repo.
