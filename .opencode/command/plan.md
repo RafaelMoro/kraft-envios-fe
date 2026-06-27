@@ -1,168 +1,165 @@
 ---
-description: "Convert a research doc into an implementation plan. Reads ai-research/*.md, defines phases, specifies file-level changes, and writes ai-planning/planning-*.md"
+description: Convert a Kraft Envios research doc into an implementation plan under ai-planning/.
 ---
 
-# /plan - Story Planning workflow
+# /plan - Story Planning Workflow
 
-You are running the **planning phase** for a story on `clean-next-budget-master` (Next.js 14 App Router + React 18 + TypeScript, pnpm, Zustand, TanStack Query, Tailwind v4 + flowbite-react, Jest). Input is a completed, sign-offed research document; output is an actionable implementation plan under `ai-planning/`.
+You are running the **planning phase** for `kraft-envios-fe` (Next.js 14 App Router + React 18 + TypeScript, pnpm, TanStack Query, Tailwind v4 + Flowbite React, Jest). Input is a completed, sign-offed research document; output is an actionable implementation plan under `ai-planning/`.
 
 ## Inputs the user may provide
 
-- A research doc path (e.g. `ai-research/{story-name}.md`) — ideal
-- Nothing — list available research docs under `ai-research/*.md` and ask which one to plan
+- A research doc path, e.g. `ai-research/{story-name}.md` - ideal
+- Nothing - list available research docs under `ai-research/*.md` and ask which one to plan
+
+Parse `$ARGUMENTS` and the conversation for the research doc path.
 
 ## Step 1 - Load shared context first
 
 Read in order:
 
-1. **The research document** (provided by the user, or selected from `ai-research/*.md`). This is the source of truth for scope, affected files, ACs, and open questions. **If the research doc is not yet sign-offed, stop and ask the user** — do not plan over a draft.
-2. `REPO_CONTEXT.md` (at the repo root) — full architecture map: directory layout, BFF/auth flow, route handler inventory, state strategy, conventions for adding new code, external backend reference. **Especially read the "Adding new code" and "External backend reference" sections.**
-3. `AGENTS.md` — toolchain, commands, env vars, branch flow (PRs target `develop`; one of `major | minor | patch` label is required).
-4. `.github/copilot-instructions.md` — unit test conventions and reference test files. **Treat the rules here as hard constraints** (no mocking the component under test, no `fireEvent`, no `querySelector`, no CSS-class assertions, no mocking `sonner` or `next/navigation`, no `require()`, always `userEvent`, always query via `screen`).
-5. `package.json` — dependencies and scripts (`pnpm dev | build | start | lint | test | test:watch`).
-6. `__tests__/mocks/{accounts,budgets,categories,records}.mock.ts` and the reference test files cited in `REPO_CONTEXT.md` → Testing conventions (e.g. `__tests__/home.test.tsx` for cookies, `__tests__/features/Dashboard/StatisticsSubscreen.test.tsx` for `ResizeObserver`).
+1. **The research document** provided by the user, or selected from `ai-research/*.md`. This is the source of truth for scope, affected files, ACs, and open questions. If the research doc is not sign-offed, stop and ask the user.
+2. `REPO_CONTEXT.md` - architecture map, route handler inventory, auth/cookie flow, testing notes, conventions, and open questions.
+3. `AGENTS.md` - compact commands, env, app structure, API-route, test, and styling guidance.
+4. `.github/copilot-instructions.md` - unit test conventions. Treat it as a hard constraint for test planning.
+5. `package.json` - dependencies and scripts (`pnpm dev | build | start | lint | test`).
+6. Relevant executable config if the story touches it: `next.config.mjs`, `jest.config.ts`, `tsconfig.json`, `postcss.config.mjs`.
 
-If the research flagged a need for backend info (e.g. a new BFF route to a not-yet-proxied endpoint), confirm the user has already run the delegation at `.opencode/command/backend-research.md` (Copilot equivalent: `.github/prompts/backend-research.prompt.md`) and pasted the response. **If not, stop and tell the user to do that first** — do not invent backend contracts.
+There are no CI workflow files in this checkout. Do not assume branch, label, release, changelog, or deployment automation unless the user provides it.
 
 ## Step 2 - Verify research is plan-ready
 
 Before drafting the plan, confirm:
 
-- All "Open Questions" in the research doc are resolved **or** explicitly deferred with a recorded assumption.
+- All research-doc open questions are resolved or explicitly deferred with a recorded assumption.
 - Each acceptance criterion is unambiguous, testable, and traces to a concrete change in this repo.
-- The "Affected areas" list in the research doc is consistent with the current `src/` layout (no files moved since research).
-- Backend dependencies are resolved (DTOs known, no version bumps needed, CORS pre-cleared) — or, if not, an explicit assumption is recorded.
+- The affected areas still match the current layout (`src/app`, `src/features`, `src/shared`, `__tests__`).
+- Backend/API contract dependencies are known from this repo's route handlers/types or are explicitly recorded as assumptions.
 
-If anything is unresolved, ask the user before proceeding. **Do not guess answers to open questions — that's what the research phase was for.**
+If anything is unresolved, ask the user before proceeding. Do not guess answers left open by research.
 
-## Step 2.5 - Scope discipline (do this before any phase work)
+## Step 2.5 - Scope discipline
 
-The plan covers **only** what the story explicitly asks for. For every concrete item you're about to add (a constant, a file, a test, a helper, a refactor, a prop, a piece of error handling), it must trace to one of:
+The plan covers **only** what the story explicitly asks for. Every file, helper, constant, prop, test, or refactor must trace to one of:
 
-1. A specific acceptance criterion in the story, **or**
-2. A direct technical prerequisite of an AC, **or**
-3. A repo convention enforced by `REPO_CONTEXT.md` / `AGENTS.md` / `.github/copilot-instructions.md`, **or**
-4. A research-doc finding the user explicitly accepted in the research Q&A.
+1. A specific acceptance criterion.
+2. A direct technical prerequisite of an acceptance criterion.
+3. A repo convention from `REPO_CONTEXT.md`, `AGENTS.md`, or `.github/copilot-instructions.md`.
+4. A research-doc finding the user explicitly accepted.
 
-If an item doesn't trace to one of those, it is **out of scope**. Common temptations to refuse:
+If an item does not trace to one of those, it is out of scope.
 
-- **Speculative error handling.** Don't add try/catches, fallbacks, or alerts for failure modes the story doesn't mention. Trust internal code; only handle errors at boundaries the story implies.
-- **Telemetry / logging / caching** that the story doesn't mention.
-- **Refactors of nearby code** that the story doesn't ask for, even if they look tempting (e.g. "while we're here, let's also clean up that other route handler").
-- **Tests for invented behavior.** Tests cover what the plan actually builds. If the behavior isn't planned, neither is the test.
-- **Nice-to-haves** that aren't required by an AC.
-- **Backend changes.** This repo is the BFF. If a needed change lives in `BE_Personal_Finances`, do not include it in this plan — surface it as an open question for the user to take to the backend agent.
+Common temptations to refuse:
 
-When tempted to include something speculative, instead:
-
-- Note it under "Open Questions" in the research doc for future phases, **or**
-- If it's a technical prerequisite, trace it to the AC it supports and ask the user to confirm it's in scope before including it, **or**
-- Drop it entirely.
-
-The story's own words are the highest authority. Repo conventions are second. Research findings the user accepted are third.
+- Speculative error handling beyond the boundary behavior the story requires.
+- Telemetry, logging, caching, or broad cleanup not mentioned by the story.
+- Refactors of nearby route handlers/components just because they look inconsistent.
+- Tests for invented behavior not present in the plan.
+- New state libraries; this repo currently uses local React state, cookies/server actions, TanStack Query, and local-storage helpers, not Zustand.
+- Backend changes outside this repository. If backend behavior is unknown, surface it as an open question or assumption.
 
 ## Step 3 - Define phases
 
-Break into phases, each independently testable. Common patterns for this repo:
+Break work into phases, each independently testable. Common phase patterns for this repo:
 
-| Story type                                                 | Phase pattern                                                                                                                                                       |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **New feature domain** (e.g. new `src/features/<Domain>/`) | Scaffolding (folders, types, store if needed) → UI (atoms/molecules/organisms + `accounts` of feature) → wiring to BFF route handler → tests                        |
-| **New BFF route handler**                                  | Types (request/response) → handler (`src/app/api/<domain>/route.ts`, mirror `accounts/route.ts` pattern) → tests for handler → update `REPO_CONTEXT.md` route table |
-| **New page**                                               | `src/app/<route>/page.tsx` + supporting components → integration with existing layouts/nav → tests                                                                  |
-| **New Zustand store**                                      | `store/<name>.store.ts` + `provider/<name>-store-provider.tsx` → seed in test mock → consumer component wiring → tests                                              |
-| **Form feature**                                           | Yup schema → `react-hook-form` integration → form components → submission + success/error UI → tests                                                                |
-| **Bug fix**                                                | Root cause + fix → regression test → verification (manual or automated)                                                                                             |
-| **Test-only / refactor**                                   | Identify scope → change → run `pnpm test` (coverage is always collected) → verify no behavior change                                                                |
+| Story type | Phase pattern |
+| --- | --- |
+| New feature UI | Types/constants if needed -> feature component(s) under `src/features/<Domain>/` -> route/page/dashboard wiring -> tests |
+| New or changed API route | Shared request/response types -> route handler under `src/app/api/**/route.ts` following existing auth/proxy shape -> callers/hooks -> tests -> update `REPO_CONTEXT.md` if broadly useful |
+| New page | `src/app/<route>/page.tsx` -> feature UI -> navigation/redirect behavior -> tests |
+| Form feature | Yup schema/constants -> `react-hook-form` integration -> submit/mutation behavior -> success/error UI required by ACs -> tests |
+| Bug fix | Root cause -> smallest fix -> regression test -> focused verification |
+| Test-only/refactor | Exact scope -> change -> focused tests -> no behavior-change verification |
 
-Don't create a phase for "lint/format" or "code review" — those are PR concerns, not phases.
+Do not create phases for linting, formatting, code review, CI release, or changelog work.
 
 ## Step 4 - Specify changes per phase
 
-For each phase, include a **"Changes Required"** section that specifies:
+For each phase, include a **Changes Required** section.
 
-For each file change:
+For each file change, specify:
 
-- **Exact path** — e.g. `src/app/api/categories/route.ts`, `src/features/Categories/CreateCategoryButton.tsx`, `src/zustand/store/categories.store.ts`, `__tests__/app/api/categories/route.test.ts`.
-- **Action**: Create / Modify / Delete.
-- **For modifications**: line range or "after line x".
-- **Code structure**: function signatures, key logic, critical conditionals. **Not full implementations.**
-- **Edge cases** worth flagging (only the non-obvious ones — SSR vs client, `force-dynamic` interaction, httpOnly cookie flow, Zustand provider requirement).
-- **Rationale**: a 1-2 sentence "why" only when not self-evident.
+- **Exact path** - e.g. `src/app/api/quotes/route.ts`, `src/features/Guides/Mn/CreateGuideModalMn.tsx`, `src/shared/types/guides.types.ts`, `__tests__/feature/Guides/Mn/CreateGuideModalMn.test.tsx`.
+- **Action** - Create / Modify / Delete.
+- **For modifications** - line range, function/component name, or "near <symbol>".
+- **Code structure** - function signatures, key props, state shape, critical conditionals. Do not write full implementations.
+- **Edge cases** - only non-obvious ones, such as client/server component boundaries, httpOnly session cookies, mixed API response envelopes, mobile/tablet dashboard rendering, or `product-sat` using an external SAT URI instead of `BACKEND_URI`.
+- **Rationale** - 1-2 sentences only when not self-evident.
 
-Stay concise. Show the implementer what to build; don't write it for them. Target **500-700 lines** for the whole plan.
+Stay concise. Show the implementer what to build, not the complete code. Target **300-700 lines** for the whole plan depending on story size.
 
 ## Step 5 - Specify success criteria per phase
 
 Each phase needs:
 
-- **Automated** — exact commands using pnpm. For this repo, typical:
-  - `pnpm test` (always collects coverage; targeted: `pnpm test -- __tests__/path/to/file.test.tsx`)
-  - `pnpm dev` (visually check no console errors / no `force-dynamic` warnings)
-  - `pnpm build` (catches type errors since there's no separate `typecheck` script)
-  - `pnpm lint`
-- **Manual** — specific user-facing steps (click X, see Y, refresh, log out and back in, etc.).
+- **Automated** - exact commands using pnpm, choosing the narrowest useful verification:
+  - `pnpm test -- __tests__/path/to/file.test.tsx` for focused tests.
+  - `pnpm test` when the change crosses many areas; coverage is always collected.
+  - `pnpm exec tsc --noEmit` for TypeScript-only verification.
+  - `pnpm lint` for lint verification.
+  - `pnpm build` for full production verification.
+- **Manual** - specific user-facing steps when UI behavior is affected, including desktop/mobile when dashboard behavior can differ.
 
-## Step 6 - Specify test coverage (not test code)
+Do not tell implementers to run `pnpm install` unless the plan intentionally changes dependencies.
 
-Add a table like this example:
+## Step 6 - Specify test coverage, not test code
 
-| File                                              | Coverage areas                                                    | Pattern reference                                                                                                 |
-| ------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `src/app/api/categories/route.ts`                 | POST 201, POST 400 (validation), unauth 401 path                  | Mirror `__tests__/app/api/accounts/route.test.ts` (if it exists) or `__tests__/home.test.tsx` cookie-mock pattern |
-| `src/features/Categories/CreateCategoryModal.tsx` | Open/close, form submit calls mutation, error toast, success path | Wrap with `QueryProviderWrapper`; use `userEvent`; query via `screen`                                             |
-| `src/zustand/store/categories.store.ts`           | Initial state, add/remove action, selector behavior               | Mirror `__tests__/zustand/dashboard.store.test.ts` (if it exists)                                                 |
+Add a table like this:
 
-Test patterns to follow (cite the reference file in the table):
+| File | Coverage areas | Pattern reference |
+| --- | --- | --- |
+| `src/app/api/quotes/route.ts` | success, missing access token, upstream error shape if in scope | Cookie/header mock pattern from `__tests__/home.test.tsx`; route style from existing API handlers |
+| `src/features/Quotes/QuoteForm.tsx` | form validation, submit behavior, visible result/error states required by ACs | Existing `__tests__/feature/Quotes/*.test.tsx`; Testing Library + `userEvent` |
+| `src/features/Dashboard/Dashboard.tsx` | screen switching and mobile/desktop branches if touched | Existing dashboard tests; wrap router/query providers as needed |
 
-- **Router mocks** — `AppRouterContextProviderMock` from `src/shared/ui/organisms/AppRouterContextProviderMock.tsx`.
-- **Query mocks** — `QueryProviderWrapper` from `src/app/QueryProviderWrapper.tsx`.
-- **Zustand mocks** — `DashboardStoreProvider` + `mockAccounts` from `__tests__/mocks/accounts.mock.ts`.
-- **Cookie mocks** — `__tests__/home.test.tsx` (lines 13-18 style) using `jest.mock('next/headers', ...)`.
-- **`ResizeObserver` mock** — `__tests__/features/Dashboard/StatisticsSubscreen.test.tsx`.
+Test rules from `.github/copilot-instructions.md` to reflect in the plan:
 
-**Hard rules** (from `.github/copilot-instructions.md`): never mock the component under test, never mock `sonner` or `next/navigation`, never assert on CSS classes, never extract `container` from `render()` or use `querySelector`, never use `require()`, always use `userEvent` (not `fireEvent`), always query via `screen`.
+- Use `userEvent`, not `fireEvent`.
+- Do not mock internal components from `@/features` or `@/shared`; test real behavior unless absolutely necessary.
+- Mock external API calls/network and unavailable browser APIs when needed.
+- If mocking hooks with `jest.mock()`, use relative imports rather than `@/` aliases.
+- Use Testing Library queries via `screen`; do not use `querySelector`, `getElementById`, or `container`.
+- Do not assert on CSS classes or visual styling unless it is critical functionality.
+- Preserve existing `it.skip()` / `test.skip()` unless the user explicitly asks to fix those tests.
+- Mock data must match the real function return shape; read the implementation before specifying mocks.
+- Do not include file extensions in import statements.
+- Mocks should use named exports, not default exports.
 
-Describe **what** to test, not how. Full test code belongs in the implementation phase.
+Describe **what** to test, not full test implementations.
 
 ## Step 7 - Write the planning doc
 
 File path: `ai-planning/planning-{story-name}.md` (create the directory if it does not exist).
-Length target: **500-700 lines**. If you exceed it, you're writing implementation, not a plan. The AC is probably too broad and needs to be broken into multiple stories.
 
-The planning doc should follow the structure implied by Steps 3-6:
+The planning doc should include:
 
-1. **Header** — story name, source research doc path, sign-off date, PR label.
-2. **Acceptance Criteria** — copied from the research doc, in order.
-3. **Affected files** — full inventory grouped by area (`src/app/api/**`, `src/features/<Domain>/**`, `src/zustand/**`, `src/shared/**`, `__tests__/**`).
-4. **Phases** — one section per phase, each with **Changes Required**, **Success Criteria**, and **Test Coverage**.
-5. **Cross-cutting concerns** — only those the AC actually implies (e.g. "this feature needs the user to be logged in, so wrap the page in the dashboard layout").
-6. **Open Questions / Out-of-scope items** — anything the research left dangling, plus any near-temptations you deliberately refused.
+1. **Header** - story name, source research doc path, sign-off status/date, and any assumptions.
+2. **Acceptance Criteria** - copied from the research doc in order.
+3. **Affected files** - grouped by area: `src/app/**`, `src/app/api/**`, `src/features/**`, `src/shared/**`, `__tests__/**`, docs/config if relevant.
+4. **Phases** - one section per phase with Changes Required, Success Criteria, and Test Coverage.
+5. **Cross-cutting concerns** - only those implied by ACs, e.g. auth cookies, dashboard mobile branch, env vars, API response shape.
+6. **Open Questions / Out-of-scope items** - unresolved items plus nearby changes deliberately excluded.
 
-## Step 8 - Capture planning insights to memory
+## Step 8 - Capture planning insights
 
-If planning reveals non-obvious technical decisions or constraints that future work would benefit from, write a short note under a memory location the project uses (the repo does not ship with one — skip this step unless the user has set one up). Focus on insights that would not be easily discovered from the code alone (e.g. "the BFF's `getAccessToken` returns null during static prerender — wrap any page that calls it with a Suspense boundary").
+If planning reveals a verified, broadly useful, non-obvious repo fact, add it to `REPO_CONTEXT.md`. Skip story-specific details.
 
 ## Step 9 - Present for review
 
 End the turn with:
 
-1. **Path to the planning doc.**
-2. **Phase summary** — one line per phase.
-3. **Assumptions made** — bullet list of anything the research didn't fully cover and you decided to assume.
-4. **Unresolved questions** — bullet list of anything the user still needs to answer before implementation.
-5. **Decisions beyond the research doc** — bullet list of any calls you made the research didn't make (and why).
-6. **PR flow reminder** — target branch is `develop`; the PR must carry exactly one of `major | minor | patch`; `CHANGELOG.md` and `package.json` version are managed by `develop-pipeline.yml`, not by the PR.
+1. Path to the planning doc.
+2. Phase summary - one line per phase.
+3. Assumptions made.
+4. Unresolved questions.
+5. Decisions beyond the research doc and why.
 
 Do **not** start implementing. Wait for human sign-off.
 
 ## Don'ts
 
-- Don't write source files, tests, or run commands.
-- Don't include full code implementations — show structure.
-- Don't repeat content already in the research doc — link to it.
-- Don't add phases for things tooling handles (linting, formatting, the CI version bump, the CHANGELOG entry).
-- Don't invent answers to open questions left unresolved by research.
-- Don't invent specifics the story doesn't supply. If the story says "do X" without specifying how, don't invent the how — note it as an open question for the user to answer.
-- Don't propose changes to `BE_Personal_Finances`. If a needed change lives there, surface it as an open question and use the `.opencode/command/backend-research.md` delegation template (Copilot: `.github/prompts/backend-research.prompt.md`) when the user is ready.
-- Don't edit `CHANGELOG.md` or manually bump `package.json` — `develop-pipeline.yml` does that on merge to `develop`.
+- Do not write source files or tests while planning, except the planning doc and optional verified `REPO_CONTEXT.md` note.
+- Do not run tests, builds, lint, typecheck, or `pnpm install` during planning.
+- Do not include full code implementations.
+- Do not repeat the research doc wholesale; link to it and plan the work.
+- Do not add phases for tooling-only concerns like formatting, CI release, changelog, or version bumps.
+- Do not assume Zustand, finance domains, branch labels, changelog automation, or external backend repository access.
