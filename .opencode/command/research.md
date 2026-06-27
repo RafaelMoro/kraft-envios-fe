@@ -19,10 +19,11 @@ Before any codebase exploration, read these files and do not re-discover what is
 
 1. `REPO_CONTEXT.md` - architecture map, route handler inventory, auth/cookie flow, conventions, open questions
 2. `AGENTS.md` - compact toolchain, commands, env, tests, and structure guidance
-3. `package.json` - dependencies and scripts (`pnpm dev | build | start | lint | test`)
-4. Relevant executable config: `next.config.mjs`, `jest.config.ts`, `tsconfig.json`, `postcss.config.mjs`
+3. `.github/copilot-instructions.md` - project-specific unit test conventions, wrappers, and mocking rules
+4. `package.json` - dependencies and scripts (`pnpm dev | build | start | lint | test`)
+5. Relevant executable config: `next.config.mjs`, `jest.config.ts`, `tsconfig.json`, `postcss.config.mjs`
 
-There is no `.github/copilot-instructions.md` or CI workflow directory in this checkout. Do not assume branch, label, release, or deployment rules unless the user provides them.
+There is no CI workflow directory in this checkout. Do not assume branch, label, release, or deployment rules unless the user provides them.
 
 ## Step 2 - Story quality check
 
@@ -108,6 +109,7 @@ The research doc must include:
   - Shared code: `src/shared/{ui,hooks,lib,utils,constants,types}`
   - Tests: `__tests__/feature/*`, `__tests__/components/*`, `__tests__/home.test.tsx`; helper dirs `__tests__/mocks/` and `__tests__/utils-test/` are ignored by Jest
 - **Existing patterns to follow** - App Router server/client split, TanStack Query via `features/QueryProviderWrapper`, Flowbite React, Tailwind v4, `react-hook-form` + `yup`, route-handler proxy style
+- **Testing rules to follow** - use `.github/copilot-instructions.md` for router/query wrappers, `userEvent`, mocking limits, import conventions, skipped-test preservation, and mock data shape checks
 - **Dependencies / integration points** - new deps require `package.json` and pnpm lockfile changes; env vars are listed in `.env.example` and `AGENTS.md`
 - **Edge cases and constraints** - httpOnly session cookies, mixed API response shapes, mobile/tablet dashboard branch, coverage always collected on tests, `product-sat` external SAT URI instead of `BACKEND_URI`
 

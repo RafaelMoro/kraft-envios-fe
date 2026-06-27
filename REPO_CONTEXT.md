@@ -147,6 +147,7 @@ Required values are documented in `.env.example`:
 - `__tests__/mocks/` and `__tests__/utils-test/` are ignored as test suites. Use them for fixtures/helpers imported by real tests.
 - Real tests currently live under `__tests__/feature/*`, `__tests__/components/*`, and `__tests__/home.test.tsx`.
 - Keep new tests near the matching feature/shared UI boundary.
+- `.github/copilot-instructions.md` contains project-specific unit test rules: router/query wrappers, `userEvent` over `fireEvent`, avoid mocking internal components, avoid styling assertions, preserve skipped tests, and match mock data to real return shapes.
 
 ## Styling And UI
 
@@ -175,6 +176,7 @@ Required values are documented in `.env.example`:
 | `tsconfig.json` | Strict TypeScript, `@/*` path alias. |
 | `jest.config.ts` | Jest + coverage + ignored helper directories. |
 | `jest.setup.ts` | Global test setup. |
+| `.github/copilot-instructions.md` | Unit test conventions and mocking rules. |
 | `src/app/layout.tsx` | Root layout, theme cookie, QueryProvider. |
 | `src/app/page.tsx` | Login entrypoint and authenticated redirect. |
 | `src/app/dashboard/page.tsx` | Dashboard server wrapper + Flowbite theme. |
