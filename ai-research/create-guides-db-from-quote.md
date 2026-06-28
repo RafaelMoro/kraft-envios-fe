@@ -54,6 +54,7 @@ Feature UI:
 - `src/features/Guides/Mn/ParcelInfoForm.tsx` handles content, value, quantity, and SAT selection validation.
 - `src/features/Guides/Mn/ProductSatDropdown.tsx` already provides SAT product search.
 - `src/features/Guides/ResultGuideScreen.tsx` cannot be reused as-is without adapting semantics because mutation success is not the same as provider creation success for Guides DB.
+- Add DB-specific feature code under `src/features/Guides-DB` to keep it separate from the current provider-specific guide flows.
 
 Shared code:
 
@@ -173,12 +174,23 @@ Pre-select UI:
 - Minimal options: new Guides DB flow and legacy provider flow.
 - The legacy option should route to the current provider-specific modal for the selected quote source.
 - The new option should route to the Guides DB modal/form flow.
+- Friendly button copy options for the new Guides DB flow:
+  - `Guardar guía en Kraft`
+  - `Crear guía guardada`
+  - `Crear guía DB`
+- Friendly button copy options for the legacy provider flow:
+  - `Crear con proveedor`
+  - `Usar flujo actual`
+  - `Crear guía externa`
 
 Guides DB modal/form:
 
 - A four-step flow can follow the existing guide modal pattern: origin, destination, parcel, confirm/result.
 - The origin/destination steps can reuse the saved-address mental model and temporary-address option.
-- Parcel step should include SAT product, content, optional value, optional quantity, and use stored quote dimensions invisibly.
+- Parcel step should include SAT product/content selection from the UI, optional value, optional quantity, and quote dimensions from the selected quote process.
+- Show `width`, `height`, `length`, and `weight` as disabled inputs because they come from the quote request used to obtain the selected quote.
+- Show origin and destination zip codes as disabled inputs for the same reason: they come from the quote request used to obtain the selected quote.
+- Add helper copy near the disabled quote-derived fields: this information cannot be modified here; the user must quote again to change it because the selected quote is based on those values.
 - Include `notifyMe`, defaulted to `false`.
 - Confirm step should show enough data to verify origin, destination, parcel, provider, and quote before submit.
 
@@ -253,12 +265,13 @@ Backend contract:
 
 UI/product decisions:
 
-- I: Question: What labels should the pre-select screen use for the new and legacy create flows?
-  - Status: pending.
-  - Context: The requirement is to preserve both paths; exact Spanish microcopy is not finalized.
+- I: Question: Which final pre-select button labels should be used for the new and legacy create flows?
+  - Status: partially answered.
+  - Answer: Candidate labels are documented in the Pre-select UI section: new DB flow can use `Guardar guía en Kraft`, `Crear guía guardada`, or `Crear guía DB`; legacy flow can use `Crear con proveedor`, `Usar flujo actual`, or `Crear guía externa`.
+  - Context: The requirement is to preserve both paths; final product copy still needs one selected option per flow.
 - II: Question: Should missing package dimensions block create or allow manual entry?
   - Status: pending.
-  - Context: Quote dimensions should come from the quote request, but the UI should still handle missing ref state safely.
+  - Context: Quote dimensions should come from the quote request and should be displayed as disabled fields, but the UI should still handle missing ref state safely.
 
 Error copy:
 
