@@ -211,6 +211,34 @@ Create Guides DB response fields observed:
 - For `status: failed`, user-facing error messaging should be derived from `failureInfo.errorCode` and `failureInfo.errorDetails`; exact friendly-copy mapping depends on the error code context to be provided later.
 - Successful response includes persisted `origin`, `destination`, and `parcel` details.
 
+Guides DB backend error codes provided so far:
+
+- `GDE-AUTH-001`: user email is missing from request or not found in database.
+- `GDE-NF-001`: guide cannot be found by `kraftId` or ObjectId.
+- `GDE-NF-002`: syncing a guide that has no external tracking ID.
+- `GDE-RTL-001`: retry eligibility check fails because max attempts or cooldown is active.
+- `GDE-BDN-001`: general database error during guide creation.
+- `GDE-BDN-008`: `kraftId` counter update/creation fails.
+- `GDE-BDN-009`: generic/unknown backend error.
+- `GDE-BDN-010`: soft delete of a guide fails.
+- `GDE-BDN-011`: hard delete of a guide fails.
+- `GDE-BDN-012`: updating guide data fails.
+- `GDE-PVR-001`: default provider error when no specific mapping exists.
+- `GDE-PVR-002`: provider returns empty or invalid guide response.
+- `GDE-PVR-003`: provider returns 401 unauthorized.
+- `GDE-PVR-004`: provider returns 5xx server error.
+- `GDE-PVR-005`: provider returns validation/fields error (400).
+- `GDE-PVR-006`: provider indicates quote ID has expired.
+- `GDE-NET-001`: DNS/network error (`ENOTFOUND`).
+- `GDE-TMOT-001`: connection timeout error (`ETIMEDOUT`).
+- `GDE-RLIM-003`: provider returns rate limit error.
+- `GDE-BUS-007`: invalid provider is specified.
+
+Story 1 error-message scope:
+
+- Creation result UI should prioritize `GDE-PVR-*`, `GDE-NET-001`, `GDE-TMOT-001`, `GDE-RLIM-003`, `GDE-BUS-007`, `GDE-AUTH-001`, `GDE-BDN-001`, `GDE-BDN-008`, and `GDE-BDN-009` because these can affect guide creation.
+- Delete, sync, retry, and update codes are useful context but out of Story 1 unless they appear in create responses.
+
 **Important mismatch:**
 
 - Existing `GlobalCreateGuideResponse` expects `trackingNumber`, `source`, `carrier`, `price`, `guideLink`, `labelUrl`, and `file`.
@@ -387,7 +415,7 @@ Backend contract:
   - Answer: New endpoints use singular `message`.
 - Question: What error shape should the BFF unwrap for the new endpoints?
   - Status: answered.
-  - Answer: For DB guide creation failures caused by the external provider, the endpoint still returns HTTP 201 and the UI should read `data.failureInfo.errorDetails` plus `data.failureInfo.errorCode` to decide what friendly message to show. Error-code context will be provided separately.
+  - Answer: For DB guide creation failures caused by the external provider, the endpoint still returns HTTP 201 and the UI should read `data.failureInfo.errorDetails` plus `data.failureInfo.errorCode` to decide what friendly message to show. Initial backend error-code context is now listed in the backend contract section.
   - Context: This is different from transport/backend non-2xx errors; those can still follow the existing route-handler fallback pattern.
 
 Create payload:
