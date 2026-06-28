@@ -414,15 +414,27 @@ Create payload:
 
 UI/product decisions:
 
-- Should failed DB guide creation show in the same success result screen with warning copy, or a separate failed-record screen?
-- Should month/year default to current month/year or all dates?
-- What page size should be used by default?
-- Should the existing provider-specific modals remain accessible anywhere after replacing `Crear guía`?
+- Question: Should failed DB guide creation show in the same success result screen with warning copy, or a separate failed-record screen?
+  - Status: pending.
+  - Context: Guides DB create returns HTTP 201 even when `data.status` is `failed`, because only the external provider failed.
+- Question: Should month/year default to current month/year or all dates?
+  - Status: pending.
+  - Context: `GET /guides/db` and `GET /guides/db/admin` accept optional `month` and `year` query params.
+- Question: What page size should be used by default?
+  - Status: pending.
+  - Context: List endpoints accept optional `limit`; examples return `limit: 10`.
+- Question: Should the existing provider-specific modals remain accessible anywhere after replacing `Crear guía`?
+  - Status: pending.
+  - Context: Current quote flow branches into MN, GE, TONE, and Pkk external-provider modals; Guides DB create uses a unified payload.
 
 Authorization:
 
-- Is admin role still determined only by `userInfo.data.user.role.includes('admin')` on the frontend?
-- What happens if an admin chooses scope `own` in All Guides DB: should it match My Guides or include deleted records if toggle is on?
+- Question: Is admin role still determined only by `userInfo.data.user.role.includes('admin')` on the frontend?
+  - Status: pending.
+  - Context: `Aside` currently uses this role check to show admin-only margin-profit UI.
+- Question: What happens if an admin chooses scope `own` in All Guides DB: should it match My Guides or include deleted records?
+  - Status: pending.
+  - Context: Admin endpoint supports `scope=all|own`; admins can see soft-deleted records for auditing, while regular `GET /guides/db` hides soft-deleted guides.
 
 ## Assumptions
 
