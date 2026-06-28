@@ -400,8 +400,9 @@ Create payload:
   - Status: answered.
   - Answer: `parcel.value` and `parcel.quantity` are optional; inputs can be optional and only filled values should be attached to the payload.
 - Question: What should `country` be: `MX`, `Mexico`, user-entered value, or the saved address value?
-  - Status: pending.
-  - Context: example says `Algun lugar`; current MN flow hardcodes `MX`.
+  - Status: answered.
+  - Answer: Use `MX`. For now, there will be no UI for choosing other countries.
+  - Context: current MN flow already hardcodes `MX`.
 - Question: Are `email`, `company`, and `reference` required or can existing default values be used?
   - Status: answered.
   - Answer: `email`, `company`, and `reference` are required values.
@@ -415,25 +416,31 @@ Create payload:
 UI/product decisions:
 
 - I: Question: Should failed DB guide creation show in the same success result screen with warning copy, or a separate failed-record screen?
-  - Status: pending.
+  - Status: answered.
+  - Answer: Map provider error codes to friendly, concise, clear user messages. Start with the known error codes and add more mappings later as they appear.
   - Context: Guides DB create returns HTTP 201 even when `data.status` is `failed`, because only the external provider failed.
 - II: Question: Should month/year default to current month/year or all dates?
-  - Status: pending.
+  - Status: answered.
+  - Answer: Default to the current month and year when the user has not filled filters.
   - Context: `GET /guides/db` and `GET /guides/db/admin` accept optional `month` and `year` query params.
 - III: Question: What page size should be used by default?
-  - Status: pending.
+  - Status: answered.
+  - Answer: Do not pass a page size by default. The backend default `limit` is 10, and `limit` serves the same purpose as page size.
   - Context: List endpoints accept optional `limit`; examples return `limit: 10`.
 - IV: Question: Should the existing provider-specific modals remain accessible anywhere after replacing `Crear guía`?
-  - Status: pending.
+  - Status: answered.
+  - Answer: Yes. To maintain retrocompatibility and avoid user outage from the new feature, add a pre-select screen as the first step so users can choose the new DB create flow or the legacy provider flow.
   - Context: Current quote flow branches into MN, GE, TONE, and Pkk external-provider modals; Guides DB create uses a unified payload.
 
 Authorization:
 
 - I: Question: Is admin role still determined only by `userInfo.data.user.role.includes('admin')` on the frontend?
-  - Status: pending.
-  - Context: `Aside` currently uses this role check to show admin-only margin-profit UI.
+  - Status: answered.
+  - Answer: Yes for frontend gating. The role comes from the backend login response, is saved in the frontend `user-info` httpOnly cookie, and is read back into `userInfo.data.user.role`; `Aside` currently uses `role.includes('admin')`.
+  - Context: `src/app/api/route.ts` saves backend `LoginData` via `saveUserInfo(userData)`, and `src/shared/lib/auth.lib.ts` reads it with `getUserInfo()`.
 - II: Question: What happens if an admin chooses scope `own` in All Guides DB: should it match My Guides or include deleted records?
-  - Status: pending.
+  - Status: answered.
+  - Answer: It returns the guides owned by that admin user and does not show other users' guides.
   - Context: Admin endpoint supports `scope=all|own`; admins can see soft-deleted records for auditing, while regular `GET /guides/db` hides soft-deleted guides.
 
 ## Assumptions
