@@ -378,19 +378,39 @@ Smallest useful tests per story:
 
 Backend contract:
 
-- Create returns HTTP 201 even when `data.status` is `failed`; the app DB create succeeded and only the external provider failed.
-- New endpoints use singular `message`.
-- BFF error unwrapping means: when the backend returns non-2xx, confirm where the human-readable error lives in the error response, e.g. `error.response.data.error.message`, `error.response.data.message`, or another field, so the route handler can return the right message to the UI.
+- Question: Does the create endpoint return HTTP 201/200 for `status: failed`, or does provider failure ever return non-2xx?
+  - Status: answered.
+  - Answer: Create returns HTTP 201 even when `data.status` is `failed`; the app DB create succeeded and only the external provider failed.
+- Question: Is `message` singular or `messages` plural used by the new endpoints?
+  - Status: answered.
+  - Answer: New endpoints use singular `message`.
+- Question: What error shape should the BFF unwrap for the new endpoints?
+  - Status: pending.
+  - Explanation: when the backend returns non-2xx, confirm where the human-readable error lives in the error response, e.g. `error.response.data.error.message`, `error.response.data.message`, or another field, so the route handler can return the right message to the UI.
 
 Create payload:
 
-- `parcel.satProductId` should be `selectedProduct.code`, matching existing provider guide flows that use SAT product.
-- Parcel dimensions should be sent as numbers, matching the get-quotes/BFF payload behavior.
-- `parcel.value` and `parcel.quantity` are optional; inputs can be optional and only filled values should be attached to the payload.
-- What should `country` be: `MX`, `Mexico`, user-entered value, or the saved address value? Example says `Algun lugar`; current MN flow hardcodes `MX`.
-- `email`, `company`, and `reference` are required values.
-- Saved address `addressName` maps to `street1`, matching current guide flow.
-- `notifyMe` is always accepted and defaults to `false`.
+- Question: Should `parcel.satProductId` be the SAT product `id`, `code`, description, or a backend-specific value?
+  - Status: answered.
+  - Answer: `parcel.satProductId` should be `selectedProduct.code`, matching existing provider guide flows that use SAT product.
+- Question: Should parcel dimensions be sent as numbers or strings?
+  - Status: answered.
+  - Answer: Parcel dimensions should be sent as numbers, matching the get-quotes/BFF payload behavior.
+- Question: Are `parcel.value` and `parcel.quantity` required in create payload?
+  - Status: answered.
+  - Answer: `parcel.value` and `parcel.quantity` are optional; inputs can be optional and only filled values should be attached to the payload.
+- Question: What should `country` be: `MX`, `Mexico`, user-entered value, or the saved address value?
+  - Status: pending.
+  - Context: example says `Algun lugar`; current MN flow hardcodes `MX`.
+- Question: Are `email`, `company`, and `reference` required or can existing default values be used?
+  - Status: answered.
+  - Answer: `email`, `company`, and `reference` are required values.
+- Question: Should saved address `addressName` map to `street1` exactly as current guide flow does?
+  - Status: answered.
+  - Answer: Yes, saved address `addressName` maps to `street1`, matching current guide flow.
+- Question: Is `notifyMe` provider-specific or always accepted?
+  - Status: answered.
+  - Answer: `notifyMe` is always accepted and defaults to `false`.
 
 UI/product decisions:
 
