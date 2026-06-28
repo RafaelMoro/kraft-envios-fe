@@ -197,8 +197,8 @@ Result behavior:
 
 Friendly failed messages:
 
-- Map error codes to concise Spanish copy.
-- Start with known create-relevant codes and use a fallback for unknown codes.
+- Use one concise Spanish copy for known provider/create failure codes: `La guía se guardó en Kraft, pero el proveedor no pudo crearla. Intenta más tarde o contacta a soporte.`
+- Use a generic fallback for unknown codes if needed.
 - Keep `failureInfo.errorDetails` available for debugging or future display, but do not expose raw JSON as primary user copy.
 
 ### Existing Patterns To Follow
@@ -272,8 +272,9 @@ UI/product decisions:
 Error copy:
 
 - I: Question: What friendly Spanish message should each create-relevant error code show?
-  - Status: pending.
-  - Context: Backend error codes are known, but product copy per code still needs mapping.
+  - Status: answered.
+  - Answer: Use one message for known provider/create failures: `La guía se guardó en Kraft, pero el proveedor no pudo crearla. Intenta más tarde o contacta a soporte.`
+  - Context: Backend error codes are known, but Story 1 does not need per-code copy.
 
 ## Assumptions
 
