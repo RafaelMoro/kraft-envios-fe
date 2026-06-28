@@ -203,7 +203,7 @@ Friendly failed messages:
 
 ### Existing Patterns To Follow
 
-- Keep domain UI under `src/features/Guides` or `src/features/Dashboard/subscreens` only where the quote entry point lives.
+- Keep DB-specific guide UI under `src/features/Guides-DB`; only touch `src/features/Dashboard/subscreens` where the quote entry point lives.
 - Keep shared DTOs/constants/callbacks under `src/shared/{types,constants,utils}`.
 - Use `react-hook-form` and `yup` for forms, matching existing guide forms.
 - Use TanStack Query `useMutation` for create.
@@ -238,7 +238,7 @@ Focused test candidates:
 ### Edge Cases And Constraints
 
 - Selected quote is required and must be exactly one.
-- Package dimensions may be missing if the user somehow opens create without a completed quote request; decide whether to block with error or use form fallback during planning.
+- Package dimensions should come from the completed quote request. If they are missing, block Guides DB creation with an error instead of allowing manual entry.
 - Stored `PackageDimensions` are strings; create payload requires numbers.
 - SAT product must use `selectedProduct.code`.
 - `value` and `quantity` are optional but should remain numeric if supplied.
