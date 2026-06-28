@@ -40,7 +40,7 @@ Routes/pages:
 
 API route handlers:
 
-- Add a new BFF route under `src/app/api/guides/**/route.ts` for Guides DB create.
+- Add a new BFF route at `src/app/api/guides-db/route.ts` for Guides DB create.
 - The backend endpoint is `POST /guides/db/create` through `BACKEND_URI`.
 - Follow existing route-handler proxy style: `getAccessToken()`, missing token guard, `Authorization: Bearer <token>`, `NextResponse.json`.
 
@@ -174,14 +174,8 @@ Pre-select UI:
 - Minimal options: new Guides DB flow and legacy provider flow.
 - The legacy option should route to the current provider-specific modal for the selected quote source.
 - The new option should route to the Guides DB modal/form flow.
-- Friendly button copy options for the new Guides DB flow:
-  - `Guardar guía en Kraft`
-  - `Crear guía guardada`
-  - `Crear guía DB`
-- Friendly button copy options for the legacy provider flow:
-  - `Crear con proveedor`
-  - `Usar flujo actual`
-  - `Crear guía externa`
+- Use `Crear guía en Kraft` for the new Guides DB flow.
+- Use `Crear guía externa` for the legacy provider flow.
 
 Guides DB modal/form:
 
@@ -260,18 +254,20 @@ Focused test candidates:
 Backend contract:
 
 - I: Question: What is the exact BFF route path to expose for `POST /guides/db/create`?
-  - Status: pending.
-  - Context: Existing app convention is `/api/guides/...`; a likely frontend route is `/api/guides/db/create`, but this is an implementation naming decision.
+  - Status: answered.
+  - Answer: Use `/api/guides-db`, implemented by `src/app/api/guides-db/route.ts`; the route's `POST` method proxies backend `POST /guides/db/create`.
+  - Context: This keeps the new DB guide API separate from current provider-specific guide routes.
 
 UI/product decisions:
 
 - I: Question: Which final pre-select button labels should be used for the new and legacy create flows?
-  - Status: partially answered.
-  - Answer: Candidate labels are documented in the Pre-select UI section: new DB flow can use `Guardar guía en Kraft`, `Crear guía guardada`, or `Crear guía DB`; legacy flow can use `Crear con proveedor`, `Usar flujo actual`, or `Crear guía externa`.
-  - Context: The requirement is to preserve both paths; final product copy still needs one selected option per flow.
+  - Status: answered.
+  - Answer: Use `Crear guía en Kraft` for the new Guides DB flow and `Crear guía externa` for the legacy provider flow.
+  - Context: The requirement is to preserve both paths with clear user-facing copy.
 - II: Question: Should missing package dimensions block create or allow manual entry?
-  - Status: pending.
-  - Context: Quote dimensions should come from the quote request and should be displayed as disabled fields, but the UI should still handle missing ref state safely.
+  - Status: answered.
+  - Answer: Do not allow manual entry. `width`, `height`, `weight`, and `length` come from the get-quote process and are shown disabled. If the user wants to change them, they must quote again.
+  - Context: Quote dimensions are part of the data used to calculate the selected quote.
 
 Error copy:
 
