@@ -112,8 +112,9 @@ The research doc must include:
 ### Open Questions
 
 - Separate questions into categories such as `Backend contract`, `Create payload`, `UI/product decisions`, and `Authorization`.
+- List questions within each category using Roman numerals (`I`, `II`, `III`, `IV`, ...).
 - Use this format for every question:
-  - `Question: ...`
+  - `I: Question: ...`
   - `Status: pending / answered`
   - `Answer: ...` when answered
   - `Context: ...` when extra context helps

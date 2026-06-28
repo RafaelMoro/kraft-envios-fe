@@ -115,9 +115,16 @@ The research doc must include:
 
 ### Open Questions
 
-- List unresolved decisions.
-- Flag ambiguous requirements.
-- Note missing backend/API contract information.
+- Separate questions into categories such as `Backend contract`, `Create payload`, `UI/product decisions`, and `Authorization`.
+- List questions within each category using Roman numerals (`I`, `II`, `III`, `IV`, ...).
+- Use this format for every question:
+  - `I: Question: ...`
+  - `Status: pending / answered`
+  - `Answer: ...` when answered
+  - `Context: ...` when extra context helps
+  - `Explanation: ...` when the question needs clarification
+- Keep answered questions in the section; do not delete them after the user answers.
+- Flag ambiguous requirements and missing backend/API contract information as `Status: pending`.
 
 Focus on **high-level actions** needed to accomplish the task. Do not include implementation code beyond illustrative file references.
 
