@@ -208,6 +208,7 @@ Create Guides DB response fields observed:
 - `data.isProviderTrackingSynced` is boolean.
 - `data.createdAt`, `updatedAt`, `deletedAt`, `deletedBy` are present.
 - `data.failureInfo` is `null` for successful provider creation and contains `errorDetails`, `errorCode`, `timestamp` for failed provider creation.
+- For `status: failed`, user-facing error messaging should be derived from `failureInfo.errorCode` and `failureInfo.errorDetails`; exact friendly-copy mapping depends on the error code context to be provided later.
 - Successful response includes persisted `origin`, `destination`, and `parcel` details.
 
 **Important mismatch:**
@@ -385,8 +386,9 @@ Backend contract:
   - Status: answered.
   - Answer: New endpoints use singular `message`.
 - Question: What error shape should the BFF unwrap for the new endpoints?
-  - Status: pending.
-  - Explanation: when the backend returns non-2xx, confirm where the human-readable error lives in the error response, e.g. `error.response.data.error.message`, `error.response.data.message`, or another field, so the route handler can return the right message to the UI.
+  - Status: answered.
+  - Answer: For DB guide creation failures caused by the external provider, the endpoint still returns HTTP 201 and the UI should read `data.failureInfo.errorDetails` plus `data.failureInfo.errorCode` to decide what friendly message to show. Error-code context will be provided separately.
+  - Context: This is different from transport/backend non-2xx errors; those can still follow the existing route-handler fallback pattern.
 
 Create payload:
 
