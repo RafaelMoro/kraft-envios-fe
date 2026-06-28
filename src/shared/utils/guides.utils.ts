@@ -148,25 +148,32 @@ export const toGuideDbParcelPayload = (
 ): CreateGuideDbParcelPayload | null => {
   if (!packageDimensions) return null
 
-  const length = Number(packageDimensions.length)
-  const width = Number(packageDimensions.width)
-  const height = Number(packageDimensions.height)
-  const weight = Number(packageDimensions.weight)
+  const { length, width, height, weight } = packageDimensions
+  if (
+    length === '' || width === '' || height === '' || weight === ''
+  ) {
+    return null
+  }
+
+  const numericLength = Number(length)
+  const numericWidth = Number(width)
+  const numericHeight = Number(height)
+  const numericWeight = Number(weight)
 
   if (
-    !Number.isFinite(length) ||
-    !Number.isFinite(width) ||
-    !Number.isFinite(height) ||
-    !Number.isFinite(weight)
+    !Number.isFinite(numericLength) ||
+    !Number.isFinite(numericWidth) ||
+    !Number.isFinite(numericHeight) ||
+    !Number.isFinite(numericWeight)
   ) {
     return null
   }
 
   const payload: CreateGuideDbParcelPayload = {
-    length,
-    width,
-    height,
-    weight,
+    length: numericLength,
+    width: numericWidth,
+    height: numericHeight,
+    weight: numericWeight,
     content: parcelInfo.content,
     satProductId,
   }
