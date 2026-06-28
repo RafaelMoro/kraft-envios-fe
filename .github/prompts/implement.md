@@ -45,7 +45,7 @@ For each phase in the plan:
 2. Run the phase's automated success criteria, using the narrowest useful commands from the plan.
 3. Fix failures before moving to the next phase.
 4. Update any implementation checklist in the planning doc if the plan includes one.
-5. Pause between phases only if the plan or user explicitly requires it; otherwise continue until the implementation is complete.
+5. **Stop at the end of each phase and wait for explicit user sign-off before starting the next phase.** Do not auto-continue across phase boundaries even if the plan does not say to pause. The user must say "continue", "go", or otherwise approve the next phase. While waiting, summarize the completed phase (files touched, what was built, what was verified) and ask for the sign-off.
 
 ## Step 4 - Apply repo conventions while implementing
 
