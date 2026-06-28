@@ -262,6 +262,91 @@ export type CreateGuideGEPayload = {
   parcel: ParcelInfoValuesGE;
 };
 
+export type CreateGuideDbAddressPayload = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  country: string;
+  reference: string;
+};
+
+export type CreateGuideDbParcelPayload = {
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  content: string;
+  satProductId: string;
+  value?: number;
+  quantity?: number;
+};
+
+export type CreateGuideDbPayload = {
+  provider: ProviderSource;
+  quoteId: string;
+  origin: CreateGuideDbAddressPayload;
+  destination: CreateGuideDbAddressPayload;
+  parcel: CreateGuideDbParcelPayload;
+  notifyMe: boolean;
+};
+
+export type CreateGuideDbFailureInfo = {
+  errorCode: string;
+  errorDetails?: string | null;
+};
+
+export type CreateGuideDbResponseData = {
+  status: 'created' | 'failed';
+  kraftId: string;
+  provider: ProviderSource;
+  failureInfo: CreateGuideDbFailureInfo | null;
+};
+
+export type CreateGuideDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: CreateGuideDbResponseData;
+};
+
+export type CreateGuideDbFormValues = {
+  originAddress: CreateGuideAddressFormValuesMn;
+  destinationAddress: CreateGuideAddressFormValuesMn;
+  parcelInfo: {
+    content: string;
+    value: string;
+    quantity: string;
+    notifyMe: boolean;
+  };
+};
+
+export type CreateGuideDbAddressFormValues = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  reference: string;
+};
+
 export type CreateAddressGEPayload = {
   zipcode: string;
   neighborhood: string;

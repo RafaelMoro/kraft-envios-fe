@@ -10,6 +10,7 @@ import {
   CREATE_ADDRESS_GE_ENDPOINT,
   DEFAULT_RFC,
   CREATE_GUIDE_GE_ENDPOINT,
+  CREATE_GUIDE_DB_ENDPOINT,
   GET_GUIDES_ENDPOINT,
   GUIDE_STATUS,
 } from "../constants/guides.constants";
@@ -36,6 +37,11 @@ import {
   PersonalDataGEFormValues,
   AddressGE,
   GetGuidesData,
+  CreateGuideDbPayload,
+  CreateGuideDbResponse,
+  CreateGuideDbParcelPayload,
+  CreateGuideDbFormValues,
+  PackageDimensions,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
 
@@ -115,6 +121,72 @@ export const createGuideGECb = async (data: CreateGuideGEPayload) => {
     throw error;
   }
 };
+
+export const createGuideDbCb = async (
+  data: CreateGuideDbPayload,
+): Promise<CreateGuideDbResponse['data']> => {
+  try {
+    const res: AxiosResponse<CreateGuideDbResponse> = await axios.post(
+      CREATE_GUIDE_DB_ENDPOINT,
+      data,
+    );
+    return res?.data?.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Builds the Guides DB parcel payload by converting stored string dimensions to numbers
+ * and attaching optional numeric fields only when supplied. Returns null when required
+ * dimensions cannot be safely converted so callers can block submit before mutation.
+ */
+export const toGuideDbParcelPayload = (
+  packageDimensions: PackageDimensions | null,
+  parcelInfo: CreateGuideDbFormValues['parcelInfo'],
+  satProductId: string,
+): CreateGuideDbParcelPayload | null => {
+  if (!packageDimensions) return null
+
+  const length = Number(packageDimensions.length)
+  const width = Number(packageDimensions.width)
+  const height = Number(packageDimensions.height)
+  const weight = Number(packageDimensions.weight)
+
+  if (
+    !Number.isFinite(length) ||
+    !Number.isFinite(width) ||
+    !Number.isFinite(height) ||
+    !Number.isFinite(weight)
+  ) {
+    return null
+  }
+
+  const payload: CreateGuideDbParcelPayload = {
+    length,
+    width,
+    height,
+    weight,
+    content: parcelInfo.content,
+    satProductId,
+  }
+
+  if (parcelInfo.value.trim() !== '') {
+    const value = Number(parcelInfo.value)
+    if (Number.isFinite(value)) {
+      payload.value = value
+    }
+  }
+
+  if (parcelInfo.quantity.trim() !== '') {
+    const quantity = Number(parcelInfo.quantity)
+    if (Number.isFinite(quantity)) {
+      payload.quantity = quantity
+    }
+  }
+
+  return payload
+}
 
 export const getGEAliasesCb = async (
   aliasesOnly?: boolean,
