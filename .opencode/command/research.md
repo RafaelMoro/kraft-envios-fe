@@ -65,7 +65,12 @@ Apply these constraints **before** exploration:
 
 ## Step 5 - Ask about scope and complexity
 
-Use the `question` tool to resolve at minimum:
+Ask answer-selection questions with the execution environment's native question UI:
+
+- In opencode, use the `question` tool.
+- In VS Code/GitHub Copilot, use the VS Code question/quick-pick tool.
+
+Resolve at minimum:
 
 1. **Quick or full research?** Estimate complexity. For a small bug fix or one-line behavior change, ask:
 
@@ -83,7 +88,7 @@ Use the `question` tool to resolve at minimum:
 
 4. **Other story-specific clarifications** - e.g. courier behavior, backend contract uncertainty, Flowbite vs local shared UI, accessibility expectations, mobile/desktop behavior, cookie/local-storage expectations.
 
-Batch all of these into a single `question` call. Do not invent answers.
+Batch all of these into a single question UI call when the environment supports it. Do not invent answers.
 
 ## Step 6 - Write the research doc
 
