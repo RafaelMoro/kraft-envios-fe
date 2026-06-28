@@ -191,11 +191,11 @@ Create Guides DB payload example:
 - `quoteId`: selected quote ID from quotes feature.
 - `parcel.length`, `parcel.width`, `parcel.height`, `parcel.weight`: numeric dimensions from quote request.
 - `parcel.content`: user-entered content.
-- `parcel.satProductId`: selected SAT product ID/code, contract needs confirmation.
-- `parcel.value`: requested in high-level requirements and present in successful response.
-- `parcel.quantity`: requested in high-level requirements and present in successful response.
+- `parcel.satProductId`: use the same value current provider guide flows use, `selectedProduct.code`.
+- `parcel.value`: optional; only attach when the user fills it.
+- `parcel.quantity`: optional; only attach when the user fills it.
 - `origin` and `destination`: same field list with alias, name, lastName, phone, email, company, street1, external_number, neighborhood, city, town, state, zipcode, country, reference.
-- `notifyMe`: boolean.
+- `notifyMe`: always accepted, defaults to `false`.
 
 Create Guides DB response fields observed:
 
@@ -246,8 +246,7 @@ SAT product:
 
 - `ProductSatDropdown` exists and debounces lookup by 1.5 seconds.
 - Current formatted `SearchProduct` only includes `code` and `description`.
-- Backend create example names `satProductId` as `sat-product-id-1`, but existing code sends `selectedProduct.code` for MN.
-- Contract must confirm whether Guides DB expects SAT `code`, SAT product `id`, or another ID.
+- Existing MN and GE provider guide flows send `selectedProduct.code` as `satProductId`; Guides DB should match that behavior.
 
 Result screen:
 
@@ -307,7 +306,7 @@ Likely type additions:
 - Guides DB provider type can reuse `ProviderSource` from `quotes.types.ts`.
 - `CreateGuideDbPayload` for the new unified payload.
 - `GuideDbAddress` matching the origin/destination field list.
-- `GuideDbParcel` matching dimensions, content, SAT product, value, and quantity.
+- `GuideDbParcel` matching dimensions, content, SAT product, and optional value/quantity.
 - `GuideDbStatus = 'created' | 'failed'`.
 - `GuideDbFailureInfo` for failure details.
 - `GuideDb` response type for `kraftId`, provider data, timestamps, soft-delete metadata, failure info, origin, destination, and parcel.
@@ -379,19 +378,19 @@ Smallest useful tests per story:
 
 Backend contract:
 
-- Does the create endpoint return HTTP 201/200 for `status: failed`, or does provider failure ever return non-2xx?
-- Is `message` singular or `messages` plural used by the new endpoints?
-- What error shape should the BFF unwrap for the new endpoints?
+- Create returns HTTP 201 even when `data.status` is `failed`; the app DB create succeeded and only the external provider failed.
+- New endpoints use singular `message`.
+- BFF error unwrapping means: when the backend returns non-2xx, confirm where the human-readable error lives in the error response, e.g. `error.response.data.error.message`, `error.response.data.message`, or another field, so the route handler can return the right message to the UI.
 
 Create payload:
 
-- Should `parcel.satProductId` be the SAT product `id`, `code`, description, or a backend-specific value?
-- Should parcel dimensions be sent as numbers or strings? Example create payload shows numbers; successful response shows strings.
-- Are `parcel.value` and `parcel.quantity` required in create payload? High-level requirements say yes; first payload example omits them.
+- `parcel.satProductId` should be `selectedProduct.code`, matching existing provider guide flows that use SAT product.
+- Parcel dimensions should be sent as numbers, matching the get-quotes/BFF payload behavior.
+- `parcel.value` and `parcel.quantity` are optional; inputs can be optional and only filled values should be attached to the payload.
 - What should `country` be: `MX`, `Mexico`, user-entered value, or the saved address value? Example says `Algun lugar`; current MN flow hardcodes `MX`.
-- Are `email`, `company`, and `reference` required or can existing default values be used?
-- Should saved address `addressName` map to `street1` exactly as current guide flow does?
-- Is `notifyMe` provider-specific or always accepted?
+- `email`, `company`, and `reference` are required values.
+- Saved address `addressName` maps to `street1`, matching current guide flow.
+- `notifyMe` is always accepted and defaults to `false`.
 
 UI/product decisions:
 
