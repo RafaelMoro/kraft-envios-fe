@@ -1,5 +1,5 @@
 ---
-description: "Execute an approved Kraft Envios planning doc phase by phase and report results."
+description: Execute an approved Kraft Envios planning doc phase by phase and report results.
 ---
 
 # /implement - Story Implementation Workflow
@@ -10,6 +10,8 @@ You are running the **implementation phase** for `kraft-envios-fe` (Next.js 14 A
 
 - A planning doc path, e.g. `ai-planning/planning-{story-name}.md` - ideal
 - Nothing - list available planning docs under `ai-planning/*.md` and ask which one to implement
+
+Parse `$ARGUMENTS` and the conversation for the planning doc path.
 
 ## Step 1 - Load shared context first
 

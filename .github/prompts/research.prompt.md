@@ -1,3 +1,7 @@
+---
+description: Research a Kraft Envios feature or bug and write an ai-research note without changing source code.
+---
+
 # /research - Research Workflow
 
 You are running the **research phase** for `kraft-envios-fe` (Next.js 14 App Router + React 18 + TypeScript, pnpm, TanStack Query, Tailwind v4 + Flowbite React, Jest). Your goal is to gather information, ask clarifying questions, and write a research document under `ai-research/`.
@@ -7,7 +11,7 @@ You are running the **research phase** for `kraft-envios-fe` (Next.js 14 App Rou
 - A free-form description of the work
 - Neither, in which case ask for at least one before proceeding
 
-Parse whatever the user supplied.
+Parse whatever the user supplied from `$ARGUMENTS` and the conversation.
 
 ## Step 1 - Load shared context first
 
@@ -61,7 +65,7 @@ Apply these constraints **before** exploration:
 
 ## Step 5 - Ask about scope and complexity
 
-Use `vscode_askQuestions` to resolve at minimum:
+Use the `question` tool to resolve at minimum:
 
 1. **Quick or full research?** Estimate complexity. For a small bug fix or one-line behavior change, ask:
 
@@ -79,7 +83,7 @@ Use `vscode_askQuestions` to resolve at minimum:
 
 4. **Other story-specific clarifications** - e.g. courier behavior, backend contract uncertainty, Flowbite vs local shared UI, accessibility expectations, mobile/desktop behavior, cookie/local-storage expectations.
 
-Batch all of these into a single `vscode_askQuestions` call. Do not invent answers.
+Batch all of these into a single `question` call. Do not invent answers.
 
 ## Step 6 - Write the research doc
 

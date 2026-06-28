@@ -6,7 +6,13 @@
 - `pnpm build` is the production verification; there is no dedicated typecheck script, so use `pnpm exec tsc --noEmit` for TypeScript-only checks.
 - `pnpm lint` runs `next lint` with `next/core-web-vitals` and `next/typescript`.
 - `pnpm test` runs Jest in jsdom and always collects coverage into `coverage/`.
+- `pnpm sync:prompts` copies `.opencode/command/{research,plan,implement}.md` into `.github/prompts/`; run it after changing research, plan, or implementation instructions.
 - Run focused tests with `pnpm test -- __tests__/path/to/file.test.tsx` or add `-t "test name"` after the file path.
+
+## Prompt Sync
+- `.opencode/command/*.md` is the source of truth for research, plan, and implementation command instructions.
+- When updating those instructions, edit `.opencode/command/*.md` first, then run `pnpm sync:prompts` so `.github/prompts/*` stays in sync.
+- Do not manually update only `.github/prompts/*`; it causes drift.
 
 ## App Structure
 - This is a single Next.js 14 App Router app under `src/app`; imports use the `@/*` alias for `src/*`.

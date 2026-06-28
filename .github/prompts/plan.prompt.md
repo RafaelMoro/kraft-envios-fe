@@ -1,5 +1,5 @@
 ---
-description: "Convert a Kraft Envios research doc into an implementation plan under ai-planning/."
+description: Convert a Kraft Envios research doc into an implementation plan under ai-planning/.
 ---
 
 # /plan - Story Planning Workflow
@@ -10,6 +10,8 @@ You are running the **planning phase** for `kraft-envios-fe` (Next.js 14 App Rou
 
 - A research doc path, e.g. `ai-research/{story-name}.md` - ideal
 - Nothing - list available research docs under `ai-research/*.md` and ask which one to plan
+
+Parse `$ARGUMENTS` and the conversation for the research doc path.
 
 ## Step 1 - Load shared context first
 
