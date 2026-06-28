@@ -92,7 +92,7 @@ Batch all of these into a single question UI call when the environment supports 
 
 ## Step 6 - Write the research doc
 
-File path: `ai-research/{story-name}.md` (create the directory if it does not exist).
+File path: `ai-research/{name}.epic.md` if the research is an epic, or `ai-research/{name}.story.md` if it is a story (create the directory if it does not exist). Use the scope assessment from Step 3 to pick the suffix.
 
 Length target: **~200-500 lines** for full mode, **~100-200 lines** for quick mode. Cut aggressively for small stories.
 
