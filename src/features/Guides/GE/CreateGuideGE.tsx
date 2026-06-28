@@ -5,7 +5,14 @@ import { useMutation } from "@tanstack/react-query";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSteps } from "@/shared/hooks/useSteps";
 import { Stepper } from "@/shared/ui/atoms/Stepper"
-import { AddressInfoFormGE, CreateGuideFormValuesGE, CreateGuideGEPayload, GlobalCreateGuideResponse, PackageDimensions, ParcelInfoValuesGE, SearchProduct } from "@/shared/types/guides.types";
+import { AddressInfoFormGE,
+  CreateGuideFormValuesGE,
+  CreateGuideGEPayload,
+  GlobalCreateGuideResponse,
+  PackageDimensions,
+  ParcelInfoValuesGE,
+  SearchProduct
+} from "@/shared/types/guides.types";
 import { CREATE_GUIDE_STEPS, initialStateCreateGuideGE } from "@/shared/constants/guides.constants";
 import { ParcelInfoFormGE } from "./ParcelInfoFormGE";
 import { ProductSatDropdown } from "../Mn/ProductSatDropdown";
