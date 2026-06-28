@@ -23,6 +23,8 @@ import { CreateGuideModalTone } from "@/features/Guides/Tone/CreateGuideModalTon
 import { CreateGuidePkk } from "@/features/Guides/Pkk/CreateGuidePkk"
 import { PackageDimensions } from "@/shared/types/guides.types"
 import { CreateGuideGE } from "@/features/Guides/GE/CreateGuideGE"
+import { CreateGuideDbFlowSelector } from "@/features/Guides-DB/CreateGuideDbFlowSelector"
+import { CreateGuideDbModal } from "@/features/Guides-DB/CreateGuideDbModal"
 
 interface QuotesProps {
   userInfo: LoginData | null
@@ -46,6 +48,10 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const toggleCreateGuidePkk = () => setOpenCreateGuidePkk((prev) => !prev)
   const [openCreateGuideGE, setOpenCreateGuideGE] = useState<boolean>(false)
   const toggleCreateGuideGE = () => setOpenCreateGuideGE((prev) => !prev)
+  const [openCreateGuideSelector, setOpenCreateGuideSelector] = useState<boolean>(false)
+  const toggleCreateGuideSelector = () => setOpenCreateGuideSelector((prev) => !prev)
+  const [openCreateGuideDb, setOpenCreateGuideDb] = useState<boolean>(false)
+  const toggleCreateGuideDb = () => setOpenCreateGuideDb((prev) => !prev)
 
   // Intersection observer states
   const [isIntersectingActionBar, setIsIntersectingActionBar] = useState<boolean>(true)
@@ -108,35 +114,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     }
   }, [successCopyActionBar])
 
-  const handleClickCreateGuide = () => {
-    if (selectedQuotes.length === 0) {
-      setErrorActionBar('Debes seleccionar una cotización para crear una guía.')
-      return;
-    }
-    if (selectedQuotes.length > 1) {
-      setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
-      return;
-    }
-
-    if (selectedQuotes[0].source === 'GE') {
-      toggleCreateGuideGE()
-      return;
-    }
-
-    if (selectedQuotes[0].source === 'TONE') {
-      toggleCreateGuideTone()
-      return;
-    }
-    if (selectedQuotes[0].source === 'Pkk') {
-      toggleCreateGuidePkk()
-      return;
-    }
-
-    toggleCreateGuideMn()
-  }
-
-  const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
-    setSelectedQuotes([quote])
+  const openLegacyGuideFlow = (quote: QuoteUI) => {
     if (quote.source === 'GE') {
       toggleCreateGuideGE()
       return;
@@ -153,6 +131,36 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     }
 
     toggleCreateGuideMn()
+  }
+
+  const handleClickCreateGuide = () => {
+    if (selectedQuotes.length === 0) {
+      setErrorActionBar('Debes seleccionar una cotización para crear una guía.')
+      return;
+    }
+    if (selectedQuotes.length > 1) {
+      setErrorActionBar('Solo puede seleccionar una sola cotización para crear una guía.')
+      return;
+    }
+
+    toggleCreateGuideSelector()
+  }
+
+  const handleCreateGuideQuoteCard = (quote: QuoteUI) => {
+    setSelectedQuotes([quote])
+    toggleCreateGuideSelector()
+  }
+
+  const handleSelectDbFlow = () => {
+    setOpenCreateGuideSelector(false)
+    toggleCreateGuideDb()
+  }
+
+  const handleSelectLegacyFlow = () => {
+    setOpenCreateGuideSelector(false)
+    if (selectedQuotes.length > 0) {
+      openLegacyGuideFlow(selectedQuotes[0])
+    }
   }
 
   const {
@@ -288,6 +296,19 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         packageDimensions={packageDimensions.current}
         selectedQuotes={selectedQuotes}
         toggleModal={toggleCreateGuideGE}
+        resetSelectedQuotes={resetSelectedQuotes}
+      />
+      <CreateGuideDbFlowSelector
+        open={openCreateGuideSelector}
+        toggleModal={toggleCreateGuideSelector}
+        onCreateDb={handleSelectDbFlow}
+        onCreateLegacy={handleSelectLegacyFlow}
+      />
+      <CreateGuideDbModal
+        open={openCreateGuideDb}
+        selectedQuotes={selectedQuotes}
+        packageDimensions={packageDimensions.current}
+        toggleModal={toggleCreateGuideDb}
         resetSelectedQuotes={resetSelectedQuotes}
       />
     </main>
