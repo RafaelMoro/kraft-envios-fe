@@ -24,7 +24,7 @@ Acceptance criteria:
 
 1. A user can select exactly one quote and open a DB-backed guide creation modal from the existing `Crear guía` action in `QuotesSubscreen`.
 2. The modal sends `provider`, `quoteId`, `parcel`, `origin`, `destination`, and `notifyMe` to a new BFF route that proxies the new backend create endpoint.
-3. `provider` is constrained to existing quote sources: `GE`, `TONE`, `Pkk`, `Mn`.
+3. `provider` is constrained to existing quote sources and is derived from the selected quote: `GE`, `TONE`, `Pkk`, or `Mn`.
 4. Parcel dimensions come from the quote request, while content, SAT product, value, quantity, and notify preference are filled in the guide flow.
 5. The result UI can show both `created` and `failed` Guides DB responses without treating all HTTP 201 responses as provider success.
 
@@ -32,10 +32,10 @@ Acceptance criteria:
 
 Acceptance criteria:
 
-1. A regular user can switch from external-provider guides to `Mis guías DB` from the existing guides screen.
+1. A regular user can view `Mis guías DB` from the existing guides screen.
 2. The DB-backed list supports month, year, and pagination query params.
 3. The UI displays saved guide data including failed guide records when the backend returns them.
-4. Existing external-provider guides remain available as a separate source option.
+4. Soft-deleted guides are not returned by `GET /guides/db`, so regular users do not see deleted guides.
 5. Loading, empty, and error states remain clear on desktop and mobile/tablet layouts.
 
 #### Story 3: Admin All Guides DB List
@@ -43,34 +43,27 @@ Acceptance criteria:
 Acceptance criteria:
 
 1. Admin users see an additional `Todas las guías DB` source option; non-admin users do not.
-2. Admin list filters include month, year, pagination, and scope `all | own`; soft-deleted filtering is still unclear because the provided admin endpoint params do not include it.
+2. Admin users can see guides that regular users have soft-deleted for auditing.
 3. The route handler proxies admin query params and preserves auth through the session token.
-4. The UI can show soft-deleted metadata when present (`deletedAt`, `deletedBy`) without breaking normal guide cards.
-5. Non-admin access is hidden in UI and should still rely on backend authorization for enforcement.
-
-#### Story 4: Guides DB Source Switcher On Existing Guides Screen
-
-Acceptance criteria:
-
-1. The existing `Ver guias` dashboard screen adds a Flowbite React button group for source selection.
-2. Source options include external APIs, `Mis guías DB`, and admin-only `Todas las guías DB`.
-3. Query keys and list state change with the selected source and filter params so stale data is not shown.
-4. The current external API partial-failure notification behavior remains limited to the external APIs source.
-5. The selected source naming is understandable to users and distinguishes external APIs from saved DB records.
+4. Admin UI can switch between regular-user view behavior and all-guides/admin behavior where required by the guides screen.
+5. Admin list filters include month, year, pagination, and a scope select with `Todas las guías` and `Mis guías`.
+6. Admin UI can show soft-deleted metadata when present (`deletedAt`, `deletedBy`) without breaking normal guide cards.
+7. Non-admin access is hidden in UI and should still rely on backend authorization for enforcement.
 
 ### Recommended Story Order
 
 1. Story 1: Create Guides DB From Quote.
 2. Story 2: My Guides DB List.
 3. Story 3: Admin All Guides DB List.
-4. Story 4: Source switcher can be done with Story 2 if the list work starts first, but it should not block create flow research.
 
 ### Story Boundary Notes
 
 - The full request is an epic, not one story.
 - Create flow touches quotes, guides, addresses, SAT lookup, BFF routes, shared types, and result UI.
 - List flow touches dashboard guide screen, route handlers, query params, admin role checks, and guide card shape mapping.
+- Source switching between regular and admin guides is part of Story 3, not a standalone story.
 - Retry failed guide creation is future scope and should remain out of these stories.
+- Delete Guides DB exists in the backend, but delete UI/workflow is not included in this epic unless explicitly added as a later story.
 
 ## Technical Research
 
@@ -189,10 +182,12 @@ List response envelope:
 - `data.limit` is current page size.
 - `data.totalPages` is total pages.
 - Admin and regular list examples use the same response shape.
+- `GET /guides/db` does not return soft-deleted guides.
+- Admin list behavior can include guides that regular users soft-deleted.
 
 Create Guides DB payload example:
 
-- `provider`: one of `GE`, `TONE`, `Pkk`, `Mn`.
+- `provider`: one of `GE`, `TONE`, `Pkk`, `Mn`; it is derived from the selected quote source.
 - `quoteId`: selected quote ID from quotes feature.
 - `parcel.length`, `parcel.width`, `parcel.height`, `parcel.weight`: numeric dimensions from quote request.
 - `parcel.content`: user-entered content.
@@ -235,7 +230,7 @@ Current quote-to-guide flow:
 Implication for Guides DB:
 
 - Replacing `Crear guía` with the new DB flow can be smaller than maintaining four provider-specific create paths for this feature.
-- The modal can use `selectedQuotes[0].source` as `provider` and `selectedQuotes[0].id` as `quoteId`.
+- The modal should use `selectedQuotes[0].source` as `provider` and `selectedQuotes[0].id` as `quoteId`; for example, a selected TONE quote sends `provider: 'TONE'`.
 - The modal still needs access to `packageDimensions.current`; currently only GE/PKK modals receive it.
 - Existing MN address and parcel components are the closest starting point, but they do not include length/width/height/weight in parcel because MN external route did not require them.
 
@@ -278,6 +273,8 @@ Implication for Guides DB lists:
 - External source can keep current `getGuidesCb` path and transformation.
 - My Guides DB and All Guides DB probably need separate callbacks or one callback with mode/query params.
 - Existing `GuideCard` may need a mapper from DB guide to the current card shape or a small DB-specific card if important fields differ too much.
+- Regular users will not see their soft-deleted guides in `GET /guides/db`.
+- Admin users can see soft-deleted guides for auditing through admin behavior.
 
 Admin gating:
 
@@ -287,12 +284,20 @@ Admin gating:
 - The same check can gate the admin-only source option in `Order`.
 - Backend must still enforce admin authorization.
 
+Delete behavior:
+
+- Backend supports deleting Guides DB records.
+- Regular users soft delete guides; these guides disappear from `GET /guides/db` for the user perspective but remain in DB for auditing.
+- Admin users can soft delete and hard delete.
+- Admin hard delete removes the guide from DB.
+- Delete UI and delete route research are out of current scope unless added as a new story.
+
 Pagination and filters:
 
 - No current guide list pagination exists in `Order`.
 - Current external list has no month/year filters.
 - New DB list routes use `page`, `limit`, `month`, and `year`; admin also uses `scope=all|own`.
-- Initial high-level requirements mentioned showing soft-deleted guides, but the provided admin endpoint contract does not include a soft-deleted query param.
+- Soft-deleted visibility is role/source behavior: regular list hides soft-deleted guides; admin can see soft-deleted guides for auditing.
 - UI can use existing Flowbite form controls already installed; no dependency addition is needed.
 
 ### Existing Types And Constants To Update Later
@@ -311,8 +316,9 @@ Likely type additions:
 Likely constants additions:
 
 - New BFF endpoint constants in `src/shared/constants/guides.constants.ts`.
-- Source selector labels for external APIs, my DB guides, and admin all DB guides.
-- Query key fragments for external/my/all guide sources.
+- Source selector labels for my DB guides and admin all DB guides.
+- Final button group labels are `Guías externas`, `Mis guías guardadas`, and `Todas las guías`.
+- Query key fragments for my-guides and admin/all-guides DB sources.
 
 Do not add new dependencies.
 
@@ -342,8 +348,7 @@ Smallest useful tests per story:
 
 - Create story: quote action opens DB modal and sends selected quote/provider/dimensions into the flow; modal result handles `created` and `failed` statuses.
 - My list story: source selection fetches DB guides with month/year/page params and renders returned DB records.
-- Admin list story: admin role sees all-guides source and non-admin role does not.
-- Source switcher story: external source still uses existing callback and DB source uses DB callback with separate query key/filter state.
+- Admin list story: admin role sees all-guides/admin UI, non-admin role does not, and admin can see soft-deleted guides.
 
 ### Edge Cases And Constraints
 
@@ -374,7 +379,6 @@ Smallest useful tests per story:
 
 Backend contract:
 
-- Should admin support a soft-deleted toggle? The original requirement included it, but `GET /guides/db/admin` params provided so far do not.
 - Does the create endpoint return HTTP 201/200 for `status: failed`, or does provider failure ever return non-2xx?
 - Is `message` singular or `messages` plural used by the new endpoints?
 - What error shape should the BFF unwrap for the new endpoints?
@@ -391,14 +395,9 @@ Create payload:
 
 UI/product decisions:
 
-- What user-facing name should the external API source button use? Suggested: `Guías externas` or `APIs externas`.
-- What user-facing name should My Guides DB use? Suggested: `Mis guías guardadas`.
-- What user-facing name should Admin All Guides DB use? Suggested: `Todas las guías`.
 - Should failed DB guide creation show in the same success result screen with warning copy, or a separate failed-record screen?
-- Should failed DB guide records be shown in guide lists by default?
 - Should month/year default to current month/year or all dates?
 - What page size should be used by default?
-- Should filters apply to external API guides too, or only DB-backed sources?
 - Should the existing provider-specific modals remain accessible anywhere after replacing `Crear guía`?
 
 Authorization:
