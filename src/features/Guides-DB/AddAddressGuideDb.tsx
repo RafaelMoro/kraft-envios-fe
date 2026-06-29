@@ -15,8 +15,8 @@ import { PersonalDataForm } from "@/features/Guides/PersonalDataForm";
 import { SelectAddressDropdown } from "@/features/Addresses/SelectAddressDropdown";
 import { Address, UpdateAddressInfoPayload } from "@/shared/types/addresses.types";
 import { useAddAddress } from "@/shared/hooks/useAddAddress";
-import { AddTempAddressMn } from "@/features/Guides/Mn/AddTempAddressMn";
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage";
+import { AddTempAddressGuideDb } from "./AddTempAddressGuideDb";
 
 interface AddAddressGuideDbProps {
   title: string
@@ -124,7 +124,7 @@ export const AddAddressGuideDb = ({
 
   if (useTempAddress) {
     return (
-      <AddTempAddressMn
+      <AddTempAddressGuideDb
         title={title}
         addressType={addressType as AddressType}
         goNext={goNext}
