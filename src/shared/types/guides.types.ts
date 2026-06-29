@@ -559,44 +559,46 @@ export const AddPersonalDataFormSchema: ObjectSchema<PersonalDataFormValues> =
     ],
   );
 
-export const CreateGuideAddressFormSchemaMn: ObjectSchema<CreateGuideAddressFormValuesMn> =
-  AddPersonalDataFormSchema.concat(
-    object().shape(
-      {
-        street1: string()
-          .required("Calle es requerida")
-          .min(2, "La calle debe tener al menos 2 caracteres"),
-        neighborhood: string()
-          .required("Colonia es requerida")
-          .min(2, "La colonia debe tener al menos 2 caracteres"),
-        external_number: string()
-          .required("Número exterior es requerido")
-          .matches(/^[a-zA-Z0-9]+$/, {
-            excludeEmptyString: true,
-            message: "El número exterior solo puede contener letras y números",
-          })
-          .min(1, "El número exterior debe tener al menos 1 carácter"),
-        city: string()
-          .required("Ciudad es requerida")
-          .min(2, "La ciudad debe tener al menos 2 caracteres"),
-        state: string()
-          .required("Estado es requerido")
-          .min(2, "El estado debe tener al menos 2 caracteres"),
-        reference: string()
-          .nullable()
-          .notRequired()
-          .when("reference", {
-            is: (value: string) => value?.length,
-            then: (rule) =>
-              rule.min(
-                2,
-                "La referencia del domicilio debe tener al menos 2 caracteres",
-              ),
-          }),
-      },
-      [["reference", "reference"]],
-    ),
-  );
+export const CreateGuideAddressFormSchemaMn = AddPersonalDataFormSchema.concat(
+  object().shape(
+    {
+      street1: string()
+        .required("Calle es requerida")
+        .min(2, "La calle debe tener al menos 2 caracteres"),
+      neighborhood: string()
+        .required("Colonia es requerida")
+        .min(2, "La colonia debe tener al menos 2 caracteres"),
+      external_number: string()
+        .required("Número exterior es requerido")
+        .matches(/^[a-zA-Z0-9]+$/, {
+          excludeEmptyString: true,
+          message: "El número exterior solo puede contener letras y números",
+        })
+        .min(1, "El número exterior debe tener al menos 1 carácter"),
+      city: string()
+        .required("Ciudad es requerida")
+        .min(2, "La ciudad debe tener al menos 2 caracteres"),
+      state: string()
+        .required("Estado es requerido")
+        .min(2, "El estado debe tener al menos 2 caracteres"),
+      reference: string()
+        .nullable()
+        .notRequired()
+        .when("reference", {
+          is: (value: string) => value?.length,
+          then: (rule) =>
+            rule.min(
+              2,
+              "La referencia del domicilio debe tener al menos 2 caracteres",
+            ),
+        }),
+      alias: string().notRequired(),
+      town: string().notRequired(),
+      zipcode: string().notRequired(),
+    },
+    [["reference", "reference"]],
+  ),
+)
 
 export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> =
   object({

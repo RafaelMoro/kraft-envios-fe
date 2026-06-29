@@ -30,7 +30,7 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
     clearErrors,
     setError,
   } = useForm<CreateGuideAddressFormValuesMn>({
-    resolver: yupResolver(CreateGuideAddressFormSchemaMn)
+    resolver: yupResolver(CreateGuideAddressFormSchemaMn) as never
   })
   const clearManualAddressRegionFields = () => {
     setValue("neighborhood", "");
