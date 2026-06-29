@@ -178,12 +178,6 @@ export const CreateGuideDbModal = ({
               <ConfirmGuideDbData
                 originAddress={formData.current.originAddress}
                 destinationAddress={formData.current.destinationAddress}
-                originAlias={aliasesMn.origin.alias}
-                originTown={aliasesMn.origin.town}
-                originZipcode={aliasesMn.origin.address?.zipcode ?? ''}
-                destinationAlias={aliasesMn.destination.alias}
-                destinationTown={aliasesMn.destination.town}
-                destinationZipcode={aliasesMn.destination.address?.zipcode ?? ''}
                 parcelInfo={formData.current.parcelInfo}
                 selectedQuote={selectedQuote}
                 packageDimensions={packageDimensions}

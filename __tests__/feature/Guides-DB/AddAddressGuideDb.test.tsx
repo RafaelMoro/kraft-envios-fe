@@ -127,4 +127,45 @@ describe('AddAddressGuideDb - destination vs origin guard', () => {
 
     expect(mockGoNext).toHaveBeenCalled()
   })
+
+  it('When town is missing on the saved address, Then it blocks submit with a town error', async () => {
+    const user = userEvent.setup()
+    renderComponent({
+      excludedAlias: 'Otra',
+      aliasSaved: { ...aliasSavedDestination, alias: 'Oficina', town: '' },
+    })
+
+    const submitButton = screen.getByTestId('destination-address-guide-db-next-button')
+    await user.click(submitButton)
+
+    expect(mockGoNext).not.toHaveBeenCalled()
+    expect(mockUpdateAddress).not.toHaveBeenCalled()
+    expect(screen.getByText('Por favor selecciona un municipio')).toBeInTheDocument()
+  })
+
+  it('When a valid saved address is submitted, Then updateAddress receives alias, zipcode, and town from the saved address', async () => {
+    const user = userEvent.setup()
+    renderComponent({
+      excludedAlias: 'Otra',
+      aliasSaved: {
+        ...aliasSavedDestination,
+        alias: 'Oficina',
+        town: 'Cuauhtémoc',
+        address: {
+          ...aliasSavedDestination.address,
+          alias: 'Oficina',
+          zipcode: '06600',
+        },
+      },
+    })
+
+    const submitButton = screen.getByTestId('destination-address-guide-db-next-button')
+    await user.click(submitButton)
+
+    expect(mockUpdateAddress).toHaveBeenCalledTimes(1)
+    const submitted = mockUpdateAddress.mock.calls[0][0]
+    expect(submitted.alias).toBe('Oficina')
+    expect(submitted.zipcode).toBe('06600')
+    expect(submitted.town).toBe('Cuauhtémoc')
+  })
 })

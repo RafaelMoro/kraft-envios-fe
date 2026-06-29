@@ -114,12 +114,15 @@ export type CreateGuidePersonalDataTonePayload = Omit<
 >;
 
 export type CreateGuideAddressDataMnFormValues = {
+  alias?: string;
   street1: string;
   neighborhood: string;
   external_number: string;
   city: string;
   state: string;
   reference?: string | null | undefined;
+  town?: string;
+  zipcode?: string;
 };
 
 export type CreateGuideAddressFormValuesMn = PersonalDataFormValues &

@@ -25,12 +25,6 @@ import {
 interface ConfirmGuideDbDataProps {
   originAddress: CreateGuideAddressFormValuesMn
   destinationAddress: CreateGuideAddressFormValuesMn
-  originAlias: string
-  originTown: string
-  originZipcode: string
-  destinationAlias: string
-  destinationTown: string
-  destinationZipcode: string
   parcelInfo: CreateGuideDbFormValues['parcelInfo']
   selectedQuote: QuoteUI
   packageDimensions: PackageDimensions | null
@@ -43,12 +37,6 @@ interface ConfirmGuideDbDataProps {
 export const ConfirmGuideDbData = ({
   originAddress,
   destinationAddress,
-  originAlias,
-  originTown,
-  originZipcode,
-  destinationAlias,
-  destinationTown,
-  destinationZipcode,
   parcelInfo,
   selectedQuote,
   packageDimensions,
@@ -67,31 +55,32 @@ export const ConfirmGuideDbData = ({
       quoteId: selectedQuote.id,
       origin: {
         ...verifyAndUpdateAddressGuideDb(originAddress),
-        alias: originAlias,
+        alias: originAddress.alias ?? '',
         street1: originAddress.street1 ?? '',
         external_number: originAddress.external_number ?? '',
         neighborhood: originAddress.neighborhood ?? '',
         city: originAddress.city ?? '',
-        town: originTown,
+        town: originAddress.town ?? '',
         state: originAddress.state ?? '',
-        zipcode: originZipcode,
+        zipcode: originAddress.zipcode ?? '',
         country: 'MX',
       },
       destination: {
         ...verifyAndUpdateAddressGuideDb(destinationAddress),
-        alias: destinationAlias,
+        alias: destinationAddress.alias ?? '',
         street1: destinationAddress.street1 ?? '',
         external_number: destinationAddress.external_number ?? '',
         neighborhood: destinationAddress.neighborhood ?? '',
         city: destinationAddress.city ?? '',
-        town: destinationTown,
+        town: destinationAddress.town ?? '',
         state: destinationAddress.state ?? '',
-        zipcode: destinationZipcode,
+        zipcode: destinationAddress.zipcode ?? '',
         country: 'MX',
       },
       parcel,
       notifyMe: parcelInfo.notifyMe,
     }
+    console.log('payload', payload)
     onSubmit(payload)
   }
 

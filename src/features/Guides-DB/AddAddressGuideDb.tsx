@@ -93,11 +93,18 @@ export const AddAddressGuideDb = ({
       setCityError("Por favor selecciona una ciudad");
       return;
     }
+    if (!aliasSaved.town) {
+      setTownError("Por favor selecciona un municipio");
+      return;
+    }
 
     const addressMn = aliasSaved.addressMn
     const allData: CreateGuideAddressFormValuesMn = {
       ...data,
       ...addressMn,
+      alias: aliasSaved.alias,
+      zipcode: aliasSaved.address?.zipcode ?? '',
+      town: aliasSaved.town,
     }
     updateAddress(allData)
     goNext()
