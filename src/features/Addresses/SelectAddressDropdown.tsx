@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Button, Dropdown, DropdownItem, Label, TextInput } from "flowbite-react"
 import { RiArrowDownSLine } from "@remixicon/react"
 import { HiChevronDown } from "react-icons/hi"
@@ -16,6 +16,7 @@ interface SelectAddressDropdownProps<T extends AliasSaved> {
   cityError: string;
   hideTownDropdown?: boolean;
   hideCityDropdown?: boolean;
+  excludedAlias?: string;
   setErrorMessage: (message: string) => void;
   setTownError: (message: string) => void;
   setCityError: (message: string) => void;
@@ -29,12 +30,18 @@ interface SelectAddressDropdownProps<T extends AliasSaved> {
  * For GE, it has its own SelectAliasGE component.
  */
 export const SelectAddressDropdown = <T extends AliasSaved>({
-  aliasSaved, errorMessage, townError, cityError, hideTownDropdown = false, hideCityDropdown = false,
+  aliasSaved, errorMessage, townError, cityError, hideTownDropdown = false, hideCityDropdown = false, excludedAlias,
   setAliasSelected, updateAddressInfo, setErrorMessage, setTownError, setCityError,
 }: SelectAddressDropdownProps<T>) => {
   const { data: addresses, isPending, isError } = useGetAddress()
   const [filteredAddresses, setFilteredAddresses] = useState<Address[]>([])
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(aliasSaved?.address);
+
+  const filterExcludedAlias = React.useCallback(
+    (list: Address[]) =>
+      excludedAlias ? list.filter((address) => address.alias !== excludedAlias) : list,
+    [excludedAlias],
+  )
 
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
   const [aliasPlaceholder, setAliasPlaceholder] = useState<string>("Alias de dirección");
@@ -55,10 +62,11 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
 
     // Filter addresses based on search input
     if (addresses && addresses.length > 0) {
+      const available = filterExcludedAlias(addresses)
       if (inputValue.trim() === "") {
-        setFilteredAddresses(addresses)
+        setFilteredAddresses(available)
       } else {
-        const filtered = addresses.filter((address) =>
+        const filtered = available.filter((address) =>
           address.alias.toLowerCase().includes(inputValue.toLowerCase())
         )
         setFilteredAddresses(filtered)
@@ -69,9 +77,9 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   // When addresses are fetched, set them to the state. If there is a search term, filter them by the term.
   useEffect(() => {
     if (addresses && addresses.length > 0 && !isPending) {
-      setFilteredAddresses(addresses)
+      setFilteredAddresses(filterExcludedAlias(addresses))
     }
-  }, [addresses, isPending])
+  }, [addresses, isPending, filterExcludedAlias])
 
   // Set the placeholder based on the state of fetching addresses and the saved alias
   useEffect(() => {
@@ -105,6 +113,12 @@ export const SelectAddressDropdown = <T extends AliasSaved>({
   const [cities, setCities] = useState<string[]>(aliasSaved?.address?.city || []);
 
   const handleSelectAlias = (address: Address) => {
+    if (excludedAlias && address.alias === excludedAlias) {
+      if (errorMessage) setErrorMessage("")
+      setErrorMessage("El domicilio destino no puede ser el mismo que el origen")
+      return
+    }
+
     let newTown = ""
     let newCity = ""
 

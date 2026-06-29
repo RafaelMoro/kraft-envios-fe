@@ -143,6 +143,7 @@ export const CreateGuideDbModal = ({
                 addressData={formData.current.destinationAddress}
                 isMobileTablet={isMobileTablet}
                 isDestination
+                excludedAlias={aliasesMn.origin.alias}
                 toggleModal={toggleModal}
                 goPrev={goPrev}
               />

@@ -24,6 +24,7 @@ interface AddAddressGuideDbProps {
   aliasSaved: AliasSavedMn
   isMobileTablet: boolean
   isDestination?: boolean
+  excludedAlias?: string
   goNext: () => void
   goPrev: () => void
   toggleModal: () => void
@@ -45,7 +46,7 @@ interface AddAddressGuideDbProps {
 }
 
 export const AddAddressGuideDb = ({
-  isDestination = false, title, addressData, aliasSaved, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias,
+  isDestination = false, title, addressData, aliasSaved, excludedAlias, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias,
 }: AddAddressGuideDbProps) => {
   const {
     aliasSelected,
@@ -78,6 +79,10 @@ export const AddAddressGuideDb = ({
 
     if (!aliasSelected) {
       setAddressError("Por favor selecciona un alias de dirección");
+      return;
+    }
+    if (excludedAlias && aliasSelected === excludedAlias) {
+      setAddressError("El domicilio destino no puede ser el mismo que el origen");
       return;
     }
     if (!aliasSaved.addressMn) {
@@ -168,6 +173,7 @@ export const AddAddressGuideDb = ({
           setErrorMessage={setAddressError}
           setTownError={setTownError}
           setCityError={setCityError}
+          excludedAlias={excludedAlias}
         />
       </AddAddressCreateGuide>
       {Object.keys(errors).length > 0 && (

@@ -37,7 +37,6 @@ import {
   PersonalDataGEFormValues,
   AddressGE,
   GetGuidesData,
-  CreateGuideDbAddressPayload,
   CreateGuideDbPayload,
   CreateGuideDbResponse,
   CreateGuideDbParcelPayload,
@@ -403,30 +402,21 @@ export const verifyAndUpdateAddressPkk = (
 };
 
 /**
- * Fills empty optional email/company fields with defaults and combines name + lastName.
- * Used by the Guides DB confirm step to build the address payload sent to the BFF.
- * @param address - The address form values
- * @returns Address payload with defaults applied for empty email/company
+ * Fills empty optional email/company fields with defaults and combines name + lastName
+ * for the Guides DB confirm step. The caller is responsible for assembling the rest of
+ * the address payload (street, city, alias, town, zipcode, country).
+ * @param address - The personal/contact fields from the address form
+ * @returns Verified personal/contact fields with defaults applied
  */
 export const verifyAndUpdateAddressGuideDb = (
-  address: CreateGuideAddressFormValuesMn,
-): CreateGuideDbAddressPayload => {
+  address: Pick<CreateGuideAddressFormValuesMn, 'name' | 'lastName' | 'phone' | 'email' | 'company'>,
+): { name: string; lastName: string; phone: string; email: string; company: string } => {
   return {
-    alias: address.alias ?? '',
-    name: `${address.name} ${address.lastName}`.trim(),
+    name: `${address.name ?? ''} ${address.lastName ?? ''}`.trim(),
     lastName: address.lastName ?? '',
     phone: address.phone ?? '',
     email: address.email?.trim() || DEFAULT_EMAIL,
     company: address.company?.trim() || DEFAULT_COMPANY,
-    street1: address.street1 ?? '',
-    external_number: address.external_number ?? '',
-    neighborhood: address.neighborhood ?? '',
-    city: address.city ?? '',
-    town: address.town ?? '',
-    state: address.state ?? '',
-    zipcode: address.zipcode ?? '',
-    country: 'MX',
-    reference: address.reference ?? '',
   }
 }
 
