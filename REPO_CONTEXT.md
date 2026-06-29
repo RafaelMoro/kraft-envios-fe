@@ -70,6 +70,7 @@ Key invariants:
 | `Addresses/` | Address management forms, previews, dropdowns, pending GE address UI. |
 | `AutocompleteZipcode/` | Zipcode autocomplete inputs and region dropdowns. |
 | `Guides/` | Guide creation/viewing for MN, GE, PKK, and Tone flows. |
+| `Guides-DB/` | DB-backed create flow (pre-select, multi-step modal, result semantics for `created`/`failed`). |
 | `ProfitMargin/` | Courier profit-margin forms/cards. |
 | `QueryProviderWrapper.tsx` | App-wide TanStack Query provider. |
 | `AppRouterContextProviderMock.tsx` | Test helper for router context. |
@@ -101,6 +102,7 @@ Most proxy routes read `getAccessToken()` from `src/shared/lib/auth.lib.ts`, ret
 | `/api/address` | `GET`, `POST`, `PUT`, `DELETE` | CRUD proxy for `${BACKEND_URI}/addresses`; delete encodes the address alias in the URL. |
 | `/api/ge-address` | `GET`, `POST`, `PUT`, `DELETE` | GE address proxy for `${BACKEND_URI}/ge/addresses` and `${BACKEND_URI}/ge/address/{id}`; PUT blocks alias edits. |
 | `/api/guides/get-guides` | `GET` | Proxies to `${BACKEND_URI}/guides`. |
+| `/api/guides-db` | `POST` | Proxies to `${BACKEND_URI}/guides/db/create`; returns 201 even when upstream `data.status === 'failed'` (saved DB record, not transport error). |
 | `/api/guides/mn` | `POST` | Creates MN guide via `${BACKEND_URI}/mn/create-guide`; treats null-guide or embedded 400 message as failure. |
 | `/api/guides/tone` | `POST` | Creates Tone guide via `${BACKEND_URI}/tone/create-guide`; same null-guide/embedded-400 failure rule as MN. |
 | `/api/guides/ge` | `POST` | Creates GE guide via `${BACKEND_URI}/ge/create-guide`. |

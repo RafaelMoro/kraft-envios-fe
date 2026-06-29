@@ -114,12 +114,15 @@ export type CreateGuidePersonalDataTonePayload = Omit<
 >;
 
 export type CreateGuideAddressDataMnFormValues = {
+  alias?: string;
   street1: string;
   neighborhood: string;
   external_number: string;
   city: string;
   state: string;
   reference?: string | null | undefined;
+  town?: string;
+  zipcode?: string;
 };
 
 export type CreateGuideAddressFormValuesMn = PersonalDataFormValues &
@@ -260,6 +263,91 @@ export type CreateGuideGEPayload = {
   origin: CreateGuideAddressValuesGE;
   destination: CreateGuideAddressValuesGE;
   parcel: ParcelInfoValuesGE;
+};
+
+export type CreateGuideDbAddressPayload = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  country: string;
+  reference: string;
+};
+
+export type CreateGuideDbParcelPayload = {
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  content: string;
+  satProductId: string;
+  value?: number;
+  quantity?: number;
+};
+
+export type CreateGuideDbPayload = {
+  provider: ProviderSource;
+  quoteId: string;
+  origin: CreateGuideDbAddressPayload;
+  destination: CreateGuideDbAddressPayload;
+  parcel: CreateGuideDbParcelPayload;
+  notifyMe: boolean;
+};
+
+export type CreateGuideDbFailureInfo = {
+  errorCode: string;
+  errorDetails?: string | null;
+};
+
+export type CreateGuideDbResponseData = {
+  status: 'created' | 'failed';
+  kraftId: string;
+  provider: ProviderSource;
+  failureInfo: CreateGuideDbFailureInfo | null;
+};
+
+export type CreateGuideDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: CreateGuideDbResponseData;
+};
+
+export type CreateGuideDbFormValues = {
+  originAddress: CreateGuideAddressFormValuesMn;
+  destinationAddress: CreateGuideAddressFormValuesMn;
+  parcelInfo: {
+    content: string;
+    value: string;
+    quantity: string;
+    notifyMe: boolean;
+  };
+};
+
+export type CreateGuideDbAddressFormValues = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  reference: string;
 };
 
 export type CreateAddressGEPayload = {
@@ -471,44 +559,46 @@ export const AddPersonalDataFormSchema: ObjectSchema<PersonalDataFormValues> =
     ],
   );
 
-export const CreateGuideAddressFormSchemaMn: ObjectSchema<CreateGuideAddressFormValuesMn> =
-  AddPersonalDataFormSchema.concat(
-    object().shape(
-      {
-        street1: string()
-          .required("Calle es requerida")
-          .min(2, "La calle debe tener al menos 2 caracteres"),
-        neighborhood: string()
-          .required("Colonia es requerida")
-          .min(2, "La colonia debe tener al menos 2 caracteres"),
-        external_number: string()
-          .required("Número exterior es requerido")
-          .matches(/^[a-zA-Z0-9]+$/, {
-            excludeEmptyString: true,
-            message: "El número exterior solo puede contener letras y números",
-          })
-          .min(1, "El número exterior debe tener al menos 1 carácter"),
-        city: string()
-          .required("Ciudad es requerida")
-          .min(2, "La ciudad debe tener al menos 2 caracteres"),
-        state: string()
-          .required("Estado es requerido")
-          .min(2, "El estado debe tener al menos 2 caracteres"),
-        reference: string()
-          .nullable()
-          .notRequired()
-          .when("reference", {
-            is: (value: string) => value?.length,
-            then: (rule) =>
-              rule.min(
-                2,
-                "La referencia del domicilio debe tener al menos 2 caracteres",
-              ),
-          }),
-      },
-      [["reference", "reference"]],
-    ),
-  );
+export const CreateGuideAddressFormSchemaMn = AddPersonalDataFormSchema.concat(
+  object().shape(
+    {
+      street1: string()
+        .required("Calle es requerida")
+        .min(2, "La calle debe tener al menos 2 caracteres"),
+      neighborhood: string()
+        .required("Colonia es requerida")
+        .min(2, "La colonia debe tener al menos 2 caracteres"),
+      external_number: string()
+        .required("Número exterior es requerido")
+        .matches(/^[a-zA-Z0-9]+$/, {
+          excludeEmptyString: true,
+          message: "El número exterior solo puede contener letras y números",
+        })
+        .min(1, "El número exterior debe tener al menos 1 carácter"),
+      city: string()
+        .required("Ciudad es requerida")
+        .min(2, "La ciudad debe tener al menos 2 caracteres"),
+      state: string()
+        .required("Estado es requerido")
+        .min(2, "El estado debe tener al menos 2 caracteres"),
+      reference: string()
+        .nullable()
+        .notRequired()
+        .when("reference", {
+          is: (value: string) => value?.length,
+          then: (rule) =>
+            rule.min(
+              2,
+              "La referencia del domicilio debe tener al menos 2 caracteres",
+            ),
+        }),
+      alias: string().notRequired(),
+      town: string().notRequired(),
+      zipcode: string().notRequired(),
+    },
+    [["reference", "reference"]],
+  ),
+)
 
 export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> =
   object({

@@ -5,7 +5,9 @@ import {
   CreateGuideFormValuesTone,
   AllAliasSavedPkk,
   CreateGuideAddressDataPkkFormValues,
-  CreateGuideAddressValuesPkk
+  CreateGuideAddressValuesPkk,
+  CreateGuideDbAddressFormValues,
+  CreateGuideDbFormValues,
 } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
@@ -132,6 +134,23 @@ export const initialStateAddressForm: CreateGuideAddressFormValuesMn = {
   reference: ""
 }
 
+export const initialStateAddressGuideDb: CreateGuideDbAddressFormValues = {
+  alias: "",
+  name: "",
+  lastName: "",
+  phone: "",
+  email: "",
+  company: "",
+  street1: "",
+  neighborhood: "",
+  external_number: "",
+  city: "",
+  town: "",
+  state: "",
+  zipcode: "",
+  reference: ""
+}
+
 
 export const initialStateForm: CreateGuideFormValuesMn = {
   originAddress: initialStateAddressForm,
@@ -234,6 +253,27 @@ export const CREATE_GUIDE_MN_ENDPOINT = '/api/guides/mn'
 export const CREATE_GUIDE_TONE_ENDPOINT = '/api/guides/tone'
 export const CREATE_GUIDE_PKK_ENDPOINT = '/api/guides/pkk'
 export const CREATE_GUIDE_GE_ENDPOINT = '/api/guides/ge'
+export const CREATE_GUIDE_DB_ENDPOINT = '/api/guides-db'
 export const GET_ALIAS_ADDRESSES_GE_ENDPOINT = '/api/ge-address'
 export const GET_GUIDES_ENDPOINT = '/api/guides/get-guides'
 export const CREATE_ADDRESS_GE_ENDPOINT = '/api/ge-address'
+
+export const initialStateFormGuideDb: CreateGuideDbFormValues = {
+  originAddress: { ...initialStateAddressForm },
+  destinationAddress: { ...initialStateAddressForm },
+  parcelInfo: {
+    content: '',
+    value: '',
+    quantity: '',
+    notifyMe: false,
+  },
+}
+
+export const GUIDE_DB_PROVIDER_FAILED_MESSAGE =
+  'La guía se guardó en Kraft, pero el proveedor no pudo crearla. Intenta más tarde o contacta a soporte.'
+
+export const GUIDE_DB_GENERIC_FAILED_MESSAGE =
+  'La guía se guardó en Kraft, pero ocurrió un error al crearla con el proveedor. Por favor, intente nuevamente.'
+
+export const GUIDE_DB_GENERIC_ERROR_MESSAGE =
+  'Ocurrió un error al crear la guía. Por favor, intente nuevamente.'

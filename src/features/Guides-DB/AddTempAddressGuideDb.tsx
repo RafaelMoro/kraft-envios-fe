@@ -4,14 +4,14 @@ import { SubmitHandler, useForm } from "react-hook-form"
 
 import { AddressType, CreateGuideAddressFormSchemaMn, CreateGuideAddressFormValuesMn } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { PersonalDataForm } from "../PersonalDataForm"
+import { PersonalDataForm } from "@/features/Guides/PersonalDataForm"
 import { AutocompleteZipcode } from "@/features/Addresses/AutocompleteZipcode"
 import { useAutocompleteZipcode } from "@/shared/hooks/useAutocompleteZipcode"
 import { useAddressRegionSelector } from "@/shared/hooks/useAddressRegionSelector"
 import { AddressRegionSelector } from "@/features/Addresses/AddressRegionSelector "
-import { ManualFieldsMn } from "./ManualFieldsMn"
+import { ManualFieldsMn } from "@/features/Guides/Mn/ManualFieldsMn"
 
-interface OriginAddressFormProps {
+interface AddTempAddressGuideDbProps {
   title: string
   addressData: CreateGuideAddressFormValuesMn
   addressType: AddressType
@@ -21,7 +21,7 @@ interface OriginAddressFormProps {
   toggleTempAddress: () => void
 }
 
-export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress }: OriginAddressFormProps) => {
+export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress }: AddTempAddressGuideDbProps) => {
   const {
     register,
     handleSubmit,
@@ -64,14 +64,28 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
     event?.preventDefault()
     event?.stopPropagation()
 
-    // We need to validate showManualFields because if user is using manual fields these validations are not necessary
+    if (!data.alias?.trim()) {
+      setError("alias", { type: "manual", message: "Alias es requerido" })
+      return
+    }
+
+    if (!data.town?.trim()) {
+      setError("town", { type: "manual", message: "Municipio es requerido" })
+      return
+    }
+
     const isZipcodeValid = validateZipcodeErrors()
     if (!isZipcodeValid && !showManualFields) return
 
     const isNeighborhoodValid = isValidNeighborhood()
     if (!isNeighborhoodValid && !showManualFields) return
 
-    updateAddress(data)
+    updateAddress({
+      ...data,
+      alias: data.alias?.trim() || '',
+      town: data.town?.trim() || '',
+      zipcode,
+    })
     goNext()
   }
 
@@ -81,7 +95,7 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-      { isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">{title}</h5>)}
+      {isMobileTablet && (<h5 className="text-xl font-bold text-center mb-5">{title}</h5>)}
       <h4 className="text-xl">Datos personales</h4>
       <PersonalDataForm<CreateGuideAddressFormValuesMn>
         addressData={addressData}
@@ -93,6 +107,36 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <div className="mb-2 block">
+              <Label htmlFor="alias">Alias</Label>
+            </div>
+            <TextInput
+              data-testid="alias"
+              defaultValue={addressData.alias ?? ''}
+              id="alias"
+              type="text"
+              {...register("alias")}
+            />
+            {errors?.alias?.message && (
+              <ErrorMessage>{errors.alias.message}</ErrorMessage>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="town">Municipio</Label>
+            </div>
+            <TextInput
+              data-testid="town"
+              defaultValue={addressData.town ?? ''}
+              id="town"
+              type="text"
+              {...register("town")}
+            />
+            {errors?.town?.message && (
+              <ErrorMessage>{errors.town.message}</ErrorMessage>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 block">
               <Label htmlFor="street1">Calle</Label>
             </div>
             <TextInput
@@ -102,8 +146,8 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
               type="text"
               {...register("street1")}
             />
-            { errors?.street1?.message && (
-              <ErrorMessage>{errors.street1?.message}</ErrorMessage>
+            {errors?.street1?.message && (
+              <ErrorMessage>{errors.street1.message}</ErrorMessage>
             )}
           </div>
           <div>
@@ -118,8 +162,8 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
               inputMode="numeric"
               {...register("external_number")}
             />
-            { errors?.external_number?.message && (
-              <ErrorMessage>{errors.external_number?.message}</ErrorMessage>
+            {errors?.external_number?.message && (
+              <ErrorMessage>{errors.external_number.message}</ErrorMessage>
             )}
           </div>
           <div>
@@ -133,8 +177,8 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
               type="text"
               {...register("reference")}
             />
-            { errors?.reference?.message && (
-              <ErrorMessage>{errors.reference?.message}</ErrorMessage>
+            {errors?.reference?.message && (
+              <ErrorMessage>{errors.reference.message}</ErrorMessage>
             )}
           </div>
           <AddressRegionSelector
@@ -170,10 +214,10 @@ export const AddTempAddressMn = ({ addressData, addressType, title, isMobileTabl
         </section>
       </div>
       <div className="flex justify-between mt-4">
-        <Button color="light" data-testid={`${addressType}-address-mn-temp-cancel-button`} className="hover:cursor-pointer" onClick={handleCancel}>
+        <Button color="light" data-testid={`${addressType}-address-guide-db-temp-cancel-button`} className="hover:cursor-pointer" onClick={handleCancel}>
           Volver
         </Button>
-        <Button data-testid={`${addressType}-address-mn-temp-next-button`} type="submit" className="hover:cursor-pointer">
+        <Button data-testid={`${addressType}-address-guide-db-temp-next-button`} type="submit" className="hover:cursor-pointer">
           Siguiente
         </Button>
       </div>
