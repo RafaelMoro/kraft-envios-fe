@@ -76,7 +76,6 @@ export const ConfirmGuideDbData = ({
         state: originAddress.state ?? '',
         zipcode: originZipcode,
         country: 'MX',
-        reference: originAddress.reference ?? '',
       },
       destination: {
         ...verifyAndUpdateAddressGuideDb(destinationAddress),
@@ -89,7 +88,6 @@ export const ConfirmGuideDbData = ({
         state: destinationAddress.state ?? '',
         zipcode: destinationZipcode,
         country: 'MX',
-        reference: destinationAddress.reference ?? '',
       },
       parcel,
       notifyMe: parcelInfo.notifyMe,

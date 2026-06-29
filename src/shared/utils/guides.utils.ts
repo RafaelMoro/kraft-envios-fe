@@ -402,21 +402,22 @@ export const verifyAndUpdateAddressPkk = (
 };
 
 /**
- * Fills empty optional email/company fields with defaults and combines name + lastName
- * for the Guides DB confirm step. The caller is responsible for assembling the rest of
- * the address payload (street, city, alias, town, zipcode, country).
+ * Fills empty optional email/company/reference fields with defaults and combines
+ * name + lastName for the Guides DB confirm step. The caller is responsible for
+ * assembling the rest of the address payload (street, city, alias, town, zipcode, country).
  * @param address - The personal/contact fields from the address form
  * @returns Verified personal/contact fields with defaults applied
  */
 export const verifyAndUpdateAddressGuideDb = (
-  address: Pick<CreateGuideAddressFormValuesMn, 'name' | 'lastName' | 'phone' | 'email' | 'company'>,
-): { name: string; lastName: string; phone: string; email: string; company: string } => {
+  address: Pick<CreateGuideAddressFormValuesMn, 'name' | 'lastName' | 'phone' | 'email' | 'company' | 'reference'>,
+): { name: string; lastName: string; phone: string; email: string; company: string; reference: string } => {
   return {
     name: `${address.name ?? ''} ${address.lastName ?? ''}`.trim(),
     lastName: address.lastName ?? '',
     phone: address.phone ?? '',
     email: address.email?.trim() || DEFAULT_EMAIL,
     company: address.company?.trim() || DEFAULT_COMPANY,
+    reference: address.reference?.trim() || DEFAULT_REFERENCE,
   }
 }
 

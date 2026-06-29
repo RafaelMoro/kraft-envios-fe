@@ -64,11 +64,28 @@ describe('verifyAndUpdateAddressGuideDb', () => {
   })
 
   describe('Given the address regardless of inputs', () => {
-    it('When verified, Then the result only contains the five verified personal/contact fields', () => {
+    it('When verified, Then the result only contains the six verified personal/contact fields', () => {
       const result = verifyAndUpdateAddressGuideDb(baseAddress)
       expect(Object.keys(result).sort()).toEqual(
-        ['company', 'email', 'lastName', 'name', 'phone'].sort(),
+        ['company', 'email', 'lastName', 'name', 'phone', 'reference'].sort(),
       )
+    })
+  })
+
+  describe('Given an address with reference', () => {
+    it('When reference is empty, Then it falls back to DEFAULT_REFERENCE', () => {
+      const result = verifyAndUpdateAddressGuideDb({ ...baseAddress, reference: '' })
+      expect(result.reference).toBe('Sin referencia')
+    })
+
+    it('When reference is whitespace, Then it falls back to DEFAULT_REFERENCE', () => {
+      const result = verifyAndUpdateAddressGuideDb({ ...baseAddress, reference: '   ' })
+      expect(result.reference).toBe('Sin referencia')
+    })
+
+    it('When reference is filled, Then it is preserved', () => {
+      const result = verifyAndUpdateAddressGuideDb({ ...baseAddress, reference: 'Frente al parque' })
+      expect(result.reference).toBe('Frente al parque')
     })
   })
 })
