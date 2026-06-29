@@ -28,10 +28,11 @@ interface CreateGuideGEProps {
   packageDimensions: PackageDimensions | null;
   selectedQuotes: QuoteUI[]
   toggleModal: () => void;
-  resetSelectedQuotes: () => void
+  resetSelectedQuotes: () => void;
+  resetCotization?: () => void;
 }
 
-export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageDimensions, selectedQuotes }: CreateGuideGEProps) => {
+export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, resetCotization, packageDimensions, selectedQuotes }: CreateGuideGEProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
   const steps = new Set(CREATE_GUIDE_STEPS)
@@ -90,15 +91,6 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
     console.warn('No package dimensions available to update parcel info')
   }
 
-  const closeModal = () => {
-    resetFormData()
-    resetSteps()
-    setSearchProductSat('')
-    setErrorSelectAlias(null)
-    resetSelectedQuotes()
-    toggleModal()
-  }
-
   const { mutate: createGuide, data, isError, isPending, isSuccess } = useMutation<GlobalCreateGuideResponse, GeneralApiError, CreateGuideGEPayload>({
     mutationFn: createGuideGECb,
     onSuccess: () => {
@@ -108,6 +100,18 @@ export const CreateGuideGE = ({ open, toggleModal, resetSelectedQuotes, packageD
       goNext()
     }
   })
+
+  const closeModal = () => {
+    resetFormData()
+    resetSteps()
+    setSearchProductSat('')
+    setErrorSelectAlias(null)
+    resetSelectedQuotes()
+    if (isSuccess && resetCotization) {
+      resetCotization()
+    }
+    toggleModal()
+  }
 
   return (
     <Modal show={open} onClose={closeModal}>

@@ -199,6 +199,15 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
     setAllFilteredQuotes(allQuotes)
   }
 
+  const resetCotization = () => {
+    resetSelectedQuotes()
+    setAllQuotes([])
+    setAllFilteredQuotes([])
+    packageDimensions.current = null
+    setErrorActionBar(null)
+    resetFiltersQuotes()
+  }
+
   /**
    * Scroll the quotes section into view when the ref exists.
    * Safe-guards against missing ref or missing scrollIntoView API.
@@ -297,6 +306,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         selectedQuotes={selectedQuotes}
         toggleModal={toggleCreateGuideGE}
         resetSelectedQuotes={resetSelectedQuotes}
+        resetCotization={resetCotization}
       />
       <CreateGuideDbFlowSelector
         open={openCreateGuideSelector}
@@ -310,6 +320,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
         packageDimensions={packageDimensions.current}
         toggleModal={toggleCreateGuideDb}
         resetSelectedQuotes={resetSelectedQuotes}
+        resetCotization={resetCotization}
       />
     </main>
   )

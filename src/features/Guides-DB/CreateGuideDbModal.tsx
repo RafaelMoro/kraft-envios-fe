@@ -32,6 +32,7 @@ interface CreateGuideDbModalProps {
   packageDimensions: PackageDimensions | null
   toggleModal: () => void
   resetSelectedQuotes: () => void
+  resetCotization?: () => void
 }
 
 export const CreateGuideDbModal = ({
@@ -40,6 +41,7 @@ export const CreateGuideDbModal = ({
   packageDimensions,
   toggleModal,
   resetSelectedQuotes,
+  resetCotization,
 }: CreateGuideDbModalProps) => {
   const { isMobileTablet } = useMediaQuery()
   const { step, goNext, goPrev, resetSteps } = useSteps({ firstStep: 1 })
@@ -70,16 +72,6 @@ export const CreateGuideDbModal = ({
     formData.current.parcelInfo = data
   }
 
-  const closeModal = () => {
-    resetAliases()
-    resetFormData()
-    resetSteps()
-    setSearchProductSat('')
-    setErrorProductSat('')
-    resetSelectedQuotes()
-    toggleModal()
-  }
-
   const {
     mutate: createGuide,
     data,
@@ -96,6 +88,19 @@ export const CreateGuideDbModal = ({
       goNext()
     },
   })
+
+  const closeModal = () => {
+    resetAliases()
+    resetFormData()
+    resetSteps()
+    setSearchProductSat('')
+    setErrorProductSat('')
+    if (isSuccess && resetCotization) {
+      resetCotization()
+    }
+    resetSelectedQuotes()
+    toggleModal()
+  }
 
   const selectedQuote = selectedQuotes[0]
   const blockingError =

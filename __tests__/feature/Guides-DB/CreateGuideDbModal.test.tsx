@@ -8,6 +8,7 @@ import { mockMatchMedia, QueryMatchMedia } from '../../utils-test/mockWatchMedia
 
 const mockToggleModal = jest.fn()
 const mockResetSelectedQuotes = jest.fn()
+const mockResetCotization = jest.fn()
 
 const mockQuote: QuoteUI = {
   id: 'quote-1',
@@ -49,6 +50,7 @@ const renderWithProviders = (props: {
         packageDimensions={props.packageDimensions}
         toggleModal={mockToggleModal}
         resetSelectedQuotes={mockResetSelectedQuotes}
+        resetCotization={mockResetCotization}
       />
     </QueryClientProvider>,
   )
@@ -126,6 +128,18 @@ describe('CreateGuideDbModal', () => {
       const closeButton = screen.getByRole('button', { name: /cancelar|cerrar/i })
       closeButton.click()
       expect(mockToggleModal).toHaveBeenCalled()
+    })
+
+    it('When user dismisses the modal before success, Then it does NOT reset cotization', () => {
+      renderWithProviders({
+        open: true,
+        selectedQuotes: [mockQuote],
+        packageDimensions: mockDimensions,
+      })
+
+      const closeButton = screen.getByRole('button', { name: /cancelar|cerrar/i })
+      closeButton.click()
+      expect(mockResetCotization).not.toHaveBeenCalled()
     })
   })
 })
