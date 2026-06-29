@@ -111,8 +111,7 @@ export const ConfirmGuideDbData = ({
       <article className="flex flex-col gap-2">
         <h5 className="text-lg font-bold">Cotización</h5>
         <ul className="grid grid-cols-1 gap-1">
-          <li>ID: {selectedQuote.id}</li>
-          <li>Proveedor: {selectedQuote.source}</li>
+          <li>Origen: {selectedQuote.source}</li>
           <li>Servicio: {selectedQuote.service}</li>
         </ul>
       </article>
