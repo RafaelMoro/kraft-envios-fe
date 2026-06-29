@@ -25,6 +25,8 @@ Before any codebase exploration, read these files and do not re-discover what is
 
 There is no CI workflow directory in this checkout. Do not assume branch, label, release, or deployment rules unless the user provides them.
 
+Prompt maintenance note: `.opencode/command/research.md` is the source of truth for this workflow. If you change this command prompt, run `pnpm sync:prompts` so `.github/prompts/research.prompt.md` stays in sync.
+
 ## Step 2 - Story quality check
 
 Skim the task and flag any of these **before** spending tool calls on exploration:
@@ -110,7 +112,7 @@ The research doc must include:
 - **Affected areas**, referencing this repo's layout:
   - Routes/pages: `src/app/**`
   - API route handlers: `src/app/api/**/route.ts`
-  - Feature UI: `src/features/{Login,Dashboard,Quotes,Addresses,AutocompleteZipcode,Guides,ProfitMargin}`
+  - Feature UI: `src/features/{Login,Dashboard,Quotes,Addresses,AutocompleteZipcode,Guides,Guides-DB,ProfitMargin}`
   - Shared code: `src/shared/{ui,hooks,lib,utils,constants,types}`
   - Tests: `__tests__/feature/*`, `__tests__/components/*`, `__tests__/home.test.tsx`; helper dirs `__tests__/mocks/` and `__tests__/utils-test/` are ignored by Jest
 - **Existing patterns to follow** - App Router server/client split, TanStack Query via `features/QueryProviderWrapper`, Flowbite React, Tailwind v4, `react-hook-form` + `yup`, route-handler proxy style
@@ -153,4 +155,4 @@ Do **not** start planning or writing code. Wait for human sign-off.
 - Do not propose implementation; that is the planning phase.
 - Do not write or modify source files other than the research doc, except for a verified broadly useful `REPO_CONTEXT.md` note.
 - Do not run tests, builds, or `pnpm install` during research.
-- Do not assume Zustand, finance domains, CI labels, branch flow, changelog automation, or external backend repository access; those are not present in this repo.
+- Do not assume Zustand, finance domains, CI labels, branch flow, changelog automation, release automation, or external backend repository access; those are not present in this repo.
