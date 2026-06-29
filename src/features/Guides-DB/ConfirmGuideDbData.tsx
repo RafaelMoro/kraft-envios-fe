@@ -9,7 +9,7 @@ import {
 } from "@/shared/types/guides.types"
 import { QuoteUI } from "@/shared/types/quotes.types"
 import { formatPhoneNumber } from "@/shared/utils/global.utils"
-import { toGuideDbParcelPayload } from "@/shared/utils/guides.utils"
+import { toGuideDbParcelPayload, verifyAndUpdateAddressGuideDb } from "@/shared/utils/guides.utils"
 import {
   RiCheckboxMultipleBlankLine,
   RiEditBoxLine,
@@ -66,38 +66,16 @@ export const ConfirmGuideDbData = ({
       provider: selectedQuote.source,
       quoteId: selectedQuote.id,
       origin: {
+        ...verifyAndUpdateAddressGuideDb(originAddress),
         alias: originAlias,
-        name: `${originAddress.name} ${originAddress.lastName}`.trim(),
-        lastName: originAddress.lastName ?? '',
-        phone: originAddress.phone ?? '',
-        email: originAddress.email ?? '',
-        company: originAddress.company ?? '',
-        street1: originAddress.street1 ?? '',
-        external_number: originAddress.external_number ?? '',
-        neighborhood: originAddress.neighborhood ?? '',
-        city: originAddress.city ?? '',
         town: originTown,
-        state: originAddress.state ?? '',
         zipcode: originZipcode,
-        country: 'MX',
-        reference: originAddress.reference ?? '',
       },
       destination: {
+        ...verifyAndUpdateAddressGuideDb(destinationAddress),
         alias: destinationAlias,
-        name: `${destinationAddress.name} ${destinationAddress.lastName}`.trim(),
-        lastName: destinationAddress.lastName ?? '',
-        phone: destinationAddress.phone ?? '',
-        email: destinationAddress.email ?? '',
-        company: destinationAddress.company ?? '',
-        street1: destinationAddress.street1 ?? '',
-        external_number: destinationAddress.external_number ?? '',
-        neighborhood: destinationAddress.neighborhood ?? '',
-        city: destinationAddress.city ?? '',
         town: destinationTown,
-        state: destinationAddress.state ?? '',
         zipcode: destinationZipcode,
-        country: 'MX',
-        reference: destinationAddress.reference ?? '',
       },
       parcel,
       notifyMe: parcelInfo.notifyMe,
