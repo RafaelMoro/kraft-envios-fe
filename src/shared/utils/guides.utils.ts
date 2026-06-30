@@ -13,6 +13,9 @@ import {
   CREATE_GUIDE_DB_ENDPOINT,
   GET_GUIDES_ENDPOINT,
   GUIDE_STATUS,
+  GET_GUIDES_DB_ENDPOINT,
+  GUIDE_DB_FAILURE_MESSAGES,
+  GUIDE_DB_GENERIC_FAILURE_MESSAGE,
 } from "../constants/guides.constants";
 import {
   CreateGuideMnPayload,
@@ -42,6 +45,11 @@ import {
   CreateGuideDbParcelPayload,
   CreateGuideDbFormValues,
   PackageDimensions,
+  GetGuidesDbParams,
+  GetGuidesDbResponse,
+  GetGuidesDbResponseData,
+  GuidesDbStatus,
+  GuideDbFailureInfo,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
 
@@ -570,4 +578,30 @@ export const getGuideStatus = (status: string) => {
  */
 export const generateGuideId = (guide: GetGuidesData): string => {
   return `${guide.source}-${guide.trackingNumber}`;
+};
+
+export const getGuidesDbCb = async (params: GetGuidesDbParams): Promise<GetGuidesDbResponseData> => {
+  const searchParams = new URLSearchParams();
+  searchParams.append('page', String(params.page));
+  searchParams.append('month', String(params.month));
+  searchParams.append('year', String(params.year));
+  if (params.limit !== undefined && params.limit !== 10) {
+    searchParams.append('limit', String(params.limit));
+  }
+
+  const res: AxiosResponse<GetGuidesDbResponse> = await axios.get(
+    `${GET_GUIDES_DB_ENDPOINT}?${searchParams}`,
+  );
+  return res.data.data;
+};
+
+export const getGuideDbStatusLabel = (status: GuidesDbStatus): string => {
+  return status === 'created' ? 'Creado' : 'Fallido';
+};
+
+export const getGuideDbFailureMessage = (failureInfo: GuideDbFailureInfo | null): string | null => {
+  if (!failureInfo) return null;
+  const { errorCode } = failureInfo;
+  const friendlyMessage = GUIDE_DB_FAILURE_MESSAGES[errorCode] ?? GUIDE_DB_GENERIC_FAILURE_MESSAGE;
+  return `${errorCode}: ${friendlyMessage}`;
 };
