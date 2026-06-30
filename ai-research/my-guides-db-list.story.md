@@ -158,8 +158,8 @@ Query params:
 
 - `page`: optional number.
 - `limit`: optional number; backend default is 10, and the UI can expose page-size options for the default value, 50, and 100.
-- `month`: optional string.
-- `year`: optional string.
+- `month`: optional number from 1 to 12, for example `3`; do not send `03` or month names.
+- `year`: optional full year number, for example `2026`; do not send two-digit years like `26`.
 
 Default filters:
 
@@ -269,7 +269,7 @@ Story 2 needs:
 - DB records may have no `trackingNumber` or `externalId`; use `kraftId` as fallback display and key.
 - Existing `getGuideStatusLabel()` does not map lowercase `failed`.
 - Existing `getGuideStatus()` maps external text and defaults to `En proceso`; do not use it blindly for DB `failed`.
-- Month/year query param type is documented as string; UI values can stay strings.
+- Month/year query params are numbers: month is integer `1` through `12`, and year is the full year such as `2026`.
 - `product-sat` and guide creation fields are out of scope for this story.
 - Admin source visibility belongs to Story 3.
 
@@ -332,8 +332,9 @@ Backend contract:
   - Context: Existing `/api/guides-db` currently has `POST` for create only; implementation can choose the smallest frontend BFF path that proxies backend `GET /guides/db`.
 
 - II: Question: Are `month` and `year` accepted as numeric strings like `"6"`/`"2026"`, zero-padded month strings like `"06"`, or month names?
-  - Status: pending
-  - Context: Existing epic says month/year are optional strings and default to current month/year, but the backend format is not explicit.
+  - Status: answered
+  - Answer: Query params are numbers. `month` is an integer from 1 to 12, like `3`, not `03` or `March`. `year` is the complete year, like `2026`, not `26`.
+  - Context: UI should convert/select values accordingly before calling the DB list endpoint.
 
 - III: Question: Does regular `GET /guides/db` always include `origin`, `destination`, and `parcel` for failed records?
   - Status: answered
@@ -353,8 +354,8 @@ UI/product decisions:
   - Context: `Ver todas las guias` is for the admin implementation in Story 3.
 
 - II: Question: What exact empty-state copy should appear when the current month/year has no DB guides?
-  - Status: pending
-  - Answer: Recommended Spanish options: `No encontramos guias para este mes.`, `Aun no tienes guias guardadas en este periodo.`, `No hay guias para el mes seleccionado.`
+  - Status: answered
+  - Answer: Use `No hay guias para el mes seleccionado.`
   - Context: Existing external list has no explicit empty state; AC 5 requires clear states.
 
 - III: Question: Should failed DB guide cards display `failureInfo.errorDetails` directly, a friendly error-code mapping, or only a generic failed status in the list?

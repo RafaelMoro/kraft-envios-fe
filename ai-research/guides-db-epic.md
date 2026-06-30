@@ -165,16 +165,16 @@ Get my Guides DB query params:
 
 - `page`: optional number.
 - `limit`: optional number; default backend page size is 10, and UI can expose default, 50, and 100.
-- `month`: optional string.
-- `year`: optional string.
+- `month`: optional number from 1 to 12, for example `3`; do not send `03` or month names.
+- `year`: optional full year number, for example `2026`; do not send two-digit years like `26`.
 
 Get admin Guides DB query params:
 
 - `scope`: `all | own`.
 - `page`: optional number.
 - `limit`: optional number; default backend page size is 10, and UI can expose default, 50, and 100.
-- `month`: optional string.
-- `year`: optional string.
+- `month`: optional number from 1 to 12, for example `3`; do not send `03` or month names.
+- `year`: optional full year number, for example `2026`; do not send two-digit years like `26`.
 
 List response envelope:
 
@@ -457,7 +457,7 @@ UI/product decisions:
 - II: Question: Should month/year default to current month/year or all dates?
   - Status: answered.
   - Answer: Default to the current month and year when the user has not filled filters.
-  - Context: `GET /guides/db` and `GET /guides/db/admin` accept optional `month` and `year` query params.
+  - Context: `GET /guides/db` and `GET /guides/db/admin` accept optional numeric `month` and `year` query params. `month` is `1`-`12`; `year` is a full year such as `2026`.
 - III: Question: What page size should be used by default?
   - Status: answered.
   - Answer: Do not pass a page size for the default option. The backend default `limit` is 10. The UI can expose a select for default, 50, and 100.
