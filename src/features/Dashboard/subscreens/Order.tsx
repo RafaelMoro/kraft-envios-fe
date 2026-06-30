@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { Button, ButtonGroup } from "flowbite-react"
+import clsx from "clsx"
 
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb, getGuideStatus, generateGuideId } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE } from "@/shared/constants/guides.constants"
+
+type GuideListSource = 'external' | 'ownDb'
 
 interface OrderProps {
   userInfo: LoginData | null
@@ -25,11 +29,25 @@ export const Order = ({ userInfo }: OrderProps) => {
     updateNotificationMessage,
   } = useNotification();
 
+  const [selectedSource, setSelectedSource] = useState<GuideListSource>('external')
+  const [selectedMonth] = useState(() => new Date().getMonth() + 1)
+  const [selectedYear] = useState(() => new Date().getFullYear())
+  const [dbPage, setDbPage] = useState(1)
+  const [dbLimit] = useState<10 | 50 | 100>(10)
+
   const [guides, setGuides] = useState<GuideUI[]>([])
   const { data, isPending, isError } = useQuery({
-    queryKey: ['guides'],
-    queryFn: getGuidesCb
+    queryKey: ['guides', 'external'],
+    queryFn: getGuidesCb,
+    enabled: selectedSource === 'external',
   })
+
+  useQuery({
+    queryKey: ['guides', 'db', selectedMonth, selectedYear, dbPage, dbLimit],
+    queryFn: () => getGuidesDbCb({ page: dbPage, month: selectedMonth, year: selectedYear, limit: dbLimit }),
+    enabled: selectedSource === 'ownDb',
+  })
+
   const messages = data?.messages
 
   useEffect(() => {
@@ -48,7 +66,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         return {
         ...guide,
         id: generateGuideId(guide),
-        hasBeenFetched: guide.source === 'Pkk' ? false : true, // Only guides from Pkk will be marked as not fetched initially
+        hasBeenFetched: guide.source === 'Pkk' ? false : true,
         logoSrc: getQuoteImg({ courier: guide.courier, isMobile: isMobileTablet })
       }
     })
@@ -71,18 +89,17 @@ export const Order = ({ userInfo }: OrderProps) => {
     setGuides(updatedGuides)
   }
 
-  // Handle error messages if any provider failed to fetch guides
   useEffect(() => {
-    if (messages && messages.length > 0) {
+    if (messages && messages.length > 0 && selectedSource === 'external') {
       const courierNames: string[] = []
-      
+
       if (messages.includes(ERROR_TONE_GUIDES_SERVER_MESSAGE)) {
         courierNames.push('TONE')
       }
       if (messages.includes(ERROR_GE_GUIDES_SERVER_MESSAGE)) {
         courierNames.push('GE')
       }
-      
+
       if (courierNames.length > 0) {
         const courierList = courierNames.join(' y ')
         updateNotificationMessage(`${ERROR_GUIDES_USER_MESSAGE_BASE} ${courierList}.`)
@@ -90,7 +107,7 @@ export const Order = ({ userInfo }: OrderProps) => {
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages])
+  }, [messages, selectedSource])
 
   return (
     <main className='w-full p-4 flex flex-col gap-5'>
@@ -101,7 +118,31 @@ export const Order = ({ userInfo }: OrderProps) => {
         />
       )}
       <h1 className="text-3xl font-bold text-center">Bienvenido {userInfo?.data?.user?.name}</h1>
-      { isError && (
+      <div className="w-full flex justify-center">
+        <ButtonGroup>
+          <Button
+            className={clsx({ "text-indigo-600 dark:text-indigo-400": selectedSource === 'external' })}
+            onClick={() => setSelectedSource('external')}
+            color="alternative"
+          >
+            Ver guias externas
+          </Button>
+          <Button
+            className={clsx({ "text-indigo-600 dark:text-indigo-400": selectedSource === 'ownDb' })}
+            onClick={() => { setSelectedSource('ownDb'); setDbPage(1); }}
+            color="alternative"
+          >
+            Ver mis guias
+          </Button>
+          <Button
+            disabled
+            color="alternative"
+          >
+            Ver todas las guias
+          </Button>
+        </ButtonGroup>
+      </div>
+      { selectedSource === 'external' && isError && (
         <div className="flex flex-col gap-5">
           <h2 className="text-2xl font-bold text-center tracking-tight md:col-span-2 lg:col-span-3">
             Oops!
@@ -111,7 +152,7 @@ export const Order = ({ userInfo }: OrderProps) => {
           </p>
         </div>
       )}
-      { !isError && (
+      { selectedSource === 'external' && !isError && (
         <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-5">
           { !isPending && guides.map((guide => (
             <GuideCard key={guide.id} guide={guide} isPending={isPending} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
@@ -120,7 +161,7 @@ export const Order = ({ userInfo }: OrderProps) => {
             <GuideCard key={index} guide={null} isPending={true} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           ))}
         </div>
-      ) }
+      )}
     </main>
   )
 }
