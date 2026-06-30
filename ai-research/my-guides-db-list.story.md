@@ -8,17 +8,18 @@ My Guides DB List.
 
 ### Story Description
 
-Regular users need a `Mis guías DB` view from the existing `Ver guias` dashboard screen. This view should fetch app-owned Guides DB records from the regular-user backend endpoint, support month/year/page query params, and render saved records including records whose provider creation failed.
+Regular users need a `Ver mis guias` view from the existing `Ver guias` dashboard screen. A Flowbite button group should separate the current external-provider guides fetch from the new regular-user Guides DB fetch. This view should fetch app-owned Guides DB records from the regular-user backend endpoint, support month/year/page query params, and render saved records including records whose provider creation failed.
 
 This research is scoped to Story 2 from `ai-research/guides-db-epic.md`, lines 31-39. Admin/all-guides behavior is out of scope except where it affects boundaries for Story 3.
 
 ### Acceptance Criteria
 
-1. A regular user can view `Mis guías DB` from the existing guides screen.
+1. A regular user can switch between `Ver guias externas` and `Ver mis guias` from the existing guides screen.
 2. The DB-backed list supports month, year, and pagination query params.
 3. The UI displays saved guide data including failed guide records when the backend returns them.
 4. Soft-deleted guides are not returned by `GET /guides/db`, so regular users do not see deleted guides.
 5. Loading, empty, and error states remain clear on desktop and mobile/tablet layouts.
+6. The button group includes `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`; `Ver todas las guias` is admin-only Story 3 scope and should be hidden or disabled for regular users in Story 2.
 
 ### Scope Classification
 
@@ -30,7 +31,7 @@ Full template.
 
 ### User-Confirmed Scope
 
-- Keep this to regular-user `Mis guías DB`.
+- Keep this to regular-user `Ver mis guias`.
 - Exclude admin/all-guides behavior except as a boundary note.
 - Prioritize the existing `Order` screen and regular list API contract.
 
@@ -42,6 +43,7 @@ Full template.
 - Retry failed guide creation.
 - Changes to the Story 1 create flow except reusing its types or constants where already present.
 - Global response-envelope normalization.
+- Implementing the admin data fetch for `Ver todas las guias`; only reserve the button-group slot/boundary for Story 3.
 
 ## Technical Research
 
@@ -53,6 +55,7 @@ Full template.
 - There is no regular-user Guides DB list BFF route yet.
 - There are no Guides DB list response types yet.
 - There is no source selector in `Order` yet.
+- The requested source selector labels are `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`.
 - There is no pagination/month/year state in `Order` yet.
 
 ### Affected Areas
@@ -79,6 +82,8 @@ Feature UI:
 - `src/features/Guides/ViewGuides/GuideCardPkk.tsx` performs an extra external PKK fetch when `guide.source === 'Pkk' && hasBeenFetched === false`; DB list records should not trigger that behavior by accident.
 - `src/features/Guides/ViewGuides/GuidesTable.tsx` exists but does not appear used by `Order`; it also assumes external `GetGuidesData` shape.
 - `src/features/ProfitMargin/SubscreenManagerGroupButton.tsx` is the local Flowbite `ButtonGroup` example to follow for source switching.
+- Story 2 should wire `Ver guias externas` to the existing `getGuidesCb` flow and `Ver mis guias` to the new regular `GET /guides/db` flow.
+- `Ver todas las guias` is reserved for the Story 3 admin implementation and should not trigger a regular-user DB fetch.
 
 Shared code:
 
@@ -114,6 +119,7 @@ Flowbite React:
 - Flowbite React is already installed; no dependency is needed.
 - `SubscreenManagerGroupButton` shows the local `ButtonGroup` import and active-button class pattern.
 - A source selector can follow that established ButtonGroup style without adding a new design system piece.
+- Button group verbiage is fixed as `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`.
 
 Forms and filters:
 
@@ -195,6 +201,7 @@ Current external list behavior:
 - Each guide gets an `id` from `generateGuideId(guide)`, currently `${guide.source}-${guide.trackingNumber}`.
 - PKK guides are initially `hasBeenFetched: false`; other sources are true.
 - External provider partial failures are shown through `Notification` when backend messages include TONE or GE known messages.
+- The new button group must keep the external list fetch isolated from the DB list fetch; selecting `Ver guias externas` uses the current external endpoint, while selecting `Ver mis guias` uses the regular Guides DB endpoint.
 
 Implications for DB list:
 
@@ -282,7 +289,7 @@ High-level actions only:
 1. Add regular Guides DB list types for record, response envelope, and query params.
 2. Add a regular list BFF route for `GET /guides/db` that forwards month/year/page query params and auth.
 3. Add a shared callback/endpoint constant for the regular DB list.
-4. Add source state in `Order` so users can switch between external guides and `Mis guías DB`.
+4. Add source state in `Order` so users can switch between `Ver guias externas` and `Ver mis guias`, with `Ver todas las guias` reserved for admin Story 3.
 5. Add month/year/page controls for the DB source.
 6. Render DB records, including failed records, without depending on nullable external guide fields.
 7. Add/update focused tests for source selection, query params, failed-record rendering, empty state, error state, and pagination behavior.
@@ -298,8 +305,10 @@ High-level actions only:
 
 ### Focused Story 2 Tests To Add Later
 
-- Source selector shows external guides and `Mis guías DB` for regular users.
-- Selecting `Mis guías DB` calls the DB list callback with current month/year and page 1.
+- Source selector shows `Ver guias externas` and `Ver mis guias` for regular users.
+- `Ver todas las guias` remains hidden or disabled for regular users until Story 3 admin implementation.
+- Selecting `Ver mis guias` calls the DB list callback with current month/year and page 1.
+- Selecting `Ver guias externas` keeps using the current external guide callback.
 - Changing month/year refetches DB list and resets page to 1.
 - Pagination next/previous changes `page` and refetches DB list.
 - A DB guide with `status: failed` and null external fields still renders as a saved DB record.
@@ -335,9 +344,10 @@ Backend contract:
 
 UI/product decisions:
 
-- I: Question: Should the selector label be exactly `Mis guías DB` from Story 2 or `Mis guías guardadas` from the earlier epic label notes?
-  - Status: pending
-  - Context: Story AC uses `Mis guías DB`; epic constants notes mention final labels `Guías externas`, `Mis guías guardadas`, and `Todas las guías`.
+- I: Question: What exact button group labels should be used for external, regular DB, and admin DB guide sources?
+  - Status: answered
+  - Answer: Use `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`.
+  - Context: `Ver todas las guias` is for the admin implementation in Story 3.
 
 - II: Question: What exact empty-state copy should appear when the current month/year has no DB guides?
   - Status: pending
@@ -373,10 +383,12 @@ Authorization:
 - `GET /guides/db` is served by the same backend base URI in `BACKEND_URI`.
 - The frontend should add a BFF route handler rather than calling backend directly from `Order`.
 - Regular authenticated users can access `Mis guías DB` without admin role checks.
+- The button label for the regular DB list is `Ver mis guias`.
+- `Ver todas las guias` is reserved for admin users in Story 3 and should not fetch admin data in Story 2.
 - Backend excludes soft-deleted guides for regular `GET /guides/db`; frontend does not need delete filtering.
 - Month/year default to the current month/year for the DB list source.
 - `limit` should not be sent by default.
-- DB list should coexist with the existing external-provider guides list.
+- DB list should coexist with the existing external-provider guides list through a Flowbite button group.
 - Existing external guide provider-message notifications should not be applied to DB list responses.
 - `kraftId` is the safest stable key for DB list records.
 
@@ -386,5 +398,5 @@ Authorization:
 - `Order` has an implicit empty state today; Story 2 needs an explicit one.
 - Existing `GuideCard` is tightly coupled to external guide fields and PKK lazy-fetch behavior.
 - DB failed records can be valid saved records with null external-provider fields, so external guide mapping is risky unless carefully guarded.
-- `ButtonGroup` already exists in the ProfitMargin feature and is the local Flowbite pattern for a two-option selector.
+- `ButtonGroup` already exists in the ProfitMargin feature and is the local Flowbite pattern for this selector.
 - There are no API route handler tests in the current checkout, so adding route tests would establish a new test location.

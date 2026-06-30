@@ -32,17 +32,18 @@ Acceptance criteria:
 
 Acceptance criteria:
 
-1. A regular user can view `Mis guías DB` from the existing guides screen.
+1. A regular user can switch from `Ver guias externas` to `Ver mis guias` from the existing guides screen.
 2. The DB-backed list supports month, year, and pagination query params.
 3. The UI displays saved guide data including failed guide records when the backend returns them.
 4. Soft-deleted guides are not returned by `GET /guides/db`, so regular users do not see deleted guides.
 5. Loading, empty, and error states remain clear on desktop and mobile/tablet layouts.
+6. The guides screen uses a Flowbite button group with `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`; the last button is reserved for Story 3 admin behavior.
 
 #### Story 3: Admin All Guides DB List
 
 Acceptance criteria:
 
-1. Admin users see an additional `Todas las guías DB` source option; non-admin users do not.
+1. Admin users can use the `Ver todas las guias` button group option; non-admin users do not fetch or access this source.
 2. Admin users can see guides that regular users have soft-deleted for auditing.
 3. The route handler proxies admin query params and preserves auth through the session token.
 4. Admin UI can switch between regular-user view behavior and all-guides/admin behavior where required by the guides screen.
@@ -61,7 +62,8 @@ Acceptance criteria:
 - The full request is an epic, not one story.
 - Create flow touches quotes, guides, addresses, SAT lookup, BFF routes, shared types, and result UI.
 - List flow touches dashboard guide screen, route handlers, query params, admin role checks, and guide card shape mapping.
-- Source switching between regular and admin guides is part of Story 3, not a standalone story.
+- Source switching is through one Flowbite button group: `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`.
+- Story 2 wires `Ver guias externas` and `Ver mis guias`; Story 3 wires admin behavior for `Ver todas las guias`.
 - Retry failed guide creation is future scope and should remain out of these stories.
 - Delete Guides DB exists in the backend, but delete UI/workflow is not included in this epic unless explicitly added as a later story.
 
@@ -88,6 +90,7 @@ Feature UI:
 
 - `src/features/Dashboard/subscreens/QuotesSubscreen.tsx` owns selected quotes and currently opens provider-specific guide modals from `handleClickCreateGuide` and `handleCreateGuideQuoteCard`.
 - `src/features/Dashboard/subscreens/Order.tsx` is the current `Ver guias` screen and fetches external guides with `useQuery({ queryKey: ['guides'], queryFn: getGuidesCb })`.
+- `Order` should separate external, regular DB, and admin DB guide sources through a Flowbite button group using labels `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`.
 - `src/features/Guides/Mn/CreateGuideModalMn.tsx` is closest to the requested DB create flow because it already uses saved address aliases, temporary addresses, SAT product search, value, and quantity.
 - `src/features/Guides/Mn/AddAddressMn.tsx` maps saved addresses from `useGetAddress()` into MN payload shape.
 - `src/features/Guides/Mn/ParcelInfoForm.tsx` collects SAT product, content, value, and quantity.
@@ -300,6 +303,7 @@ Implication for Guides DB lists:
 - DB-backed guides can include failed provider creation records and should render as saved records, not query errors.
 - External source can keep current `getGuidesCb` path and transformation.
 - My Guides DB and All Guides DB probably need separate callbacks or one callback with mode/query params.
+- `Ver guias externas` should keep the current `/api/guides/get-guides` fetch; `Ver mis guias` should fetch regular `GET /guides/db`; `Ver todas las guias` is the admin source for Story 3.
 - Existing `GuideCard` may need a mapper from DB guide to the current card shape or a small DB-specific card if important fields differ too much.
 - Regular users will not see their soft-deleted guides in `GET /guides/db`.
 - Admin users can see soft-deleted guides for auditing through admin behavior.
@@ -345,7 +349,7 @@ Likely constants additions:
 
 - New BFF endpoint constants in `src/shared/constants/guides.constants.ts`.
 - Source selector labels for my DB guides and admin all DB guides.
-- Final button group labels are `Guías externas`, `Mis guías guardadas`, and `Todas las guías`.
+- Final button group labels are `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`.
 - Query key fragments for my-guides and admin/all-guides DB sources.
 
 Do not add new dependencies.
