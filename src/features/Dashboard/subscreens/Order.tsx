@@ -6,18 +6,91 @@ import clsx from "clsx"
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb, getGuideDbStatusLabel, getGuideDbFailureMessage } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
-import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
+import { GetGuidesData, GuideUI, GuideDbRecord } from "@/shared/types/guides.types"
 
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { Notification } from "@/shared/ui/atoms/Notification"
-import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE } from "@/shared/constants/guides.constants"
+import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE, GUIDES_DB_EMPTY_MESSAGE, GUIDES_DB_ERROR_MESSAGE } from "@/shared/constants/guides.constants"
 
 type GuideListSource = 'external' | 'ownDb'
 
 interface OrderProps {
   userInfo: LoginData | null
+}
+
+const MONTHS = [
+  { value: 1, label: 'Enero' },
+  { value: 2, label: 'Febrero' },
+  { value: 3, label: 'Marzo' },
+  { value: 4, label: 'Abril' },
+  { value: 5, label: 'Mayo' },
+  { value: 6, label: 'Junio' },
+  { value: 7, label: 'Julio' },
+  { value: 8, label: 'Agosto' },
+  { value: 9, label: 'Septiembre' },
+  { value: 10, label: 'Octubre' },
+  { value: 11, label: 'Noviembre' },
+  { value: 12, label: 'Diciembre' },
+]
+
+const currentYear = new Date().getFullYear()
+const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - i)
+
+function GuideDbCard({ guide }: { guide: GuideDbRecord }) {
+  const statusLabel = getGuideDbStatusLabel(guide.status)
+  const failureMessage = getGuideDbFailureMessage(guide.failureInfo)
+
+  return (
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-start">
+          <div className="flex flex-col">
+            <span className="font-mono text-sm font-semibold">{guide.kraftId}</span>
+            {guide.externalId && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">{guide.externalId}</span>
+            )}
+          </div>
+          <span className={clsx(
+            "text-xs font-medium px-2 py-1 rounded",
+            guide.status === 'created' ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+          )}>
+            {statusLabel}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm">
+          <span className="font-medium">{guide.provider}</span>
+        </div>
+
+        {guide.status === 'failed' && failureMessage && (
+          <p className="text-xs text-red-600 dark:text-red-400">{failureMessage}</p>
+        )}
+
+        <div className="flex flex-col text-xs text-gray-600 dark:text-gray-400 mt-1">
+          <span>Origen: {guide.origin.city || guide.origin.alias || 'N/A'}</span>
+          <span>Destino: {guide.destination.city || guide.destination.alias || 'N/A'}</span>
+          {guide.parcel.content && <span>Contenido: {guide.parcel.content}</span>}
+        </div>
+
+        {guide.labelUrl && (
+          <a
+            href={guide.labelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Ver etiqueta
+          </a>
+        )}
+
+        {guide.price && (
+          <span className="text-sm font-medium">${guide.price}</span>
+        )}
+      </div>
+    </div>
+  )
 }
 
 export const Order = ({ userInfo }: OrderProps) => {
@@ -30,10 +103,10 @@ export const Order = ({ userInfo }: OrderProps) => {
   } = useNotification();
 
   const [selectedSource, setSelectedSource] = useState<GuideListSource>('external')
-  const [selectedMonth] = useState(() => new Date().getMonth() + 1)
-  const [selectedYear] = useState(() => new Date().getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth() + 1)
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear())
   const [dbPage, setDbPage] = useState(1)
-  const [dbLimit] = useState<10 | 50 | 100>(10)
+  const [dbLimit, setDbLimit] = useState<10 | 50 | 100>(10)
 
   const [guides, setGuides] = useState<GuideUI[]>([])
   const { data, isPending, isError } = useQuery({
@@ -42,7 +115,7 @@ export const Order = ({ userInfo }: OrderProps) => {
     enabled: selectedSource === 'external',
   })
 
-  useQuery({
+  const { data: dbData, isPending: dbIsPending, isError: dbIsError } = useQuery({
     queryKey: ['guides', 'db', selectedMonth, selectedYear, dbPage, dbLimit],
     queryFn: () => getGuidesDbCb({ page: dbPage, month: selectedMonth, year: selectedYear, limit: dbLimit }),
     enabled: selectedSource === 'ownDb',
@@ -109,6 +182,23 @@ export const Order = ({ userInfo }: OrderProps) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, selectedSource])
 
+  const handleMonthChange = (month: number) => {
+    setSelectedMonth(month)
+    setDbPage(1)
+  }
+
+  const handleYearChange = (year: number) => {
+    setSelectedYear(year)
+    setDbPage(1)
+  }
+
+  const handleLimitChange = (limit: 10 | 50 | 100) => {
+    setDbLimit(limit)
+    setDbPage(1)
+  }
+
+  const totalPages = dbData?.totalPages ?? 1
+
   return (
     <main className='w-full p-4 flex flex-col gap-5'>
       {openNotification && (
@@ -142,6 +232,7 @@ export const Order = ({ userInfo }: OrderProps) => {
           </Button>
         </ButtonGroup>
       </div>
+
       { selectedSource === 'external' && isError && (
         <div className="flex flex-col gap-5">
           <h2 className="text-2xl font-bold text-center tracking-tight md:col-span-2 lg:col-span-3">
@@ -161,6 +252,116 @@ export const Order = ({ userInfo }: OrderProps) => {
             <GuideCard key={index} guide={null} isPending={true} updatePkkGuide={updatePkkGuide} isDesktop={isDesktop} />
           ))}
         </div>
+      )}
+
+      { selectedSource === 'ownDb' && (
+        <>
+          <div className="flex flex-wrap gap-4 justify-center items-center">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Mes:</label>
+              <select
+                value={selectedMonth}
+                onChange={(e) => handleMonthChange(Number(e.target.value))}
+                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800"
+              >
+                {MONTHS.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Año:</label>
+              <select
+                value={selectedYear}
+                onChange={(e) => handleYearChange(Number(e.target.value))}
+                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800"
+              >
+                {YEARS.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Registros:</label>
+              <select
+                value={dbLimit}
+                onChange={(e) => handleLimitChange(Number(e.target.value) as 10 | 50 | 100)}
+                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800"
+              >
+                <option value={10}>10</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+          </div>
+
+          { dbIsError && (
+            <div className="flex flex-col gap-5">
+              <h2 className="text-2xl font-bold text-center tracking-tight">
+                Oops!
+              </h2>
+              <p className="text-center text-gray-600 dark:text-gray-400">
+                {GUIDES_DB_ERROR_MESSAGE}
+              </p>
+            </div>
+          )}
+
+          { !dbIsError && dbIsPending && (
+            <div className="flex justify-center py-8">
+              <p className="text-gray-500 dark:text-gray-400">Cargando...</p>
+            </div>
+          )}
+
+          { !dbIsError && !dbIsPending && dbData?.guides.length === 0 && (
+            <div className="flex flex-col gap-5">
+              <p className="text-center text-gray-600 dark:text-gray-400">
+                {GUIDES_DB_EMPTY_MESSAGE}
+              </p>
+            </div>
+          )}
+
+          { !dbIsError && !dbIsPending && dbData && dbData.guides.length > 0 && (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-5">
+                {dbData.guides.map((guide) => (
+                  <GuideDbCard key={guide.kraftId} guide={guide} />
+                ))}
+              </div>
+
+              { totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 flex-wrap">
+                  <Button
+                    size="sm"
+                    onClick={() => setDbPage((p) => Math.max(1, p - 1))}
+                    disabled={dbPage === 1}
+                    color="alternative"
+                  >
+                    Anterior
+                  </Button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      size="sm"
+                      onClick={() => setDbPage(page)}
+                      className={clsx({ "text-indigo-600 dark:text-indigo-400": page === dbPage })}
+                      color="alternative"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                  <Button
+                    size="sm"
+                    onClick={() => setDbPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={dbPage >= totalPages}
+                    color="alternative"
+                  >
+                    Siguiente
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </>
       )}
     </main>
   )
