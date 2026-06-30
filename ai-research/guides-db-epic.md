@@ -164,7 +164,7 @@ Endpoint paths:
 Get my Guides DB query params:
 
 - `page`: optional number.
-- `limit`: optional number.
+- `limit`: optional number; default backend page size is 10, and UI can expose default, 50, and 100.
 - `month`: optional string.
 - `year`: optional string.
 
@@ -172,7 +172,7 @@ Get admin Guides DB query params:
 
 - `scope`: `all | own`.
 - `page`: optional number.
-- `limit`: optional number.
+- `limit`: optional number; default backend page size is 10, and UI can expose default, 50, and 100.
 - `month`: optional string.
 - `year`: optional string.
 
@@ -331,6 +331,7 @@ Pagination and filters:
 - New DB list routes use `page`, `limit`, `month`, and `year`; admin also uses `scope=all|own`.
 - Soft-deleted visibility is role/source behavior: regular list hides soft-deleted guides; admin can see soft-deleted guides for auditing.
 - UI can use existing Flowbite form controls already installed; no dependency addition is needed.
+- Pagination should include previous/next controls plus direct page numbers, and page-size selection for default, 50, and 100.
 
 ### Existing Types And Constants To Update Later
 
@@ -459,7 +460,7 @@ UI/product decisions:
   - Context: `GET /guides/db` and `GET /guides/db/admin` accept optional `month` and `year` query params.
 - III: Question: What page size should be used by default?
   - Status: answered.
-  - Answer: Do not pass a page size by default. The backend default `limit` is 10, and `limit` serves the same purpose as page size.
+  - Answer: Do not pass a page size for the default option. The backend default `limit` is 10. The UI can expose a select for default, 50, and 100.
   - Context: List endpoints accept optional `limit`; examples return `limit: 10`.
 - IV: Question: Should the existing provider-specific modals remain accessible anywhere after replacing `Crear guía`?
   - Status: answered.
@@ -476,6 +477,10 @@ Authorization:
   - Status: answered.
   - Answer: It returns the guides owned by that admin user and does not show other users' guides.
   - Context: Admin endpoint supports `scope=all|own`; admins can see soft-deleted records for auditing, while regular `GET /guides/db` hides soft-deleted guides.
+- III: Question: Which frontend roles can see `Ver mis guias`?
+  - Status: answered.
+  - Answer: Both role values can see `Ver mis guias`: `user` and `admin`.
+  - Context: Verified in code: `src/shared/types/global.types.ts` defines `UserRoles = 'user' | 'admin'`; `src/shared/types/login.types.ts` stores `role: UserRoles[]`; admin-only UI checks `role.includes('admin')`.
 
 ## Assumptions
 

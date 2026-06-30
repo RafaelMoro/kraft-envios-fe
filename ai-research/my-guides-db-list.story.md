@@ -72,7 +72,7 @@ API route handlers:
 - Existing Guides DB create route: `src/app/api/guides-db/route.ts` only implements `POST` to `${BACKEND_URI}/guides/db/create`.
 - Story 2 needs a regular-user list proxy for backend `GET /guides/db`.
 - The BFF should follow current route-handler style: `getAccessToken()`, `400` for missing token, `Authorization: Bearer <token>`, `NextResponse.json`, and existing axios error fallback.
-- Query params needed for regular list are `page`, `month`, and `year`; `limit` exists in backend context but the Story 2 AC only names month, year, and pagination.
+- Query params needed for regular list are `page`, `month`, `year`, and optionally `limit` when the user changes page size.
 
 Feature UI:
 
@@ -157,7 +157,7 @@ Regular list endpoint:
 Query params:
 
 - `page`: optional number.
-- `limit`: optional number; backend default is 10, and earlier epic answers say not to pass a page size by default.
+- `limit`: optional number; backend default is 10, and the UI can expose page-size options for the default value, 50, and 100.
 - `month`: optional string.
 - `year`: optional string.
 
@@ -239,10 +239,10 @@ Research note:
 - No current guide pagination exists in `Order`.
 - No current guide month/year filters exist in `Order`.
 - Backend list response includes `page`, `limit`, `total`, and `totalPages`.
-- Earlier epic answer says not to pass `limit` by default; backend default is 10.
+- Backend default page size is 10; the UI can expose a select for default, 50, and 100.
 - Month/year default should be current month/year when filters are not filled.
 - If filter values change, current page should return to page 1 to avoid empty pages for narrower filters.
-- Pagination controls only need regular next/previous or page buttons sufficient to navigate `totalPages`; no dependency needed.
+- Pagination controls should include previous/next and direct page-number controls; no dependency needed.
 
 ### Loading, Empty, And Error States
 
@@ -326,21 +326,24 @@ High-level actions only:
 
 Backend contract:
 
-- I: Question: What is the exact BFF path preferred for regular Guides DB list: reuse `/api/guides-db` with `GET`, or add a more explicit nested path such as `/api/guides-db/list`?
-  - Status: pending
-  - Context: Existing `/api/guides-db` currently has `POST` for create only. Reusing the same route with `GET` is the smallest route surface, but path preference is not documented.
+- I: Question: What backend path should the regular Guides DB list BFF proxy?
+  - Status: answered
+  - Answer: Proxy backend `GET /guides/db`.
+  - Context: Existing `/api/guides-db` currently has `POST` for create only; implementation can choose the smallest frontend BFF path that proxies backend `GET /guides/db`.
 
 - II: Question: Are `month` and `year` accepted as numeric strings like `"6"`/`"2026"`, zero-padded month strings like `"06"`, or month names?
   - Status: pending
   - Context: Existing epic says month/year are optional strings and default to current month/year, but the backend format is not explicit.
 
 - III: Question: Does regular `GET /guides/db` always include `origin`, `destination`, and `parcel` for failed records?
-  - Status: pending
-  - Context: Create responses include persisted fields; list examples are summarized but not shown in this repo.
+  - Status: answered
+  - Answer: Yes, regular `GET /guides/db` always includes `origin`, `destination`, and `parcel`.
+  - Context: This applies to failed records too.
 
 - IV: Question: Can `failureInfo` be present for statuses other than `failed`, or absent for `failed` records?
-  - Status: pending
-  - Context: UI should avoid crashing either way, but display copy depends on this contract.
+  - Status: answered
+  - Answer: `failureInfo` does not appear for statuses other than `failed`.
+  - Context: UI should still guard null values defensively.
 
 UI/product decisions:
 
@@ -351,43 +354,48 @@ UI/product decisions:
 
 - II: Question: What exact empty-state copy should appear when the current month/year has no DB guides?
   - Status: pending
+  - Answer: Recommended Spanish options: `No encontramos guias para este mes.`, `Aun no tienes guias guardadas en este periodo.`, `No hay guias para el mes seleccionado.`
   - Context: Existing external list has no explicit empty state; AC 5 requires clear states.
 
 - III: Question: Should failed DB guide cards display `failureInfo.errorDetails` directly, a friendly error-code mapping, or only a generic failed status in the list?
-  - Status: pending
-  - Context: Story 1 result UI has friendly messages, but list detail level is not specified.
+  - Status: answered
+  - Answer: Show the friendly error-code message.
+  - Context: Do not show raw `failureInfo.errorDetails` as the primary user-facing message.
 
 - IV: Question: Should users see `kraftId` as the primary identifier when no external tracking number exists?
-  - Status: pending
+  - Status: answered
+  - Answer: Yes. `kraftId` should be the primary identifier, and `externalId` should appear in grey with a much smaller text size when present.
   - Context: Failed DB records may not have tracking numbers, but users need a stable visible identifier.
 
 Pagination and filters:
 
 - I: Question: Should pagination expose only previous/next controls, or direct page number controls?
-  - Status: pending
+  - Status: answered
+  - Answer: Use both previous/next controls and page numbers so users can jump directly to another page.
   - Context: No existing pagination component is present in this repo.
 
 - II: Question: Should `limit` stay entirely omitted, or should the UI eventually expose page size?
   - Status: answered
-  - Answer: Do not pass a page size by default. Backend default `limit` is 10.
-  - Context: This was answered in the existing epic research.
+  - Answer: The UI can expose a select button to choose from the backend default value, 50, and 100.
+  - Context: Backend default `limit` is 10; omit `limit` for the default option.
 
 Authorization:
 
-- I: Question: Should frontend hide `Mis guías DB` for any user state, or is every authenticated regular user allowed to see it?
-  - Status: pending
-  - Context: Story says a regular user can view it; no extra frontend role restriction is documented.
+- I: Question: Should frontend hide `Ver mis guias` for any user state, or can both supported roles see it?
+  - Status: answered
+  - Answer: Both frontend role values can see `Ver mis guias`: `user` and `admin`.
+  - Context: Verified in code: `src/shared/types/global.types.ts` defines `UserRoles = 'user' | 'admin'`; `src/shared/types/login.types.ts` stores `role: UserRoles[]`; `Aside` uses `role.includes('admin')` for admin-only UI.
 
 ## Assumptions
 
 - `GET /guides/db` is served by the same backend base URI in `BACKEND_URI`.
 - The frontend should add a BFF route handler rather than calling backend directly from `Order`.
-- Regular authenticated users can access `Mis guías DB` without admin role checks.
+- Both supported roles, `user` and `admin`, can access `Ver mis guias` without admin-only gating.
 - The button label for the regular DB list is `Ver mis guias`.
 - `Ver todas las guias` is reserved for admin users in Story 3 and should not fetch admin data in Story 2.
 - Backend excludes soft-deleted guides for regular `GET /guides/db`; frontend does not need delete filtering.
 - Month/year default to the current month/year for the DB list source.
-- `limit` should not be sent by default.
+- `limit` should not be sent for the default page size; send it only when the user chooses 50 or 100.
 - DB list should coexist with the existing external-provider guides list through a Flowbite button group.
 - Existing external guide provider-message notifications should not be applied to DB list responses.
 - `kraftId` is the safest stable key for DB list records.
