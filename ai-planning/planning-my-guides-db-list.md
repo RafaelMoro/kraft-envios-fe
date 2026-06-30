@@ -78,6 +78,13 @@ Docs/config:
 - If needed for UI copy, add constants for:
   - `GUIDES_DB_EMPTY_MESSAGE = 'No hay guias para el mes seleccionado.'`
   - `GUIDES_DB_ERROR_MESSAGE = 'Ha sucedido un error. Intentelo nuevamente'`
+- Add `GUIDE_DB_FAILURE_MESSAGES: Record<string, string>` with only user-actionable codes:
+  - `GDE-PVR-005`: `El proveedor rechazó algunos datos de la guía. Revisa la información del envío e intenta crearla nuevamente.`
+  - `GDE-PVR-006`: `La cotización expiró antes de crear la guía. Genera una nueva cotización e intenta nuevamente.`
+  - `GDE-NET-001`: `No pudimos conectar con el proveedor. Intenta nuevamente en unos minutos.`
+  - `GDE-TMOT-001`: `El proveedor tardó demasiado en responder. Intenta nuevamente en unos minutos.`
+  - `GDE-RLIM-003`: `El proveedor recibió demasiadas solicitudes. Espera unos minutos e intenta nuevamente.`
+- Add `GUIDE_DB_GENERIC_FAILURE_MESSAGE = 'No pudimos crear la guía con el proveedor. Intenta nuevamente o contacta a soporte.'` as the fallback for unmapped codes.
 - Do not rename `CREATE_GUIDE_DB_ENDPOINT`; existing create flow must keep working.
 
 `src/shared/utils/guides.utils.ts`
@@ -89,7 +96,7 @@ Docs/config:
   - Append `limit` only when the value is present and not `10`.
 - Call `axios.get(`${GET_GUIDES_DB_ENDPOINT}?${params}`)` and return `res.data.data`.
 - Optional helper: `getGuideDbStatusLabel(status: GuidesDbStatus): string` returning `Creado` or `Fallido`.
-- Optional helper: `getGuideDbFailureMessage(failureInfo: GuideDbFailureInfo | null): string | null`, using friendly copy and not raw `errorDetails`.
+- Optional helper: `getGuideDbFailureMessage(failureInfo: GuideDbFailureInfo | null): string | null`, returning `${errorCode}: ${friendlyMessage}` for mapped codes and `${errorCode}: ${GUIDE_DB_GENERIC_FAILURE_MESSAGE}` for unmapped codes.
 - Edge cases:
   - Month must be `1` through `12`, not zero-padded.
   - Year must be full year number.
@@ -240,6 +247,7 @@ Manual:
 - Edge cases:
   - Failed DB records may have null `trackingNumber`, `shipmentNumber`, `carrier`, `price`, `guideLink`, `labelUrl`, and `file`; rendering must not crash.
   - `failureInfo` may be null; show status only or generic friendly failure copy.
+  - Do not show `failureInfo.errorDetails` in the card; the UI should show only `errorCode` plus the friendly message.
   - Backend owns soft-delete filtering; no client-side `deletedAt` condition in this story.
 
 ### Success Criteria
@@ -323,7 +331,7 @@ Manual:
 
 Open questions:
 
-- None blocking. The only implementation assumption is the exact friendly mapping for `failureInfo.errorCode`; use existing friendly copy unless a code catalog is present by implementation time.
+- None blocking. The first user-facing error-code map is defined for `GDE-PVR-005`, `GDE-PVR-006`, `GDE-NET-001`, `GDE-TMOT-001`, and `GDE-RLIM-003`; all other codes use the generic fallback unless product asks for more specific copy later.
 
 Out of scope:
 
