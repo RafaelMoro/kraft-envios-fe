@@ -341,3 +341,163 @@ Out of scope:
 - Global API envelope normalization.
 - New pagination/filter component library or state library.
 - Refactoring existing external guide cards, PKK lazy-fetch behavior, or unrelated route handlers.
+
+---
+
+# Follow-Up: Backend Breaking Change — `quote` Object Replaces `quoteId`
+
+## Source
+
+Backend breaking-change notification received 2026-07-01. Affects `POST /guides/db/create` (create payload) and `GET /guides/db` (list response). Changes 2 (`GET /guides/db/admin` with `includeInternalPricing`) and 3 (`PATCH /guides/db/:guideId`) are out of scope.
+
+## Summary of Breaking Changes
+
+1. **`POST /guides/db/create`** — `quoteId` (top-level string) is replaced by a nested `quote` object:
+   - `quoteId` removed from payload top level.
+   - `quote` object (required) added with required fields: `id`, `service`, `total`, `typeService`, `courier`.
+   - Optional `qAdj*` fields also live inside `quote`: `qBaseRef`, `qAdjFactor`, `qAdjBasis`, `qAdjMode`, `qAdjSrcRef`.
+   - `quote.source` is NOT sent — `Guide.provider` on the entity is authoritative.
+2. **`GET /guides/db` response** — `GuideDbRecord` now includes a `quote` object; top-level `quoteId` is removed.
+
+## User Confirmed Approach
+
+- **Service field**: "We pass as the backend returns the quote with all the props with exception the prop source." The raw `service` from the backend must be preserved — it cannot be the display-formatted version. Currently `QuotesSubscreen.updateAllQuotes` overwrites `service` with `formatQuoteServiceName(item.service)` (underscores → spaces). The raw value must be kept for the create payload.
+- **qAdj* fields**: Thread through from backend quote response (optional on both request and non-admin response).
+- **quoteId in response**: Fully replaced by `quote.id`; `quoteId` field removed from `GuideDbRecord`.
+
+## Key Findings
+
+- `quoteId` is set in the payload at exactly one place: `ConfirmGuideDbData.tsx:55` = `selectedQuote.id`.
+- `selectedQuote` carries `QuoteUI` which extends `Quote` with `amountFormatted` and `logoSrc` — these are UI-only fields that must be stripped when building the create payload.
+- `qBaseRef`, `qAdjFactor`, `qAdjBasis`, `qAdjMode`, `qAdjSrcRef` do not exist anywhere in the FE code, types, or mocks.
+- The quote API route (`src/app/api/quotes/route.ts`) passes `res.data` through untouched — no field stripping occurs. If the backend sends `qAdj*` fields, they pass through at runtime but are not typed.
+
+## Phase A — Quote Type Extensions: `qAdj*` Fields & Raw Service Preservation
+
+### Changes Required
+
+`src/shared/types/quotes.types.ts`:
+
+- Add optional `qBaseRef?: number`, `qAdjFactor?: number`, `qAdjBasis?: number`, `qAdjMode?: string`, `qAdjSrcRef?: string` to the `Quote` interface (lines 38–45). These are optional so existing `QuoteUI` mock objects in tests do NOT need updating.
+- Add `serviceName: string` to `QuoteUI` (lines 47–50). This stores the display-formatted service name so `service` can stay raw.
+
+`src/features/Dashboard/subscreens/QuotesSubscreen.tsx`:
+
+- In `updateAllQuotes` (line 184), change `service: formatQuoteServiceName(item.service)` to `serviceName: formatQuoteServiceName(item.service)`. The `...item` spread already provides the raw `service`; only the display alias needs to change.
+
+`src/features/Quotes/QuoteCard.tsx`:
+
+- Update any display reference from `quote.service` to `quote.serviceName` (approximately line 58 per research).
+
+### Success Criteria
+
+- `pnpm exec tsc --noEmit`
+- `pnpm lint`
+
+## Phase B — Create Payload: `quoteId` → Nested `quote` Object
+
+### Changes Required
+
+`src/shared/types/guides.types.ts`:
+
+- Add `CreateGuideDbQuotePayload` type:
+  ```ts
+  type CreateGuideDbQuotePayload = {
+    id: string;
+    service: string;
+    total: number;
+    typeService: QuoteTypeService | null;
+    courier: QuoteCourier | null;
+    qBaseRef?: number;
+    qAdjFactor?: number;
+    qAdjBasis?: number;
+    qAdjMode?: string;
+    qAdjSrcRef?: string;
+  }
+  ```
+- In `CreateGuideDbPayload`: remove `quoteId: string`, add `quote: CreateGuideDbQuotePayload`.
+
+`src/features/Guides-DB/ConfirmGuideDbData.tsx`:
+
+- In `handleSubmit` (line 53), replace `quoteId: selectedQuote.id` with a `quote` object. Destructure to strip UI-only fields and `source`:
+  ```ts
+  const { source, amountFormatted, logoSrc, serviceName, ...quoteData } = selectedQuote;
+  const payload: CreateGuideDbPayload = {
+    provider: source,
+    quote: quoteData,
+    // ... rest unchanged
+  }
+  ```
+  `quoteData` now contains `id`, `service` (raw), `total`, `typeService`, `courier`, and any `qAdj*` fields from the backend.
+
+### Success Criteria
+
+- `pnpm exec tsc --noEmit`
+- `pnpm lint`
+- `pnpm test -- __tests__/feature/Guides-DB/ConfirmGuideDbData.test.tsx`
+
+## Phase C — DB List Response: `quoteId` Replaced by `quote` Object
+
+### Changes Required
+
+`src/shared/types/guides.types.ts`:
+
+- Add `GuideDbQuote` type:
+  ```ts
+  type GuideDbQuote = {
+    id: string;
+    service: string;
+    total: number;
+    typeService: QuoteTypeService | null;
+    courier: QuoteCourier | null;
+  }
+  ```
+  (No `qAdj*` fields for non-admin responses.)
+- In `GuideDbRecord`: remove `quoteId?: string | null`, add `quote: GuideDbQuote`.
+
+`src/features/Dashboard/subscreens/Order.tsx`:
+
+- In `GuideDbCard`, update any reference from `guide.quoteId` to `guide.quote.id` (if `quoteId` was used for display — research shows it was listed but not visibly rendered in the current card).
+
+### Success Criteria
+
+- `pnpm exec tsc --noEmit`
+- `pnpm lint`
+- `pnpm test -- __tests__/feature/Dashboard/Order.test.tsx`
+
+## Phase D — Test Updates
+
+Since `qAdj*` are optional on `Quote`, no existing mock needs to add them. However, `serviceName` is a **required** new field on `QuoteUI`, so all `QuoteUI` mock objects need it.
+
+| File | Update |
+| --- | --- |
+| `__tests__/mocks/quotes.mocks.ts` | 4 mocks (lines 3, 17, 31, 45): add `serviceName: <same as service>` |
+| `__tests__/feature/Quotes/QuotesCard.test.tsx` | Inline `nextDayQuote` (line ~113): add `serviceName` |
+| `__tests__/feature/Guides-DB/CreateGuideDbModal.test.tsx` | `mockQuote` (line ~13): add `serviceName` |
+| `__tests__/feature/Guides-DB/ConfirmGuideDbData.test.tsx` | `mockQuote` (line ~21): add `serviceName`; change `expect(payload.quoteId).toBe('quote-1')` → `expect(payload.quote.id).toBe('quote-1')` |
+| `__tests__/feature/Guides/Mn/ConfirmGuideDataMn.test.tsx` | 2 inline mocks (lines ~61, ~237): add `serviceName` |
+| `__tests__/feature/Guides/Mn/CreateGuideModalMn.test.tsx` | `mockSelectedQuotes` (line ~12): add `serviceName` |
+| `__tests__/feature/Guides/GE/CreateGuideGE.test.tsx` | `mockSelectedQuotes` (line ~101): add `serviceName` |
+| `__tests__/feature/Guides/GE/ConfirmGuideGE.test.tsx` | `mockSelectedQuotes` (line ~52): add `serviceName` |
+| `__tests__/feature/Guides/Tone/CreateGuideModalTone.test.tsx` | `mockSelectedQuotes` (line ~12): add `serviceName` |
+| `__tests__/feature/Dashboard/Order.test.tsx` | `createMockDbRecord` builder: remove `quoteId`, add `quote: { id, service, total, typeService, courier }` |
+
+### Success Criteria
+
+- `pnpm test -- __tests__/feature/Guides-DB/ConfirmGuideDbData.test.tsx`
+- `pnpm test -- __tests__/feature/Dashboard/Order.test.tsx`
+- `pnpm test` (broad run)
+
+## Cross-Cutting Notes
+
+- No changes to `/api/quotes` route handler — it passes `res.data` through untouched and will automatically forward `qAdj*` fields when the backend sends them.
+- `GetQuoteData` / `GetQuoteDataAxios` response types carry `Quote[]` so they automatically pick up the new optional `qAdj*` fields when the backend includes them.
+- `console.log('payload', payload)` on `ConfirmGuideDbData.tsx:83` is pre-existing; will not be removed.
+- `qAdj*` are optional on `CreateGuideDbQuotePayload` — they are omitted from the payload when `undefined`, which is valid per the backend contract.
+
+## Out of Scope
+
+- `GET /guides/db/admin` with `?includeInternalPricing=true` (admin Story 3).
+- `PATCH /guides/db/:guideId` with `quote` object (not implemented in FE).
+- Adding `qAdj*` to any UI display — they are admin-only internal pricing fields.
+- Changes to external guide create flows (MN, TONE, GE, PKK).
