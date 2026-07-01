@@ -470,7 +470,13 @@ describe('Order', () => {
   describe('When switching to DB source', () => {
     const createMockDbRecord = (overrides: Partial<GuideDbRecord> = {}): GuideDbRecord => ({
       kraftId: 'KB-12345',
-      quoteId: null,
+      quote: {
+        id: 'quote-123',
+        service: 'Estafeta Terrestre',
+        total: 178.56,
+        typeService: 'standard',
+        courier: 'Estafeta',
+      },
       externalId: null,
       trackingNumber: null,
       shipmentNumber: null,

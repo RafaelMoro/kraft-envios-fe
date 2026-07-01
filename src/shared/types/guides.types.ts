@@ -373,9 +373,17 @@ export type GuideDbParcel = {
   quantity?: number;
 };
 
+export type GuideDbQuote = {
+  id: string;
+  service: string;
+  total: number;
+  typeService: QuoteTypeService | null;
+  courier: QuoteCourier | null;
+};
+
 export type GuideDbRecord = {
   kraftId: string;
-  quoteId?: string | null;
+  quote: GuideDbQuote;
   externalId?: string | null;
   trackingNumber?: string | null;
   shipmentNumber?: string | null;
