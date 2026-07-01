@@ -1,6 +1,6 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
-import { ProviderSource, QuoteCourier, QuoteImage } from "./quotes.types";
+import { ProviderSource, QuoteCourier, QuoteImage, QuoteTypeService } from "./quotes.types";
 import { Address } from "./addresses.types";
 import { zipcodeValidation } from "./global.types";
 
@@ -296,11 +296,24 @@ export type CreateGuideDbParcelPayload = {
 
 export type CreateGuideDbPayload = {
   provider: ProviderSource;
-  quoteId: string;
+  quote: CreateGuideDbQuotePayload;
   origin: CreateGuideDbAddressPayload;
   destination: CreateGuideDbAddressPayload;
   parcel: CreateGuideDbParcelPayload;
   notifyMe: boolean;
+};
+
+export type CreateGuideDbQuotePayload = {
+  id: string;
+  service: string;
+  total: number;
+  typeService: QuoteTypeService | null;
+  courier: QuoteCourier | null;
+  qBaseRef?: number;
+  qAdjFactor?: number;
+  qAdjBasis?: number;
+  qAdjMode?: string;
+  qAdjSrcRef?: string;
 };
 
 export type CreateGuideDbFailureInfo = {
