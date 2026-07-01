@@ -501,3 +501,98 @@ Since `qAdj*` are optional on `Quote`, no existing mock needs to add them. Howev
 - `PATCH /guides/db/:guideId` with `quote` object (not implemented in FE).
 - Adding `qAdj*` to any UI display — they are admin-only internal pricing fields.
 - Changes to external guide create flows (MN, TONE, GE, PKK).
+
+---
+
+# Follow-Up: Guides DB Card Redesign
+
+## Source
+
+User-provided visual reference received 2026-07-01. Goal: adapt the compact horizontal shipment-card layout for the `Ver mis guias` / Guides DB list, while using this repo's current `DESIGN.md` guidance, Tailwind v4, and Flowbite React.
+
+## Scope
+
+- Redesign only the Guides DB list card currently rendered inline as `GuideDbCard` in `src/features/Dashboard/subscreens/Order.tsx`.
+- Keep source switching, filters, pagination, React Query wiring, and backend contracts unchanged.
+- Use existing design system tokens and patterns: Flowbite `Badge` / `Button`, `primary-*`, `gray-*`, `red-*`, `green-*`, rounded cards, Geist typography, and `data-theme` dark mode.
+- Do not redesign external guide cards in `src/features/Guides/ViewGuides/GuideCard.tsx`.
+
+## Current State
+
+- The Guides DB card is a small local function in `Order.tsx` around line 41.
+- It currently shows `kraftId`, optional `externalId`, status, provider, origin/destination text, parcel content, optional label link, and optional price.
+- Failed DB records can have null external-provider fields (`trackingNumber`, `shipmentNumber`, `carrier`, `price`, `guideLink`, `labelUrl`, `file`), so the card must keep rendering from `kraftId`, `provider`, `quote`, `origin`, `destination`, `parcel`, and `failureInfo`.
+
+## Visual Direction
+
+Match the reference card structure:
+
+- A compact white/dark surface with `rounded-lg`, border, and generous horizontal spacing.
+- Desktop layout is a single-row grid with vertical separators between sections.
+- Mobile/tablet layout stacks the same sections with clear gaps and no horizontal overflow.
+- Failed records use a red border/tint and red failure text.
+- Created records use the neutral border and a green status badge.
+- Keep labels small, uppercase, and muted; keep important values bold.
+
+## Implementation Plan
+
+### 1. Redesign `GuideDbCard` In `Order.tsx`
+
+Use the existing local component unless it becomes too noisy. Extracting a new file is optional, not required.
+
+Render sections:
+
+- **Identity:** `kraftId` as monospaced bold text, `externalId` as muted secondary text when present, status `Badge` (`Creado` or `Fallido`).
+- **Date / failure meta:** created records show `Created: <formatted date>` from `createdAt`; failed records show the friendly failure message from `getGuideDbFailureMessage(guide.failureInfo)`.
+- **Route:** origin city/town/alias, arrow, destination city/state/town/alias. Use `ORIGIN` and `DESTINATION` small uppercase labels.
+- **Parcel:** content plus quantity when present, and weight in kg using `guide.parcel.weight`.
+- **Provider / price:** prefer `guide.quote.courier || guide.provider`, show `guide.quote.service`, and show `guide.price || guide.quote.total` as `$x.xx MXN`.
+- **Action:** for successful records with `labelUrl || guideLink`, render a Flowbite-style secondary button/link labeled `Ver detalles` opening in a new tab. Do not add a retry flow yet.
+
+### 2. Keep Failed State Honest
+
+- Do not render a working `Reintentar` button until a retry mutation exists.
+- Failed records should show the red state and friendly message, but no fake action.
+- If product later provides a retry API/handler, add `Reintentar` as a real button using the existing red button style.
+
+### 3. Formatting Helpers
+
+Keep helpers tiny and local to `Order.tsx` unless they are reused elsewhere:
+
+- `formatGuideDbDate(date: string)` using `Intl.DateTimeFormat` or `toLocaleDateString`.
+- `formatGuideDbMoney(value: string | number | null | undefined)` returning `$0.00 MXN` style text.
+- `getGuideDbLocation(address)` returning `city || town || alias || 'N/A'`.
+
+Do not add dependencies or a formatting library.
+
+### 4. Tests
+
+Update `__tests__/feature/Dashboard/Order.test.tsx` only where the card text changes.
+
+Coverage to preserve/add:
+
+- Created DB record renders `kraftId`, origin, destination, provider/service, parcel content, and price.
+- Failed DB record renders `kraftId`, `Fallido`, and friendly failure message.
+- Failed DB record with null external fields still renders provider and does not crash.
+- If a successful DB record has `labelUrl` or `guideLink`, `Ver detalles` is rendered as a new-tab link.
+- Do not assert styling classes.
+
+### 5. Verification
+
+Run:
+
+- `pnpm test -- __tests__/feature/Dashboard/Order.test.tsx`
+- `pnpm lint`
+
+Manual checks:
+
+- Desktop: `Ver mis guias` card visually matches the provided compact shipment-card reference.
+- Mobile/tablet: sections stack cleanly without horizontal scroll.
+- Dark mode: card, text, badge, and failure state remain readable.
+
+## Out of Scope
+
+- Retry API, retry mutation, or a fake `Reintentar` action.
+- Admin `Ver todas las guias` redesign.
+- External guide card redesign.
+- Generated Tailwind tokens from `DESIGN.md`.
