@@ -124,7 +124,8 @@ Dark mode is driven by `<html data-theme="dark">` and Tailwind's custom `dark:` 
 The app loads Geist Sans and Geist Mono with `next/font/local` in `src/app/layout.tsx` from `src/app/fonts/GeistVF.woff` and `src/app/fonts/GeistMonoVF.woff`.
 
 - Use **Geist Sans** for interface text, labels, dashboard content, and forms.
-- Use **Geist Mono** only for code-like values, IDs, diagnostics, or fixed-width data.
+- Use **Geist Mono** only when the user explicitly asks for monospace or when a true code/diagnostic block requires fixed-width alignment; do not use it for guide numbers, IDs, prices, or metadata by default.
+- Do not change font family unless explicitly requested; preserve the app-level Geist Sans typography.
 - Existing Flowbite/Tailwind text utilities (`text-sm`, `text-base`, `font-medium`) are preferred over bespoke CSS.
 
 ## Layout
