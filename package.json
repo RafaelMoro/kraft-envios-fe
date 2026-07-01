@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
+    "design:lint": "designmd lint DESIGN.md",
     "sync:prompts": "node scripts/sync-opencode-commands.mjs"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@google/design.md": "^0.3.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
