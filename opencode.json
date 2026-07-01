@@ -1,4 +1,15 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@dietrichgebert/ponytail"]
+  "plugin": ["@dietrichgebert/ponytail"],
+  "mcp": {
+    "stitch": {
+      "type": "local",
+      "command": [
+        "sh",
+        "-c",
+        "set -a; [ -f .env ] && . ./.env; set +a; exec npx @_davideast/stitch-mcp proxy"
+      ],
+      "enabled": true
+    }
+  }
 }
