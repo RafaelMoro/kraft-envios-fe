@@ -42,11 +42,17 @@ export interface Quote {
   typeService: QuoteTypeService | null;
   courier: QuoteCourier | null;
   source: ProviderSource;
+  qBaseRef?: number;
+  qAdjFactor?: number;
+  qAdjBasis?: number;
+  qAdjMode?: string;
+  qAdjSrcRef?: string;
 }
 
 export interface QuoteUI extends Quote {
   amountFormatted: string;
   logoSrc: QuoteImage;
+  serviceName: string;
 }
 
 export type ProviderImg =
