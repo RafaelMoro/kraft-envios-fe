@@ -4,7 +4,7 @@ import clsx from "clsx"
 import { primaryButtonCSS } from "@/shared/constants/global.constants"
 import { GuideDbRecord } from "@/shared/types/guides.types"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
-import { getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
+import { getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage"
 
@@ -13,7 +13,6 @@ const cityState = (city: string, state: string) => [city, state].filter(Boolean)
 const fullName = (name: string, lastName: string) => [name, lastName].filter(Boolean).join(' ')
 
 export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobile: boolean }) {
-  const failureMessage = getGuideDbFailureMessage(guide.failureInfo)
   const price = guide.price ? formatNumberToCurrency(Number(guide.price)) : formatNumberToCurrency(guide.quote.total)
   const statusLabel = getGuideDbStatusLabel(guide.status)
   const logoSrc = getQuoteImg({ courier: guide.quote.courier, isMobile })
@@ -70,7 +69,6 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
         <AddressBlock guide={guide} type="destination" />
 
         <div className="flex flex-col gap-2">
-          <button type="button" className={clsx(primaryButtonCSS, "w-full")}>Ver detalles</button>
           {guide.labelUrl && (
             <a
               href={guide.labelUrl}
@@ -83,10 +81,9 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
           )}
         </div>
       </div>
-
-      {guide.status === 'failed' && failureMessage && (
-        <p className="mt-3 text-xs text-red-600 dark:text-red-400">{failureMessage}</p>
-      )}
+      <div className="w-full flex justify-center mt-5">
+        <button type="button" className={clsx(primaryButtonCSS)}>Ver detalles</button>
+      </div>
     </article>
   )
 }
