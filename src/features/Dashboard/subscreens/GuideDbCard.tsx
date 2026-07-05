@@ -24,6 +24,7 @@ export function GuideDbCard({ guide }: { guide: GuideDbRecord }) {
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_24px_minmax(0,1fr)_170px_140px] lg:items-center">
+        {/* Guide header */}
         <div className="flex flex-wrap gap-2 lg:flex-col lg:items-start">
           <span className="rounded border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
             {guide.kraftId}
@@ -43,6 +44,7 @@ export function GuideDbCard({ guide }: { guide: GuideDbRecord }) {
           </span>
         </div>
 
+        {/* Guide address */}
         <AddressBlock guide={guide} type="origin" />
         <RiArrowRightLine className="hidden text-gray-600 dark:text-gray-300 lg:block" size={24} />
         <AddressBlock guide={guide} type="destination" />
@@ -80,7 +82,7 @@ function AddressBlock({ guide, type }: { guide: GuideDbRecord; type: 'origin' | 
   const address = guide[type]
 
   return (
-    <div className="min-w-0 text-sm">
+    <div className="min-w-0 text-sm flex flex-col gap-1">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-700 dark:text-gray-300">
         {cityState(address.city, address.state) || 'N/A'}
       </p>
