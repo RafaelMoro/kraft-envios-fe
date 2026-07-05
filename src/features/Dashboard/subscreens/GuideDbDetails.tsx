@@ -23,6 +23,7 @@ interface GuideDbDetailsProps {
 }
 
 export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
+  console.log('GuideDbDetails render', guide)
   const createdAt = new Date(guide.createdAt)
   const updatedAt = new Date(guide.updatedAt)
   const createdDate = formatDateToSpanish(createdAt)
@@ -68,7 +69,7 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Envío de {fullName(guide.origin.name, guide.origin.lastName) || dash} → {fullName(guide.destination.name, guide.destination.lastName) || dash}
+              Envío de: {guide.origin.name || dash} → {guide.destination.name || dash}
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {guide.quote.service} · {typeServiceLabel(guide.quote.typeService)} · Creado el {createdDate.date}, {createdDate.time} hrs
@@ -196,7 +197,7 @@ const AddressBlock = ({ address, kind }: { address: GuideDbRecord['origin']; kin
         {label}
       </div>
       <span className={clsx("text-xs font-medium", aliasColor)}>{address.alias || 'Sin alias'}</span>
-      <span className="font-semibold text-gray-900 dark:text-white">{fullName(address.name, address.lastName) || 'N/A'}</span>
+      <span className="font-semibold text-gray-900 dark:text-white">{address.name || 'N/A'}</span>
       <span className="text-xs text-gray-600 dark:text-gray-400">
         {[address.street1, address.external_number && `#${address.external_number}`, address.neighborhood, cityState(address.city, address.state), address.zipcode && `CP ${address.zipcode}`].filter(Boolean).join(', ')}
       </span>
