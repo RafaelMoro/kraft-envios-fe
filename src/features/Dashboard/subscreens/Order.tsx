@@ -6,11 +6,12 @@ import clsx from "clsx"
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb, getGuideDbStatusLabel, getGuideDbFailureMessage } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
-import { GetGuidesData, GuideUI, GuideDbRecord } from "@/shared/types/guides.types"
+import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
+import { GuideDbCard } from "@/features/Dashboard/subscreens/GuideDbCard"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE, GUIDES_DB_EMPTY_MESSAGE, GUIDES_DB_ERROR_MESSAGE } from "@/shared/constants/guides.constants"
 
@@ -37,61 +38,6 @@ const MONTHS = [
 
 const currentYear = new Date().getFullYear()
 const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - i)
-
-function GuideDbCard({ guide }: { guide: GuideDbRecord }) {
-  const statusLabel = getGuideDbStatusLabel(guide.status)
-  const failureMessage = getGuideDbFailureMessage(guide.failureInfo)
-
-  return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col">
-            <span className="font-mono text-sm font-semibold">{guide.kraftId}</span>
-            {guide.externalId && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">{guide.externalId}</span>
-            )}
-          </div>
-          <span className={clsx(
-            "text-xs font-medium px-2 py-1 rounded",
-            guide.status === 'created' ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-          )}>
-            {statusLabel}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium">{guide.provider}</span>
-        </div>
-
-        {guide.status === 'failed' && failureMessage && (
-          <p className="text-xs text-red-600 dark:text-red-400">{failureMessage}</p>
-        )}
-
-        <div className="flex flex-col text-xs text-gray-600 dark:text-gray-400 mt-1">
-          <span>Origen: {guide.origin.city || guide.origin.alias || 'N/A'}</span>
-          <span>Destino: {guide.destination.city || guide.destination.alias || 'N/A'}</span>
-          {guide.parcel.content && <span>Contenido: {guide.parcel.content}</span>}
-        </div>
-
-        {guide.labelUrl && (
-          <a
-            href={guide.labelUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-blue-600 hover:underline dark:text-blue-400"
-          >
-            Ver etiqueta
-          </a>
-        )}
-
-        {guide.price && (
-          <span className="text-sm font-medium">${guide.price}</span>
-        )}
-      </div>
-    </div>
-  )
-}
 
 export const Order = ({ userInfo }: OrderProps) => {
   const { isMobileTablet, isDesktop } = useMediaQuery()
@@ -322,7 +268,7 @@ export const Order = ({ userInfo }: OrderProps) => {
 
           { !dbIsError && !dbIsPending && dbData && dbData.guides.length > 0 && (
             <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-5">
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {dbData.guides.map((guide) => (
                   <GuideDbCard key={guide.kraftId} guide={guide} />
                 ))}
