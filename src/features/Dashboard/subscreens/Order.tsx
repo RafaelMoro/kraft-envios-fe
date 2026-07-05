@@ -268,7 +268,7 @@ export const Order = ({ userInfo }: OrderProps) => {
 
           { !dbIsError && !dbIsPending && dbData && dbData.guides.length > 0 && (
             <>
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-3">
                 {dbData.guides.map((guide) => (
                   <GuideDbCard key={guide.kraftId} guide={guide} />
                 ))}

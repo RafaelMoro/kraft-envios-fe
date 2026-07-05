@@ -23,11 +23,11 @@ export function GuideDbCard({ guide }: { guide: GuideDbRecord }) {
 
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <span className="rounded border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
-          {guide.kraftId}
-        </span>
-        <div className="flex flex-wrap justify-end gap-2">
+      <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_24px_minmax(0,1fr)_170px_140px] lg:items-center">
+        <div className="flex flex-wrap gap-2 lg:flex-col lg:items-start">
+          <span className="rounded border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
+            {guide.kraftId}
+          </span>
           <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-blue-900 dark:text-blue-200">
             {guide.quote.courier ?? guide.provider}
           </span>
@@ -42,38 +42,36 @@ export function GuideDbCard({ guide }: { guide: GuideDbRecord }) {
             {guide.status === 'created' ? '✓' : 'X'} {statusLabel}
           </span>
         </div>
-      </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
         <AddressBlock guide={guide} type="origin" />
-        <RiArrowRightLine className="text-gray-600 dark:text-gray-300" size={24} />
+        <RiArrowRightLine className="hidden text-gray-600 dark:text-gray-300 lg:block" size={24} />
         <AddressBlock guide={guide} type="destination" />
+
+        <div className="grid grid-cols-2 gap-3 border-t border-gray-200 pt-4 text-sm dark:border-gray-700 lg:pt-3">
+          <Info label="Servicio" value={guide.quote.service} />
+          <Info label="Tipo" value={typeServiceLabel(guide.quote.typeService)} />
+          <Info label="Paquete" value={guide.parcel.content || 'N/A'} />
+          <Info label="Cotización" value={price || 'N/A'} highlight />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <button type="button" className={clsx(primaryButtonCSS, "w-full")}>Ver detalles</button>
+          {guide.labelUrl && (
+            <a
+              href={guide.labelUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-10 items-center justify-center rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
+            >
+              Etiqueta
+            </a>
+          )}
+        </div>
       </div>
 
       {guide.status === 'failed' && failureMessage && (
         <p className="mt-3 text-xs text-red-600 dark:text-red-400">{failureMessage}</p>
       )}
-
-      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-gray-200 pt-4 text-sm dark:border-gray-700 sm:grid-cols-4">
-        <Info label="Servicio" value={guide.quote.service} />
-        <Info label="Tipo" value={typeServiceLabel(guide.quote.typeService)} />
-        <Info label="Paquete" value={guide.parcel.content || 'N/A'} />
-        <Info label="Cotización" value={price || 'N/A'} highlight />
-      </div>
-
-      <div className="mt-4 flex gap-2">
-        <button type="button" className={clsx(primaryButtonCSS, "min-w-0 flex-1")}>Ver detalles</button>
-        {guide.labelUrl && (
-          <a
-            href={guide.labelUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-10 items-center justify-center rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-          >
-            Etiqueta
-          </a>
-        )}
-      </div>
     </article>
   )
 }
@@ -83,12 +81,12 @@ function AddressBlock({ guide, type }: { guide: GuideDbRecord; type: 'origin' | 
 
   return (
     <div className="min-w-0 text-sm">
-      <p className="truncate text-xs font-medium uppercase tracking-wide text-gray-700 dark:text-gray-300">
+      <p className="text-xs font-medium uppercase tracking-wide text-gray-700 dark:text-gray-300">
         {cityState(address.city, address.state) || 'N/A'}
       </p>
-      <p className="mt-1 truncate text-xs font-medium text-primary-700 dark:text-primary-400">{address.alias || 'Sin alias'}</p>
-      <p className="truncate font-semibold text-gray-900 dark:text-white">{fullName(address.name, address.lastName) || 'N/A'}</p>
-      <p className="line-clamp-2 text-xs text-gray-700 dark:text-gray-300">
+      <p className="mt-1 text-xs font-medium text-primary-700 dark:text-primary-400">{address.alias || 'Sin alias'}</p>
+      <p className="font-semibold text-gray-900 dark:text-white">{fullName(address.name, address.lastName) || 'N/A'}</p>
+      <p className="text-xs text-gray-700 dark:text-gray-300">
         {[address.street1, address.neighborhood, address.city, address.zipcode && `CP ${address.zipcode}`].filter(Boolean).join(', ')}
       </p>
     </div>
@@ -98,8 +96,8 @@ function AddressBlock({ guide, type }: { guide: GuideDbRecord; type: 'origin' | 
 function Info({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className="min-w-0">
-      <p className="truncate text-xs font-medium uppercase tracking-wide text-gray-700 dark:text-gray-300">{label}</p>
-      <p className={clsx("truncate font-semibold", highlight ? "text-primary-700 dark:text-primary-400" : "text-gray-900 dark:text-white")}>{value}</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-gray-700 dark:text-gray-300">{label}</p>
+      <p className={clsx("font-semibold", highlight ? "text-primary-700 dark:text-primary-400" : "text-gray-900 dark:text-white")}>{value}</p>
     </div>
   )
 }
