@@ -3,16 +3,10 @@ import clsx from "clsx"
 
 import { primaryButtonCSS } from "@/shared/constants/global.constants"
 import { GuideDbRecord } from "@/shared/types/guides.types"
-import { QuoteTypeService } from "@/shared/types/quotes.types"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage"
-
-const typeServiceLabel = (typeService: QuoteTypeService | null) => {
-  if (typeService === 'nextDay') return 'Día siguiente'
-  return 'Estándar'
-}
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
 
@@ -24,16 +18,33 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
   const statusLabel = getGuideDbStatusLabel(guide.status)
   const logoSrc = getQuoteImg({ courier: guide.quote.courier, isMobile })
 
+  const typeService = guide.quote.typeService === 'nextDay' ? 'Día siguiente' : 'Estándar'
+
+  // const isOtherProvider = guide.quote.courier === 'other'
+  const isFedexProvider = guide.quote.courier === 'Fedex'
+  const titleStyles = clsx(
+    "text-base font-semibold text-gray-900 dark:text-white",
+    { "place-self-end justify-self-start": isFedexProvider }
+  )
+
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_24px_minmax(0,1fr)_170px_140px] lg:items-center">
+      <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_24px_minmax(0,1fr)_140px] lg:items-center">
         {/* Guide header */}
-          <CourierImage
-            image={logoSrc}
-            courier={guide.quote.courier}
-            dataTestId="guide-db-logo"
-            cssImgContainer="h-12 w-12 shrink-0"
-          />
+        <CourierImage
+          image={logoSrc}
+          courier={guide.quote.courier}
+          dataTestId="guide-db-logo"
+          cssImgContainer="h-12 w-12 shrink-0"
+        />
+        <div data-testid="guide-title">
+          <span className="text-xs font-light text-blue-700 dark:text-blue-600">Paquetería</span>
+          <h5 className={titleStyles}>
+            {guide.quote.service}
+          </h5>
+          <span className="text-sm">{ typeService }</span>
+          <span className="text-sm font-semibold text-primary-700 dark:text-primary-400">{price}</span>
+        </div>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <span className="rounded border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
             {guide.kraftId}
@@ -57,13 +68,6 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
         <AddressBlock guide={guide} type="origin" />
         <RiArrowRightLine className="hidden text-gray-600 dark:text-gray-300 lg:block" size={24} />
         <AddressBlock guide={guide} type="destination" />
-
-        <div className="grid grid-cols-2 gap-3 border-t border-gray-200 pt-4 text-sm dark:border-gray-700 lg:pt-3">
-          <Info label="Servicio" value={guide.quote.service} />
-          <Info label="Tipo" value={typeServiceLabel(guide.quote.typeService)} />
-          <Info label="Paquete" value={guide.parcel.content || 'N/A'} />
-          <Info label="Cotización" value={price || 'N/A'} highlight />
-        </div>
 
         <div className="flex flex-col gap-2">
           <button type="button" className={clsx(primaryButtonCSS, "w-full")}>Ver detalles</button>
@@ -100,15 +104,6 @@ function AddressBlock({ guide, type }: { guide: GuideDbRecord; type: 'origin' | 
       <p className="text-xs text-gray-700 dark:text-gray-300">
         {[address.street1, address.neighborhood, address.city, address.zipcode && `CP ${address.zipcode}`].filter(Boolean).join(', ')}
       </p>
-    </div>
-  )
-}
-
-function Info({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <div className="min-w-0">
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-700 dark:text-gray-300">{label}</p>
-      <p className={clsx("font-semibold", highlight ? "text-primary-700 dark:text-primary-400" : "text-gray-900 dark:text-white")}>{value}</p>
     </div>
   )
 }
