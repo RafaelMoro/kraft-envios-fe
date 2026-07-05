@@ -4,8 +4,10 @@ import clsx from "clsx"
 import { primaryButtonCSS } from "@/shared/constants/global.constants"
 import { GuideDbRecord } from "@/shared/types/guides.types"
 import { QuoteTypeService } from "@/shared/types/quotes.types"
+import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
+import { CourierImage } from "@/shared/ui/atoms/CourierImage"
 
 const typeServiceLabel = (typeService: QuoteTypeService | null) => {
   if (typeService === 'nextDay') return 'Día siguiente'
@@ -16,16 +18,23 @@ const cityState = (city: string, state: string) => [city, state].filter(Boolean)
 
 const fullName = (name: string, lastName: string) => [name, lastName].filter(Boolean).join(' ')
 
-export function GuideDbCard({ guide }: { guide: GuideDbRecord }) {
+export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobile: boolean }) {
   const failureMessage = getGuideDbFailureMessage(guide.failureInfo)
   const price = guide.price ? formatNumberToCurrency(Number(guide.price)) : formatNumberToCurrency(guide.quote.total)
   const statusLabel = getGuideDbStatusLabel(guide.status)
+  const logoSrc = getQuoteImg({ courier: guide.quote.courier, isMobile })
 
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_24px_minmax(0,1fr)_170px_140px] lg:items-center">
         {/* Guide header */}
-        <div className="flex flex-wrap gap-2 lg:flex-col lg:items-start">
+        <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
+          <CourierImage
+            image={logoSrc}
+            courier={guide.quote.courier}
+            dataTestId="guide-db-logo"
+            cssImgContainer="h-12 w-12 shrink-0"
+          />
           <span className="rounded border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
             {guide.kraftId}
           </span>

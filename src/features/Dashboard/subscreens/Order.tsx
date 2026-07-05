@@ -270,7 +270,7 @@ export const Order = ({ userInfo }: OrderProps) => {
             <>
               <div className="grid gap-3">
                 {dbData.guides.map((guide) => (
-                  <GuideDbCard key={guide.kraftId} guide={guide} />
+                  <GuideDbCard key={guide.kraftId} guide={guide} isMobile={isMobileTablet} />
                 ))}
               </div>
 
