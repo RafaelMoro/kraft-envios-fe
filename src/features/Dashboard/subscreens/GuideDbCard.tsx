@@ -26,20 +26,20 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
 
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_24px_minmax(0,1fr)_170px_140px] lg:items-center">
+      <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_24px_minmax(0,1fr)_170px_140px] lg:items-center">
         {/* Guide header */}
-        <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <CourierImage
             image={logoSrc}
             courier={guide.quote.courier}
             dataTestId="guide-db-logo"
             cssImgContainer="h-12 w-12 shrink-0"
           />
+        <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <span className="rounded border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
             {guide.kraftId}
           </span>
           <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-blue-900 dark:text-blue-200">
-            {guide.quote.courier ?? guide.provider}
+            {guide.provider}
           </span>
           <span
             className={clsx(
