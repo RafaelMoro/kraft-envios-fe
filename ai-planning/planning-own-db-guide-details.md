@@ -64,10 +64,10 @@ type GuideDbDetailsProps = {
 
 Sections (each is a `rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800` card, matching `GuideDbCard.tsx:30`):
 
-- **Top actions bar**: `Volver a guías` (outlined, `greySecondaryCSS`) on the left, `Copiar ID` (outlined, `secondaryButtonCSS`) on the right that copies `guide.kraftId` via `navigator.clipboard.writeText` (mirror `QuotesSubscreen.tsx:100`). Add `data-testid="guide-db-details-back-button"` and `data-testid="guide-db-details-copy-id-button"`.
+- **Top actions bar**: `Volver a guías` (outlined, `greySecondaryCSS`) on the left. Add `data-testid="guide-db-details-back-button"`.
 - **Header card**: `kraftId` in a small mono pill; status pill (`created` green / `failed` red, reuse logic from `GuideDbCard.tsx:57-66`); provider pill; `Envío de {origin name} → {destination name}` as h1; meta line `Estafeta · Día siguiente · Creado el {formatDateToSpanish(new Date(guide.createdAt)).date}, {formatDateToSpanish(new Date(guide.createdAt)).time} hrs`; tracking/external IDs line; price on the right with `formatNumberToCurrency(guide.price ?? guide.quote.total)` (`src/shared/utils/global.utils.ts`).
 - **Summary row (4 cards)**: Paquete, Servicio, Valor declarado, Actualizado. Build from `guide.parcel`, `guide.quote.service`, `guide.quote.typeService`, `guide.parcel.value`, `formatDateToSpanish(new Date(guide.updatedAt))`. Add `data-testid="guide-db-details-summary-card"`.
-- **Ruta card**: header `RUTA` with right-aligned `Ver en mapa` link built from a Google Maps directions URL using `origin` and `destination` `street1, city, state`. Two side-by-side address blocks (mirroring `GuideDbCard.tsx:82-96`) with `ORIGEN` / `DESTINO` dots in primary blue / green.
+- **Ruta card**: header `RUTA`. Two side-by-side address blocks (mirroring `GuideDbCard.tsx:82-96`) with `ORIGEN` / `DESTINO` dots in primary blue / green.
 - **Paquete card**: 3-col grid with CONTENIDO, CANTIDAD, PESO, DIMENSIONES (CM), VALOR DECLARADO, SAT PRODUCTO. Source from `guide.parcel` and `guide.parcel.satProductId`.
 - **Cotización card**: SERVICIO, TIPO DE SERVICIO, COURIER, TOTAL, ID DE COTIZACIÓN. Source from `guide.quote`.
 - **Error de creación card**: rendered only when `guide.status === 'failed' && guide.failureInfo`. Red-50 tinted card (mirror the failure block from `ResultGuideDbScreen.tsx:76-103`) with `errorDetails`, `errorCode` (e.g. `GDE-PVR-001`), and timestamp.
@@ -82,15 +82,33 @@ Reuse:
 
 ### 4. Render switch in `Order.tsx`
 
+Use conditional rendering (no ternary). Pattern:
+
 ```tsx
-{selectedSource === 'ownDb' && (
-  selectedDbGuide
-    ? <GuideDbDetails guide={selectedDbGuide} onBack={() => setSelectedDbGuide(null)} />
-    : (
-        <>
-          {/* existing filters + list + pagination */}
-        </>
-      )
+const Example = ({ propBoolean }: { propBoolean: boolean }) => {
+  return (
+    <>
+      { propBoolean && (
+        <div>Some UI</div>
+      )}
+      { !propBoolean && (
+        <div>Some other UI</div>
+      )}
+    </>
+  )
+}
+```
+
+Apply to the own-DB branch in `Order.tsx`:
+
+```tsx
+{ selectedSource === 'ownDb' && selectedDbGuide && (
+  <GuideDbDetails guide={selectedDbGuide} onBack={() => setSelectedDbGuide(null)} />
+)}
+{ selectedSource === 'ownDb' && !selectedDbGuide && (
+  <>
+    {/* existing filters + list + pagination */}
+  </>
 )}
 ```
 
