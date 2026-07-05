@@ -28,22 +28,26 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
 
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <div className="grid gap-5 lg:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_24px_minmax(0,1fr)_140px] lg:items-center">
-        {/* Guide header */}
+      <div className="grid gap-5 lg:grid-cols-12">
+        {/* Guide image */}
         <CourierImage
           image={logoSrc}
           courier={guide.quote.courier}
           dataTestId="guide-db-logo"
-          cssImgContainer="h-12 w-12 shrink-0"
+          cssImgContainer="lg:col-span-2 place-self-center"
         />
-        <div data-testid="guide-title">
+
+        {/* Guide quote info */}
+        <div data-testid="guide-title" className="lg:col-span-2">
           <span className="text-xs font-light text-blue-700 dark:text-blue-600">Paquetería</span>
           <h5 className={titleStyles}>
             {guide.quote.service}
           </h5>
           <span className="text-sm">{ typeService }</span>
         </div>
-        <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
+
+        {/* Guide content, price, provider and status */}
+        <div className="lg:col-span-2 flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <span className="text-xs text-gray-600">Contenido: {guide.parcel.content}</span>
           <span className="font-semibold text-primary-700 dark:text-primary-400">{price}</span>
           <div className="flex gap-1">
@@ -67,21 +71,8 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
         <AddressBlock guide={guide} type="origin" />
         <RiArrowRightLine className="hidden text-gray-600 dark:text-gray-300 lg:block" size={24} />
         <AddressBlock guide={guide} type="destination" />
-
-        <div className="flex flex-col gap-2">
-          {guide.labelUrl && (
-            <a
-              href={guide.labelUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-10 items-center justify-center rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-            >
-              Etiqueta
-            </a>
-          )}
-        </div>
       </div>
-      <div className="w-full flex justify-center mt-5">
+      <div className="w-full mt-3 flex justify-center">
         <button type="button" className={clsx(primaryButtonCSS)}>Ver detalles</button>
       </div>
     </article>
@@ -92,7 +83,7 @@ function AddressBlock({ guide, type }: { guide: GuideDbRecord; type: 'origin' | 
   const address = guide[type]
 
   return (
-    <div className="min-w-0 text-sm flex flex-col gap-1">
+    <div className="lg:col-span-2 min-w-0 text-sm flex flex-col gap-1">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-700 dark:text-gray-300">
         {cityState(address.city, address.state) || 'N/A'}
       </p>
