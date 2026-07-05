@@ -10,8 +10,6 @@ import { CourierImage } from "@/shared/ui/atoms/CourierImage"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
 
-const fullName = (name: string, lastName: string) => [name, lastName].filter(Boolean).join(' ')
-
 export function GuideDbCard({
   guide,
   isMobile,
@@ -103,7 +101,7 @@ function AddressBlock({ guide, type }: { guide: GuideDbRecord; type: 'origin' | 
         {cityState(address.city, address.state) || 'N/A'}
       </p>
       <p className="mt-1 text-xs font-medium text-primary-700 dark:text-primary-400">{address.alias || 'Sin alias'}</p>
-      <p className="font-semibold text-gray-900 dark:text-white">{fullName(address.name, address.lastName) || 'N/A'}</p>
+      <p className="font-semibold text-gray-900 dark:text-white">{address.name || 'N/A'}</p>
       <p className="text-xs text-gray-700 dark:text-gray-300">
         {[address.street1, address.neighborhood, address.city, address.zipcode && `CP ${address.zipcode}`].filter(Boolean).join(', ')}
       </p>
