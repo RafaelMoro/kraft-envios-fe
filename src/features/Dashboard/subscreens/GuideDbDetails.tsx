@@ -5,9 +5,9 @@ import { GuideDbRecord } from "@/shared/types/guides.types"
 import { formatDateToSpanish, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { greySecondaryCSS } from "@/shared/constants/global.constants"
+import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE } from "@/shared/constants/addresses.constants"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
-const fullName = (name: string, lastName: string) => [name, lastName].filter(Boolean).join(' ')
 const typeServiceLabel = (typeService: GuideDbRecord['quote']['typeService']) =>
   typeService === 'nextDay' ? 'Día siguiente' : typeService === 'standard' ? 'Estándar' : '—'
 const dash = '—'
@@ -23,7 +23,6 @@ interface GuideDbDetailsProps {
 }
 
 export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
-  console.log('GuideDbDetails render', guide)
   const createdAt = new Date(guide.createdAt)
   const updatedAt = new Date(guide.updatedAt)
   const createdDate = formatDateToSpanish(createdAt)
@@ -142,7 +141,6 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
         <div className="grid gap-4 sm:grid-cols-3">
           <Detail label="SERVICIO" value={guide.quote.service} />
           <Detail label="TIPO DE SERVICIO" value={typeServiceLabel(guide.quote.typeService)} />
-          <Detail label="COURIER" value={guide.quote.courier ?? dash} />
           <Detail label="TOTAL" value={formatNumberToCurrency(guide.quote.total)} accent />
           <Detail label="ID DE COTIZACIÓN" value={guide.quote.id} mono />
         </div>
@@ -202,9 +200,9 @@ const AddressBlock = ({ address, kind }: { address: GuideDbRecord['origin']; kin
         {[address.street1, address.external_number && `#${address.external_number}`, address.neighborhood, cityState(address.city, address.state), address.zipcode && `CP ${address.zipcode}`].filter(Boolean).join(', ')}
       </span>
       <div className="mt-1 flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400">
-        { address.email && <span>{address.email}</span> }
+        { address.email && address.email !== DEFAULT_EMAIL_VALUE && <span>{address.email}</span> }
         { address.phone && <span>{address.phone}</span> }
-        { address.company && <span>{address.company}</span> }
+        { address.company && address.company !== DEFAULT_COMPANY_NAME && <span>{address.company}</span> }
       </div>
       <span className="text-xs text-gray-500 dark:text-gray-400">Ref.: {address.reference || 'Sin referencia'}</span>
     </div>

@@ -148,6 +148,17 @@ export const Order = ({ userInfo }: OrderProps) => {
     setSelectedDbGuide(null)
   }
 
+  const handleSelectExternalSource = () => {
+    setSelectedSource('external')
+    setSelectedDbGuide(null)
+  }
+
+  const handleSelectOwnDbSource = () => {
+    setSelectedSource('ownDb')
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
   const totalPages = dbData?.totalPages ?? 1
 
   return (
@@ -163,14 +174,14 @@ export const Order = ({ userInfo }: OrderProps) => {
         <ButtonGroup>
           <Button
             className={clsx({ "text-indigo-600 dark:text-indigo-400": selectedSource === 'external' })}
-            onClick={() => { setSelectedSource('external'); setSelectedDbGuide(null); }}
+            onClick={handleSelectExternalSource}
             color="alternative"
           >
             Ver guias externas
           </Button>
           <Button
             className={clsx({ "text-indigo-600 dark:text-indigo-400": selectedSource === 'ownDb' })}
-            onClick={() => { setSelectedSource('ownDb'); setDbPage(1); setSelectedDbGuide(null); }}
+            onClick={handleSelectOwnDbSource}
             color="alternative"
           >
             Ver mis guias
