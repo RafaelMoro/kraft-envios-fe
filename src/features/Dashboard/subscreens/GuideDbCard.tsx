@@ -43,25 +43,25 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
             {guide.quote.service}
           </h5>
           <span className="text-sm">{ typeService }</span>
-          <span className="text-sm font-semibold text-primary-700 dark:text-primary-400">{price}</span>
         </div>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
-          <span className="rounded border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
-            {guide.kraftId}
-          </span>
-          <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-blue-900 dark:text-blue-200">
-            {guide.provider}
-          </span>
-          <span
-            className={clsx(
-              "rounded-full px-3 py-1 text-xs font-semibold",
-              guide.status === 'created'
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-            )}
-          >
-            {guide.status === 'created' ? '✓' : 'X'} {statusLabel}
-          </span>
+          <span className="text-xs text-gray-600">Contenido: {guide.parcel.content}</span>
+          <span className="font-semibold text-primary-700 dark:text-primary-400">{price}</span>
+          <div className="flex gap-1">
+            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-blue-900 dark:text-blue-200">
+              {guide.provider}
+            </span>
+            <span
+              className={clsx(
+                "rounded-full px-3 py-1 text-xs font-semibold",
+                guide.status === 'created'
+                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                  : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+              )}
+            >
+              {guide.status === 'created' ? '✓' : 'X'} {statusLabel}
+            </span>
+          </div>
         </div>
 
         {/* Guide address */}
