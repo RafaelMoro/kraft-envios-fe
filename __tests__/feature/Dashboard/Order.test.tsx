@@ -684,10 +684,13 @@ describe('Order', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
 
       await waitFor(() => {
-        expect(screen.getByText('KB-12345')).toBeInTheDocument();
-      }, { timeout: 3000 });
-      expect(screen.getByText('Fallido')).toBeInTheDocument();
-      expect(screen.getByText(/GDE-PVR-005/)).toBeInTheDocument();
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByText('KB-12345')).toBeInTheDocument();
+      expect(screen.getByText(/Fallido/)).toBeInTheDocument();
+      expect(screen.getByText('GDE-PVR-005')).toBeInTheDocument();
     });
 
     it('Then should render failed DB record with null external fields', async () => {
@@ -712,8 +715,11 @@ describe('Order', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
 
       await waitFor(() => {
-        expect(screen.getByText('KB-12345')).toBeInTheDocument();
-      }, { timeout: 3000 });
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByText('KB-12345')).toBeInTheDocument();
       expect(screen.getByText('Mn')).toBeInTheDocument();
     });
 
