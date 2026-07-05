@@ -12,7 +12,15 @@ const cityState = (city: string, state: string) => [city, state].filter(Boolean)
 
 const fullName = (name: string, lastName: string) => [name, lastName].filter(Boolean).join(' ')
 
-export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobile: boolean }) {
+export function GuideDbCard({
+  guide,
+  isMobile,
+  onViewDetails,
+}: {
+  guide: GuideDbRecord
+  isMobile: boolean
+  onViewDetails: (guide: GuideDbRecord) => void
+}) {
   const price = guide.price ? formatNumberToCurrency(Number(guide.price)) : formatNumberToCurrency(guide.quote.total)
   const statusLabel = getGuideDbStatusLabel(guide.status)
   const logoSrc = getQuoteImg({ courier: guide.quote.courier, isMobile })
@@ -73,7 +81,14 @@ export function GuideDbCard({ guide, isMobile }: { guide: GuideDbRecord; isMobil
         <AddressBlock guide={guide} type="destination" />
       </div>
       <div className="w-full mt-3 flex justify-center">
-        <button type="button" className={clsx(primaryButtonCSS)}>Ver detalles</button>
+        <button
+          type="button"
+          data-testid="guide-db-details-button"
+          className={clsx(primaryButtonCSS)}
+          onClick={() => onViewDetails(guide)}
+        >
+          Ver detalles
+        </button>
       </div>
     </article>
   )

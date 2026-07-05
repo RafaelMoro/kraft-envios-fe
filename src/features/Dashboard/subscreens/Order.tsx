@@ -8,10 +8,11 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
 import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
-import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
+import { GetGuidesData, GuideDbRecord, GuideUI } from "@/shared/types/guides.types"
 
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { GuideDbCard } from "@/features/Dashboard/subscreens/GuideDbCard"
+import { GuideDbDetails } from "@/features/Dashboard/subscreens/GuideDbDetails"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE, GUIDES_DB_EMPTY_MESSAGE, GUIDES_DB_ERROR_MESSAGE } from "@/shared/constants/guides.constants"
 
@@ -53,6 +54,7 @@ export const Order = ({ userInfo }: OrderProps) => {
   const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear())
   const [dbPage, setDbPage] = useState(1)
   const [dbLimit, setDbLimit] = useState<10 | 50 | 100>(10)
+  const [selectedDbGuide, setSelectedDbGuide] = useState<GuideDbRecord | null>(null)
 
   const [guides, setGuides] = useState<GuideUI[]>([])
   const { data, isPending, isError } = useQuery({
@@ -131,16 +133,19 @@ export const Order = ({ userInfo }: OrderProps) => {
   const handleMonthChange = (month: number) => {
     setSelectedMonth(month)
     setDbPage(1)
+    setSelectedDbGuide(null)
   }
 
   const handleYearChange = (year: number) => {
     setSelectedYear(year)
     setDbPage(1)
+    setSelectedDbGuide(null)
   }
 
   const handleLimitChange = (limit: 10 | 50 | 100) => {
     setDbLimit(limit)
     setDbPage(1)
+    setSelectedDbGuide(null)
   }
 
   const totalPages = dbData?.totalPages ?? 1
@@ -158,14 +163,14 @@ export const Order = ({ userInfo }: OrderProps) => {
         <ButtonGroup>
           <Button
             className={clsx({ "text-indigo-600 dark:text-indigo-400": selectedSource === 'external' })}
-            onClick={() => setSelectedSource('external')}
+            onClick={() => { setSelectedSource('external'); setSelectedDbGuide(null); }}
             color="alternative"
           >
             Ver guias externas
           </Button>
           <Button
             className={clsx({ "text-indigo-600 dark:text-indigo-400": selectedSource === 'ownDb' })}
-            onClick={() => { setSelectedSource('ownDb'); setDbPage(1); }}
+            onClick={() => { setSelectedSource('ownDb'); setDbPage(1); setSelectedDbGuide(null); }}
             color="alternative"
           >
             Ver mis guias
@@ -200,7 +205,13 @@ export const Order = ({ userInfo }: OrderProps) => {
         </div>
       )}
 
-      { selectedSource === 'ownDb' && (
+      { selectedSource === 'ownDb' && selectedDbGuide && (
+        <GuideDbDetails
+          guide={selectedDbGuide}
+          onBack={() => setSelectedDbGuide(null)}
+        />
+      )}
+      { selectedSource === 'ownDb' && !selectedDbGuide && (
         <>
           <div className="flex flex-wrap gap-4 justify-center items-center">
             <div className="flex items-center gap-2">
@@ -270,7 +281,12 @@ export const Order = ({ userInfo }: OrderProps) => {
             <>
               <div className="grid gap-3">
                 {dbData.guides.map((guide) => (
-                  <GuideDbCard key={guide.kraftId} guide={guide} isMobile={isMobileTablet} />
+                  <GuideDbCard
+                    key={guide.kraftId}
+                    guide={guide}
+                    isMobile={isMobileTablet}
+                    onViewDetails={setSelectedDbGuide}
+                  />
                 ))}
               </div>
 

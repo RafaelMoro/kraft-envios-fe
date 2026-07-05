@@ -761,5 +761,106 @@ describe('Order', () => {
         expect(screen.queryByText('TRK123456')).not.toBeInTheDocument();
       });
     });
+
+    describe('When clicking Ver detalles on an own DB guide', () => {
+      const buildMockResponse = (overrides: Partial<GuideDbRecord> = {}) =>
+        createMockDbResponse({
+          guides: [createMockDbRecord(overrides)],
+        });
+
+      it('Then should show details view and hide the list', async () => {
+        mockedGetGuidesDbCb.mockResolvedValue(buildMockResponse());
+
+        renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+        await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('guide-db-details-button')[0]).toBeInTheDocument();
+        });
+
+        await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+        expect(screen.getByTestId('guide-db-details-header')).toBeInTheDocument();
+        expect(screen.getByText('KB-12345')).toBeInTheDocument();
+        expect(screen.getByText(/Envío de/)).toBeInTheDocument();
+        expect(screen.queryAllByTestId('guide-db-details-button')).toHaveLength(0);
+      });
+
+      it('Then should show package data from the selected guide', async () => {
+        mockedGetGuidesDbCb.mockResolvedValue(buildMockResponse());
+
+        renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+        await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+        await waitFor(() => {
+          expect(screen.getAllByTestId('guide-db-details-button')[0]).toBeInTheDocument();
+        });
+        await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+        expect(screen.getAllByTestId('guide-db-details-summary-card')).toHaveLength(4);
+        expect(screen.getAllByText('Electronica').length).toBeGreaterThan(0);
+        expect(screen.getByText('SAT-001')).toBeInTheDocument();
+      });
+
+      it('Then should show the creation error block for failed guides', async () => {
+        mockedGetGuidesDbCb.mockResolvedValue(
+          buildMockResponse({
+            status: 'failed',
+            failureInfo: {
+              errorCode: 'GDE-PVR-001',
+              errorDetails: 'Insufficient funds',
+              timestamp: '2026-07-05T08:14:00Z',
+            },
+          })
+        );
+
+        renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+        await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+        await waitFor(() => {
+          expect(screen.getAllByTestId('guide-db-details-button')[0]).toBeInTheDocument();
+        });
+        await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+        expect(screen.getByTestId('guide-db-details-error')).toBeInTheDocument();
+        expect(screen.getByText('GDE-PVR-001')).toBeInTheDocument();
+        expect(screen.getByText('Insufficient funds')).toBeInTheDocument();
+      });
+
+      it('Then should return to the list when clicking Volver a guías', async () => {
+        mockedGetGuidesDbCb.mockResolvedValue(buildMockResponse());
+
+        renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+        await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+        await waitFor(() => {
+          expect(screen.getAllByTestId('guide-db-details-button')[0]).toBeInTheDocument();
+        });
+        await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+        expect(screen.getByTestId('guide-db-details-back-button')).toBeInTheDocument();
+
+        await userEvent.click(screen.getByTestId('guide-db-details-back-button'));
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('guide-db-details-header')).not.toBeInTheDocument();
+        });
+        expect(screen.getAllByTestId('guide-db-details-button')[0]).toBeInTheDocument();
+      });
+
+      it('Then should not call getGuidesDbCb again when opening details', async () => {
+        mockedGetGuidesDbCb.mockResolvedValue(buildMockResponse());
+
+        renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+        await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+        await waitFor(() => {
+          expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(1);
+        });
+
+        await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 });
