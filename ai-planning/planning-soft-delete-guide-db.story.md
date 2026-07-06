@@ -79,11 +79,12 @@ Goal: backend proxy ready and callable from the client before any UI is touched.
 **`src/shared/constants/guides.constants.ts`** — Modify:
 
 - Near the existing endpoint constants (after `GET_GUIDES_DB_ENDPOINT`, line ~261), add `DELETE_GUIDE_DB_ENDPOINT = '/api/guides-db'` (the dynamic `/{kraftId}` segment is appended by the callback so the constant mirrors the collection base path used by `GET_GUIDES_DB_ENDPOINT`).
-- Near the existing `GUIDES_DB_*` message constants (after line ~291), add Modal copy constants:
+- Near the existing `GUIDES_DB_*` message constants (after line ~291), add Modal copy constants and the delete error message:
   - `GUIDES_DB_DELETE_MODAL_TITLE = '¿Deseas eliminar esta guia?'`
   - `GUIDES_DB_DELETE_MODAL_BODY = 'Esta acción no se puede deshacer.'`
   - `GUIDES_DB_DELETE_MODAL_CONFIRM = 'Eliminar'`
   - `GUIDES_DB_DELETE_MODAL_CANCEL = 'Cancelar'`
+  - `GUIDES_DB_DELETE_ERROR_MESSAGE = 'No se pudo eliminar la guía. Por favor, intenta nuevamente.'`
 
 **`src/shared/utils/guides.utils.ts`** — Modify:
 
@@ -135,7 +136,7 @@ Goal: the user can confirm deletion from both the card (list) and the details sc
 
 **`src/features/Dashboard/subscreens/Order.tsx`** — Modify:
 
-- Imports: add `useMutation` from `@tanstack/react-query`, `deleteGuideDbCb` from `@/shared/utils/guides.utils`, `GuideDbRecord` already imported.
+- Imports: add `useMutation, useQueryClient` from `@tanstack/react-query`, `deleteGuideDbCb` from `@/shared/utils/guides.utils`, `GUIDES_DB_DELETE_ERROR_MESSAGE` from `@/shared/constants/guides.constants`. (`GuideDbRecord` already imported.)
 - Inside the component, near the existing `useQuery` calls (~line 75):
   ```ts
   const deleteMutation = useMutation({
@@ -144,7 +145,7 @@ Goal: the user can confirm deletion from both the card (list) and the details sc
       queryClient.invalidateQueries({ queryKey: ['guides', 'db'] });
     },
     onError: () => {
-      updateNotificationMessage('No se pudo eliminar la guía. Intenta nuevamente.');
+      updateNotificationMessage(GUIDES_DB_DELETE_ERROR_MESSAGE);
       toggleNotification();
     },
   });
@@ -172,11 +173,12 @@ Goal: the user can confirm deletion from both the card (list) and the details sc
   - `GuideDbDetails`: `onDeleteGuide={selectedSource === 'ownDb' ? handleDeleteGuide : undefined}`
   - `GuideDbDetails` is rendered for both `ownDb` and `allDb` (current code at line 279). With `onDeleteGuide = undefined` in `allDb`, the delete control stays hidden for admins viewing other users' guides.
 
-- Error message text: reuse `GUIDES_DB_ERROR_MESSAGE` ('Ha sucedido un error. Intentelo nuevamente') for the notification, matching the existing list-error copy. Do not introduce a new constant. (Alternative: introduce `GUIDES_DB_DELETE_ERROR_MESSAGE` — skip per scope discipline; the existing message is user-facing adequate.)
+- Error message text: introduce `GUIDES_DB_DELETE_ERROR_MESSAGE = 'No se pudo eliminar la guía. Por favor, intenta nuevamente.'` in `src/shared/constants/guides.constants.ts` (alongside the modal-copy constants added in Phase 1). The existing `GUIDES_DB_ERROR_MESSAGE` is generic for the list query; the delete action warrants specific copy. Mirrors the per-action error pattern in `DeleteAddressModal.tsx:74`.
 
 **`src/features/Dashboard/subscreens/GuideDbCard.tsx`** — Modify:
 
-- Imports: add `Button, Modal` from `flowbite-react`, `RiDeleteBinLine` from `@remixicon/react`, `useState` from `react`. Import the four new modal-copy constants from `@/shared/constants/guides.constants`.
+- Add `"use client"` directive at the top of the file. The component is currently a stateless function; adding `useState` requires the client boundary to live in this file (the existing `Order.tsx` client boundary transitively covers it, but a top-level directive matches the pattern in `DeleteAddressModal.tsx:1` and `CopyInfoQuotesModal.tsx:1` and removes ambiguity).
+- Imports: add `Button, Modal, ModalBody, ModalFooter, ModalHeader` from `flowbite-react`, `RiDeleteBinLine` from `@remixicon/react`, `useState` from `react`. Import the four modal-copy constants and the new `GUIDES_DB_DELETE_ERROR_MESSAGE` from `@/shared/constants/guides.constants`.
 - Add prop `onDeleteGuide?: (guide: GuideDbRecord) => void` to the component signature (optional; undefined hides the control).
 - Add local `const [isConfirmOpen, setIsConfirmOpen] = useState(false)`.
 - Replace the existing "Ver detalles" footer block (lines 81-90) with a flex row containing the existing `Ver detalles` button + a Flowbite icon Button rendered only when `onDeleteGuide` is provided AND `guide.deletedAt == null`:
@@ -193,35 +195,39 @@ Goal: the user can confirm deletion from both the card (list) and the details sc
     <RiDeleteBinLine size={18} />
   </Button>
   ```
-- Add the Flowbite `Modal` at the end of the article:
+- Add the Flowbite `Modal` at the end of the article, using the **named subcomponents** pattern (matches `src/features/Addresses/DeleteAddressModal.tsx:4` and `src/features/Quotes/CopyInfoQuotesModal.tsx:3`):
   ```tsx
-  <Modal show={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} size="sm" data-testid="guide-db-delete-modal">
-    <Modal.Header>{GUIDES_DB_DELETE_MODAL_TITLE}</Modal.Header>
-    <Modal.Body><p>{GUIDES_DB_DELETE_MODAL_BODY}</p></Modal.Body>
-    <Modal.Footer>
-      <Button color="red" data-testid="guide-db-delete-confirm" onClick={() => { setIsConfirmOpen(false); onDeleteGuide?.(guide); }}>{GUIDES_DB_DELETE_MODAL_CONFIRM}</Button>
-      <Button color="gray" data-testid="guide-db-delete-cancel" onClick={() => setIsConfirmOpen(false)}>{GUIDES_DB_DELETE_MODAL_CANCEL}</Button>
-    </Modal.Footer>
+  <Modal show={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} size="sm">
+    <ModalHeader>{GUIDES_DB_DELETE_MODAL_TITLE}</ModalHeader>
+    <ModalBody><p className="text-center text-red-600 dark:text-red-400">{GUIDES_DB_DELETE_MODAL_BODY}</p></ModalBody>
+    <ModalFooter>
+      <div className="w-full flex justify-between">
+        <Button color="red" data-testid="guide-db-delete-confirm" onClick={() => { setIsConfirmOpen(false); onDeleteGuide?.(guide); }}>{GUIDES_DB_DELETE_MODAL_CONFIRM}</Button>
+        <Button color="gray" data-testid="guide-db-delete-cancel" onClick={() => setIsConfirmOpen(false)}>{GUIDES_DB_DELETE_MODAL_CANCEL}</Button>
+      </div>
+    </ModalFooter>
   </Modal>
   ```
+  Import: `import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react"`.
 - Hide the entire delete control (button + nothing else) when `guide.deletedAt != null`. The existing deleted banner (lines 91-99) stays unchanged.
 
 **`src/features/Dashboard/subscreens/GuideDbDetails.tsx`** — Modify:
 
-- Same imports as `GuideDbCard` (`Button`, `Modal`, `RiDeleteBinLine`, `useState`, modal-copy constants).
+- Add `"use client"` directive at the top of the file (same rationale as `GuideDbCard`).
+- Same imports as `GuideDbCard` (`Button, Modal, ModalBody, ModalFooter, ModalHeader` from `flowbite-react`, `RiDeleteBinLine`, `useState`, modal-copy constants + `GUIDES_DB_DELETE_ERROR_MESSAGE`).
 - Add prop `onDeleteGuide?: (guide: GuideDbRecord) => void` to `GuideDbDetailsProps`.
 - Add local `isConfirmOpen` state.
 - Place the delete icon button in the existing header row (line ~57 `<div className="flex items-center justify-between">`), as a sibling to the back button, right-aligned. Render only when `onDeleteGuide` is provided AND `guide.deletedAt == null`.
-- Add the same `Modal` at the end of the `<section>` (after the existing deleted banner block, lines 209-220). Confirm click calls `onDeleteGuide?.(guide)`.
+- Add the same `<Modal>` block at the end of the `<section>` (after the existing deleted banner block, lines 209-220), using the named subcomponents (`ModalHeader` / `ModalBody` / `ModalFooter`) and the same `data-testid` values (`guide-db-delete-confirm`, `guide-db-delete-cancel`). Confirm click calls `onDeleteGuide?.(guide)`.
 - The existing deleted banner section (lines 209-220) stays unchanged. When `deletedAt != null` the delete button is hidden and the banner shows.
 
 ### Edge cases
-- Client/server boundary: `Order`, `GuideDbCard`, `GuideDbDetails` are already client components via the dynamic import in `src/app/dashboard/page.tsx`. No new `'use client'` directive needed for the cards themselves, but confirm `GuideDbCard.tsx` and `GuideDbDetails.tsx` already rely on hooks/state — `GuideDbCard` currently has no hooks; adding `useState` means it must be a client component. The dashboard dynamically imports `Dashboard` with `ssr: false`, so the entire subtree is client-rendered; adding `useState` is safe without a new directive at the top of `GuideDbCard.tsx` (its parent `Order` is the client boundary). If `pnpm lint` flags it, add `'use client'` to `GuideDbCard.tsx` only.
+- Client/server boundary: `GuideDbCard.tsx` and `GuideDbDetails.tsx` get `"use client"` directives (see above). `Order.tsx` and the dashboard's `ssr: false` boundary also keep the subtree client-rendered. Redundant but unambiguous and matches `DeleteAddressModal.tsx` / `CopyInfoQuotesModal.tsx`.
 - Mobile/tablet vs desktop: `Order` is used in both branches of `Dashboard.tsx` via `useMediaQuery`. The `Modal` is responsive by default (Flowbite). The delete icon button is the same size in both layouts. No separate mobile rendering needed.
 - Inactive `allDb` query invalidation: `invalidateQueries({ queryKey: ['guides', 'db'] })` invalidates both `ownDb` and `allDb` queries by prefix match. The inactive `allDb` refetch only fires when the admin navigates back to that source, which is correct.
 - Deleting from details: `selectedDbGuide` is non-null, so per-call `onSuccess` calls `setSelectedDbGuide(null)` → list view re-renders → invalidation-driven refetch removes the row. This matches AC 6.
 - Deleting the last item on a page: `dbPage` does not decrement; the user may see the empty-state message. Accepted per research; deferred to Story 5.
-- Notification during pending mutation: do not disable the delete button while pending. Flowbite Modal closes on confirm click; the user can click again and the mutation queues. Acceptable for this story; if duplicate-fires become an issue, defer a debounce to Story 5.
+- Notification during pending mutation: the Modal closes synchronously on confirm click (`setIsConfirmOpen(false)` runs before `onDeleteGuide?.(guide)`), so a user cannot double-fire from the same Modal. If the user reopens the Modal and re-confirms, the mutation queues; this is acceptable for this story.
 
 ### Success Criteria
 - Automated:
@@ -236,15 +242,15 @@ Goal: the user can confirm deletion from both the card (list) and the details sc
   - Desktop: open a guide's details (`Ver detalles`), click the trash icon, confirm. UI returns to the list; the row is gone after refetch.
   - Admin: go to `Ver todas las guias`, confirm no delete button on any card or details screen.
   - Verify a guide with `deletedAt` already set shows no delete button (only the deleted banner) — if such a guide is visible via `includeDeleted`.
-  - Trigger a backend error (kill backend or send a bad `kraftId`): notification shows `Ha sucedido un error. Intentelo nuevamente`; the row remains.
+  - Trigger a backend error (kill backend or send a bad `kraftId`): notification shows `No se pudo eliminar la guía. Por favor, intenta nuevamente.`; the row remains.
   - Mobile/tablet viewport: confirm the Modal and the icon button render correctly.
 
 ### Test coverage (described, not written)
 
 | File | Coverage areas | Pattern reference |
 | --- | --- | --- |
-| `__tests__/feature/Dashboard/Order.test.tsx` | (1) Regular user soft-deletes from list: confirm Modal opens, `deleteGuideDbCb` invoked with correct `kraftId`, on success `queryClient.invalidateQueries({ queryKey: ['guides', 'db'] })` is observable (refetch the list mock, assert the deleted record is gone). (2) Soft-delete from details: after success `selectedDbGuide` cleared → list view restored (assert `guide-db-details-header` gone, `guide-db-details-button` present). (3) Error path: `deleteGuideDbCb` rejects → `Notification` shows `Ha sucedido un error. Intentelo nuevamente`. (4) Admin `allDb` source: no `guide-db-delete-button` rendered on any card or details screen. (5) Existing tests still pass with the extended jest.mock. | Existing `Order.test.tsx` jest.mock pattern at lines 11-22 (`...jest.requireActual(...), getGuidesCb: jest.fn(), getGuidesDbCb: jest.fn()`); add `deleteGuideDbCb: jest.fn()` to the allowlist. Reuse `createMockDbRecord`/`createMockDbResponse` helpers already in the file. `userEvent` for clicks. |
-| `__tests__/feature/Dashboard/GuideDbCard.test.tsx` (new) | (1) Delete button hidden when `deletedAt != null`. (2) Delete button hidden when `onDeleteGuide` is undefined (admin `allDb` projection). (3) Delete button visible when `onDeleteGuide` provided and `deletedAt == null`. (4) Clicking the button opens the Modal; Modal shows the four Spanish copy strings. (5) Confirming calls `onDeleteGuide(guide)` with the exact `GuideDbRecord` passed in; cancelling does not. | Testing Library `render` + `screen.getByRole`/`getByTestId` (`guide-db-delete-button`, `guide-db-delete-modal`, `guide-db-delete-confirm`, `guide-db-delete-cancel`). `userEvent.click`. No router or query provider needed — `GuideDbCard` is a pure presentational component (no `useQuery`). Construct a `GuideDbRecord` fixture matching `GuideDbRecord` type, mirroring the `createMockDbRecord` helper in `Order.test.tsx`. |
+ | `__tests__/feature/Dashboard/Order.test.tsx` | (1) Regular user soft-deletes from list: confirm Modal opens, `deleteGuideDbCb` invoked with correct `kraftId`, on success `queryClient.invalidateQueries({ queryKey: ['guides', 'db'] })` is observable (refetch the list mock, assert the deleted record is gone). (2) Soft-delete from details: after success `selectedDbGuide` cleared → list view restored (assert `guide-db-details-header` gone, `guide-db-details-button` present). (3) Error path: `deleteGuideDbCb` rejects → `Notification` shows `No se pudo eliminar la guía. Por favor, intenta nuevamente.`. (4) Admin `allDb` source: no `guide-db-delete-button` rendered on any card or details screen. (5) Existing tests still pass with the extended jest.mock. | Existing `Order.test.tsx` jest.mock pattern at lines 11-22 (`...jest.requireActual(...), getGuidesCb: jest.fn(), getGuidesDbCb: jest.fn()`); add `deleteGuideDbCb: jest.fn()` to the allowlist. Reuse `createMockDbRecord`/`createMockDbResponse` helpers already in the file. `userEvent` for clicks. |
+ | `__tests__/feature/Dashboard/GuideDbCard.test.tsx` (new) | (1) Delete button hidden when `deletedAt != null`. (2) Delete button hidden when `onDeleteGuide` is undefined (admin `allDb` projection). (3) Delete button visible when `onDeleteGuide` provided and `deletedAt == null`. (4) Clicking the button opens the Modal; Modal shows the four Spanish copy strings (query by `getByText` for the title/body, `getByTestId` for the action buttons). (5) Confirming calls `onDeleteGuide(guide)` with the exact `GuideDbRecord` passed in; cancelling does not. | Testing Library `render` + `screen.getByRole`/`getByTestId` (`guide-db-delete-button`, `guide-db-delete-confirm`, `guide-db-delete-cancel`). `userEvent.click`. No router or query provider needed — `GuideDbCard` is a pure presentational component (no `useQuery`). Construct a `GuideDbRecord` fixture matching `GuideDbRecord` type, mirroring the `createMockDbRecord` helper in `Order.test.tsx`. |
 | `__tests__/feature/Dashboard/GuideDbDetails.test.tsx` (new) | (1) Delete button visible when `onDeleteGuide` provided and `deletedAt == null`; hidden when `deletedAt != null` (banner still shows). (2) Hidden when `onDeleteGuide` undefined. (3) Modal opens on click; confirming calls `onDeleteGuide(guide)`. (4) `Volver a guías` back button unchanged (existing `guide-db-details-back-button`). | Same pattern as `GuideDbCard.test.tsx`. `GuideDbDetails` is presentational; no query/router provider needed. Fixture must include `createdAt`/`updatedAt`/`updatedAt` valid ISO strings (the component does `new Date(...)`). |
 
 ### Test rules to honor (from `.github/copilot-instructions.md`)
