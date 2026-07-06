@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Button, ButtonGroup } from "flowbite-react"
+import { Button, ButtonGroup, Label, Select } from "flowbite-react"
 import clsx from "clsx"
 
 import { LoginData } from "@/shared/types/login.types"
@@ -224,42 +224,42 @@ export const Order = ({ userInfo }: OrderProps) => {
       )}
       { selectedSource === 'ownDb' && !selectedDbGuide && (
         <>
-          <div className="flex flex-wrap gap-4 justify-center items-center">
+          <div className="flex gap-4 justify-center items-center">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Mes:</label>
-              <select
+              <Label htmlFor="order-month">Mes:</Label>
+              <Select
+                id="order-month"
                 value={selectedMonth}
                 onChange={(e) => handleMonthChange(Number(e.target.value))}
-                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800"
               >
                 {MONTHS.map((m) => (
                   <option key={m.value} value={m.value}>{m.label}</option>
                 ))}
-              </select>
+              </Select>
             </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Año:</label>
-              <select
+            <div className="flex items-center gap-2 max-w-md">
+              <Label htmlFor="order-year">Año:</Label>
+              <Select
+                id="order-year"
                 value={selectedYear}
                 onChange={(e) => handleYearChange(Number(e.target.value))}
-                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800"
               >
                 {YEARS.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Registros:</label>
-              <select
+              <Label htmlFor="order-limit">Registros:</Label>
+              <Select
+                id="order-limit"
                 value={dbLimit}
                 onChange={(e) => handleLimitChange(Number(e.target.value) as 10 | 50 | 100)}
-                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800"
               >
                 <option value={10}>10</option>
                 <option value={50}>50</option>
                 <option value={100}>100</option>
-              </select>
+              </Select>
             </div>
           </div>
 
