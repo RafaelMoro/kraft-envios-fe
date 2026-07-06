@@ -21,6 +21,7 @@ const mockSearchProduct: SearchProduct = {
 const mockQuote: QuoteUI = {
   id: 'quote-1',
   service: 'Express',
+  serviceName: 'Express',
   total: 100,
   typeService: 'nextDay',
   courier: 'DHL',
@@ -171,7 +172,7 @@ describe('ConfirmGuideDbData', () => {
 
       const payload = mockOnSubmit.mock.calls[0][0]
       expect(payload.provider).toBe('GE')
-      expect(payload.quoteId).toBe('quote-1')
+      expect(payload.quote.id).toBe('quote-1')
       expect(payload.origin.alias).toBe('Casa')
       expect(payload.origin.town).toBe('Cuauhtémoc')
       expect(payload.origin.zipcode).toBe('06000')

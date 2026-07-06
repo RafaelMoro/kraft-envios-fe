@@ -62,6 +62,7 @@ const mockSelectedQuotes: QuoteUI[] = [
   {
     id: 'quote-123',
     service: 'Express',
+    serviceName: 'Express',
     total: 250.50,
     typeService: 'nextDay',
     courier: 'DHL',
@@ -238,6 +239,7 @@ describe('ConfirmGuideData', () => {
         {
           id: 'first-quote',
           service: 'Express',
+          serviceName: 'Express',
           total: 250.50,
           typeService: 'nextDay' as const,
           courier: 'DHL' as const,
@@ -253,6 +255,7 @@ describe('ConfirmGuideData', () => {
         {
           id: 'second-quote',
           service: 'Standard',
+          serviceName: 'Standard',
           total: 150.00,
           typeService: 'standard' as const,
           courier: 'Estafeta' as const,

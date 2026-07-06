@@ -13,6 +13,7 @@ const mockSelectedQuotes: QuoteUI[] = [
   {
     id: 'quote-123',
     service: 'Express',
+    serviceName: 'Express',
     total: 250.50,
     typeService: 'nextDay',
     courier: 'DHL',

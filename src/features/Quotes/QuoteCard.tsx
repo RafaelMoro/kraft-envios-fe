@@ -55,7 +55,7 @@ export const QuoteCard = ({ quote, isMobile = false, addSelectedQuote, removeSel
         <div data-testid="quote-title" className="col-span-2 md:col-span-4 lg:col-span-8">
           <span className="text-xs font-light text-blue-700 dark:text-blue-600">Paquetería</span>
           <h5 className={titleStyles}>
-            {quote.service}
+            {quote.serviceName}
           </h5>
           <span className="text-sm">{typeService(quote.typeService)}</span>
         </div>

@@ -181,7 +181,7 @@ export const QuotesSubscreen = ({ userInfo }: QuotesProps) => {
   const updateAllQuotes = (quotesGotten: Quote[]) => {
     const quotesFormatted: QuoteUI[] = quotesGotten.map((item) => ({
       ...item,
-      service: formatQuoteServiceName(item.service),
+      serviceName: formatQuoteServiceName(item.service),
       logoSrc: getQuoteImg({ courier: item.courier, isMobile }),
       amountFormatted: formatNumberToCurrency(item.total)
     }))

@@ -34,4 +34,5 @@
 
 ## Styling
 - Tailwind v4 is wired through `@tailwindcss/postcss` in `postcss.config.mjs`; there is no separate Tailwind config file.
+- `DESIGN.md` at the repo root is the agent-readable source of truth for the current design system; consult it before UI changes and run `pnpm design:lint` after edits.
 - Flowbite React is part of the UI stack; dashboard customizes Flowbite theme locally in `src/app/dashboard/page.tsx`.

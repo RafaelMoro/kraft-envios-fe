@@ -1,6 +1,6 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
-import { ProviderSource, QuoteCourier, QuoteImage } from "./quotes.types";
+import { ProviderSource, QuoteCourier, QuoteImage, QuoteTypeService } from "./quotes.types";
 import { Address } from "./addresses.types";
 import { zipcodeValidation } from "./global.types";
 
@@ -296,16 +296,30 @@ export type CreateGuideDbParcelPayload = {
 
 export type CreateGuideDbPayload = {
   provider: ProviderSource;
-  quoteId: string;
+  quote: CreateGuideDbQuotePayload;
   origin: CreateGuideDbAddressPayload;
   destination: CreateGuideDbAddressPayload;
   parcel: CreateGuideDbParcelPayload;
   notifyMe: boolean;
 };
 
+export type CreateGuideDbQuotePayload = {
+  id: string;
+  service: string;
+  total: number;
+  typeService: QuoteTypeService | null;
+  courier: QuoteCourier | null;
+  qBaseRef?: number;
+  qAdjFactor?: number;
+  qAdjBasis?: number;
+  qAdjMode?: string;
+  qAdjSrcRef?: string;
+};
+
 export type CreateGuideDbFailureInfo = {
   errorCode: string;
   errorDetails?: string | null;
+  timestamp?: string | null;
 };
 
 export type CreateGuideDbResponseData = {
@@ -320,6 +334,97 @@ export type CreateGuideDbResponse = {
   message: string | null;
   error: string | null;
   data: CreateGuideDbResponseData;
+};
+
+export type GuidesDbStatus = 'created' | 'failed';
+
+export type GuideDbFailureInfo = {
+  errorCode: string;
+  errorDetails?: string | null;
+  timestamp?: string | null;
+};
+
+export type GuideDbAddress = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  country: string;
+  reference: string;
+};
+
+export type GuideDbParcel = {
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  content: string;
+  satProductId: string;
+  value?: number;
+  quantity?: number;
+};
+
+export type GuideDbQuote = {
+  id: string;
+  service: string;
+  total: number;
+  typeService: QuoteTypeService | null;
+  courier: QuoteCourier | null;
+};
+
+export type GuideDbRecord = {
+  kraftId: string;
+  quote: GuideDbQuote;
+  externalId?: string | null;
+  trackingNumber?: string | null;
+  shipmentNumber?: string | null;
+  carrier?: string | null;
+  price?: string | null;
+  guideLink?: string | null;
+  labelUrl?: string | null;
+  file?: string | null;
+  status: GuidesDbStatus;
+  provider: ProviderSource;
+  isProviderTrackingSynced: boolean;
+  failureInfo: GuideDbFailureInfo | null;
+  origin: GuideDbAddress;
+  destination: GuideDbAddress;
+  parcel: GuideDbParcel;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
+};
+
+export type GetGuidesDbParams = {
+  page: number;
+  month: number;
+  year: number;
+  limit?: 10 | 50 | 100;
+};
+
+export type GetGuidesDbResponseData = {
+  guides: GuideDbRecord[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export type GetGuidesDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: GetGuidesDbResponseData;
 };
 
 export type CreateGuideDbFormValues = {

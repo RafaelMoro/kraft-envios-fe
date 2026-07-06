@@ -257,6 +257,7 @@ export const CREATE_GUIDE_DB_ENDPOINT = '/api/guides-db'
 export const GET_ALIAS_ADDRESSES_GE_ENDPOINT = '/api/ge-address'
 export const GET_GUIDES_ENDPOINT = '/api/guides/get-guides'
 export const CREATE_ADDRESS_GE_ENDPOINT = '/api/ge-address'
+export const GET_GUIDES_DB_ENDPOINT = '/api/guides-db'
 
 export const initialStateFormGuideDb: CreateGuideDbFormValues = {
   originAddress: { ...initialStateAddressForm },
@@ -277,3 +278,17 @@ export const GUIDE_DB_GENERIC_FAILED_MESSAGE =
 
 export const GUIDE_DB_GENERIC_ERROR_MESSAGE =
   'Ocurrió un error al crear la guía. Por favor, intente nuevamente.'
+
+export const GUIDES_DB_EMPTY_MESSAGE = 'No hay guias para el mes seleccionado.'
+
+export const GUIDES_DB_ERROR_MESSAGE = 'Ha sucedido un error. Intentelo nuevamente'
+
+export const GUIDE_DB_FAILURE_MESSAGES: Record<string, string> = {
+  'GDE-PVR-005': 'El proveedor rechazó algunos datos de la guía. Revisa la información del envío e intenta crearla nuevamente.',
+  'GDE-PVR-006': 'La cotización expiró antes de crear la guía. Genera una nueva cotización e intenta nuevamente.',
+  'GDE-NET-001': 'No pudimos conectar con el proveedor. Intenta nuevamente en unos minutos.',
+  'GDE-TMOT-001': 'El proveedor tardó demasiado en responder. Intenta nuevamente en unos minutos.',
+  'GDE-RLIM-003': 'El proveedor recibió demasiadas solicitudes. Espera unos minutos e intenta nuevamente.',
+}
+
+export const GUIDE_DB_GENERIC_FAILURE_MESSAGE = 'No pudimos crear la guía con el proveedor. Intenta nuevamente o contacta a soporte.'

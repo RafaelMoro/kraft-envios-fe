@@ -50,9 +50,11 @@ export const ConfirmGuideDbData = ({
     const parcel = toGuideDbParcelPayload(packageDimensions, parcelInfo, selectedProduct.code)
     if (!parcel) return
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { source, amountFormatted, logoSrc, serviceName, ...quoteData } = selectedQuote
     const payload: CreateGuideDbPayload = {
-      provider: selectedQuote.source,
-      quoteId: selectedQuote.id,
+      provider: source,
+      quote: quoteData,
       origin: {
         ...verifyAndUpdateAddressGuideDb(originAddress),
         alias: originAddress.alias ?? '',
@@ -91,7 +93,7 @@ export const ConfirmGuideDbData = ({
         <h5 className="text-lg font-bold">Cotización</h5>
         <ul className="grid grid-cols-1 gap-1">
           <li>Origen: {selectedQuote.source}</li>
-          <li>Servicio: {selectedQuote.service}</li>
+          <li>Servicio: {selectedQuote.serviceName}</li>
         </ul>
       </article>
       <article className="flex flex-col gap-4">

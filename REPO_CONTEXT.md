@@ -1,6 +1,6 @@
 # Repository Context - kraft-envios-fe
 
-**Last Updated:** 2026-06-27
+**Last Updated:** 2026-06-28
 
 A living reference for AI agents and developers working in this repository. It documents the app wiring, module boundaries, data flow, and conventions that are not obvious from a single file read.
 
@@ -141,6 +141,13 @@ Required values are documented in `.env.example`:
 | `pnpm exec tsc --noEmit` | TypeScript-only check; there is no package script for this. |
 | `pnpm test` | Jest run in jsdom; coverage is always collected into `coverage/`. |
 | `pnpm test -- __tests__/path/to/file.test.tsx` | Focus one test file. Add `-t "test name"` to focus by name. |
+| `pnpm sync:prompts` | Copy `.opencode/command/{research,plan,implement}.md` into `.github/prompts/`; run after changing those command prompts. |
+
+## Prompt Sync
+
+- `.opencode/command/*.md` is the source of truth for research, planning, and implementation command prompts.
+- `pnpm sync:prompts` copies `research.md` to `.github/prompts/research.prompt.md`, `plan.md` to `.github/prompts/plan.prompt.md`, and `implement.md` to `.github/prompts/implement.md`.
+- Do not manually update only `.github/prompts/*`; it creates drift from the opencode commands.
 
 ## Testing Conventions
 
@@ -161,6 +168,7 @@ Required values are documented in `.env.example`:
 ## Conventions And Gotchas
 
 - Path alias: `@/*` maps to `./src/*`.
+- Prompt instructions live under `.opencode/command/`; run `pnpm sync:prompts` after editing them so `.github/prompts/` stays in sync.
 - Add `'use client'` to files that use hooks, browser APIs, router hooks, or client-only libraries.
 - Keep backend proxy behavior consistent with existing route handlers unless intentionally fixing a bug: access-token check, `Authorization` header, `NextResponse.json`, and 400 error shape.
 - Do not assume all backend responses have the same envelope. Existing routes return a mix of raw upstream data, `{ data }`, `{ message }`, and feature-specific objects.
@@ -179,6 +187,8 @@ Required values are documented in `.env.example`:
 | `jest.config.ts` | Jest + coverage + ignored helper directories. |
 | `jest.setup.ts` | Global test setup. |
 | `.github/copilot-instructions.md` | Unit test conventions and mocking rules. |
+| `.opencode/command/research.md` | Source research workflow prompt; syncs to `.github/prompts/research.prompt.md`. |
+| `scripts/sync-opencode-commands.mjs` | Prompt sync script used by `pnpm sync:prompts`. |
 | `src/app/layout.tsx` | Root layout, theme cookie, QueryProvider. |
 | `src/app/page.tsx` | Login entrypoint and authenticated redirect. |
 | `src/app/dashboard/page.tsx` | Dashboard server wrapper + Flowbite theme. |

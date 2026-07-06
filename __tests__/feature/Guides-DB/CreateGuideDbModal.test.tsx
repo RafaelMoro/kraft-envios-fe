@@ -13,6 +13,7 @@ const mockResetCotization = jest.fn()
 const mockQuote: QuoteUI = {
   id: 'quote-1',
   service: 'Express',
+  serviceName: 'Express',
   total: 100,
   typeService: 'nextDay',
   courier: 'DHL',
