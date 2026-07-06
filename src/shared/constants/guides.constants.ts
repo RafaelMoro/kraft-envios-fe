@@ -259,6 +259,7 @@ export const GET_ALIAS_ADDRESSES_GE_ENDPOINT = '/api/ge-address'
 export const GET_GUIDES_ENDPOINT = '/api/guides/get-guides'
 export const CREATE_ADDRESS_GE_ENDPOINT = '/api/ge-address'
 export const GET_GUIDES_DB_ENDPOINT = '/api/guides-db'
+export const DELETE_GUIDE_DB_ENDPOINT = '/api/guides-db'
 
 export const initialStateFormGuideDb: CreateGuideDbFormValues = {
   originAddress: { ...initialStateAddressForm },
@@ -290,6 +291,12 @@ export const GUIDES_DB_ADMIN_INCLUDE_DELETED_LABEL = 'Incluir guías eliminadas'
 export const GUIDES_DB_ADMIN_INCLUDE_INTERNAL_PRICING_LABEL = 'Mostrar precio interno'
 export const GUIDES_DB_DELETED_MESSAGE = 'Eliminada el {date} por {deletedBy}'
 export const GUIDES_DB_INTERNAL_PRICING_SECTION_TITLE = 'PRECIO INTERNO'
+
+export const GUIDES_DB_DELETE_MODAL_TITLE = '¿Deseas eliminar esta guia?'
+export const GUIDES_DB_DELETE_MODAL_BODY = 'Esta acción no se puede deshacer.'
+export const GUIDES_DB_DELETE_MODAL_CONFIRM = 'Eliminar'
+export const GUIDES_DB_DELETE_MODAL_CANCEL = 'Cancelar'
+export const GUIDES_DB_DELETE_ERROR_MESSAGE = 'No se pudo eliminar la guía. Por favor, intenta nuevamente.'
 
 export const GUIDES_DB_INTERNAL_PRICING_FIELDS: Record<string, string> = {
   qBaseRef: 'Base',

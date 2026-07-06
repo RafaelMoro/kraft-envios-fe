@@ -103,6 +103,7 @@ Most proxy routes read `getAccessToken()` from `src/shared/lib/auth.lib.ts`, ret
 | `/api/ge-address` | `GET`, `POST`, `PUT`, `DELETE` | GE address proxy for `${BACKEND_URI}/ge/addresses` and `${BACKEND_URI}/ge/address/{id}`; PUT blocks alias edits. |
 | `/api/guides/get-guides` | `GET` | Proxies to `${BACKEND_URI}/guides`. |
 | `/api/guides-db` | `GET`, `POST` | `GET` proxies list to `${BACKEND_URI}/guides/db` (params `page`, `month`, `year`, `limit`); when `scope=all\|own` is present it branches to `${BACKEND_URI}/guides/db/admin` instead. `POST` proxies create to `${BACKEND_URI}/guides/db/create`; returns 201 even when upstream `data.status === 'failed'` (saved DB record, not transport error). |
+| `/api/guides-db/[kraftId]` | `DELETE` | Soft-deletes a guide owned by the current user. Proxies `DELETE ${BACKEND_URI}/guides/db/{kraftId}` (URL-encoded). Forwards the upstream `{ version, message, error, data: { guide: { kraftId } } }` envelope on success; collapses any non-2xx to `{ message }` 400. |
 | `/api/guides/mn` | `POST` | Creates MN guide via `${BACKEND_URI}/mn/create-guide`; treats null-guide or embedded 400 message as failure. |
 | `/api/guides/tone` | `POST` | Creates Tone guide via `${BACKEND_URI}/tone/create-guide`; same null-guide/embedded-400 failure rule as MN. |
 | `/api/guides/ge` | `POST` | Creates GE guide via `${BACKEND_URI}/ge/create-guide`. |

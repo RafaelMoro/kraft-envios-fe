@@ -51,11 +51,53 @@ Acceptance criteria:
 6. Admin UI can show soft-deleted metadata when present (`deletedAt`, `deletedBy`) without breaking normal guide cards.
 7. Non-admin access is hidden in UI and should still rely on backend authorization for enforcement.
 
+#### Story 4: Soft Delete Guide DB (Regular User)
+
+Acceptance criteria:
+
+1. A regular user (any role value: `user` or `admin`) can soft-delete a non-deleted Guides DB record they own from both `GuideDbCard` (list) and `GuideDbDetails` (details screen) in the `Ver mis guias` source. Backend enforces ownership: a regular user can only soft-delete their own guides.
+2. The delete control is hidden when `guide.deletedAt` is non-null so already-soft-deleted records cannot be re-deleted from the regular UI.
+3. Soft delete asks for confirmation through a Flowbite `Modal` before sending the request. Modal copy: title `¿Deseas eliminar esta guia?`, body `Esta acción no se puede deshacer.`, confirm `Eliminar`, cancel `Cancelar`.
+4. The UI calls a new BFF `DELETE` route at `/api/guides-db/{kraftId}` that proxies the backend `DELETE /guides/db/{kraft-id}` soft-delete endpoint with `getAccessToken()` and `Authorization: Bearer <token>`. The `kraftId` is URL-encoded as a defensive default.
+5. The backend returns HTTP 200 with `{ version, message, error, data: { guide: { kraftId } } }`; the BFF forwards that envelope and reacts to non-2xx errors with the existing `{ message }` 400 pattern (including 4xx from the backend).
+6. On success the UI invalidates the active Guides DB list query (regular and admin sources), which triggers a refetch that drops the deleted record. If the user is on `GuideDbDetails`, the UI calls `onBack` to return to the list. No success notification is shown; the refetched list is the only signal of success. Errors use the existing `useNotification` + `Notification` atom.
+7. The delete control is a Flowbite icon button using `RiDeleteBinLine` from `@remixicon/react` (already used in `src/features/Addresses/AddressCard.tsx:2`). Planning phase should search for the exact existing icon-button implementation pattern in this repo before final placement.
+8. Regular users are not informed that deletion is "soft" or that records persist; the feature is presented simply as deleting the guide. Hard delete is admin-only and never exposed to regular users in this story.
+9. The hard-delete path (`DELETE /guides/db/{kraft-id}/hard`) is intentionally out of scope for this story and is captured in Story 5.
+10. The delete control is only rendered in the `Ver mis guias` source. Admins viewing `Ver todas las guias` (other users' guides) do not see a soft-delete control in this story; that source is for viewing/auditing only.
+
+Scope notes:
+
+- This story is regular-user-facing; admin users acting as regular users in `Ver mis guias` also soft-delete via the same flow.
+- Soft-deleted guides disappear from `GET /guides/db` for regular users and from refetched `GET /guides/db/admin` for admins, but remain in DB for auditing (already enforced by backend and surfaced through Story 3 admin `includeDeleted` toggle for previously-deleted records).
+- The delete control belongs in the existing `Order` source views only; external guide list (`Ver guias externas`) has no delete action.
+- The full research note for this story is in `ai-research/soft-delete-guide-db.story.md`.
+
+#### Story 5: Hard Delete Guide DB (Admin)
+
+Acceptance criteria:
+
+1. Admin users can hard-delete a Guides DB record from the `Ver todas las guias` source through `GuideDbCard` and `GuideDbDetails`.
+2. Hard delete is gated behind the same `userInfo.data.user.role.includes('admin')` check used for the admin source; non-admins never see the hard-delete control.
+3. The UI calls a new BFF `DELETE` route at `/api/guides-db/{kraftId}/hard` that proxies the backend `DELETE /guides/db/{kraft-id}/hard` endpoint with the same auth guard as the soft-delete route.
+4. The backend returns the same response envelope as soft delete (`{ version, message, error, data: { guide: { kraftId } } }` with HTTP 200); the BFF treats both soft and hard delete responses identically.
+5. Hard-delete confirmation UI distinguishes the action from soft delete (e.g., explicit warning copy) because the record is permanently removed from DB.
+6. On success the UI invalidates the admin Guides DB list query (including `includeDeleted` refresh) and stays on the list.
+7. Backend authorization must still enforce admin-only hard delete; frontend gating is convenience, not security.
+
+Scope notes (hard delete stub):
+
+- This story is intentionally left as an un-groomed stub. ACs above are draft and should be revisited when the story is researched.
+- Hard delete should be researched separately and is not in the scope of the soft-delete story below.
+- Hard delete is only meaningful for admin viewing of already-soft-deleted or live records; the exact eligibility rules (e.g., can a guide be hard-deleted without being soft-deleted first) are pending backend confirmation.
+
 ### Recommended Story Order
 
 1. Story 1: Create Guides DB From Quote.
 2. Story 2: My Guides DB List.
 3. Story 3: Admin All Guides DB List.
+4. Story 4: Soft Delete Guide DB (Regular User).
+5. Story 5: Hard Delete Guide DB (Admin).
 
 ### Story Boundary Notes
 
@@ -65,7 +107,7 @@ Acceptance criteria:
 - Source switching is through one Flowbite button group: `Ver guias externas`, `Ver mis guias`, and `Ver todas las guias`.
 - Story 2 wires `Ver guias externas` and `Ver mis guias`; Story 3 wires admin behavior for `Ver todas las guias`.
 - Retry failed guide creation is future scope and should remain out of these stories.
-- Delete Guides DB exists in the backend, but delete UI/workflow is not included in this epic unless explicitly added as a later story.
+- Delete Guides DB is now part of this epic: Story 4 covers regular-user soft delete, Story 5 covers admin hard delete (stub).
 
 ## Technical Research
 
@@ -160,6 +202,16 @@ Endpoint paths:
 - Create Guides DB: `POST /guides/db/create`.
 - Get my Guides DB: `GET /guides/db`.
 - Get all/admin Guides DB: `GET /guides/db/admin`.
+- Soft delete Guides DB: `DELETE /guides/db/{kraft-id}`.
+- Hard delete Guides DB: `DELETE /guides/db/{kraft-id}/hard` (admin-only).
+
+Delete Guides DB response envelope (soft and hard):
+
+- HTTP 200.
+- `{ version, message, error, data: { guide: { kraftId } } }`.
+- `version` is `1.2.0` as observed.
+- `message` and `error` are `null` on success.
+- Soft and hard endpoints return the same response shape.
 
 Get my Guides DB query params:
 
@@ -322,7 +374,10 @@ Delete behavior:
 - Regular users soft delete guides; these guides disappear from `GET /guides/db` for the user perspective but remain in DB for auditing.
 - Admin users can soft delete and hard delete.
 - Admin hard delete removes the guide from DB.
-- Delete UI and delete route research are out of current scope unless added as a new story.
+- Delete UI and BFF route are now in scope: Story 4 covers regular-user soft delete, Story 5 covers admin hard delete (stub).
+- Soft delete endpoint: `DELETE /guides/db/{kraft-id}` returns `{ version, message, error, data: { guide: { kraftId } } }` with HTTP 200.
+- Hard delete endpoint: `DELETE /guides/db/{kraft-id}/hard` returns the same envelope with HTTP 200.
+- The soft-delete research story lives in `ai-research/soft-delete-guide-db.story.md`.
 
 Pagination and filters:
 

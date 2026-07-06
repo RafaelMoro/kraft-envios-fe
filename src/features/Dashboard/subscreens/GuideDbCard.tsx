@@ -1,4 +1,7 @@
-import { RiArrowRightLine } from "@remixicon/react"
+"use client"
+import { useState } from "react"
+import { Button } from "flowbite-react"
+import { RiArrowRightLine, RiDeleteBinLine } from "@remixicon/react"
 import clsx from "clsx"
 
 import { primaryButtonCSS } from "@/shared/constants/global.constants"
@@ -8,6 +11,7 @@ import { formatDateToSpanish, getGuideDbStatusLabel } from "@/shared/utils/guide
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { GUIDES_DB_DELETED_MESSAGE } from "@/shared/constants/guides.constants"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage"
+import { GuideDbDeleteModal } from "@/features/Dashboard/subscreens/GuideDbDeleteModal"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
 
@@ -15,11 +19,14 @@ export function GuideDbCard({
   guide,
   isMobile,
   onViewDetails,
+  onDeleteGuide,
 }: {
   guide: GuideDbRecord
   isMobile: boolean
   onViewDetails: (guide: GuideDbRecord) => void
+  onDeleteGuide?: (guide: GuideDbRecord) => void
 }) {
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const price = guide.price ? formatNumberToCurrency(Number(guide.price)) : formatNumberToCurrency(guide.quote.total)
   const statusLabel = getGuideDbStatusLabel(guide.status)
   const logoSrc = getQuoteImg({ courier: guide.quote.courier, isMobile })
@@ -78,7 +85,7 @@ export function GuideDbCard({
         <RiArrowRightLine className="hidden text-gray-600 dark:text-gray-300 lg:block" size={24} />
         <AddressBlock guide={guide} type="destination" />
       </div>
-      <div className="w-full mt-3 flex justify-center">
+      <div className="w-full mt-3 flex justify-center gap-3">
         <button
           type="button"
           data-testid="guide-db-details-button"
@@ -87,6 +94,19 @@ export function GuideDbCard({
         >
           Ver detalles
         </button>
+        { onDeleteGuide && guide.deletedAt == null && (
+          <Button
+            type="button"
+            color="red"
+            outline
+            data-testid="guide-db-delete-button"
+            onClick={() => setIsConfirmOpen(true)}
+            className="inline-flex items-center gap-2"
+            aria-label="Eliminar guía"
+          >
+            <RiDeleteBinLine size={18} />
+          </Button>
+        ) }
       </div>
       { guide.deletedAt != null && (
         <div className="w-full mt-3 flex justify-center" data-testid="guide-db-card-deleted">
@@ -96,6 +116,16 @@ export function GuideDbCard({
               .replace('{deletedBy}', guide.deletedBy ?? '—')}
           </span>
         </div>
+      ) }
+      { onDeleteGuide && (
+        <GuideDbDeleteModal
+          open={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={() => {
+            setIsConfirmOpen(false)
+            onDeleteGuide(guide)
+          }}
+        />
       ) }
     </article>
   )
