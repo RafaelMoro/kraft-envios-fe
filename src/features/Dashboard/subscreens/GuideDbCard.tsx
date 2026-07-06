@@ -25,7 +25,6 @@ export function GuideDbCard({
 
   const typeService = guide.quote.typeService === 'nextDay' ? 'Día siguiente' : 'Estándar'
 
-  // const isOtherProvider = guide.quote.courier === 'other'
   const isFedexProvider = guide.quote.courier === 'Fedex'
   const titleStyles = clsx(
     "text-base font-semibold text-gray-900 dark:text-white",
