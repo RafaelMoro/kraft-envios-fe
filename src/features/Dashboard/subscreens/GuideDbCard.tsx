@@ -18,13 +18,15 @@ const cityState = (city: string, state: string) => [city, state].filter(Boolean)
 export function GuideDbCard({
   guide,
   isMobile,
+  isAdmin,
   onViewDetails,
   onDeleteGuide,
 }: {
   guide: GuideDbRecord
   isMobile: boolean
+  isAdmin?: boolean
   onViewDetails: (guide: GuideDbRecord) => void
-  onDeleteGuide?: (guide: GuideDbRecord) => void
+  onDeleteGuide?: (guide: GuideDbRecord, permanent: boolean) => void
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const price = guide.price ? formatNumberToCurrency(Number(guide.price)) : formatNumberToCurrency(guide.quote.total)
@@ -94,7 +96,7 @@ export function GuideDbCard({
         >
           Ver detalles
         </button>
-        { onDeleteGuide && guide.deletedAt == null && (
+        { onDeleteGuide && (isAdmin || guide.deletedAt == null) && (
           <Button
             type="button"
             color="red"
@@ -121,9 +123,10 @@ export function GuideDbCard({
         <GuideDbDeleteModal
           open={isConfirmOpen}
           onClose={() => setIsConfirmOpen(false)}
-          onConfirm={() => {
+          isAdmin={isAdmin}
+          onConfirm={(permanent) => {
             setIsConfirmOpen(false)
-            onDeleteGuide(guide)
+            onDeleteGuide(guide, permanent)
           }}
         />
       ) }

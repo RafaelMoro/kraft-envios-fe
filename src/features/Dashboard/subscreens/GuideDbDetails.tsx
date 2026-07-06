@@ -29,11 +29,12 @@ const pillBase = "rounded-full px-3 py-1 text-xs font-semibold"
 
 interface GuideDbDetailsProps {
   guide: GuideDbRecord
+  isAdmin?: boolean
   onBack: () => void
-  onDeleteGuide?: (guide: GuideDbRecord) => void
+  onDeleteGuide?: (guide: GuideDbRecord, permanent: boolean) => void
 }
 
-export const GuideDbDetails = ({ guide, onBack, onDeleteGuide }: GuideDbDetailsProps) => {
+export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide }: GuideDbDetailsProps) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const createdAt = new Date(guide.createdAt)
   const updatedAt = new Date(guide.updatedAt)
@@ -70,7 +71,7 @@ export const GuideDbDetails = ({ guide, onBack, onDeleteGuide }: GuideDbDetailsP
           <RiArrowLeftLine size={18} />
           Volver a guías
         </button>
-        { onDeleteGuide && guide.deletedAt == null && (
+        { onDeleteGuide && (isAdmin || guide.deletedAt == null) && (
           <Button
             type="button"
             color="red"
@@ -241,9 +242,10 @@ export const GuideDbDetails = ({ guide, onBack, onDeleteGuide }: GuideDbDetailsP
         <GuideDbDeleteModal
           open={isConfirmOpen}
           onClose={() => setIsConfirmOpen(false)}
-          onConfirm={() => {
+          isAdmin={isAdmin}
+          onConfirm={(permanent) => {
             setIsConfirmOpen(false)
-            onDeleteGuide(guide)
+            onDeleteGuide(guide, permanent)
           }}
         />
       ) }
