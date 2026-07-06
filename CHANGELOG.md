@@ -1,3 +1,9 @@
+## v0.48.0 (2026-07-06)
+
+### Pull Requests
+[#106](https://github.com/RafaelMoro/kraft-envios-fe/pull/106) | Add soft delete feature
+
+
 ## v0.47.0 (2026-07-06)
 
 ### Pull Requests
