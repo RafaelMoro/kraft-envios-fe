@@ -228,8 +228,9 @@ UI/product decisions:
   - Answer: Scope is only meaningful for admin users on the `Ver todas las guias` source. The `scope` query param should only be sent when the active source is admin; `Ver mis guias` calls the regular endpoint with no `scope` at all.
   - Context: `getGuidesDbCb` should only append `scope` to `URLSearchParams` when `selectedSource === 'allDb'`. No reset logic is needed because `scope` is irrelevant to the regular source.
 - III: Question: What copy should the soft-deleted metadata block show (e.g. "Eliminada el {date} por {deletedBy}")?
-  - Status: pending.
-  - Context: No existing soft-delete copy constant; a small constant in `guides.constants.ts` is the likely home.
+  - Status: answered.
+  - Answer: Use the example verbiage "Eliminada el {date} por {deletedBy}".
+  - Context: Small constant in `guides.constants.ts` is the likely home; `deletedBy` may be a user id/email depending on backend, format accordingly.
 - IV: Question: Should the scope `Select` default to `Todas las guías` (`all`) as AC 5 listing order implies?
   - Status: answered.
   - Answer: Yes, default to `all` (`Todas las guías`) instead of `own`.
