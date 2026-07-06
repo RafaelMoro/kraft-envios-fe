@@ -1971,7 +1971,6 @@ describe('Order', () => {
         expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
       });
       await userEvent.click(screen.getByTestId('guide-db-delete-button'));
-      await userEvent.click(screen.getByTestId('guide-db-hard-delete-checkbox'));
       await userEvent.click(screen.getByTestId('guide-db-delete-confirm'));
 
       await waitFor(() => {
@@ -2012,12 +2011,44 @@ describe('Order', () => {
         expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
       });
       await userEvent.click(screen.getByTestId('guide-db-delete-button'));
-      await userEvent.click(screen.getByTestId('guide-db-hard-delete-checkbox'));
       await userEvent.click(screen.getByTestId('guide-db-delete-confirm'));
 
       await waitFor(() => {
         expect(mockedHardDeleteGuideDbCb).toHaveBeenCalledWith('KB-12345');
       });
+    });
+
+    it('Then should open the hard-delete modal directly when admin clicks delete on a soft-deleted guide from Ver todas las guias', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              deletedAt: '2026-06-15T10:00:00Z',
+              deletedBy: 'admin@example.com',
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await userEvent.click(screen.getByTestId('order-admin-include-deleted-toggle'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-delete-button'));
+
+      expect(screen.queryByTestId('guide-db-hard-delete-checkbox')).not.toBeInTheDocument();
+      expect(screen.getByText('¿Eliminar permanentemente esta guía?')).toBeInTheDocument();
+      expect(screen.getByTestId('guide-db-delete-confirm')).toHaveTextContent('Eliminar permanentemente');
     });
   });
 

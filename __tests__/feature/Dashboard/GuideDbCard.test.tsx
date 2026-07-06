@@ -309,4 +309,63 @@ describe('Feature: GuideDbCard delete control', () => {
       expect(screen.queryByTestId('guide-db-delete-button')).not.toBeInTheDocument();
     });
   });
+
+  describe('Scenario: Hard-delete default for already soft-deleted admin rows', () => {
+    it('Given isAdmin and a soft-deleted guide, When the modal opens, Then the checkbox is hidden and the hard-delete copy is shown', async () => {
+      const user = userEvent.setup();
+      const onDeleteGuide = jest.fn();
+      render(
+        <GuideDbCard
+          {...baseProps}
+          isAdmin
+          guide={createMockDbRecord({ deletedAt: '2026-06-15T10:00:00Z', deletedBy: 'admin@example.com' })}
+          onDeleteGuide={onDeleteGuide}
+        />,
+      );
+
+      await user.click(screen.getByTestId('guide-db-delete-button'));
+
+      expect(screen.queryByTestId('guide-db-hard-delete-checkbox')).not.toBeInTheDocument();
+      expect(screen.getByText('¿Eliminar permanentemente esta guía?')).toBeInTheDocument();
+      expect(screen.getByTestId('guide-db-delete-confirm')).toHaveTextContent('Eliminar permanentemente');
+    });
+
+    it('Given isAdmin and a soft-deleted guide, When the user confirms, Then onDeleteGuide is called with permanent true', async () => {
+      const user = userEvent.setup();
+      const onDeleteGuide = jest.fn();
+      const guide = createMockDbRecord({ deletedAt: '2026-06-15T10:00:00Z', deletedBy: 'admin@example.com' });
+      render(
+        <GuideDbCard
+          {...baseProps}
+          isAdmin
+          guide={guide}
+          onDeleteGuide={onDeleteGuide}
+        />,
+      );
+
+      await user.click(screen.getByTestId('guide-db-delete-button'));
+      await user.click(screen.getByTestId('guide-db-delete-confirm'));
+
+      await waitFor(() => {
+        expect(onDeleteGuide).toHaveBeenCalledWith(guide, true);
+      });
+    });
+
+    it('Given isAdmin and a live guide, When the modal opens, Then the checkbox is still rendered', async () => {
+      const user = userEvent.setup();
+      const onDeleteGuide = jest.fn();
+      render(
+        <GuideDbCard
+          {...baseProps}
+          isAdmin
+          guide={createMockDbRecord()}
+          onDeleteGuide={onDeleteGuide}
+        />,
+      );
+
+      await user.click(screen.getByTestId('guide-db-delete-button'));
+
+      expect(screen.getByTestId('guide-db-hard-delete-checkbox')).toBeInTheDocument();
+    });
+  });
 });

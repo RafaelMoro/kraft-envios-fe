@@ -243,6 +243,7 @@ export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide }: GuideD
           open={isConfirmOpen}
           onClose={() => setIsConfirmOpen(false)}
           isAdmin={isAdmin}
+          defaultPermanent={Boolean(isAdmin) && guide.deletedAt != null}
           onConfirm={(permanent) => {
             setIsConfirmOpen(false)
             onDeleteGuide(guide, permanent)

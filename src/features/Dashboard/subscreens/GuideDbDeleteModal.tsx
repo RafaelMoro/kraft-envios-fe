@@ -17,16 +17,17 @@ interface GuideDbDeleteModalProps {
   onClose: () => void
   onConfirm: (permanent: boolean) => void
   isAdmin?: boolean
+  defaultPermanent?: boolean
 }
 
-export const GuideDbDeleteModal = ({ open, onClose, onConfirm, isAdmin }: GuideDbDeleteModalProps) => {
-  const [permanent, setPermanent] = useState(false)
+export const GuideDbDeleteModal = ({ open, onClose, onConfirm, isAdmin, defaultPermanent = false }: GuideDbDeleteModalProps) => {
+  const [permanent, setPermanent] = useState(defaultPermanent)
 
   useEffect(() => {
     if (!open) {
-      setPermanent(false)
+      setPermanent(defaultPermanent)
     }
-  }, [open])
+  }, [open, defaultPermanent])
 
   const title = permanent ? GUIDES_DB_HARD_DELETE_MODAL_TITLE : GUIDES_DB_DELETE_MODAL_TITLE
   const body = permanent ? GUIDES_DB_HARD_DELETE_MODAL_BODY : GUIDES_DB_DELETE_MODAL_BODY
@@ -37,7 +38,7 @@ export const GuideDbDeleteModal = ({ open, onClose, onConfirm, isAdmin }: GuideD
       <ModalHeader>{title}</ModalHeader>
       <ModalBody>
         <p className="text-center text-red-600 dark:text-red-400">{body}</p>
-        { isAdmin && (
+        { isAdmin && !defaultPermanent && (
           <div className="mt-4 flex items-center gap-2 justify-center">
             <Checkbox
               id="guide-db-hard-delete-toggle"
