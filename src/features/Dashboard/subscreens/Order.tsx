@@ -224,11 +224,12 @@ export const Order = ({ userInfo }: OrderProps) => {
       )}
       { selectedSource === 'ownDb' && !selectedDbGuide && (
         <>
-          <div className="flex gap-4 justify-center items-center">
+          <div className="flex flex-wrap gap-4 justify-center items-center">
             <div className="flex items-center gap-2">
               <Label htmlFor="order-month">Mes:</Label>
               <Select
                 id="order-month"
+                className="w-32"
                 value={selectedMonth}
                 onChange={(e) => handleMonthChange(Number(e.target.value))}
               >
@@ -241,6 +242,7 @@ export const Order = ({ userInfo }: OrderProps) => {
               <Label htmlFor="order-year">Año:</Label>
               <Select
                 id="order-year"
+                className="w-24"
                 value={selectedYear}
                 onChange={(e) => handleYearChange(Number(e.target.value))}
               >
@@ -253,6 +255,7 @@ export const Order = ({ userInfo }: OrderProps) => {
               <Label htmlFor="order-limit">Registros:</Label>
               <Select
                 id="order-limit"
+                className="w-24"
                 value={dbLimit}
                 onChange={(e) => handleLimitChange(Number(e.target.value) as 10 | 50 | 100)}
               >
