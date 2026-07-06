@@ -154,6 +154,13 @@ export const deleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbRes
   return res.data;
 };
 
+export const hardDeleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbResponse> => {
+  const res: AxiosResponse<DeleteGuideDbResponse> = await axios.delete(
+    `${DELETE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}/hard`,
+  );
+  return res.data;
+};
+
 /**
  * Builds the Guides DB parcel payload by converting stored string dimensions to numbers
  * and attaching optional numeric fields only when supplied. Returns null when required

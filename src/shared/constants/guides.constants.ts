@@ -298,6 +298,10 @@ export const GUIDES_DB_DELETE_MODAL_CONFIRM = 'Eliminar'
 export const GUIDES_DB_DELETE_MODAL_CANCEL = 'Cancelar'
 export const GUIDES_DB_DELETE_ERROR_MESSAGE = 'No se pudo eliminar la guía. Por favor, intenta nuevamente.'
 
+export const GUIDES_DB_HARD_DELETE_MODAL_TITLE = '¿Eliminar permanentemente esta guía?'
+export const GUIDES_DB_HARD_DELETE_MODAL_BODY = 'Esta acción removerá el registro de la base de datos de forma permanente. No se puede deshacer.'
+export const GUIDES_DB_HARD_DELETE_MODAL_CONFIRM = 'Eliminar permanentemente'
+
 export const GUIDES_DB_INTERNAL_PRICING_FIELDS: Record<string, string> = {
   qBaseRef: 'Base',
   qAdjFactor: 'Factor de ajuste',
