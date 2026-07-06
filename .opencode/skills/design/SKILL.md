@@ -19,6 +19,7 @@ Use this skill for UI, layout, styling, component redesign, spacing, color, typo
 - Do not change font family unless the user explicitly asks for a font change.
 - Do not add `font-mono` for identifiers, guide numbers, IDs, prices, or metadata unless the user explicitly requests monospace.
 - Use the app's existing typography: Geist Sans loaded in `src/app/layout.tsx`, with Tailwind utilities for size, weight, color, and spacing.
+- For visual boldness, use Tailwind `font-bold` / `font-semibold` (e.g. `<span className="font-bold">`). Do **not** use the HTML `<strong>` element purely to bold text — `<strong>` is a semantic element (importance/seriousness) and is reserved for content that genuinely warrants assistive-tech emphasis. Use `<span className="font-bold">` for purely visual weight.
 
 ## Visual Checks
 

@@ -6,7 +6,7 @@ import clsx from "clsx"
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb, deleteGuideDbCb } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb, deleteGuideDbCb, hardDeleteGuideDbCb } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { GetGuidesData, GuideDbRecord, GuideUI } from "@/shared/types/guides.types"
 
@@ -101,7 +101,8 @@ export const Order = ({ userInfo }: OrderProps) => {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (kraftId: string) => deleteGuideDbCb(kraftId),
+    mutationFn: ({ kraftId, permanent }: { kraftId: string; permanent: boolean }) =>
+      permanent ? hardDeleteGuideDbCb(kraftId) : deleteGuideDbCb(kraftId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['guides', 'db'] });
     },
@@ -225,8 +226,9 @@ export const Order = ({ userInfo }: OrderProps) => {
     setSelectedDbGuide(null)
   }
 
-  const handleDeleteGuide = (guide: GuideDbRecord) => {
-    deleteMutation.mutate(guide.kraftId, {
+  const handleDeleteGuide = (guide: GuideDbRecord, permanent: boolean) => {
+    if (permanent && !isAdmin) return
+    deleteMutation.mutate({ kraftId: guide.kraftId, permanent }, {
       onSuccess: () => {
         if (selectedDbGuide) {
           setSelectedDbGuide(null)
@@ -234,6 +236,8 @@ export const Order = ({ userInfo }: OrderProps) => {
       },
     })
   }
+
+  const canDelete = (selectedSource === 'ownDb') || (selectedSource === 'allDb' && isAdmin)
 
   const activeDbData = selectedSource === 'allDb' ? adminDbData : dbData
   const activeDbIsPending = selectedSource === 'allDb' ? adminDbIsPending : dbIsPending
@@ -302,8 +306,9 @@ export const Order = ({ userInfo }: OrderProps) => {
       { (selectedSource === 'ownDb' || selectedSource === 'allDb') && selectedDbGuide && (
         <GuideDbDetails
           guide={selectedDbGuide}
+          isAdmin={isAdmin}
           onBack={() => setSelectedDbGuide(null)}
-          onDeleteGuide={selectedSource === 'ownDb' ? handleDeleteGuide : undefined}
+          onDeleteGuide={canDelete ? handleDeleteGuide : undefined}
         />
       )}
       { (selectedSource === 'ownDb' || selectedSource === 'allDb') && !selectedDbGuide && (
@@ -411,8 +416,9 @@ export const Order = ({ userInfo }: OrderProps) => {
                     key={guide.kraftId}
                     guide={guide}
                     isMobile={isMobileTablet}
+                    isAdmin={isAdmin}
                     onViewDetails={setSelectedDbGuide}
-                    onDeleteGuide={selectedSource === 'ownDb' ? handleDeleteGuide : undefined}
+                    onDeleteGuide={canDelete ? handleDeleteGuide : undefined}
                   />
                 ))}
               </div>

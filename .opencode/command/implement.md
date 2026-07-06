@@ -62,6 +62,7 @@ These are non-negotiable. If the plan violates one, stop and ask because the pla
 - **Product SAT**: `src/app/api/product-sat/route.ts` uses `NEXT_PUBLIC_GET_SAT_PRODUCT_URI`, not `BACKEND_URI`.
 - **Forms**: prefer existing `react-hook-form` + `yup` patterns.
 - **Styling**: use Tailwind v4 utility classes and existing Flowbite React/shared UI patterns. Do not add CSS-in-JS or new styling libraries unless explicitly planned.
+- **Visual weight**: use Tailwind `font-bold` / `font-semibold` (e.g. `<span className="font-bold">`) for visual boldness. Do **not** use the HTML `<strong>` element purely to bold text — `<strong>` carries semantic meaning (importance/seriousness) and is reserved for accessibility-relevant emphasis, not visual styling. Reserve `<strong>` for content that genuinely warrants assistive-tech emphasis.
 - **Config**: preserve `withFlowbiteReact(nextConfig)` in `next.config.mjs` and `transpilePackages: ['jose']`.
 - **Do not remove pre-existing `console.log` / `console.warn` / `console.error` statements** unless the plan explicitly says to remove them.
 - **Do not edit `CHANGELOG.md` or manually bump `package.json` version** unless the user explicitly asks; no in-repo release automation is documented.
