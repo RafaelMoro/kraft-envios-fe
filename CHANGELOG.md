@@ -1,3 +1,9 @@
+## v0.49.0 (2026-07-06)
+
+### Pull Requests
+[#107](https://github.com/RafaelMoro/kraft-envios-fe/pull/107) | Add hard delete feture
+
+
 ## v0.48.0 (2026-07-06)
 
 ### Pull Requests
