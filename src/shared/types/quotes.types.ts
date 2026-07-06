@@ -1,6 +1,8 @@
 import { AxiosResponse } from "axios";
 import { number, object, ObjectSchema, string } from "yup";
 
+import { QuoteAdjustmentSourceReference } from "./guides.types";
+
 // Runtime array of supported couriers. Keep this in sync if you add/remove providers.
 export const QUOTE_COURIERS = [
   "Estafeta",
@@ -42,11 +44,17 @@ export interface Quote {
   typeService: QuoteTypeService | null;
   courier: QuoteCourier | null;
   source: ProviderSource;
+  qBaseRef?: number;
+  qAdjFactor?: number;
+  qAdjBasis?: number;
+  qAdjMode?: string;
+  qAdjSrcRef?: QuoteAdjustmentSourceReference;
 }
 
 export interface QuoteUI extends Quote {
   amountFormatted: string;
   logoSrc: QuoteImage;
+  serviceName: string;
 }
 
 export type ProviderImg =

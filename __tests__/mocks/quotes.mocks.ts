@@ -3,6 +3,7 @@ import { QuoteUI } from '@/shared/types/quotes.types'
 export const fedexQuote: QuoteUI = {
   id: '1',
   service: 'Overnight',
+  serviceName: 'Overnight',
   total: 100,
   source: 'Provider A',
   amountFormatted: '$100.00',
@@ -17,6 +18,7 @@ export const fedexQuote: QuoteUI = {
 export const paquetExpQuote: QuoteUI = {
   id: '2',
   service: 'Express',
+  serviceName: 'Express',
   total: 50,
   source: 'Provider B',
   amountFormatted: '$50.00',
@@ -31,6 +33,7 @@ export const paquetExpQuote: QuoteUI = {
 export const otherQuote: QuoteUI = {
   id: '3',
   service: 'Economy',
+  serviceName: 'Economy',
   total: 25,
   source: 'Provider C',
   amountFormatted: '$25.00',
@@ -45,6 +48,7 @@ export const otherQuote: QuoteUI = {
 export const defaultQuote: QuoteUI = {
   id: '4',
   service: 'Standard',
+  serviceName: 'Standard',
   total: 30,
   source: 'Provider D',
   amountFormatted: '$30.00',

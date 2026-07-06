@@ -508,7 +508,7 @@ describe('QuotesSubscreen', () => {
 
     it('When create guide button is clicked with multiple selected quotes, Then it shows error message', async () => {
       const user = userEvent.setup()
-      
+
       // First select multiple quotes by clicking on checkboxes
       const checkboxes = screen.getAllByRole('checkbox')
       await user.click(checkboxes[0])
@@ -518,6 +518,31 @@ describe('QuotesSubscreen', () => {
       await user.click(createGuideButton)
 
       expect(screen.getByText(/solo puede seleccionar una sola cotización para crear una guía/i)).toBeInTheDocument()
+    })
+
+    it('When create guide button is clicked with one selected quote, Then it opens the DB/legacy pre-select flow', async () => {
+      const user = userEvent.setup()
+
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[0])
+
+      const createGuideButton = screen.getByTestId('action-bar-create-guide-button')
+      await user.click(createGuideButton)
+
+      expect(screen.getByText('Crear guía en Kraft')).toBeInTheDocument()
+      expect(screen.getByText('Crear guía externa')).toBeInTheDocument()
+    })
+
+    it('When the DB pre-select DB option is clicked with one selected quote, Then it opens the DB modal', async () => {
+      const user = userEvent.setup()
+
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[0])
+
+      await user.click(screen.getByTestId('action-bar-create-guide-button'))
+      await user.click(screen.getByTestId('guides-db-flow-db-button'))
+
+      expect(screen.getByText('Crear guía en Kraft')).toBeInTheDocument()
     })
 
     it('When send info button is clicked with selected quotes, Then it opens copy modal', async () => {

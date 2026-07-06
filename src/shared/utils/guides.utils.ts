@@ -10,8 +10,13 @@ import {
   CREATE_ADDRESS_GE_ENDPOINT,
   DEFAULT_RFC,
   CREATE_GUIDE_GE_ENDPOINT,
+  CREATE_GUIDE_DB_ENDPOINT,
   GET_GUIDES_ENDPOINT,
   GUIDE_STATUS,
+  GET_GUIDES_DB_ENDPOINT,
+  DELETE_GUIDE_DB_ENDPOINT,
+  GUIDE_DB_FAILURE_MESSAGES,
+  GUIDE_DB_GENERIC_FAILURE_MESSAGE,
 } from "../constants/guides.constants";
 import {
   CreateGuideMnPayload,
@@ -36,8 +41,20 @@ import {
   PersonalDataGEFormValues,
   AddressGE,
   GetGuidesData,
+  CreateGuideDbPayload,
+  CreateGuideDbResponse,
+  DeleteGuideDbResponse,
+  CreateGuideDbParcelPayload,
+  CreateGuideDbFormValues,
+  PackageDimensions,
+  GetGuidesDbParams,
+  GetGuidesDbResponse,
+  GetGuidesDbResponseData,
+  GuidesDbStatus,
+  GuideDbFailureInfo,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
+import { formatNumberToCurrency } from "./global.utils";
 
 //#region Callbacks
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -115,6 +132,93 @@ export const createGuideGECb = async (data: CreateGuideGEPayload) => {
     throw error;
   }
 };
+
+export const createGuideDbCb = async (
+  data: CreateGuideDbPayload,
+): Promise<CreateGuideDbResponse['data']> => {
+  try {
+    const res: AxiosResponse<CreateGuideDbResponse> = await axios.post(
+      CREATE_GUIDE_DB_ENDPOINT,
+      data,
+    );
+    return res?.data?.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbResponse> => {
+  const res: AxiosResponse<DeleteGuideDbResponse> = await axios.delete(
+    `${DELETE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}`,
+  );
+  return res.data;
+};
+
+export const hardDeleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbResponse> => {
+  const res: AxiosResponse<DeleteGuideDbResponse> = await axios.delete(
+    `${DELETE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}/hard`,
+  );
+  return res.data;
+};
+
+/**
+ * Builds the Guides DB parcel payload by converting stored string dimensions to numbers
+ * and attaching optional numeric fields only when supplied. Returns null when required
+ * dimensions cannot be safely converted so callers can block submit before mutation.
+ */
+export const toGuideDbParcelPayload = (
+  packageDimensions: PackageDimensions | null,
+  parcelInfo: CreateGuideDbFormValues['parcelInfo'],
+  satProductId: string,
+): CreateGuideDbParcelPayload | null => {
+  if (!packageDimensions) return null
+
+  const { length, width, height, weight } = packageDimensions
+  if (
+    length === '' || width === '' || height === '' || weight === ''
+  ) {
+    return null
+  }
+
+  const numericLength = Number(length)
+  const numericWidth = Number(width)
+  const numericHeight = Number(height)
+  const numericWeight = Number(weight)
+
+  if (
+    !Number.isFinite(numericLength) ||
+    !Number.isFinite(numericWidth) ||
+    !Number.isFinite(numericHeight) ||
+    !Number.isFinite(numericWeight)
+  ) {
+    return null
+  }
+
+  const payload: CreateGuideDbParcelPayload = {
+    length: numericLength,
+    width: numericWidth,
+    height: numericHeight,
+    weight: numericWeight,
+    content: parcelInfo.content,
+    satProductId,
+  }
+
+  if (parcelInfo.value.trim() !== '') {
+    const value = Number(parcelInfo.value)
+    if (Number.isFinite(value)) {
+      payload.value = value
+    }
+  }
+
+  if (parcelInfo.quantity.trim() !== '') {
+    const quantity = Number(parcelInfo.quantity)
+    if (Number.isFinite(quantity)) {
+      payload.quantity = quantity
+    }
+  }
+
+  return payload
+}
 
 export const getGEAliasesCb = async (
   aliasesOnly?: boolean,
@@ -323,6 +427,26 @@ export const verifyAndUpdateAddressPkk = (
 };
 
 /**
+ * Fills empty optional email/company/reference fields with defaults and combines
+ * name + lastName for the Guides DB confirm step. The caller is responsible for
+ * assembling the rest of the address payload (street, city, alias, town, zipcode, country).
+ * @param address - The personal/contact fields from the address form
+ * @returns Verified personal/contact fields with defaults applied
+ */
+export const verifyAndUpdateAddressGuideDb = (
+  address: Pick<CreateGuideAddressFormValuesMn, 'name' | 'lastName' | 'phone' | 'email' | 'company' | 'reference'>,
+): { name: string; lastName: string; phone: string; email: string; company: string; reference: string } => {
+  return {
+    name: `${address.name ?? ''} ${address.lastName ?? ''}`.trim(),
+    lastName: address.lastName ?? '',
+    phone: address.phone ?? '',
+    email: address.email?.trim() || DEFAULT_EMAIL,
+    company: address.company?.trim() || DEFAULT_COMPANY,
+    reference: address.reference?.trim() || DEFAULT_REFERENCE,
+  }
+}
+
+/**
  * Converts CreateAddressFormValuesGE to CreateAddressGEPayload
  * Maps form field names to API payload field names and ensures required fields
  * @param formValues - The form values object to convert
@@ -471,4 +595,47 @@ export const getGuideStatus = (status: string) => {
  */
 export const generateGuideId = (guide: GetGuidesData): string => {
   return `${guide.source}-${guide.trackingNumber}`;
+};
+
+export const getGuidesDbCb = async (params: GetGuidesDbParams): Promise<GetGuidesDbResponseData> => {
+  const searchParams = new URLSearchParams();
+  searchParams.append('page', String(params.page));
+  searchParams.append('month', String(params.month));
+  searchParams.append('year', String(params.year));
+  if (params.limit !== undefined && params.limit !== 10) {
+    searchParams.append('limit', String(params.limit));
+  }
+  if (params.scope === 'all' || params.scope === 'own') {
+    searchParams.append('scope', params.scope);
+  }
+  if (params.includeDeleted === true) {
+    searchParams.append('includeDeleted', 'true');
+  }
+  if (params.includeInternalPricing === true) {
+    searchParams.append('includeInternalPricing', 'true');
+  }
+
+  const res: AxiosResponse<GetGuidesDbResponse> = await axios.get(
+    `${GET_GUIDES_DB_ENDPOINT}?${searchParams}`,
+  );
+  return res.data.data;
+};
+
+export const getGuideDbStatusLabel = (status: GuidesDbStatus): string => {
+  return status === 'created' ? 'Creado' : 'Fallido';
+};
+
+export const formatInternalPricingBasis = (
+  basis: number,
+  mode: string | null | undefined,
+): string => {
+  if (mode === 'P' || mode === 'p') return `${basis}%`
+  return formatNumberToCurrency(basis)
+}
+
+export const getGuideDbFailureMessage = (failureInfo: GuideDbFailureInfo | null): string | null => {
+  if (!failureInfo) return null;
+  const { errorCode } = failureInfo;
+  const friendlyMessage = GUIDE_DB_FAILURE_MESSAGES[errorCode] ?? GUIDE_DB_GENERIC_FAILURE_MESSAGE;
+  return `${errorCode}: ${friendlyMessage}`;
 };

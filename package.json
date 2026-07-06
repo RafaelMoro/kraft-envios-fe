@@ -1,13 +1,15 @@
 {
   "name": "kraf-envios-fe",
-  "version": "0.43.0",
+  "version": "0.49.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "design:lint": "designmd lint DESIGN.md",
+    "sync:prompts": "node scripts/sync-opencode-commands.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -25,6 +27,7 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@google/design.md": "^0.3.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

@@ -1,3 +1,39 @@
+## v0.49.0 (2026-07-06)
+
+### Pull Requests
+[#107](https://github.com/RafaelMoro/kraft-envios-fe/pull/107) | Add hard delete feture
+
+
+## v0.48.0 (2026-07-06)
+
+### Pull Requests
+[#106](https://github.com/RafaelMoro/kraft-envios-fe/pull/106) | Add soft delete feature
+
+
+## v0.47.0 (2026-07-06)
+
+### Pull Requests
+[#105](https://github.com/RafaelMoro/kraft-envios-fe/pull/105) | Add see guides admin
+
+
+## v0.46.0 (2026-07-06)
+
+### Pull Requests
+[#104](https://github.com/RafaelMoro/kraft-envios-fe/pull/104) | Get guides db
+
+
+## v0.45.0 (2026-06-29)
+
+### Pull Requests
+[#103](https://github.com/RafaelMoro/kraft-envios-fe/pull/103) | Add create guides db
+
+
+## v0.44.0 (2026-06-27)
+
+### Pull Requests
+[#102](https://github.com/RafaelMoro/kraft-envios-fe/pull/102) | Add AI worklows
+
+
 ## v0.43.0 (2026-04-19)
 
 ### Pull Requests

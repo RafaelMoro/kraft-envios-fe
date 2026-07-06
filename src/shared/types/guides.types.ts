@@ -1,6 +1,6 @@
 import { object, ObjectSchema, string, number } from "yup";
 import { emailOptionalValidation } from "./login.types";
-import { ProviderSource, QuoteCourier, QuoteImage } from "./quotes.types";
+import { ProviderSource, QuoteCourier, QuoteImage, QuoteTypeService } from "./quotes.types";
 import { Address } from "./addresses.types";
 import { zipcodeValidation } from "./global.types";
 
@@ -114,12 +114,15 @@ export type CreateGuidePersonalDataTonePayload = Omit<
 >;
 
 export type CreateGuideAddressDataMnFormValues = {
+  alias?: string;
   street1: string;
   neighborhood: string;
   external_number: string;
   city: string;
   state: string;
   reference?: string | null | undefined;
+  town?: string;
+  zipcode?: string;
 };
 
 export type CreateGuideAddressFormValuesMn = PersonalDataFormValues &
@@ -260,6 +263,213 @@ export type CreateGuideGEPayload = {
   origin: CreateGuideAddressValuesGE;
   destination: CreateGuideAddressValuesGE;
   parcel: ParcelInfoValuesGE;
+};
+
+export type CreateGuideDbAddressPayload = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  country: string;
+  reference: string;
+};
+
+export type CreateGuideDbParcelPayload = {
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  content: string;
+  satProductId: string;
+  value?: number;
+  quantity?: number;
+};
+
+export type CreateGuideDbPayload = {
+  provider: ProviderSource;
+  quote: CreateGuideDbQuotePayload;
+  origin: CreateGuideDbAddressPayload;
+  destination: CreateGuideDbAddressPayload;
+  parcel: CreateGuideDbParcelPayload;
+  notifyMe: boolean;
+};
+
+export type CreateGuideDbQuotePayload = {
+  id: string;
+  service: string;
+  total: number;
+  typeService: QuoteTypeService | null;
+  courier: QuoteCourier | null;
+  qBaseRef?: number;
+  qAdjFactor?: number;
+  qAdjBasis?: number;
+  qAdjMode?: string;
+  qAdjSrcRef?: QuoteAdjustmentSourceReference;
+};
+
+export type CreateGuideDbFailureInfo = {
+  errorCode: string;
+  errorDetails?: string | null;
+  timestamp?: string | null;
+};
+
+export type CreateGuideDbResponseData = {
+  status: 'created' | 'failed';
+  kraftId: string;
+  provider: ProviderSource;
+  failureInfo: CreateGuideDbFailureInfo | null;
+};
+
+export type CreateGuideDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: CreateGuideDbResponseData;
+};
+
+export type DeleteGuideDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: { guide: { kraftId: string } };
+};
+
+export type GuidesDbStatus = 'created' | 'failed';
+
+export type GuideDbFailureInfo = {
+  errorCode: string;
+  errorDetails?: string | null;
+  timestamp?: string | null;
+};
+
+export type GuideDbAddress = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  country: string;
+  reference: string;
+};
+
+export type GuideDbParcel = {
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  content: string;
+  satProductId: string;
+  value?: number;
+  quantity?: number;
+};
+
+export type QuoteAdjustmentSourceReference = 'default' | 'custom';
+
+export type GuideDbQuote = {
+  id: string;
+  service: string;
+  total: number;
+  typeService: QuoteTypeService | null;
+  courier: QuoteCourier | null;
+  qBaseRef?: number | null;
+  qAdjFactor?: number | null;
+  qAdjBasis?: number | null;
+  qAdjMode?: string | null;
+  qAdjSrcRef?: QuoteAdjustmentSourceReference | null;
+};
+
+export type GuideDbRecord = {
+  kraftId: string;
+  quote: GuideDbQuote;
+  externalId?: string | null;
+  trackingNumber?: string | null;
+  shipmentNumber?: string | null;
+  carrier?: string | null;
+  price?: string | null;
+  guideLink?: string | null;
+  labelUrl?: string | null;
+  file?: string | null;
+  status: GuidesDbStatus;
+  provider: ProviderSource;
+  isProviderTrackingSynced: boolean;
+  failureInfo: GuideDbFailureInfo | null;
+  origin: GuideDbAddress;
+  destination: GuideDbAddress;
+  parcel: GuideDbParcel;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
+};
+
+export type GetGuidesDbParams = {
+  page: number;
+  month: number;
+  year: number;
+  limit?: 10 | 50 | 100;
+  scope?: 'all' | 'own';
+  includeDeleted?: boolean;
+  includeInternalPricing?: boolean;
+};
+
+export type GetGuidesDbResponseData = {
+  guides: GuideDbRecord[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export type GetGuidesDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: GetGuidesDbResponseData;
+};
+
+export type CreateGuideDbFormValues = {
+  originAddress: CreateGuideAddressFormValuesMn;
+  destinationAddress: CreateGuideAddressFormValuesMn;
+  parcelInfo: {
+    content: string;
+    value: string;
+    quantity: string;
+    notifyMe: boolean;
+  };
+};
+
+export type CreateGuideDbAddressFormValues = {
+  alias: string;
+  name: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  street1: string;
+  external_number: string;
+  neighborhood: string;
+  city: string;
+  town: string;
+  state: string;
+  zipcode: string;
+  reference: string;
 };
 
 export type CreateAddressGEPayload = {
@@ -471,44 +681,46 @@ export const AddPersonalDataFormSchema: ObjectSchema<PersonalDataFormValues> =
     ],
   );
 
-export const CreateGuideAddressFormSchemaMn: ObjectSchema<CreateGuideAddressFormValuesMn> =
-  AddPersonalDataFormSchema.concat(
-    object().shape(
-      {
-        street1: string()
-          .required("Calle es requerida")
-          .min(2, "La calle debe tener al menos 2 caracteres"),
-        neighborhood: string()
-          .required("Colonia es requerida")
-          .min(2, "La colonia debe tener al menos 2 caracteres"),
-        external_number: string()
-          .required("Número exterior es requerido")
-          .matches(/^[a-zA-Z0-9]+$/, {
-            excludeEmptyString: true,
-            message: "El número exterior solo puede contener letras y números",
-          })
-          .min(1, "El número exterior debe tener al menos 1 carácter"),
-        city: string()
-          .required("Ciudad es requerida")
-          .min(2, "La ciudad debe tener al menos 2 caracteres"),
-        state: string()
-          .required("Estado es requerido")
-          .min(2, "El estado debe tener al menos 2 caracteres"),
-        reference: string()
-          .nullable()
-          .notRequired()
-          .when("reference", {
-            is: (value: string) => value?.length,
-            then: (rule) =>
-              rule.min(
-                2,
-                "La referencia del domicilio debe tener al menos 2 caracteres",
-              ),
-          }),
-      },
-      [["reference", "reference"]],
-    ),
-  );
+export const CreateGuideAddressFormSchemaMn = AddPersonalDataFormSchema.concat(
+  object().shape(
+    {
+      street1: string()
+        .required("Calle es requerida")
+        .min(2, "La calle debe tener al menos 2 caracteres"),
+      neighborhood: string()
+        .required("Colonia es requerida")
+        .min(2, "La colonia debe tener al menos 2 caracteres"),
+      external_number: string()
+        .required("Número exterior es requerido")
+        .matches(/^[a-zA-Z0-9]+$/, {
+          excludeEmptyString: true,
+          message: "El número exterior solo puede contener letras y números",
+        })
+        .min(1, "El número exterior debe tener al menos 1 carácter"),
+      city: string()
+        .required("Ciudad es requerida")
+        .min(2, "La ciudad debe tener al menos 2 caracteres"),
+      state: string()
+        .required("Estado es requerido")
+        .min(2, "El estado debe tener al menos 2 caracteres"),
+      reference: string()
+        .nullable()
+        .notRequired()
+        .when("reference", {
+          is: (value: string) => value?.length,
+          then: (rule) =>
+            rule.min(
+              2,
+              "La referencia del domicilio debe tener al menos 2 caracteres",
+            ),
+        }),
+      alias: string().notRequired(),
+      town: string().notRequired(),
+      zipcode: string().notRequired(),
+    },
+    [["reference", "reference"]],
+  ),
+)
 
 export const ParcelInfoFormValuesFormSchema: ObjectSchema<ParcelInfoFormValues> =
   object({
