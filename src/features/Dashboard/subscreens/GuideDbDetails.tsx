@@ -52,6 +52,12 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
     guide.quote.qAdjMode != null ||
     guide.quote.qAdjSrcRef != null
 
+  const qAdjBasisDisplay = guide.quote.qAdjBasis != null
+    ? (guide.quote.qAdjMode?.toUpperCase() === 'P'
+        ? `${guide.quote.qAdjBasis}%`
+        : formatNumberToCurrency(guide.quote.qAdjBasis))
+    : null
+
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -174,9 +180,7 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
             { guide.quote.qAdjBasis != null && (
               <Detail
                 label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjBasis}
-                value={guide.quote.qAdjMode?.toUpperCase() === 'P'
-                  ? `${guide.quote.qAdjBasis}%`
-                  : formatNumberToCurrency(guide.quote.qAdjBasis)}
+                value={qAdjBasisDisplay!}
               />
             ) }
             { guide.quote.qAdjMode != null && (
