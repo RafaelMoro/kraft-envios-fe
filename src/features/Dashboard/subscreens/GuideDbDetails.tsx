@@ -2,7 +2,7 @@ import { RiArrowLeftLine } from "@remixicon/react"
 import clsx from "clsx"
 
 import { GuideDbRecord } from "@/shared/types/guides.types"
-import { formatDateToSpanish, getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
+import { formatDateToSpanish, formatInternalPricingBasis, getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { greySecondaryCSS } from "@/shared/constants/global.constants"
 import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE } from "@/shared/constants/addresses.constants"
@@ -51,12 +51,6 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
     guide.quote.qAdjBasis != null ||
     guide.quote.qAdjMode != null ||
     guide.quote.qAdjSrcRef != null
-
-  const qAdjBasisDisplay = guide.quote.qAdjBasis != null
-    ? (guide.quote.qAdjMode?.toUpperCase() === 'P'
-        ? `${guide.quote.qAdjBasis}%`
-        : formatNumberToCurrency(guide.quote.qAdjBasis))
-    : null
 
   return (
     <section className="flex flex-col gap-4">
@@ -180,7 +174,7 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
             { guide.quote.qAdjBasis != null && (
               <Detail
                 label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjBasis}
-                value={qAdjBasisDisplay!}
+                value={formatInternalPricingBasis(guide.quote.qAdjBasis, guide.quote.qAdjMode)}
               />
             ) }
             { guide.quote.qAdjMode != null && (
