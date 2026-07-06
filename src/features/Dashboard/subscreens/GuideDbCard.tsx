@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react"
+import { Button } from "flowbite-react"
 import { RiArrowRightLine, RiDeleteBinLine } from "@remixicon/react"
 import clsx from "clsx"
 
@@ -9,14 +9,9 @@ import { GuideDbRecord } from "@/shared/types/guides.types"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { formatDateToSpanish, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
-import {
-  GUIDES_DB_DELETE_MODAL_BODY,
-  GUIDES_DB_DELETE_MODAL_CANCEL,
-  GUIDES_DB_DELETE_MODAL_CONFIRM,
-  GUIDES_DB_DELETE_MODAL_TITLE,
-  GUIDES_DB_DELETED_MESSAGE,
-} from "@/shared/constants/guides.constants"
+import { GUIDES_DB_DELETED_MESSAGE } from "@/shared/constants/guides.constants"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage"
+import { GuideDbDeleteModal } from "@/features/Dashboard/subscreens/GuideDbDeleteModal"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
 
@@ -123,33 +118,14 @@ export function GuideDbCard({
         </div>
       ) }
       { onDeleteGuide && (
-        <Modal show={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} size="sm">
-          <ModalHeader>{GUIDES_DB_DELETE_MODAL_TITLE}</ModalHeader>
-          <ModalBody>
-            <p className="text-center text-red-600 dark:text-red-400">{GUIDES_DB_DELETE_MODAL_BODY}</p>
-          </ModalBody>
-          <ModalFooter>
-            <div className="w-full flex justify-between">
-              <Button
-                color="red"
-                data-testid="guide-db-delete-confirm"
-                onClick={() => {
-                  setIsConfirmOpen(false)
-                  onDeleteGuide(guide)
-                }}
-              >
-                {GUIDES_DB_DELETE_MODAL_CONFIRM}
-              </Button>
-              <Button
-                color="gray"
-                data-testid="guide-db-delete-cancel"
-                onClick={() => setIsConfirmOpen(false)}
-              >
-                {GUIDES_DB_DELETE_MODAL_CANCEL}
-              </Button>
-            </div>
-          </ModalFooter>
-        </Modal>
+        <GuideDbDeleteModal
+          open={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={() => {
+            setIsConfirmOpen(false)
+            onDeleteGuide(guide)
+          }}
+        />
       ) }
     </article>
   )
