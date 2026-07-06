@@ -571,15 +571,14 @@ describe('Order', () => {
 
       expect(screen.getByRole('button', { name: 'Ver guias externas' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Ver mis guias' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Ver todas las guias' })).toBeInTheDocument();
     });
 
-    it('Then should disable Ver todas las guias button', async () => {
+    it('Then should not render Ver todas las guias button for non-admin user', async () => {
       mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse({ guides: [] }));
 
       renderWithQueryClient(<Order userInfo={mockUserInfo} />);
 
-      expect(screen.getByRole('button', { name: 'Ver todas las guias' })).toBeDisabled();
+      expect(screen.queryByRole('button', { name: 'Ver todas las guias' })).not.toBeInTheDocument();
     });
 
     it('Then should call getGuidesDbCb with default params when switching to Ver mis guias', async () => {
@@ -869,6 +868,437 @@ describe('Order', () => {
 
         expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+
+  describe('When admin user views all guides', () => {
+    const mockAdminUserInfo: LoginData = {
+      data: {
+        user: {
+          name: 'Admin User',
+          email: 'admin@example.com',
+          lastName: 'Admin',
+          role: ['admin'],
+        },
+      },
+      error: null,
+      message: null,
+      success: true,
+      version: '1.0',
+    };
+
+    const createMockDbRecord = (overrides: Partial<GuideDbRecord> = {}): GuideDbRecord => ({
+      kraftId: 'KB-12345',
+      quote: {
+        id: 'quote-123',
+        service: 'Estafeta Terrestre',
+        total: 178.56,
+        typeService: 'standard',
+        courier: 'Estafeta',
+      },
+      externalId: null,
+      trackingNumber: null,
+      shipmentNumber: null,
+      carrier: null,
+      price: null,
+      guideLink: null,
+      labelUrl: null,
+      file: null,
+      status: 'created',
+      provider: 'Mn',
+      isProviderTrackingSynced: false,
+      failureInfo: null,
+      origin: {
+        alias: 'Casa',
+        name: 'Juan',
+        lastName: 'Perez',
+        phone: '5512345678',
+        email: 'juan@example.com',
+        company: '',
+        street1: 'Av Principal',
+        external_number: '123',
+        neighborhood: 'Centro',
+        city: 'CDMX',
+        town: '',
+        state: 'Ciudad de Mexico',
+        zipcode: '06600',
+        country: 'Mexico',
+        reference: 'Entre calle 1 y 2',
+      },
+      destination: {
+        alias: 'Oficina',
+        name: 'Maria',
+        lastName: 'Garcia',
+        phone: '5587654321',
+        email: 'maria@example.com',
+        company: '',
+        street1: 'Calle 2',
+        external_number: '456',
+        neighborhood: 'Polanco',
+        city: 'CDMX',
+        town: '',
+        state: 'Ciudad de Mexico',
+        zipcode: '11560',
+        country: 'Mexico',
+        reference: 'Torre corporate',
+      },
+      parcel: {
+        length: 10,
+        width: 10,
+        height: 10,
+        weight: 1,
+        content: 'Electronica',
+        satProductId: 'SAT-001',
+        value: 500,
+        quantity: 1,
+      },
+      createdAt: '2026-06-15T10:00:00Z',
+      updatedAt: '2026-06-15T10:00:00Z',
+      deletedAt: null,
+      deletedBy: null,
+      ...overrides,
+    });
+
+    const createMockDbResponse = (overrides: Partial<GetGuidesDbResponseData> = {}): GetGuidesDbResponseData => ({
+      guides: [createMockDbRecord()],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+      ...overrides,
+    });
+
+    beforeEach(() => {
+      mockedUseMediaQuery.mockReturnValue({
+        isMobile: false,
+        isTablet: false,
+        isTabletDesktop: true,
+        isMobileTablet: false,
+        isDesktop: true,
+        isDesktopX2: false,
+      });
+      mockedGetGuidesCb.mockResolvedValue({
+        guides: mockGuides,
+        messages: [],
+      });
+    });
+
+    it('Then should render Ver todas las guias button enabled for admin', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      const allButton = screen.getByRole('button', { name: 'Ver todas las guias' });
+      expect(allButton).toBeInTheDocument();
+      expect(allButton).toBeEnabled();
+    });
+
+    it('Then should call getGuidesDbCb with scope all and current month/year/page/limit when clicking Ver todas las guias', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({
+            scope: 'all',
+            page: 1,
+            limit: 10,
+          })
+        );
+      });
+    });
+
+    it('Then should call getGuidesDbCb with scope own after switching the scope select', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ scope: 'all' })
+        );
+      });
+
+      mockedGetGuidesDbCb.mockClear();
+      await userEvent.selectOptions(screen.getByLabelText('Alcance:'), 'own');
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ scope: 'own' })
+        );
+      });
+    });
+
+    it('Then should never call getGuidesDbCb with a scope for non-admin user', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalled();
+      });
+
+      const callsWithScope = mockedGetGuidesDbCb.mock.calls.filter(
+        ([arg]) => arg && typeof arg === 'object' && 'scope' in arg && (arg as { scope?: unknown }).scope !== undefined,
+      );
+      expect(callsWithScope).toHaveLength(0);
+    });
+
+    it('Then should render admin list through GuideDbCard when admin clicks Ver todas las guias', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+    });
+
+    it('Then should open and close admin guide details via GuideDbDetails', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByText('KB-12345')).toBeInTheDocument();
+      expect(screen.getByTestId('guide-db-details-back-button')).toBeInTheDocument();
+
+      await userEvent.click(screen.getByTestId('guide-db-details-back-button'));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('guide-db-details-header')).not.toBeInTheDocument();
+      });
+      expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+    });
+
+    it('Then should show soft-delete metadata on the card when deletedAt is non-null', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              deletedAt: '2026-06-15T10:00:00Z',
+              deletedBy: 'admin@example.com',
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-card-deleted')).toBeInTheDocument();
+      });
+      expect(screen.getByText(/Eliminada el .*admin@example\.com/)).toBeInTheDocument();
+    });
+
+    it('Then should not show soft-delete metadata on the card when deletedAt is null', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({ deletedAt: null, deletedBy: null }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('guide-db-card-deleted')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Eliminada el/)).not.toBeInTheDocument();
+    });
+
+    it('Then should show the soft-delete block in details when deletedAt is non-null', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              status: 'created',
+              failureInfo: null,
+              deletedAt: '2026-06-15T10:00:00Z',
+              deletedBy: 'admin@example.com',
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-deleted')).toBeInTheDocument();
+      expect(screen.queryByTestId('guide-db-details-error')).not.toBeInTheDocument();
+    });
+
+    it('Then should call getGuidesDbCb with includeInternalPricing true after toggling Mostrar precio interno', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.not.objectContaining({ includeInternalPricing: true })
+        );
+      });
+
+      mockedGetGuidesDbCb.mockClear();
+      await userEvent.click(screen.getByTestId('order-admin-internal-pricing-toggle'));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ includeInternalPricing: true })
+        );
+      });
+    });
+
+    it('Then should call getGuidesDbCb with includeDeleted true after toggling Incluir guías eliminadas', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.not.objectContaining({ includeDeleted: true })
+        );
+      });
+
+      mockedGetGuidesDbCb.mockClear();
+      await userEvent.click(screen.getByTestId('order-admin-include-deleted-toggle'));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ includeDeleted: true })
+        );
+      });
+    });
+
+    it('Then should show the internal pricing block in details when q* fields are present', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              quote: {
+                id: 'quote-internal',
+                service: 'Estafeta',
+                total: 230.7825,
+                typeService: 'nextDay',
+                courier: null,
+                qBaseRef: 197.25,
+                qAdjFactor: 33.5325,
+                qAdjBasis: 17,
+                qAdjMode: 'p',
+                qAdjSrcRef: 'default',
+              },
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-internal-pricing')).toBeInTheDocument();
+      expect(screen.getByText('PRECIO INTERNO')).toBeInTheDocument();
+      expect(screen.getByText('Base')).toBeInTheDocument();
+      expect(screen.getByText('$197.25')).toBeInTheDocument();
+      expect(screen.getByText('Factor de ajuste')).toBeInTheDocument();
+      expect(screen.getByText('Base de ajuste')).toBeInTheDocument();
+      expect(screen.getByText('17%')).toBeInTheDocument();
+      expect(screen.getByText('Modo de ajuste')).toBeInTheDocument();
+      expect(screen.getByText('p')).toBeInTheDocument();
+      expect(screen.getByText('Origen del ajuste')).toBeInTheDocument();
+      expect(screen.getByText('Global')).toBeInTheDocument();
+    });
+
+    it('Then should not show the internal pricing block when no q* field is present', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.queryByTestId('guide-db-details-internal-pricing')).not.toBeInTheDocument();
+    });
+
+    it('Then should keep the internal pricing block independent of failure status', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              status: 'failed',
+              failureInfo: {
+                errorCode: 'GDE-PVR-005',
+                errorDetails: 'Invalid address',
+                timestamp: '2026-06-15T10:00:00Z',
+              },
+              quote: {
+                id: 'quote-internal-failed',
+                service: 'Estafeta',
+                total: 230.7825,
+                typeService: 'nextDay',
+                courier: null,
+                qBaseRef: 197.25,
+                qAdjFactor: 33.5325,
+                qAdjBasis: 17,
+                qAdjMode: 'p',
+                qAdjSrcRef: 'default',
+              },
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-internal-pricing')).toBeInTheDocument();
+      expect(screen.getByTestId('guide-db-details-error')).toBeInTheDocument();
     });
   });
 });

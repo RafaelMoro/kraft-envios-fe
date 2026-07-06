@@ -313,7 +313,7 @@ export type CreateGuideDbQuotePayload = {
   qAdjFactor?: number;
   qAdjBasis?: number;
   qAdjMode?: string;
-  qAdjSrcRef?: string;
+  qAdjSrcRef?: QuoteAdjustmentSourceReference;
 };
 
 export type CreateGuideDbFailureInfo = {
@@ -373,12 +373,19 @@ export type GuideDbParcel = {
   quantity?: number;
 };
 
+export type QuoteAdjustmentSourceReference = 'default' | 'custom';
+
 export type GuideDbQuote = {
   id: string;
   service: string;
   total: number;
   typeService: QuoteTypeService | null;
   courier: QuoteCourier | null;
+  qBaseRef?: number | null;
+  qAdjFactor?: number | null;
+  qAdjBasis?: number | null;
+  qAdjMode?: string | null;
+  qAdjSrcRef?: QuoteAdjustmentSourceReference | null;
 };
 
 export type GuideDbRecord = {
@@ -410,6 +417,9 @@ export type GetGuidesDbParams = {
   month: number;
   year: number;
   limit?: 10 | 50 | 100;
+  scope?: 'all' | 'own';
+  includeDeleted?: boolean;
+  includeInternalPricing?: boolean;
 };
 
 export type GetGuidesDbResponseData = {

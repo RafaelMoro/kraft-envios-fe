@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Button, ButtonGroup, Label, Select } from "flowbite-react"
+import { Button, ButtonGroup, Label, Select, ToggleSwitch } from "flowbite-react"
 import clsx from "clsx"
 
 import { LoginData } from "@/shared/types/login.types"
@@ -14,9 +14,19 @@ import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { GuideDbCard } from "@/features/Dashboard/subscreens/GuideDbCard"
 import { GuideDbDetails } from "@/features/Dashboard/subscreens/GuideDbDetails"
 import { Notification } from "@/shared/ui/atoms/Notification"
-import { ERROR_TONE_GUIDES_SERVER_MESSAGE, ERROR_GE_GUIDES_SERVER_MESSAGE, ERROR_GUIDES_USER_MESSAGE_BASE, GUIDES_DB_EMPTY_MESSAGE, GUIDES_DB_ERROR_MESSAGE } from "@/shared/constants/guides.constants"
+import {
+  ERROR_TONE_GUIDES_SERVER_MESSAGE,
+  ERROR_GE_GUIDES_SERVER_MESSAGE,
+  ERROR_GUIDES_USER_MESSAGE_BASE,
+  GUIDES_DB_ADMIN_INCLUDE_DELETED_LABEL,
+  GUIDES_DB_ADMIN_INCLUDE_INTERNAL_PRICING_LABEL,
+  GUIDES_DB_ADMIN_SCOPE_ALL_LABEL,
+  GUIDES_DB_ADMIN_SCOPE_OWN_LABEL,
+  GUIDES_DB_EMPTY_MESSAGE,
+  GUIDES_DB_ERROR_MESSAGE,
+} from "@/shared/constants/guides.constants"
 
-type GuideListSource = 'external' | 'ownDb'
+type GuideListSource = 'external' | 'ownDb' | 'allDb'
 
 interface OrderProps {
   userInfo: LoginData | null
@@ -49,12 +59,17 @@ export const Order = ({ userInfo }: OrderProps) => {
     updateNotificationMessage,
   } = useNotification();
 
+  const isAdmin = Array.isArray(userInfo?.data?.user?.role) && userInfo?.data?.user?.role.includes('admin')
+
   const [selectedSource, setSelectedSource] = useState<GuideListSource>('external')
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth() + 1)
   const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear())
   const [dbPage, setDbPage] = useState(1)
   const [dbLimit, setDbLimit] = useState<10 | 50 | 100>(10)
   const [selectedDbGuide, setSelectedDbGuide] = useState<GuideDbRecord | null>(null)
+  const [adminScope, setAdminScope] = useState<'all' | 'own'>('all')
+  const [includeDeleted, setIncludeDeleted] = useState(false)
+  const [includeInternalPricing, setIncludeInternalPricing] = useState(false)
 
   const [guides, setGuides] = useState<GuideUI[]>([])
   const { data, isPending, isError } = useQuery({
@@ -67,6 +82,20 @@ export const Order = ({ userInfo }: OrderProps) => {
     queryKey: ['guides', 'db', selectedMonth, selectedYear, dbPage, dbLimit],
     queryFn: () => getGuidesDbCb({ page: dbPage, month: selectedMonth, year: selectedYear, limit: dbLimit }),
     enabled: selectedSource === 'ownDb',
+  })
+
+  const { data: adminDbData, isPending: adminDbIsPending, isError: adminDbIsError } = useQuery({
+    queryKey: ['guides', 'db', 'admin', adminScope, includeDeleted, includeInternalPricing, selectedMonth, selectedYear, dbPage, dbLimit],
+    queryFn: () => getGuidesDbCb({
+      page: dbPage,
+      month: selectedMonth,
+      year: selectedYear,
+      limit: dbLimit,
+      scope: adminScope,
+      includeDeleted,
+      includeInternalPricing,
+    }),
+    enabled: selectedSource === 'allDb' && isAdmin,
   })
 
   const messages = data?.messages
@@ -159,7 +188,35 @@ export const Order = ({ userInfo }: OrderProps) => {
     setSelectedDbGuide(null)
   }
 
-  const totalPages = dbData?.totalPages ?? 1
+  const handleSelectAllDbSource = () => {
+    setSelectedSource('allDb')
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
+  const handleAdminScopeChange = (scope: 'all' | 'own') => {
+    setAdminScope(scope)
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
+  const handleIncludeDeletedChange = (value: boolean) => {
+    setIncludeDeleted(value)
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
+  const handleIncludeInternalPricingChange = (value: boolean) => {
+    setIncludeInternalPricing(value)
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
+  const activeDbData = selectedSource === 'allDb' ? adminDbData : dbData
+  const activeDbIsPending = selectedSource === 'allDb' ? adminDbIsPending : dbIsPending
+  const activeDbIsError = selectedSource === 'allDb' ? adminDbIsError : dbIsError
+
+  const totalPages = activeDbData?.totalPages ?? 1
 
   return (
     <main className='w-full p-4 flex flex-col gap-5'>
@@ -186,12 +243,15 @@ export const Order = ({ userInfo }: OrderProps) => {
           >
             Ver mis guias
           </Button>
-          <Button
-            disabled
-            color="alternative"
-          >
-            Ver todas las guias
-          </Button>
+          {isAdmin && (
+            <Button
+              className={clsx({ "text-indigo-600 dark:text-indigo-400": selectedSource === 'allDb' })}
+              onClick={handleSelectAllDbSource}
+              color="alternative"
+            >
+              Ver todas las guias
+            </Button>
+          )}
         </ButtonGroup>
       </div>
 
@@ -216,13 +276,13 @@ export const Order = ({ userInfo }: OrderProps) => {
         </div>
       )}
 
-      { selectedSource === 'ownDb' && selectedDbGuide && (
+      { (selectedSource === 'ownDb' || selectedSource === 'allDb') && selectedDbGuide && (
         <GuideDbDetails
           guide={selectedDbGuide}
           onBack={() => setSelectedDbGuide(null)}
         />
       )}
-      { selectedSource === 'ownDb' && !selectedDbGuide && (
+      { (selectedSource === 'ownDb' || selectedSource === 'allDb') && !selectedDbGuide && (
         <>
           <div className="flex flex-wrap gap-4 justify-center items-center">
             <div className="flex items-center gap-2">
@@ -264,9 +324,37 @@ export const Order = ({ userInfo }: OrderProps) => {
                 <option value={100}>100</option>
               </Select>
             </div>
+            { selectedSource === 'allDb' && (
+              <>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="order-admin-scope">Alcance:</Label>
+                  <Select
+                    id="order-admin-scope"
+                    className="w-44"
+                    value={adminScope}
+                    onChange={(e) => handleAdminScopeChange(e.target.value as 'all' | 'own')}
+                  >
+                    <option value="all">{GUIDES_DB_ADMIN_SCOPE_ALL_LABEL}</option>
+                    <option value="own">{GUIDES_DB_ADMIN_SCOPE_OWN_LABEL}</option>
+                  </Select>
+                </div>
+                <ToggleSwitch
+                  checked={includeDeleted}
+                  label={GUIDES_DB_ADMIN_INCLUDE_DELETED_LABEL}
+                  onChange={handleIncludeDeletedChange}
+                  data-testid="order-admin-include-deleted-toggle"
+                />
+                <ToggleSwitch
+                  checked={includeInternalPricing}
+                  label={GUIDES_DB_ADMIN_INCLUDE_INTERNAL_PRICING_LABEL}
+                  onChange={handleIncludeInternalPricingChange}
+                  data-testid="order-admin-internal-pricing-toggle"
+                />
+              </>
+            ) }
           </div>
 
-          { dbIsError && (
+          { activeDbIsError && (
             <div className="flex flex-col gap-5">
               <h2 className="text-2xl font-bold text-center tracking-tight">
                 Oops!
@@ -277,13 +365,13 @@ export const Order = ({ userInfo }: OrderProps) => {
             </div>
           )}
 
-          { !dbIsError && dbIsPending && (
+          { !activeDbIsError && activeDbIsPending && (
             <div className="flex justify-center py-8">
               <p className="text-gray-500 dark:text-gray-400">Cargando...</p>
             </div>
           )}
 
-          { !dbIsError && !dbIsPending && dbData?.guides.length === 0 && (
+          { !activeDbIsError && !activeDbIsPending && activeDbData?.guides.length === 0 && (
             <div className="flex flex-col gap-5">
               <p className="text-center text-gray-600 dark:text-gray-400">
                 {GUIDES_DB_EMPTY_MESSAGE}
@@ -291,10 +379,10 @@ export const Order = ({ userInfo }: OrderProps) => {
             </div>
           )}
 
-          { !dbIsError && !dbIsPending && dbData && dbData.guides.length > 0 && (
+          { !activeDbIsError && !activeDbIsPending && activeDbData && activeDbData.guides.length > 0 && (
             <>
               <div className="grid gap-3">
-                {dbData.guides.map((guide) => (
+                {activeDbData.guides.map((guide) => (
                   <GuideDbCard
                     key={guide.kraftId}
                     guide={guide}

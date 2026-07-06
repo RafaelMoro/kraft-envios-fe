@@ -52,6 +52,7 @@ import {
   GuideDbFailureInfo,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
+import { formatNumberToCurrency } from "./global.utils";
 
 //#region Callbacks
 export const getProductSatInfo = async (data: GetProductSatIdPayload) => {
@@ -588,6 +589,15 @@ export const getGuidesDbCb = async (params: GetGuidesDbParams): Promise<GetGuide
   if (params.limit !== undefined && params.limit !== 10) {
     searchParams.append('limit', String(params.limit));
   }
+  if (params.scope === 'all' || params.scope === 'own') {
+    searchParams.append('scope', params.scope);
+  }
+  if (params.includeDeleted === true) {
+    searchParams.append('includeDeleted', 'true');
+  }
+  if (params.includeInternalPricing === true) {
+    searchParams.append('includeInternalPricing', 'true');
+  }
 
   const res: AxiosResponse<GetGuidesDbResponse> = await axios.get(
     `${GET_GUIDES_DB_ENDPOINT}?${searchParams}`,
@@ -598,6 +608,14 @@ export const getGuidesDbCb = async (params: GetGuidesDbParams): Promise<GetGuide
 export const getGuideDbStatusLabel = (status: GuidesDbStatus): string => {
   return status === 'created' ? 'Creado' : 'Fallido';
 };
+
+export const formatInternalPricingBasis = (
+  basis: number,
+  mode: string | null | undefined,
+): string => {
+  if (mode === 'P' || mode === 'p') return `${basis}%`
+  return formatNumberToCurrency(basis)
+}
 
 export const getGuideDbFailureMessage = (failureInfo: GuideDbFailureInfo | null): string | null => {
   if (!failureInfo) return null;

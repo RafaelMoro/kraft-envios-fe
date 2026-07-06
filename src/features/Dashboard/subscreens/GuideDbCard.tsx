@@ -4,8 +4,9 @@ import clsx from "clsx"
 import { primaryButtonCSS } from "@/shared/constants/global.constants"
 import { GuideDbRecord } from "@/shared/types/guides.types"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
-import { getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
+import { formatDateToSpanish, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
+import { GUIDES_DB_DELETED_MESSAGE } from "@/shared/constants/guides.constants"
 import { CourierImage } from "@/shared/ui/atoms/CourierImage"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
@@ -87,6 +88,15 @@ export function GuideDbCard({
           Ver detalles
         </button>
       </div>
+      { guide.deletedAt != null && (
+        <div className="w-full mt-3 flex justify-center" data-testid="guide-db-card-deleted">
+          <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800 dark:bg-red-900 dark:text-red-200">
+            {GUIDES_DB_DELETED_MESSAGE
+              .replace('{date}', formatDateToSpanish(new Date(guide.deletedAt)).date)
+              .replace('{deletedBy}', guide.deletedBy ?? '—')}
+          </span>
+        </div>
+      ) }
     </article>
   )
 }

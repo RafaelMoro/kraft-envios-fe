@@ -82,6 +82,7 @@ For each file change, specify:
 - **Action** - Create / Modify / Delete.
 - **For modifications** - line range, function/component name, or "near <symbol>".
 - **Code structure** - function signatures, key props, state shape, critical conditionals. Do not write full implementations.
+- **Code and JSON examples** - any code snippet, function signature, type definition, JSON shape, or other multi-line structured payload in the planning doc MUST be wrapped in a fenced codeblock (```lang ...```) with the appropriate language tag (e.g. `ts`, `tsx`, `json`, `bash`). This applies to inline examples as well as separate snippets. Do not embed multi-line code/JSON in prose.
 - **Edge cases** - only non-obvious ones, such as client/server component boundaries, httpOnly session cookies, mixed API response envelopes, mobile/tablet dashboard rendering, or `product-sat` using an external SAT URI instead of `BACKEND_URI`.
 - **Rationale** - 1-2 sentences only when not self-evident.
 

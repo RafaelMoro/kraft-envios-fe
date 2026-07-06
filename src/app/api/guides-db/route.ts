@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = request.nextUrl
     const params: Record<string, string> = {}
-    const entries = ['page', 'month', 'year', 'limit']
+    const entries = ['page', 'month', 'year', 'limit', 'scope', 'includeDeleted', 'includeInternalPricing']
     for (const key of entries) {
       const value = searchParams.get(key)
       if (value !== null) {
@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const uri = `${process.env.BACKEND_URI}/guides/db`
+    const scope = searchParams.get('scope')
+    const path = scope === 'all' || scope === 'own' ? '/guides/db/admin' : '/guides/db'
+    const uri = `${process.env.BACKEND_URI}${path}`
     const res: AxiosResponse<GetGuidesDbResponse> = await axios.get(uri, {
       headers: {
         'Authorization': `Bearer ${accessToken}`

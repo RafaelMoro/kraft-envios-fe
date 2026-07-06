@@ -8,6 +8,7 @@ import {
   CreateGuideAddressValuesPkk,
   CreateGuideDbAddressFormValues,
   CreateGuideDbFormValues,
+  QuoteAdjustmentSourceReference,
 } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
@@ -282,6 +283,26 @@ export const GUIDE_DB_GENERIC_ERROR_MESSAGE =
 export const GUIDES_DB_EMPTY_MESSAGE = 'No hay guias para el mes seleccionado.'
 
 export const GUIDES_DB_ERROR_MESSAGE = 'Ha sucedido un error. Intentelo nuevamente'
+
+export const GUIDES_DB_ADMIN_SCOPE_ALL_LABEL = 'Todas las guías'
+export const GUIDES_DB_ADMIN_SCOPE_OWN_LABEL = 'Mis guías'
+export const GUIDES_DB_ADMIN_INCLUDE_DELETED_LABEL = 'Incluir guías eliminadas'
+export const GUIDES_DB_ADMIN_INCLUDE_INTERNAL_PRICING_LABEL = 'Mostrar precio interno'
+export const GUIDES_DB_DELETED_MESSAGE = 'Eliminada el {date} por {deletedBy}'
+export const GUIDES_DB_INTERNAL_PRICING_SECTION_TITLE = 'PRECIO INTERNO'
+
+export const GUIDES_DB_INTERNAL_PRICING_FIELDS: Record<string, string> = {
+  qBaseRef: 'Base',
+  qAdjFactor: 'Factor de ajuste',
+  qAdjBasis: 'Base de ajuste',
+  qAdjMode: 'Modo de ajuste',
+  qAdjSrcRef: 'Origen del ajuste',
+}
+
+export const GUIDES_DB_INTERNAL_PRICING_SOURCE_LABELS: Record<QuoteAdjustmentSourceReference, string> = {
+  default: 'Global',
+  custom: 'Personalizado',
+}
 
 export const GUIDE_DB_FAILURE_MESSAGES: Record<string, string> = {
   'GDE-PVR-005': 'El proveedor rechazó algunos datos de la guía. Revisa la información del envío e intenta crearla nuevamente.',
