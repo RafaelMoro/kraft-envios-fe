@@ -1978,6 +1978,47 @@ describe('Order', () => {
         expect(mockedHardDeleteGuideDbCb).toHaveBeenCalledWith('KB-12345');
       });
     });
+
+    it('Then should hard-delete a soft-deleted guide surfaced via the Incluir guías eliminadas toggle', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              deletedAt: '2026-06-15T10:00:00Z',
+              deletedBy: 'admin@example.com',
+            }),
+          ],
+        })
+      );
+      mockedHardDeleteGuideDbCb.mockResolvedValue({
+        version: '1.0',
+        message: null,
+        error: null,
+        data: { guide: { kraftId: 'KB-12345' } },
+      });
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await userEvent.click(screen.getByTestId('order-admin-include-deleted-toggle'));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ includeDeleted: true }),
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-delete-button'));
+      await userEvent.click(screen.getByTestId('guide-db-hard-delete-checkbox'));
+      await userEvent.click(screen.getByTestId('guide-db-delete-confirm'));
+
+      await waitFor(() => {
+        expect(mockedHardDeleteGuideDbCb).toHaveBeenCalledWith('KB-12345');
+      });
+    });
   });
 
   describe('When non-admin views Ver mis guias', () => {

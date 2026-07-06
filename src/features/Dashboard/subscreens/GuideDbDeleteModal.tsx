@@ -46,7 +46,7 @@ export const GuideDbDeleteModal = ({ open, onClose, onConfirm, isAdmin }: GuideD
               onChange={(e) => setPermanent(e.target.checked)}
             />
             <label htmlFor="guide-db-hard-delete-toggle" className="cursor-pointer">
-              <strong>Eliminar esta guia permanentemente?</strong>
+              <span className="font-bold">Eliminar esta guia permanentemente?</span>
             </label>
           </div>
         ) }
