@@ -690,7 +690,8 @@ describe('Order', () => {
 
       expect(screen.getByText('KB-12345')).toBeInTheDocument();
       expect(screen.getByText(/Fallido/)).toBeInTheDocument();
-      expect(screen.getByText('GDE-PVR-005')).toBeInTheDocument();
+      expect(screen.getByText(/GDE-PVR-005/)).toBeInTheDocument();
+      expect(screen.getByText(/El proveedor rechazó algunos datos de la guía/)).toBeInTheDocument();
     });
 
     it('Then should render failed DB record with null external fields', async () => {
@@ -829,8 +830,9 @@ describe('Order', () => {
         await userEvent.click(screen.getByTestId('guide-db-details-button'));
 
         expect(screen.getByTestId('guide-db-details-error')).toBeInTheDocument();
-        expect(screen.getByText('GDE-PVR-001')).toBeInTheDocument();
-        expect(screen.getByText('Insufficient funds')).toBeInTheDocument();
+        expect(screen.getByText(/GDE-PVR-001/)).toBeInTheDocument();
+        expect(screen.getByText(/No pudimos crear la guía con el proveedor/)).toBeInTheDocument();
+        expect(screen.queryByText('Insufficient funds')).not.toBeInTheDocument();
       });
 
       it('Then should return to the list when clicking Volver a guías', async () => {
