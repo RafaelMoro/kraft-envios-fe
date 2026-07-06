@@ -1,4 +1,7 @@
-import { RiArrowLeftLine } from "@remixicon/react"
+"use client"
+import { useState } from "react"
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react"
+import { RiArrowLeftLine, RiDeleteBinLine } from "@remixicon/react"
 import clsx from "clsx"
 
 import { GuideDbRecord } from "@/shared/types/guides.types"
@@ -7,6 +10,10 @@ import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { greySecondaryCSS } from "@/shared/constants/global.constants"
 import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE } from "@/shared/constants/addresses.constants"
 import {
+  GUIDES_DB_DELETE_MODAL_BODY,
+  GUIDES_DB_DELETE_MODAL_CANCEL,
+  GUIDES_DB_DELETE_MODAL_CONFIRM,
+  GUIDES_DB_DELETE_MODAL_TITLE,
   GUIDES_DB_DELETED_MESSAGE,
   GUIDES_DB_INTERNAL_PRICING_FIELDS,
   GUIDES_DB_INTERNAL_PRICING_SECTION_TITLE,
@@ -26,9 +33,11 @@ const pillBase = "rounded-full px-3 py-1 text-xs font-semibold"
 interface GuideDbDetailsProps {
   guide: GuideDbRecord
   onBack: () => void
+  onDeleteGuide?: (guide: GuideDbRecord) => void
 }
 
-export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
+export const GuideDbDetails = ({ guide, onBack, onDeleteGuide }: GuideDbDetailsProps) => {
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const createdAt = new Date(guide.createdAt)
   const updatedAt = new Date(guide.updatedAt)
   const createdDate = formatDateToSpanish(createdAt)
@@ -64,6 +73,19 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
           <RiArrowLeftLine size={18} />
           Volver a guías
         </button>
+        { onDeleteGuide && guide.deletedAt == null && (
+          <Button
+            type="button"
+            color="red"
+            outline
+            data-testid="guide-db-delete-button"
+            onClick={() => setIsConfirmOpen(true)}
+            className="inline-flex items-center gap-2"
+            aria-label="Eliminar guía"
+          >
+            <RiDeleteBinLine size={18} />
+          </Button>
+        ) }
       </div>
 
       <article data-testid="guide-db-details-header" className={clsx(cardShell, "flex flex-col gap-3")}>
@@ -217,6 +239,35 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
             </span>
           </div>
         </article>
+      ) }
+      { onDeleteGuide && (
+        <Modal show={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} size="sm">
+          <ModalHeader>{GUIDES_DB_DELETE_MODAL_TITLE}</ModalHeader>
+          <ModalBody>
+            <p className="text-center text-red-600 dark:text-red-400">{GUIDES_DB_DELETE_MODAL_BODY}</p>
+          </ModalBody>
+          <ModalFooter>
+            <div className="w-full flex justify-between">
+              <Button
+                color="red"
+                data-testid="guide-db-delete-confirm"
+                onClick={() => {
+                  setIsConfirmOpen(false)
+                  onDeleteGuide(guide)
+                }}
+              >
+                {GUIDES_DB_DELETE_MODAL_CONFIRM}
+              </Button>
+              <Button
+                color="gray"
+                data-testid="guide-db-delete-cancel"
+                onClick={() => setIsConfirmOpen(false)}
+              >
+                {GUIDES_DB_DELETE_MODAL_CANCEL}
+              </Button>
+            </div>
+          </ModalFooter>
+        </Modal>
       ) }
     </section>
   )

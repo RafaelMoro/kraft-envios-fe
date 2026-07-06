@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Button, ButtonGroup, Label, Select, ToggleSwitch } from "flowbite-react"
 import clsx from "clsx"
 
 import { LoginData } from "@/shared/types/login.types"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
-import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb } from "@/shared/utils/guides.utils"
+import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb, deleteGuideDbCb } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
 import { GetGuidesData, GuideDbRecord, GuideUI } from "@/shared/types/guides.types"
 
@@ -22,6 +22,7 @@ import {
   GUIDES_DB_ADMIN_INCLUDE_INTERNAL_PRICING_LABEL,
   GUIDES_DB_ADMIN_SCOPE_ALL_LABEL,
   GUIDES_DB_ADMIN_SCOPE_OWN_LABEL,
+  GUIDES_DB_DELETE_ERROR_MESSAGE,
   GUIDES_DB_EMPTY_MESSAGE,
   GUIDES_DB_ERROR_MESSAGE,
 } from "@/shared/constants/guides.constants"
@@ -58,6 +59,7 @@ export const Order = ({ userInfo }: OrderProps) => {
     toggleNotification,
     updateNotificationMessage,
   } = useNotification();
+  const queryClient = useQueryClient();
 
   const isAdmin = Array.isArray(userInfo?.data?.user?.role) && userInfo?.data?.user?.role.includes('admin')
 
@@ -97,6 +99,17 @@ export const Order = ({ userInfo }: OrderProps) => {
     }),
     enabled: selectedSource === 'allDb' && isAdmin,
   })
+
+  const deleteMutation = useMutation({
+    mutationFn: (kraftId: string) => deleteGuideDbCb(kraftId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guides', 'db'] });
+    },
+    onError: () => {
+      updateNotificationMessage(GUIDES_DB_DELETE_ERROR_MESSAGE);
+      toggleNotification();
+    },
+  });
 
   const messages = data?.messages
 
@@ -212,6 +225,16 @@ export const Order = ({ userInfo }: OrderProps) => {
     setSelectedDbGuide(null)
   }
 
+  const handleDeleteGuide = (guide: GuideDbRecord) => {
+    deleteMutation.mutate(guide.kraftId, {
+      onSuccess: () => {
+        if (selectedDbGuide) {
+          setSelectedDbGuide(null)
+        }
+      },
+    })
+  }
+
   const activeDbData = selectedSource === 'allDb' ? adminDbData : dbData
   const activeDbIsPending = selectedSource === 'allDb' ? adminDbIsPending : dbIsPending
   const activeDbIsError = selectedSource === 'allDb' ? adminDbIsError : dbIsError
@@ -280,6 +303,7 @@ export const Order = ({ userInfo }: OrderProps) => {
         <GuideDbDetails
           guide={selectedDbGuide}
           onBack={() => setSelectedDbGuide(null)}
+          onDeleteGuide={selectedSource === 'ownDb' ? handleDeleteGuide : undefined}
         />
       )}
       { (selectedSource === 'ownDb' || selectedSource === 'allDb') && !selectedDbGuide && (
@@ -388,6 +412,7 @@ export const Order = ({ userInfo }: OrderProps) => {
                     guide={guide}
                     isMobile={isMobileTablet}
                     onViewDetails={setSelectedDbGuide}
+                    onDeleteGuide={selectedSource === 'ownDb' ? handleDeleteGuide : undefined}
                   />
                 ))}
               </div>

@@ -13,13 +13,15 @@ jest.mock('../../../src/shared/utils/guides.utils', () => ({
   ...jest.requireActual('../../../src/shared/utils/guides.utils'),
   getGuidesCb: jest.fn(),
   getGuidesDbCb: jest.fn(),
+  deleteGuideDbCb: jest.fn(),
 }));
 
-import { getGuidesCb, getGuidesDbCb } from '@/shared/utils/guides.utils';
+import { getGuidesCb, getGuidesDbCb, deleteGuideDbCb } from '@/shared/utils/guides.utils';
 
 const mockedUseMediaQuery = useMediaQuery as jest.MockedFunction<typeof useMediaQuery>;
 const mockedGetGuidesCb = getGuidesCb as jest.MockedFunction<typeof getGuidesCb>;
 const mockedGetGuidesDbCb = getGuidesDbCb as jest.MockedFunction<typeof getGuidesDbCb>;
+const mockedDeleteGuideDbCb = deleteGuideDbCb as jest.MockedFunction<typeof deleteGuideDbCb>;
 
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
@@ -1299,6 +1301,391 @@ describe('Order', () => {
 
       expect(screen.getByTestId('guide-db-details-internal-pricing')).toBeInTheDocument();
       expect(screen.getByTestId('guide-db-details-error')).toBeInTheDocument();
+    });
+  });
+
+  describe('When soft-deleting a guide from Ver mis guias', () => {
+    const createMockDbRecord = (overrides: Partial<GuideDbRecord> = {}): GuideDbRecord => ({
+      kraftId: 'KB-12345',
+      quote: {
+        id: 'quote-123',
+        service: 'Estafeta Terrestre',
+        total: 178.56,
+        typeService: 'standard',
+        courier: 'Estafeta',
+      },
+      externalId: null,
+      trackingNumber: null,
+      shipmentNumber: null,
+      carrier: null,
+      price: null,
+      guideLink: null,
+      labelUrl: null,
+      file: null,
+      status: 'created',
+      provider: 'Mn',
+      isProviderTrackingSynced: false,
+      failureInfo: null,
+      origin: {
+        alias: 'Casa',
+        name: 'Juan',
+        lastName: 'Perez',
+        phone: '5512345678',
+        email: 'juan@example.com',
+        company: '',
+        street1: 'Av Principal',
+        external_number: '123',
+        neighborhood: 'Centro',
+        city: 'CDMX',
+        town: '',
+        state: 'Ciudad de Mexico',
+        zipcode: '06600',
+        country: 'Mexico',
+        reference: 'Entre calle 1 y 2',
+      },
+      destination: {
+        alias: 'Oficina',
+        name: 'Maria',
+        lastName: 'Garcia',
+        phone: '5587654321',
+        email: 'maria@example.com',
+        company: '',
+        street1: 'Calle 2',
+        external_number: '456',
+        neighborhood: 'Polanco',
+        city: 'CDMX',
+        town: '',
+        state: 'Ciudad de Mexico',
+        zipcode: '11560',
+        country: 'Mexico',
+        reference: 'Torre corporate',
+      },
+      parcel: {
+        length: 10,
+        width: 10,
+        height: 10,
+        weight: 1,
+        content: 'Electronica',
+        satProductId: 'SAT-001',
+        value: 500,
+        quantity: 1,
+      },
+      createdAt: '2026-06-15T10:00:00Z',
+      updatedAt: '2026-06-15T10:00:00Z',
+      deletedAt: null,
+      deletedBy: null,
+      ...overrides,
+    });
+
+    const createMockDbResponse = (overrides: Partial<GetGuidesDbResponseData> = {}): GetGuidesDbResponseData => ({
+      guides: [createMockDbRecord()],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+      ...overrides,
+    });
+
+    beforeEach(() => {
+      mockedUseMediaQuery.mockReturnValue({
+        isMobile: false,
+        isTablet: false,
+        isTabletDesktop: true,
+        isMobileTablet: false,
+        isDesktop: true,
+        isDesktopX2: false,
+      });
+      mockedGetGuidesCb.mockResolvedValue({
+        guides: mockGuides,
+        messages: [],
+      });
+    });
+
+    it('Then should render the delete button on the card', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+      mockedDeleteGuideDbCb.mockResolvedValue({
+        version: '1.0',
+        message: null,
+        error: null,
+        data: { guide: { kraftId: 'KB-12345' } },
+      });
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+      });
+    });
+
+    it('Then should call deleteGuideDbCb with the correct kraftId and invalidate the list query on confirm from card', async () => {
+      const initialRecord = createMockDbRecord();
+      mockedGetGuidesDbCb
+        .mockResolvedValueOnce(createMockDbResponse({ guides: [initialRecord] }))
+        .mockResolvedValueOnce(createMockDbResponse({ guides: [] }));
+      mockedDeleteGuideDbCb.mockResolvedValue({
+        version: '1.0',
+        message: null,
+        error: null,
+        data: { guide: { kraftId: 'KB-12345' } },
+      });
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+      });
+
+      await userEvent.click(screen.getByTestId('guide-db-delete-button'));
+
+      expect(screen.getByText('¿Deseas eliminar esta guia?')).toBeInTheDocument();
+      expect(screen.getByText('Esta acción no se puede deshacer.')).toBeInTheDocument();
+
+      await userEvent.click(screen.getByTestId('guide-db-delete-confirm'));
+
+      await waitFor(() => {
+        expect(mockedDeleteGuideDbCb).toHaveBeenCalledWith('KB-12345');
+      });
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(2);
+      });
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('guide-db-delete-button')).not.toBeInTheDocument();
+      });
+    });
+
+    it('Then should return to the list after deleting from details', async () => {
+      const initialRecord = createMockDbRecord();
+      mockedGetGuidesDbCb
+        .mockResolvedValueOnce(createMockDbResponse({ guides: [initialRecord] }))
+        .mockResolvedValueOnce(createMockDbResponse({ guides: [] }));
+      mockedDeleteGuideDbCb.mockResolvedValue({
+        version: '1.0',
+        message: null,
+        error: null,
+        data: { guide: { kraftId: 'KB-12345' } },
+      });
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-header')).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-delete-button'));
+      await userEvent.click(screen.getByTestId('guide-db-delete-confirm'));
+
+      await waitFor(() => {
+        expect(mockedDeleteGuideDbCb).toHaveBeenCalledWith('KB-12345');
+      });
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('guide-db-details-header')).not.toBeInTheDocument();
+      });
+      expect(
+        screen.getByText('No hay guias para el mes seleccionado.'),
+      ).toBeInTheDocument();
+    });
+
+    it('Then should show notification error when deleteGuideDbCb rejects', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+      mockedDeleteGuideDbCb.mockRejectedValue(new Error('Network down'));
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-delete-button'));
+      await userEvent.click(screen.getByTestId('guide-db-delete-confirm'));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('No se pudo eliminar la guía. Por favor, intenta nuevamente.'),
+        ).toBeInTheDocument();
+      });
+
+      expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+    });
+
+    it('Then should not call deleteGuideDbCb when the user cancels the modal', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+      mockedDeleteGuideDbCb.mockResolvedValue({
+        version: '1.0',
+        message: null,
+        error: null,
+        data: { guide: { kraftId: 'KB-12345' } },
+      });
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-delete-button'));
+      await userEvent.click(screen.getByTestId('guide-db-delete-cancel'));
+
+      expect(mockedDeleteGuideDbCb).not.toHaveBeenCalled();
+      expect(screen.getByTestId('guide-db-delete-button')).toBeInTheDocument();
+    });
+  });
+
+  describe('When admin views Ver todas las guias', () => {
+    const mockAdminUserInfo: LoginData = {
+      data: {
+        user: {
+          name: 'Admin User',
+          email: 'admin@example.com',
+          lastName: 'Admin',
+          role: ['admin'],
+        },
+      },
+      error: null,
+      message: null,
+      success: true,
+      version: '1.0',
+    };
+
+    const createMockDbRecord = (overrides: Partial<GuideDbRecord> = {}): GuideDbRecord => ({
+      kraftId: 'KB-12345',
+      quote: {
+        id: 'quote-123',
+        service: 'Estafeta Terrestre',
+        total: 178.56,
+        typeService: 'standard',
+        courier: 'Estafeta',
+      },
+      externalId: null,
+      trackingNumber: null,
+      shipmentNumber: null,
+      carrier: null,
+      price: null,
+      guideLink: null,
+      labelUrl: null,
+      file: null,
+      status: 'created',
+      provider: 'Mn',
+      isProviderTrackingSynced: false,
+      failureInfo: null,
+      origin: {
+        alias: 'Casa',
+        name: 'Juan',
+        lastName: 'Perez',
+        phone: '5512345678',
+        email: 'juan@example.com',
+        company: '',
+        street1: 'Av Principal',
+        external_number: '123',
+        neighborhood: 'Centro',
+        city: 'CDMX',
+        town: '',
+        state: 'Ciudad de Mexico',
+        zipcode: '06600',
+        country: 'Mexico',
+        reference: 'Entre calle 1 y 2',
+      },
+      destination: {
+        alias: 'Oficina',
+        name: 'Maria',
+        lastName: 'Garcia',
+        phone: '5587654321',
+        email: 'maria@example.com',
+        company: '',
+        street1: 'Calle 2',
+        external_number: '456',
+        neighborhood: 'Polanco',
+        city: 'CDMX',
+        town: '',
+        state: 'Ciudad de Mexico',
+        zipcode: '11560',
+        country: 'Mexico',
+        reference: 'Torre corporate',
+      },
+      parcel: {
+        length: 10,
+        width: 10,
+        height: 10,
+        weight: 1,
+        content: 'Electronica',
+        satProductId: 'SAT-001',
+        value: 500,
+        quantity: 1,
+      },
+      createdAt: '2026-06-15T10:00:00Z',
+      updatedAt: '2026-06-15T10:00:00Z',
+      deletedAt: null,
+      deletedBy: null,
+      ...overrides,
+    });
+
+    const createMockDbResponse = (overrides: Partial<GetGuidesDbResponseData> = {}): GetGuidesDbResponseData => ({
+      guides: [createMockDbRecord()],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+      ...overrides,
+    });
+
+    beforeEach(() => {
+      mockedUseMediaQuery.mockReturnValue({
+        isMobile: false,
+        isTablet: false,
+        isTabletDesktop: true,
+        isMobileTablet: false,
+        isDesktop: true,
+        isDesktopX2: false,
+      });
+      mockedGetGuidesCb.mockResolvedValue({
+        guides: mockGuides,
+        messages: [],
+      });
+    });
+
+    it('Then should not render the delete button on cards in the allDb source', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('guide-db-delete-button')).not.toBeInTheDocument();
+    });
+
+    it('Then should not render the delete button on details in the allDb source', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-header')).toBeInTheDocument();
+      expect(screen.queryByTestId('guide-db-delete-button')).not.toBeInTheDocument();
     });
   });
 });
