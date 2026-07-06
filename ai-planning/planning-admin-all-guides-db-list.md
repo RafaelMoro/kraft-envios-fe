@@ -148,10 +148,10 @@ Manual:
 
 No new test file at this phase. The route handler and callback are exercised through Phase 2/3 `Order` tests via the mocked `getGuidesDbCb`. Route handler integration tests are not part of this repo's existing pattern (no `__tests__/app/api/**` suite exists); covering it through the `Order`-level mock matches the established convention.
 
-| File | Coverage areas | Pattern reference |
-| --- | --- | --- |
-| `src/shared/utils/guides.utils.ts` | `getGuidesDbCb` appends `scope` only when provided | Asserted via `mockedGetGuidesDbCb` `toHaveBeenCalledWith(objectContaining({ scope: 'all' }))` in Phase 2 tests |
-| `src/app/api/guides-db/route.ts` | `scope` branch to `/guides/db/admin`; regular path unchanged when `scope` absent | Verified by the `getGuidesDbCb` mock contract in Phase 2; no direct route test per repo convention |
+| File                               | Coverage areas                                                                   | Pattern reference                                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `src/shared/utils/guides.utils.ts` | `getGuidesDbCb` appends `scope` only when provided                               | Asserted via `mockedGetGuidesDbCb` `toHaveBeenCalledWith(objectContaining({ scope: 'all' }))` in Phase 2 tests |
+| `src/app/api/guides-db/route.ts`   | `scope` branch to `/guides/db/admin`; regular path unchanged when `scope` absent | Verified by the `getGuidesDbCb` mock contract in Phase 2; no direct route test per repo convention             |
 
 ---
 
@@ -217,8 +217,8 @@ Manual (desktop and mobile/tablet):
 
 Extend `__tests__/feature/Dashboard/Order.test.tsx`. Reuse the existing `createMockDbRecord` / `createMockDbResponse` factories (lines 471-550) for admin fixtures, including non-null `deletedAt`/`deletedBy`. Add an admin `mockUserInfo` variant with `role: ['admin']`.
 
-| File | Coverage areas | Pattern reference |
-| --- | --- | --- |
+| File                                          | Coverage areas                                                                                                                                                                                                                                                                                                                                 | Pattern reference                                                                                                                                                                                                                |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/features/Dashboard/subscreens/Order.tsx` | admin role shows `Ver todas las guias`; non-admin hides it; clicking it calls `getGuidesDbCb` with `scope: 'all'` and current month/year/page/limit; switching scope to `own` calls with `scope: 'own'`; non-admin never triggers admin fetch; admin list renders records through `GuideDbCard`; admin details open/close via `GuideDbDetails` | Existing `Order.test.tsx` patterns: `renderWithQueryClient`, `userEvent.click`, `waitFor` + `objectContaining`; mock setup at lines 11-22; existing `Ver mis guias` tests at lines 585-600 as the template for admin equivalents |
 
 New tests to add (describe block `When admin user views all guides` or similar):
@@ -284,10 +284,10 @@ Manual (desktop and mobile/tablet):
 
 Extend `__tests__/feature/Dashboard/Order.test.tsx` further, or add a focused `__tests__/feature/Dashboard/GuideDbCard.test.tsx` / `GuideDbDetails.test.tsx` if the implementer prefers component-level tests. The `Order`-level integration test is preferred because it reuses the existing mock factories and provider wrappers; add only if the soft-delete block is easier to assert at the component level.
 
-| File | Coverage areas | Pattern reference |
-| --- | --- | --- |
-| `src/features/Dashboard/subscreens/GuideDbCard.tsx` | soft-delete metadata visible when `deletedAt` is non-null; absent when `deletedAt` is null/undefined | `createMockDbRecord({ deletedAt: '2026-06-15T10:00:00Z', deletedBy: 'admin@example.com' })` rendered through `Order` admin path; assert `getByText(/Eliminada el/)` |
-| `src/features/Dashboard/subscreens/GuideDbDetails.tsx` | soft-delete block visible in details when `deletedAt` non-null; failure block and soft-delete block are independent | Open details for a soft-deleted-but-created record; assert `getByTestId('guide-db-details-deleted')`; assert `queryByTestId('guide-db-details-error')` is null |
+| File                                                   | Coverage areas                                                                                                      | Pattern reference                                                                                                                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/Dashboard/subscreens/GuideDbCard.tsx`    | soft-delete metadata visible when `deletedAt` is non-null; absent when `deletedAt` is null/undefined                | `createMockDbRecord({ deletedAt: '2026-06-15T10:00:00Z', deletedBy: 'admin@example.com' })` rendered through `Order` admin path; assert `getByText(/Eliminada el/)` |
+| `src/features/Dashboard/subscreens/GuideDbDetails.tsx` | soft-delete block visible in details when `deletedAt` non-null; failure block and soft-delete block are independent | Open details for a soft-deleted-but-created record; assert `getByTestId('guide-db-details-deleted')`; assert `queryByTestId('guide-db-details-error')` is null      |
 
 New tests to add:
 
@@ -339,11 +339,11 @@ Manual (desktop and mobile/tablet):
 
 Extend `__tests__/feature/Dashboard/Order.test.tsx`. Reuse `createMockDbRecord` with a `quote` override that includes the internal pricing fields; the factory already accepts partial overrides, so the implementer can pass `quote: { ...baseRecord.quote, qBaseRef: 197.25, qAdjFactor: 33.5325, qAdjBasis: 17, qAdjMode: 'P', qAdjSrcRef: 'default' }`. (The `createMockDbRecord` factory's `quote` is fully typed; spread to keep the other required fields.)
 
-| File | Coverage areas | Pattern reference |
-| --- | --- | --- |
-| `src/features/Dashboard/subscreens/GuideDbDetails.tsx` | internal pricing block visible when fields are present; absent when no `q*` field is present; independent of `status` and `deletedAt` | Open details for an admin record carrying internal pricing; assert `getByTestId('guide-db-details-internal-pricing')` and the `qBaseRef` label/value; open details for a regular record (no internal pricing) and assert `queryByTestId('guide-db-details-internal-pricing')` is null |
-| `src/features/Dashboard/subscreens/Order.tsx` | toggling `Mostrar precio interno` calls `getGuidesDbCb` with `includeInternalPricing: true` and refetches | Render admin user, click `Ver todas las guias`, click the `data-testid="order-admin-internal-pricing-toggle"`, `waitFor` the call with `objectContaining({ includeInternalPricing: true })`; assert the previous call (before toggling) was without `includeInternalPricing` or had it as `false` |
-| `src/features/Dashboard/subscreens/Order.tsx` | toggling `Incluir guías eliminadas` calls `getGuidesDbCb` with `includeDeleted: true` and refetches | Mirror of the above with `data-testid="order-admin-include-deleted-toggle"` and `includeDeleted: true` |
+| File                                                   | Coverage areas                                                                                                                        | Pattern reference                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/Dashboard/subscreens/GuideDbDetails.tsx` | internal pricing block visible when fields are present; absent when no `q*` field is present; independent of `status` and `deletedAt` | Open details for an admin record carrying internal pricing; assert `getByTestId('guide-db-details-internal-pricing')` and the `qBaseRef` label/value; open details for a regular record (no internal pricing) and assert `queryByTestId('guide-db-details-internal-pricing')` is null             |
+| `src/features/Dashboard/subscreens/Order.tsx`          | toggling `Mostrar precio interno` calls `getGuidesDbCb` with `includeInternalPricing: true` and refetches                             | Render admin user, click `Ver todas las guias`, click the `data-testid="order-admin-internal-pricing-toggle"`, `waitFor` the call with `objectContaining({ includeInternalPricing: true })`; assert the previous call (before toggling) was without `includeInternalPricing` or had it as `false` |
+| `src/features/Dashboard/subscreens/Order.tsx`          | toggling `Incluir guías eliminadas` calls `getGuidesDbCb` with `includeDeleted: true` and refetches                                   | Mirror of the above with `data-testid="order-admin-include-deleted-toggle"` and `includeDeleted: true`                                                                                                                                                                                            |
 
 New tests to add:
 
