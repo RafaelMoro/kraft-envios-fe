@@ -10,6 +10,7 @@ import {
   GUIDES_DB_DELETED_MESSAGE,
   GUIDES_DB_INTERNAL_PRICING_FIELDS,
   GUIDES_DB_INTERNAL_PRICING_SECTION_TITLE,
+  GUIDES_DB_INTERNAL_PRICING_SOURCE_LABELS,
 } from "@/shared/constants/guides.constants"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
@@ -171,13 +172,21 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
               <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjFactor} value={formatNumberToCurrency(guide.quote.qAdjFactor)} />
             ) }
             { guide.quote.qAdjBasis != null && (
-              <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjBasis} value={formatNumberToCurrency(guide.quote.qAdjBasis)} />
+              <Detail
+                label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjBasis}
+                value={guide.quote.qAdjMode?.toUpperCase() === 'P'
+                  ? `${guide.quote.qAdjBasis}%`
+                  : formatNumberToCurrency(guide.quote.qAdjBasis)}
+              />
             ) }
             { guide.quote.qAdjMode != null && (
               <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjMode} value={guide.quote.qAdjMode} />
             ) }
             { guide.quote.qAdjSrcRef != null && (
-              <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjSrcRef} value={guide.quote.qAdjSrcRef} />
+              <Detail
+                label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjSrcRef}
+                value={GUIDES_DB_INTERNAL_PRICING_SOURCE_LABELS[guide.quote.qAdjSrcRef]}
+              />
             ) }
           </div>
         </article>

@@ -1215,7 +1215,7 @@ describe('Order', () => {
                 qBaseRef: 197.25,
                 qAdjFactor: 33.5325,
                 qAdjBasis: 17,
-                qAdjMode: 'P',
+                qAdjMode: 'p',
                 qAdjSrcRef: 'default',
               },
             }),
@@ -1237,8 +1237,12 @@ describe('Order', () => {
       expect(screen.getByText('Base')).toBeInTheDocument();
       expect(screen.getByText('$197.25')).toBeInTheDocument();
       expect(screen.getByText('Factor de ajuste')).toBeInTheDocument();
+      expect(screen.getByText('Base de ajuste')).toBeInTheDocument();
+      expect(screen.getByText('17%')).toBeInTheDocument();
       expect(screen.getByText('Modo de ajuste')).toBeInTheDocument();
-      expect(screen.getByText('P')).toBeInTheDocument();
+      expect(screen.getByText('p')).toBeInTheDocument();
+      expect(screen.getByText('Origen del ajuste')).toBeInTheDocument();
+      expect(screen.getByText('Global')).toBeInTheDocument();
     });
 
     it('Then should not show the internal pricing block when no q* field is present', async () => {
@@ -1276,7 +1280,7 @@ describe('Order', () => {
                 qBaseRef: 197.25,
                 qAdjFactor: 33.5325,
                 qAdjBasis: 17,
-                qAdjMode: 'P',
+                qAdjMode: 'p',
                 qAdjSrcRef: 'default',
               },
             }),

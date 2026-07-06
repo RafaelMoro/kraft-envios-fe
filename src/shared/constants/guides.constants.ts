@@ -8,6 +8,7 @@ import {
   CreateGuideAddressValuesPkk,
   CreateGuideDbAddressFormValues,
   CreateGuideDbFormValues,
+  QuoteAdjustmentSourceReference,
 } from "../types/guides.types";
 
 export const DEFAULT_COMPANY = 'Kraft Envios';
@@ -296,6 +297,11 @@ export const GUIDES_DB_INTERNAL_PRICING_FIELDS: Record<string, string> = {
   qAdjBasis: 'Base de ajuste',
   qAdjMode: 'Modo de ajuste',
   qAdjSrcRef: 'Origen del ajuste',
+}
+
+export const GUIDES_DB_INTERNAL_PRICING_SOURCE_LABELS: Record<QuoteAdjustmentSourceReference, string> = {
+  default: 'Global',
+  custom: 'Personalizado',
 }
 
 export const GUIDE_DB_FAILURE_MESSAGES: Record<string, string> = {
