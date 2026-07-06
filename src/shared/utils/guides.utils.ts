@@ -14,6 +14,7 @@ import {
   GET_GUIDES_ENDPOINT,
   GUIDE_STATUS,
   GET_GUIDES_DB_ENDPOINT,
+  DELETE_GUIDE_DB_ENDPOINT,
   GUIDE_DB_FAILURE_MESSAGES,
   GUIDE_DB_GENERIC_FAILURE_MESSAGE,
 } from "../constants/guides.constants";
@@ -42,6 +43,7 @@ import {
   GetGuidesData,
   CreateGuideDbPayload,
   CreateGuideDbResponse,
+  DeleteGuideDbResponse,
   CreateGuideDbParcelPayload,
   CreateGuideDbFormValues,
   PackageDimensions,
@@ -143,6 +145,13 @@ export const createGuideDbCb = async (
   } catch (error) {
     throw error;
   }
+};
+
+export const deleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbResponse> => {
+  const res: AxiosResponse<DeleteGuideDbResponse> = await axios.delete(
+    `${DELETE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}`,
+  );
+  return res.data;
 };
 
 /**

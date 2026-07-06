@@ -336,6 +336,13 @@ export type CreateGuideDbResponse = {
   data: CreateGuideDbResponseData;
 };
 
+export type DeleteGuideDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: { guide: { kraftId: string } };
+};
+
 export type GuidesDbStatus = 'created' | 'failed';
 
 export type GuideDbFailureInfo = {
