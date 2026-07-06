@@ -588,6 +588,15 @@ export const getGuidesDbCb = async (params: GetGuidesDbParams): Promise<GetGuide
   if (params.limit !== undefined && params.limit !== 10) {
     searchParams.append('limit', String(params.limit));
   }
+  if (params.scope === 'all' || params.scope === 'own') {
+    searchParams.append('scope', params.scope);
+  }
+  if (params.includeDeleted === true) {
+    searchParams.append('includeDeleted', 'true');
+  }
+  if (params.includeInternalPricing === true) {
+    searchParams.append('includeInternalPricing', 'true');
+  }
 
   const res: AxiosResponse<GetGuidesDbResponse> = await axios.get(
     `${GET_GUIDES_DB_ENDPOINT}?${searchParams}`,

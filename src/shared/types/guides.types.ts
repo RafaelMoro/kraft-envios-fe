@@ -379,6 +379,11 @@ export type GuideDbQuote = {
   total: number;
   typeService: QuoteTypeService | null;
   courier: QuoteCourier | null;
+  qBaseRef?: number | null;
+  qAdjFactor?: number | null;
+  qAdjBasis?: number | null;
+  qAdjMode?: string | null;
+  qAdjSrcRef?: string | null;
 };
 
 export type GuideDbRecord = {
@@ -410,6 +415,9 @@ export type GetGuidesDbParams = {
   month: number;
   year: number;
   limit?: 10 | 50 | 100;
+  scope?: 'all' | 'own';
+  includeDeleted?: boolean;
+  includeInternalPricing?: boolean;
 };
 
 export type GetGuidesDbResponseData = {
