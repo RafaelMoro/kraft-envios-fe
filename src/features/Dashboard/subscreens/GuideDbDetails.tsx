@@ -6,7 +6,11 @@ import { formatDateToSpanish, getGuideDbFailureMessage, getGuideDbStatusLabel } 
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { greySecondaryCSS } from "@/shared/constants/global.constants"
 import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE } from "@/shared/constants/addresses.constants"
-import { GUIDES_DB_DELETED_MESSAGE } from "@/shared/constants/guides.constants"
+import {
+  GUIDES_DB_DELETED_MESSAGE,
+  GUIDES_DB_INTERNAL_PRICING_FIELDS,
+  GUIDES_DB_INTERNAL_PRICING_SECTION_TITLE,
+} from "@/shared/constants/guides.constants"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
 const typeServiceLabel = (typeService: GuideDbRecord['quote']['typeService']) =>
@@ -39,6 +43,13 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
     { "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200": guide.status === 'created' },
     { "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200": guide.status === 'failed' }
   )
+
+  const hasInternalPricing =
+    guide.quote.qBaseRef != null ||
+    guide.quote.qAdjFactor != null ||
+    guide.quote.qAdjBasis != null ||
+    guide.quote.qAdjMode != null ||
+    guide.quote.qAdjSrcRef != null
 
   return (
     <section className="flex flex-col gap-4">
@@ -148,6 +159,29 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
           <Detail label="ID DE COTIZACIÓN" value={guide.quote.id} mono />
         </div>
       </article>
+
+      { hasInternalPricing && (
+        <article data-testid="guide-db-details-internal-pricing" className={cardShell}>
+          <h3 className="mb-3 text-sm font-bold tracking-wide text-gray-900 dark:text-white">{GUIDES_DB_INTERNAL_PRICING_SECTION_TITLE}</h3>
+          <div className="grid gap-4 sm:grid-cols-3">
+            { guide.quote.qBaseRef != null && (
+              <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qBaseRef} value={formatNumberToCurrency(guide.quote.qBaseRef)} />
+            ) }
+            { guide.quote.qAdjFactor != null && (
+              <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjFactor} value={formatNumberToCurrency(guide.quote.qAdjFactor)} />
+            ) }
+            { guide.quote.qAdjBasis != null && (
+              <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjBasis} value={formatNumberToCurrency(guide.quote.qAdjBasis)} />
+            ) }
+            { guide.quote.qAdjMode != null && (
+              <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjMode} value={guide.quote.qAdjMode} />
+            ) }
+            { guide.quote.qAdjSrcRef != null && (
+              <Detail label={GUIDES_DB_INTERNAL_PRICING_FIELDS.qAdjSrcRef} value={guide.quote.qAdjSrcRef} />
+            ) }
+          </div>
+        </article>
+      ) }
 
       { guide.status === 'failed' && guide.failureInfo && (
         <article data-testid="guide-db-details-error" className="rounded-lg border border-red-300 bg-red-50 p-5 dark:border-red-800 dark:bg-red-950">

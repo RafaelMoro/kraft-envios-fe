@@ -1154,5 +1154,147 @@ describe('Order', () => {
       expect(screen.getByTestId('guide-db-details-deleted')).toBeInTheDocument();
       expect(screen.queryByTestId('guide-db-details-error')).not.toBeInTheDocument();
     });
+
+    it('Then should call getGuidesDbCb with includeInternalPricing true after toggling Mostrar precio interno', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.not.objectContaining({ includeInternalPricing: true })
+        );
+      });
+
+      mockedGetGuidesDbCb.mockClear();
+      await userEvent.click(screen.getByTestId('order-admin-internal-pricing-toggle'));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ includeInternalPricing: true })
+        );
+      });
+    });
+
+    it('Then should call getGuidesDbCb with includeDeleted true after toggling Incluir guías eliminadas', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.not.objectContaining({ includeDeleted: true })
+        );
+      });
+
+      mockedGetGuidesDbCb.mockClear();
+      await userEvent.click(screen.getByTestId('order-admin-include-deleted-toggle'));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ includeDeleted: true })
+        );
+      });
+    });
+
+    it('Then should show the internal pricing block in details when q* fields are present', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              quote: {
+                id: 'quote-internal',
+                service: 'Estafeta',
+                total: 230.7825,
+                typeService: 'nextDay',
+                courier: null,
+                qBaseRef: 197.25,
+                qAdjFactor: 33.5325,
+                qAdjBasis: 17,
+                qAdjMode: 'P',
+                qAdjSrcRef: 'default',
+              },
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-internal-pricing')).toBeInTheDocument();
+      expect(screen.getByText('PRECIO INTERNO')).toBeInTheDocument();
+      expect(screen.getByText('Base')).toBeInTheDocument();
+      expect(screen.getByText('$197.25')).toBeInTheDocument();
+      expect(screen.getByText('Factor de ajuste')).toBeInTheDocument();
+      expect(screen.getByText('Modo de ajuste')).toBeInTheDocument();
+      expect(screen.getByText('P')).toBeInTheDocument();
+    });
+
+    it('Then should not show the internal pricing block when no q* field is present', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.queryByTestId('guide-db-details-internal-pricing')).not.toBeInTheDocument();
+    });
+
+    it('Then should keep the internal pricing block independent of failure status', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              status: 'failed',
+              failureInfo: {
+                errorCode: 'GDE-PVR-005',
+                errorDetails: 'Invalid address',
+                timestamp: '2026-06-15T10:00:00Z',
+              },
+              quote: {
+                id: 'quote-internal-failed',
+                service: 'Estafeta',
+                total: 230.7825,
+                typeService: 'nextDay',
+                courier: null,
+                qBaseRef: 197.25,
+                qAdjFactor: 33.5325,
+                qAdjBasis: 17,
+                qAdjMode: 'P',
+                qAdjSrcRef: 'default',
+              },
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-internal-pricing')).toBeInTheDocument();
+      expect(screen.getByTestId('guide-db-details-error')).toBeInTheDocument();
+    });
   });
 });
