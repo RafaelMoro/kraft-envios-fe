@@ -16,14 +16,16 @@ This research is a story note only. It does not plan implementation or include s
 
 ### Acceptance Criteria
 
-1. A regular user (any role value, `user` or `admin`, acting in the `Ver mis guias` source) can soft-delete a non-deleted Guides DB record from both `GuideDbCard` (list) and `GuideDbDetails` (details screen) in the `Ver mis guias` source.
+1. A regular user (any role value, `user` or `admin`, acting in the `Ver mis guias` source) can soft-delete a non-deleted Guides DB record from both `GuideDbCard` (list) and `GuideDbDetails` (details screen) in the `Ver mis guias` source. Soft delete is only rendered for guides owned by the current user.
 2. The Delete control is hidden when `guide.deletedAt` is non-null so already-soft-deleted records cannot be re-deleted from the regular UI.
-3. Soft delete asks for confirmation through a Flowbite `Modal` before sending the request.
-4. The UI calls a new BFF `DELETE` route at `/api/guides-db/{kraftId}` that proxies backend `DELETE /guides/db/{kraft-id}` with `getAccessToken()` and `Authorization: Bearer <token>`, following the existing `src/app/api/guides-db/route.ts` guard and error pattern.
-5. The backend returns HTTP 200 with `{ version, message, error, data: { guide: { kraftId } } }`; the BFF forwards that envelope on success and returns `{ message }` with `400` on non-2xx errors, matching the existing BFF error fallback.
-6. On success the UI invalidates the active Guides DB list query (`Ver mis guias`, and `Ver todas las guias` if the same user is an admin viewing that source), stays on the list, and shows a success notification.
-7. Regular users see this as a plain delete: no "soft" terminology, no admin-only hint, no exposure of the hard-delete path. Hard delete is never offered here.
-8. Hard delete (`DELETE /guides/db/{kraft-id}/hard`) is explicitly out of scope and is tracked as Story 5 in the epic.
+3. Soft delete asks for confirmation through a Flowbite `Modal` before sending the request. Modal copy: title `¿Deseas eliminar esta guia?`, body `Esta acción no se puede deshacer.`, confirm button `Eliminar`, cancel button `Cancelar`.
+4. The UI calls a new BFF `DELETE` route at `/api/guides-db/{kraftId}` that proxies backend `DELETE /guides/db/{kraft-id}` with `getAccessToken()` and `Authorization: Bearer <token>`, following the existing `src/app/api/guides-db/route.ts` guard and error pattern. The `kraftId` is URL-encoded as a defensive default.
+5. The backend returns HTTP 200 with `{ version, message, error, data: { guide: { kraftId } } }`; the BFF forwards that envelope on success and returns `{ message }` with `400` on non-2xx errors (including any 4xx from the backend), matching the existing BFF error fallback.
+6. On success the UI invalidates the active Guides DB list query (`Ver mis guidas`, which triggers a refetch and the deleted record disappears from both regular and admin sources), and when the user is on `GuideDbDetails` it calls `onBack` to return to the list. No success notification is shown; the refetched list is the only signal of success. Errors use the existing `useNotification` + `Notification` atom pattern.
+7. The delete control is a Flowbite icon button using `RiDeleteBinLine` from `@remixicon/react` (already used in `src/features/Addresses/AddressCard.tsx:2`). The planning phase should search the repo for the exact existing icon-button implementation pattern before final placement.
+8. Regular users see this as a plain delete: no "soft" terminology, no admin-only hint, no exposure of the hard-delete path. Hard delete is never offered here.
+9. Hard delete (`DELETE /guides/db/{kraft-id}/hard`) is explicitly out of scope and is tracked as Story 5 in the epic.
+10. The delete control is only rendered in the `Ver mis guias` source. Admins viewing `Ver todas las guias` (other users' guides) do not see a soft-delete control in this story; that source is for viewing/auditing only.
 
 ### Why This Exists
 
@@ -149,41 +151,51 @@ Smallest useful tests:
 Backend contract:
 
 - I: Question: Does soft delete ever return non-2xx for guides that are already soft-deleted, or for `status: failed` guides?
-  - Status: pending
+  - Status: answered
+  - Answer: No, it could return 4xx error if something went wrong.
   - Context: The UI hides the delete control when `deletedAt != null`, so a re-delete should not happen from the regular flow, but the BFF must still handle a backend 4xx (e.g., `GDE-BDN-010` "soft delete of a guide fails") with the standard `{ message }` 400 fallback.
 - II: Question: Is the `kraftId` always URL-safe (no slashes/spaces), or does it need encoding on the BFF and backend path?
-  - Status: pending
-  - Context: The existing `kraftId` format observed is `KFT-202607-000002`, which is URL-safe. Confirm the format is stable before relying on raw interpolation into the path.
+  - Status: answered
+  - Answer: The kraftId is URL-safe (it is a `KFT-YYYYMM-NNNNNN` style identifier with only digits and hyphens), so it can be used as a path segment without additional encoding. Encode anyway as a defensive default.
+  - Context: The observed `kraftId` format is `KFT-202607-000002`. Plan: use `encodeURIComponent` on the path segment in the BFF.
 - III: Question: Does the soft-delete response ever populate `data.guide` with more fields than `kraftId`, or only `kraftId`?
-  - Status: pending
-  - Context: The provided example returns `{ guide: { kraftId } }` only. UI should not depend on additional fields.
+  - Status: answered
+  - Answer: No, just the response I gave.
+  - Context: Response is exactly `{ version, message, error, data: { guide: { kraftId } } }`. UI must not depend on additional fields.
 - IV: Question: For an admin soft-deleting from `Ver todas las guias` with `includeDeleted` true, should the deleted record remain in the list (with the existing deleted banner) until refetch, or be re-fetched and shown with `deletedAt` set?
-  - Status: pending
-  - Context: The current implementation invalidates the DB list query on success, which refetches; if `includeDeleted` is true, the record stays visible with the deleted banner, which is the expected admin behavior. Confirm this is acceptable.
+  - Status: answered
+  - Answer: For admins and regular users, the record should remain in the list until the refetch. The refetch is what removes the record; the BE should not return it after a successful delete (for both admins and regular users).
+  - Context: For admins with `includeDeleted` true, the deleted record is still removed from the refetched list because the BE hides it. This is the desired behavior; do not rely on the deleted banner to keep it visible.
 
 UI/product decisions:
 
 - I: Question: What copy should the confirmation Modal use (title, body, confirm button, cancel button)?
-  - Status: pending
-  - Context: Spanish copy consistent with the rest of the dashboard (e.g., "¿Eliminar guía?" / "Esta acción no se puede deshacer." / "Eliminar" / "Cancelar"). Final copy should be confirmed before implementation.
+  - Status: answered
+  - Answer: Reuse the existing `useNotification` pattern only for errors (see IV). Modal copy: title `¿Deseas eliminar esta guia?`, body `Esta acción no se puede deshacer.`, confirm `Eliminar`, cancel `Cancelar`.
+  - Context: Spanish copy consistent with the rest of the dashboard.
 - II: Question: Should the delete control on `GuideDbCard` live inline with the "Ver detalles" button, or as a secondary smaller button on the card footer?
-  - Status: pending
-  - Context: The card footer currently centers a single "Ver detalles" button using `primaryButtonCSS`. A danger-styled secondary button or icon button is the obvious pairing; confirm preferred placement before implementation.
+  - Status: answered
+  - Answer: Use a Flowbite icon button following the example from Flowbite docs (Button with embedded Remixicon). The icon is `RiDeleteBinLine` from `@remixicon/react`, already used in `src/features/Addresses/AddressCard.tsx:2`. Search the planning phase for the exact existing icon-button implementation pattern in this repo before final placement.
+  - Context: Card footer currently centers a single `primaryButtonCSS` `Ver detalles` button. The icon button should be a secondary, danger-styled control that complements `Ver detalles` without competing with it.
 - III: Question: After a successful delete from `GuideDbDetails`, should the UI call `onBack` to return to the list, or stay on the details screen with the deleted banner visible?
-  - Status: pending
-  - Context: AC 6 says "stay on the list". From details, "stay on the list" means we must navigate back. Confirm this is the desired behavior versus staying on details with the deleted section.
+  - Status: answered
+  - Answer: Yes, if we are on guide db details, then go back.
+  - Context: From details, "stay on the list" means calling `onBack` after a successful delete; the list invalidation and refetch then removes the record.
 - IV: Question: Should the success notification reuse the existing `useNotification` hook/`Notification` atom used by the external guides error flow, or be a Flowbite Toast?
-  - Status: pending
-  - Context: The existing `Order` uses `useNotification` and `Notification`; reuse is the smallest path. A Flowbite Toast would be a new pattern in this screen.
+  - Status: answered
+  - Answer: Do not show a notification on success, only on error.
+  - Context: Errors use the existing `useNotification` + `Notification` atom pattern (reused, no new toast component). Success is silent and only signaled by the removed row from the refetched list.
 
 Authorization:
 
 - I: Question: Does the backend enforce that a regular user can only soft-delete their own guides (owned by the authenticated user)?
-  - Status: pending
-  - Context: The `Ver mis guias` source already only returns the user's own guides, so the UI only ever offers delete on owned records. Confirm backend ownership check so a crafted client cannot delete other users' guides.
+  - Status: answered
+  - Answer: Yes, admin can do soft and hard delete. Regular user can only do soft delete.
+  - Context: Backend enforces that regular users can only soft-delete their own guides. Admins can soft-delete (Story 4) and hard-delete (Story 5 stub). UI mirrors this: soft-delete control is rendered for both `user` and `admin` roles in `Ver mis guias` (since both own the guides shown there).
 - II: Question: Can an admin soft-delete from `Ver todas las guias` guides owned by other users, or only their own?
-  - Status: pending
-  - Context: This story exposes soft delete in `Ver mis guias` for everyone and (per AC 6) also invalidates the admin `Ver todas las guias` query. If admins should soft-delete others' guides from `Ver todas las guias`, the delete control placement must also be added to the admin source. Confirm whether admin source exposes delete or only the regular `Ver mis guias` source.
+  - Status: answered
+  - Answer: No, only their own guides.
+  - Context: Soft delete in `Ver mis guias` only operates on guides the current user owns. Admins viewing `Ver todas las guias` (others' guides) do not get a soft-delete control in this story; the admin `Ver todas las guias` source is for viewing/auditing only.
 
 Create payload:
 
@@ -191,13 +203,15 @@ Create payload:
 
 ## Assumptions
 
-- The backend soft-delete endpoint is `DELETE /guides/db/{kraft-id}` and returns HTTP 200 with `{ version, message, error, data: { guide: { kraftId } } }` on success.
+- The backend soft-delete endpoint is `DELETE /guides/db/{kraft-id}` and returns HTTP 200 with `{ version, message, error, data: { guide: { kraftId } } }` on success; it returns a 4xx error envelope that the BFF collapses to `{ message }` 400.
 - The hard-delete endpoint `DELETE /guides/db/{kraft-id}/hard` is admin-only and out of scope for this story.
 - Regular users perceive soft delete as a plain delete; the UI never mentions "soft" or "hard".
 - The existing `getAccessToken()` + `Authorization: Bearer <token>` + 400-on-error BFF pattern is reused unchanged.
-- The existing `Order` query keys (`['guides', 'db', month, year, page, limit]` and `['guides', 'db', 'admin', scope, includeDeleted, includeInternalPricing, month, year, page, limit]`) are invalidated via the shared prefix `['guides', 'db']` on delete success.
+- The existing `Order` query keys (`['guides', 'db', month, year, page, limit]` and `['guides', 'db', 'admin', scope, includeDeleted, includeInternalPricing, month, year, page, limit]`) are invalidated via the shared prefix `['guides', 'db']` on delete success. The refetch then drops the deleted record for both regular and admin sources, regardless of `includeDeleted`.
 - `GuideDbRecord.deletedAt` is the canonical "already-soft-deleted" signal and is already used by `GuideDbCard` and `GuideDbDetails` to show deleted banners.
 - The delete callback lives in `src/shared/utils/guides.utils.ts` next to `getGuidesDbCb` and `createGuideDbCb`.
-- No new dependency or env var is needed.
+- No new dependency or env var is needed. The icon component (`RiDeleteBinLine`) and Flowbite `Button` are already installed.
 - Admin hard delete is tracked as Story 5 in the epic stub and is not researched here.
-- The `kraftId` is URL-safe and can be used as a path segment without additional encoding in the observed format (`KFT-YYYYMM-NNNNNN`).
+- The `kraftId` is URL-safe in its observed format (`KFT-YYYYMM-NNNNNN`) and the BFF will additionally `encodeURIComponent` it as a defensive default.
+- The delete control is only offered for guides owned by the current user. In `Ver mis guias` every guide is owned by the user, so the control is rendered (subject to `deletedAt == null`). In `Ver todas las guias` (admin source), guides belong to other users, so no soft-delete control is shown in this story.
+- Success is silent (no notification). Errors use the existing `useNotification` + `Notification` atom.
