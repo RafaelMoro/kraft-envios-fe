@@ -32,6 +32,12 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
   const parcel = guide.parcel
   const parcelDims = `${parcel.length} × ${parcel.width} × ${parcel.height}`
 
+  const statusLabelCss = clsx(
+    pillBase,
+    { "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200": guide.status === 'created' },
+    { "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200": guide.status === 'failed' }
+  )
+
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -52,12 +58,7 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
             {guide.kraftId}
           </span>
           <span
-            className={clsx(
-              pillBase,
-              guide.status === 'created'
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-            )}
+            className={statusLabelCss}
           >
             {guide.status === 'created' ? '✓' : 'X'} {statusLabel}
           </span>
