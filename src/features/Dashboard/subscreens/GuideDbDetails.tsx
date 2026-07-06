@@ -2,7 +2,7 @@ import { RiArrowLeftLine } from "@remixicon/react"
 import clsx from "clsx"
 
 import { GuideDbRecord } from "@/shared/types/guides.types"
-import { formatDateToSpanish, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
+import { formatDateToSpanish, getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { greySecondaryCSS } from "@/shared/constants/global.constants"
 import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE } from "@/shared/constants/addresses.constants"
@@ -28,6 +28,7 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
   const createdDate = formatDateToSpanish(createdAt)
   const updatedDate = formatDateToSpanish(updatedAt)
   const price = formatNumberToCurrency(Number(guide.price ?? guide.quote.total))
+  const failureMessage = getGuideDbFailureMessage(guide.failureInfo)
   const statusLabel = getGuideDbStatusLabel(guide.status)
   const parcel = guide.parcel
   const parcelDims = `${parcel.length} × ${parcel.width} × ${parcel.height}`
@@ -151,9 +152,8 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
         <article data-testid="guide-db-details-error" className="rounded-lg border border-red-300 bg-red-50 p-5 dark:border-red-800 dark:bg-red-950">
           <h3 className="mb-3 text-sm font-bold tracking-wide text-red-800 dark:text-red-300">ERROR DE CREACIÓN</h3>
           <div className="flex flex-col gap-1 text-sm text-red-800 dark:text-red-200">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold">{guide.failureInfo.errorDetails ?? guide.failureInfo.errorCode}</span>
-              <span className="font-mono text-xs">{guide.failureInfo.errorCode}</span>
+            <div>
+              <span className="font-semibold">{failureMessage}</span>
             </div>
             { guide.failureInfo.timestamp && (
               <span className="text-xs text-red-700 dark:text-red-300">
