@@ -6,6 +6,7 @@ import { formatDateToSpanish, getGuideDbFailureMessage, getGuideDbStatusLabel } 
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { greySecondaryCSS } from "@/shared/constants/global.constants"
 import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE } from "@/shared/constants/addresses.constants"
+import { GUIDES_DB_DELETED_MESSAGE } from "@/shared/constants/guides.constants"
 
 const cityState = (city: string, state: string) => [city, state].filter(Boolean).join(', ')
 const typeServiceLabel = (typeService: GuideDbRecord['quote']['typeService']) =>
@@ -162,7 +163,20 @@ export const GuideDbDetails = ({ guide, onBack }: GuideDbDetailsProps) => {
             )}
           </div>
         </article>
-      )}
+      ) }
+
+      { guide.deletedAt != null && (
+        <article data-testid="guide-db-details-deleted" className="rounded-lg border border-amber-300 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-950">
+          <h3 className="mb-3 text-sm font-bold tracking-wide text-amber-800 dark:text-amber-300">GUÍA ELIMINADA</h3>
+          <div className="flex flex-col gap-1 text-sm text-amber-800 dark:text-amber-200">
+            <span>
+              {GUIDES_DB_DELETED_MESSAGE
+                .replace('{date}', formatDateToSpanish(new Date(guide.deletedAt)).date)
+                .replace('{deletedBy}', guide.deletedBy ?? '—')}
+            </span>
+          </div>
+        </article>
+      ) }
     </section>
   )
 }

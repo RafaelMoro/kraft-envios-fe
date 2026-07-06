@@ -1085,5 +1085,74 @@ describe('Order', () => {
       });
       expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
     });
+
+    it('Then should show soft-delete metadata on the card when deletedAt is non-null', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              deletedAt: '2026-06-15T10:00:00Z',
+              deletedBy: 'admin@example.com',
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-card-deleted')).toBeInTheDocument();
+      });
+      expect(screen.getByText(/Eliminada el .*admin@example\.com/)).toBeInTheDocument();
+    });
+
+    it('Then should not show soft-delete metadata on the card when deletedAt is null', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({ deletedAt: null, deletedBy: null }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('guide-db-card-deleted')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Eliminada el/)).not.toBeInTheDocument();
+    });
+
+    it('Then should show the soft-delete block in details when deletedAt is non-null', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(
+        createMockDbResponse({
+          guides: [
+            createMockDbRecord({
+              status: 'created',
+              failureInfo: null,
+              deletedAt: '2026-06-15T10:00:00Z',
+              deletedBy: 'admin@example.com',
+            }),
+          ],
+        })
+      );
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('guide-db-details-button')).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+
+      expect(screen.getByTestId('guide-db-details-deleted')).toBeInTheDocument();
+      expect(screen.queryByTestId('guide-db-details-error')).not.toBeInTheDocument();
+    });
   });
 });
