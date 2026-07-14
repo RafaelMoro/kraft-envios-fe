@@ -303,6 +303,16 @@ export type CreateGuideDbPayload = {
   notifyMe: boolean;
 };
 
+/**
+ * Send every field for each changed object, omit unchanged objects, and never
+ * include quote or notifyMe.
+ */
+export type UpdateGuideDbPayload = {
+  parcel?: CreateGuideDbParcelPayload;
+  origin?: CreateGuideDbAddressPayload;
+  destination?: CreateGuideDbAddressPayload;
+};
+
 export type CreateGuideDbQuotePayload = {
   id: string;
   service: string;
@@ -349,6 +359,32 @@ export type GuideDbFailureInfo = {
   errorCode: string;
   errorDetails?: string | null;
   timestamp?: string | null;
+};
+
+export type UpdateGuideDbResponseData = {
+  kraftId: string;
+  externalId: string | null | undefined;
+  shipmentNumber: string | null | undefined;
+  status: GuidesDbStatus;
+  provider: ProviderSource;
+  carrier: string | null | undefined;
+  price: string | null | undefined;
+  guideLink: string | null | undefined;
+  isProviderTrackingSynced: boolean;
+  labelUrl: string | null | undefined;
+  file: string | null | undefined;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null | undefined;
+  deletedBy: string | null | undefined;
+  failureInfo: GuideDbFailureInfo | null | undefined;
+};
+
+export type UpdateGuideDbResponse = {
+  version: string;
+  message: string | null;
+  error: string | null;
+  data: UpdateGuideDbResponseData;
 };
 
 export type GuideDbAddress = {

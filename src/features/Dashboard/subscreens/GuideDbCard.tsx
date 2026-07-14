@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Button } from "flowbite-react"
-import { RiArrowRightLine, RiDeleteBinLine } from "@remixicon/react"
+import { RiArrowRightLine, RiDeleteBinLine, RiEditLine } from "@remixicon/react"
 import clsx from "clsx"
 
 import { primaryButtonCSS } from "@/shared/constants/global.constants"
@@ -21,12 +21,14 @@ export function GuideDbCard({
   isAdmin,
   onViewDetails,
   onDeleteGuide,
+  onEditGuide,
 }: {
   guide: GuideDbRecord
   isMobile: boolean
   isAdmin?: boolean
   onViewDetails: (guide: GuideDbRecord) => void
   onDeleteGuide?: (guide: GuideDbRecord, permanent: boolean) => void
+  onEditGuide?: (guide: GuideDbRecord) => void
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const price = guide.price ? formatNumberToCurrency(Number(guide.price)) : formatNumberToCurrency(guide.quote.total)
@@ -96,6 +98,19 @@ export function GuideDbCard({
         >
           Ver detalles
         </button>
+        { onEditGuide && guide.status === 'failed' && guide.deletedAt == null && (
+          <Button
+            type="button"
+            color="gray"
+            outline
+            data-testid="guide-db-edit-button"
+            onClick={() => onEditGuide(guide)}
+            className="inline-flex items-center gap-2"
+            aria-label="Editar guía"
+          >
+            <RiEditLine size={18} />
+          </Button>
+        ) }
         { onDeleteGuide && (isAdmin || guide.deletedAt == null) && (
           <Button
             type="button"

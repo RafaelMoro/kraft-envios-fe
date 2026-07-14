@@ -13,6 +13,7 @@ import { GetGuidesData, GuideDbRecord, GuideUI } from "@/shared/types/guides.typ
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
 import { GuideDbCard } from "@/features/Dashboard/subscreens/GuideDbCard"
 import { GuideDbDetails } from "@/features/Dashboard/subscreens/GuideDbDetails"
+import { GuideDbEditModal } from "@/features/Dashboard/subscreens/GuideDbEditModal"
 import { Notification } from "@/shared/ui/atoms/Notification"
 import {
   ERROR_TONE_GUIDES_SERVER_MESSAGE,
@@ -69,6 +70,8 @@ export const Order = ({ userInfo }: OrderProps) => {
   const [dbPage, setDbPage] = useState(1)
   const [dbLimit, setDbLimit] = useState<10 | 50 | 100>(10)
   const [selectedDbGuide, setSelectedDbGuide] = useState<GuideDbRecord | null>(null)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editGuide, setEditGuide] = useState<GuideDbRecord | null>(null)
   const [adminScope, setAdminScope] = useState<'all' | 'own'>('all')
   const [includeDeleted, setIncludeDeleted] = useState(false)
   const [includeInternalPricing, setIncludeInternalPricing] = useState(false)
@@ -237,6 +240,11 @@ export const Order = ({ userInfo }: OrderProps) => {
     })
   }
 
+  const handleEditGuide = (guide: GuideDbRecord) => {
+    setEditGuide(guide)
+    setIsEditOpen(true)
+  }
+
   const canDelete = (selectedSource === 'ownDb') || (selectedSource === 'allDb' && isAdmin)
 
   const activeDbData = selectedSource === 'allDb' ? adminDbData : dbData
@@ -309,6 +317,7 @@ export const Order = ({ userInfo }: OrderProps) => {
           isAdmin={isAdmin}
           onBack={() => setSelectedDbGuide(null)}
           onDeleteGuide={canDelete ? handleDeleteGuide : undefined}
+          onEditGuide={handleEditGuide}
         />
       )}
       { (selectedSource === 'ownDb' || selectedSource === 'allDb') && !selectedDbGuide && (
@@ -419,6 +428,7 @@ export const Order = ({ userInfo }: OrderProps) => {
                     isAdmin={isAdmin}
                     onViewDetails={setSelectedDbGuide}
                     onDeleteGuide={canDelete ? handleDeleteGuide : undefined}
+                    onEditGuide={handleEditGuide}
                   />
                 ))}
               </div>
@@ -458,6 +468,11 @@ export const Order = ({ userInfo }: OrderProps) => {
           )}
         </>
       )}
+      <GuideDbEditModal
+        open={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        guide={editGuide}
+      />
     </main>
   )
 }
