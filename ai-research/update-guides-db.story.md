@@ -210,14 +210,17 @@ Backend contract:
 UI/product decisions:
 
 - I: Question: Should the edit button be hidden on soft-deleted `failed` records (where `guide.deletedAt != null`), or visible alongside the delete button whenever `status === 'failed'`?
-  - Status: pending
-  - Context: The delete button uses `(isAdmin || guide.deletedAt == null)`. The edit button as specified uses only `guide.status === 'failed'`. An admin viewing `Ver todas las guias` with `includeDeleted` would see an edit button on a soft-deleted failed record. Decide whether editing a soft-deleted record is a valid flow (it may un-delete via re-creation) or whether edit should also gate on `deletedAt == null`.
+  - Status: answered
+  - Answer: Hide the edit button on soft-deleted guides. It is available only when `guide.status === 'failed'` and `guide.deletedAt == null`.
+  - Context: An admin viewing `Ver todas las guias` with `includeDeleted` must not receive an edit affordance for a soft-deleted record.
 - II: Question: Should the edit icon button visually match the delete button (`outline`, danger-adjacent) or use a neutral/alternative tone to distinguish "edit" from "destructive"?
-  - Status: pending
-  - Context: AC 7/8 leave the color to planning. Per AGENTS.md, consult DESIGN.md before finalizing the tone. `RiEditLine` + a non-danger color (`alternative`/`light`) is the safer default; final call is a planning/product decision.
+  - Status: answered
+  - Answer: Use a neutral tone.
+  - Context: The edit button should be visually distinct from the destructive delete action; consult DESIGN.md for the exact existing neutral Flowbite/Tailwind variant during planning.
 - III: Question: Should the `GuideDbEditModal` shell ship with a placeholder body (`Formulario de edición — próximamente`) or render nothing in `ModalBody`?
-  - Status: pending
-  - Context: A placeholder communicates "intentional WIP" to users who click the edit button; an empty body reads as a bug. Lean toward a small Spanish placeholder text until the follow-up form lands.
+  - Status: answered
+  - Answer: Show the placeholder body.
+  - Context: This makes the deferred form intentional rather than presenting an empty modal.
 
 Create payload:
 
@@ -236,8 +239,9 @@ Authorization:
 Edit flow (follow-up story):
 
 - I: Question: Should the follow-up edit modal reuse `AddAddressGuideDb.tsx` / `ParcelInfoGuideDbForm.tsx` from `src/features/Guides-DB/`, or build a dedicated edit form?
-  - Status: pending
-  - Context: Drives the follow-up story's research. Not blocking here; this story ships the shell + button only.
+  - Status: answered
+  - Answer: Reuse the existing forms.
+  - Context: The follow-up edit-flow research should assess how to prefill and adapt `AddAddressGuideDb.tsx` and `ParcelInfoGuideDbForm.tsx` for editing without duplicating their validation and input behavior.
 
 ## Assumptions
 
@@ -247,9 +251,9 @@ Edit flow (follow-up story):
 - A new payload type `UpdateGuideDbPayload` has optional `parcel?: CreateGuideDbParcelPayload`, `origin?: CreateGuideDbAddressPayload`, `destination?: CreateGuideDbAddressPayload`; `quote` and `notifyMe` are intentionally excluded. Each present field is the full object (no partial sub-object permitted by the type).
 - New constants `UPDATE_GUIDE_DB_ENDPOINT = '/api/guides-db'` and `GUIDES_DB_EDIT_MODAL_TITLE = 'Editar guía'` are added next to `DELETE_GUIDE_DB_ENDPOINT` (kept as separate names even where strings repeat, matching the existing `GET_GUIDES_DB_ENDPOINT`/`DELETE_GUIDE_DB_ENDPOINT` precedent).
 - New callback `updateGuideDbCb(kraftId, data): Promise<UpdateGuideDbResponse['data']>` is added to `src/shared/utils/guides.utils.ts` and is the only client entry point for PATCH. It mirrors `createGuideDbCb` (returns `res.data.data`) and forwards via `axios.patch`. Per BE III / Create I, it throws a client-side error (no `axios.patch` call) when the payload has no `parcel`/`origin`/`destination`; the follow-up modal form also disables submit until at least one field has changed. It is NOT wired to a `useMutation` in this story; the follow-up modal form will consume it.
-- The edit icon button (`<RiEditLine />`) is added to `GuideDbCard` (inside the `div.w-full.mt-3.flex.justify-center.gap-3` block) and `GuideDbDetails` (inside the header `div.flex.items-center.justify-between`), gated by an optional `onEditGuide` prop AND `guide.status === 'failed'`. The button uses `data-testid="guide-db-edit-button"` and `aria-label="Editar guía"`. The exact Flowbite color/outline is a planning call (DESIGN.md consulted); the default recommendation is a non-danger tone (`alternative`/`light`) to distinguish edit from delete.
+- The edit icon button (`<RiEditLine />`) is added to `GuideDbCard` (inside the `div.w-full.mt-3.flex.justify-center.gap-3` block) and `GuideDbDetails` (inside the header `div.flex.items-center.justify-between`), gated by an optional `onEditGuide` prop, `guide.status === 'failed'`, and `guide.deletedAt == null`. The button uses `data-testid="guide-db-edit-button"` and `aria-label="Editar guía"`. It uses a neutral Flowbite/Tailwind tone, with the exact existing variant confirmed against DESIGN.md during planning.
 - `Order` always passes `onEditGuide` to both `GuideDbCard` and `GuideDbDetails` in both sources (`ownDb` and `allDb`); the `failed`-only visibility is enforced inside the components.
-- A new `GuideDbEditModal.tsx` is a Flowbite `Modal` shell (`data-testid="guide-db-edit-modal"`, header `Editar guía`, cancel button, empty/placeholder body) — the visible target of the edit button. The form fields, schema, submit-via-`updateGuideDbCb`, success invalidation, and error notification are explicitly deferred to a follow-up story.
+- A new `GuideDbEditModal.tsx` is a Flowbite `Modal` shell (`data-testid="guide-db-edit-modal"`, header `Editar guía`, cancel button, placeholder body `Formulario de edición — próximamente`) — the visible target of the edit button. The form fields, schema, submit-via-`updateGuideDbCb`, success invalidation, and error notification are explicitly deferred to a follow-up story.
 - This story does NOT wire a `useMutation` or invalidate any query (no submit happens yet). The existing delete mutation/invalidation in `Order` is untouched.
 - `quote` is NOT in `UpdateGuideDbPayload` for this story even though the backend accepts it (BE II). Editing `quote` requires the user to re-quote (run a new quote, then submit the updated `quote`); that is a larger, separate flow deferred to a future "re-quote then update guide" research story. Until then, the frontend never sends `quote` through `updateGuideDbCb`, and the type intentionally excludes it.
 - PATCH is owner-only (Auth I): any authenticated user may update a guide they own; admins editing someone else's guide is not supported by this endpoint. The edit button ships to both `Ver mis guias` and `Ver todas las guias` sources; a non-owner admin who clicks edit on another user's failed record will get a backend 4xx (collapsed to `{ message }` 400 by the BFF) — the follow-up form surfaces that via `useNotification`, the frontend does NOT pre-filter the edit button by owner.
