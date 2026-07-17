@@ -215,6 +215,7 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
                 cityError={errors?.city?.message ?? ""}
                 formData={addressData}
                 skipInitialZipcodeLookup={editMode}
+                resetCityAndStateOnLookup={editMode}
               />
             }
           />

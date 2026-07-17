@@ -26,6 +26,7 @@ interface AutocompleteZipcodeProps {
   cityError: string;
   hideCityField?: boolean;
   skipInitialZipcodeLookup?: boolean;
+  resetCityAndStateOnLookup?: boolean;
 }
 
 /**
@@ -51,6 +52,7 @@ export const AutocompleteZipcode = ({
   setZipcode,
   formData,
   skipInitialZipcodeLookup,
+  resetCityAndStateOnLookup,
 }: AutocompleteZipcodeProps) => {
   const {
     isFetching,
@@ -64,6 +66,7 @@ export const AutocompleteZipcode = ({
     setState,
     setCity,
     skipInitialZipcodeLookup,
+    resetCityAndStateOnLookup,
   })
 
   return (

@@ -17,13 +17,14 @@ interface UseDebouncedAutocompleteZipcodeProps {
   setState: (newState: string) => void;
   setCity: (newCity: string) => void;
   skipInitialZipcodeLookup?: boolean;
+  resetCityAndStateOnLookup?: boolean;
 }
 
 /**
  * This hook fetches the information related to neighborhoods, states and cities based on a debounced zipcode input
  */
 export const useDebouncedAutocompleteZipcode = ({
-  zipcode, formData, setNeighborhood, setState, setCity, skipInitialZipcodeLookup = false,
+  zipcode, formData, setNeighborhood, setState, setCity, skipInitialZipcodeLookup = false, resetCityAndStateOnLookup = false,
 }: UseDebouncedAutocompleteZipcodeProps) => {
   const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
@@ -93,7 +94,10 @@ export const useDebouncedAutocompleteZipcode = ({
         formData?.city,
       );
 
-      // Set selected values based on formData or auto-select single options
+      const shouldResetCityAndState =
+        resetCityAndStateOnLookup && debouncedZipcode !== formData?.zipcode
+
+      // Set selected values based on formData or auto-select single options.
       setNeighborhood(
         selectAddressValue(
           formData?.neighborhood,
@@ -102,22 +106,14 @@ export const useDebouncedAutocompleteZipcode = ({
           hasExistingFormData,
         ),
       );
-      setState(
-        selectAddressValue(
-          formData?.state,
-          newStates,
-          INITIAL_STATE_SELECT_STATE,
-          hasExistingFormData,
-        ),
-      );
-      setCity(
-        selectAddressValue(
-          formData?.city,
-          newCities,
-          INITIAL_STATE_SELECT_CITY,
-          hasExistingFormData,
-        ),
-      );
+      setState(shouldResetCityAndState
+        ? INITIAL_STATE_SELECT_STATE
+        : selectAddressValue(formData?.state, newStates, INITIAL_STATE_SELECT_STATE, hasExistingFormData),
+      )
+      setCity(shouldResetCityAndState
+        ? INITIAL_STATE_SELECT_CITY
+        : selectAddressValue(formData?.city, newCities, INITIAL_STATE_SELECT_CITY, hasExistingFormData),
+      )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, setState, setCity]);
