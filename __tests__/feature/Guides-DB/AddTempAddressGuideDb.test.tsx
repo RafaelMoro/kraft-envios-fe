@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { AddTempAddressGuideDb } from '@/features/Guides-DB/AddTempAddressGuideDb'
 import { initialStateAddressForm } from '@/shared/constants/guides.constants'
+import { CreateGuideAddressFormValuesMn } from '@/shared/types/guides.types'
 import { mockMatchMedia, QueryMatchMedia } from '../../utils-test/mockWatchMedia'
 
 jest.mock('../../../src/shared/hooks/useGetAddress', () => ({
@@ -16,6 +17,23 @@ const mockedUseGetAddress = useGetAddress as jest.MockedFunction<typeof useGetAd
 const mockGoNext = jest.fn()
 const mockUpdateAddress = jest.fn()
 const mockToggleTempAddress = jest.fn()
+
+const editAddress: CreateGuideAddressFormValuesMn = {
+  alias: 'Casa',
+  name: 'Juan',
+  lastName: 'Perez',
+  phone: '5512345678',
+  email: 'juan@example.com',
+  company: 'Kraft Envios',
+  street1: 'Calle Uno',
+  external_number: '12',
+  neighborhood: 'Centro',
+  city: 'CDMX',
+  town: 'Cuauhtemoc',
+  state: 'CDMX',
+  zipcode: '01000',
+  reference: 'Puerta azul',
+}
 
 const renderComponent = (props = {}) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
@@ -138,6 +156,18 @@ describe('AddTempAddressGuideDb', () => {
   })
 
   describe('Happy path', () => {
+    it('advances an unchanged edit address without revalidating its prefilled region', async () => {
+      const user = userEvent.setup()
+      renderComponent({ addressData: editAddress, editMode: true })
+
+      await user.click(screen.getByTestId('origin-address-guide-db-temp-next-button'))
+
+      await waitFor(() => {
+        expect(mockUpdateAddress).toHaveBeenCalledWith(editAddress)
+      })
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    })
+
     const fillRequiredFields = async (user: ReturnType<typeof userEvent.setup>) => {
       await user.type(screen.getByTestId('name'), 'Juan')
       await user.type(screen.getByTestId('lastName'), 'Pérez')

@@ -114,6 +114,45 @@ describe('ParcelInfoGuideDbForm', () => {
     })
   })
 
+  describe('Edit mode', () => {
+    it('shows non-editable quote fields and accepts the saved SAT ID without a new selection', async () => {
+      const user = userEvent.setup()
+      renderComponent({
+        editMode: true,
+        existingSatProductId: 'SAT-001',
+        searchProductSat: 'SAT-001',
+        selectedProduct: null,
+        parcelInfo: { ...baseParcelInfo, content: 'Documentos', value: '500', quantity: '2', notifyMe: true },
+      })
+
+      expect(screen.getByTestId('db-value')).toBeDisabled()
+      expect(screen.getByTestId('db-quantity')).toBeDisabled()
+      expect(screen.getByTestId('db-notify-me')).toBeDisabled()
+      expect(screen.getByText(/Estos datos vienen de la cotización/i)).toBeInTheDocument()
+
+      await user.click(screen.getByTestId('db-parcel-next-button'))
+
+      expect(mockGoNext).toHaveBeenCalledTimes(1)
+    })
+
+    it('requires a selected SAT product after changing the saved SAT ID', async () => {
+      const user = userEvent.setup()
+      renderComponent({
+        editMode: true,
+        existingSatProductId: 'SAT-001',
+        searchProductSat: 'SAT-002',
+        selectedProduct: null,
+        parcelInfo: { ...baseParcelInfo, content: 'Documentos' },
+      })
+
+      await user.click(screen.getByTestId('db-parcel-next-button'))
+
+      expect(mockUpdateErrorProductSat).toHaveBeenCalledWith(
+        'Debes de seleccionar un producto válido de la lista',
+      )
+    })
+  })
+
   describe('Navigation', () => {
     it('When the Regresar button is clicked, Then it calls goPrev and not the submit handler', async () => {
       const user = userEvent.setup()

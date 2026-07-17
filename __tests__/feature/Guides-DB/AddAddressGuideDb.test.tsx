@@ -72,7 +72,7 @@ const addressData: CreateGuideAddressFormValuesMn = {
 const createTestQueryClient = () =>
   new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
 
-const renderComponent = (props: { excludedAlias?: string; aliasSaved?: AliasSavedMn }) => {
+const renderComponent = (props: { excludedAlias?: string; aliasSaved?: AliasSavedMn; initialUseTempAddress?: boolean }) => {
   const queryClient = createTestQueryClient()
   return render(
     <QueryClientProvider client={queryClient}>
@@ -88,6 +88,7 @@ const renderComponent = (props: { excludedAlias?: string; aliasSaved?: AliasSave
         toggleModal={mockToggleModal}
         updateAddress={mockUpdateAddress}
         updateSavedAlias={mockUpdateSavedAlias}
+        initialUseTempAddress={props.initialUseTempAddress}
       />
     </QueryClientProvider>,
   )
@@ -103,6 +104,12 @@ describe('AddAddressGuideDb - destination vs origin guard', () => {
       isError: false,
       error: null,
     } as never)
+  })
+
+  it('opens the prefilled manual address form when requested', () => {
+    renderComponent({ initialUseTempAddress: true })
+
+    expect(screen.getByTestId('street1')).toHaveValue('Calle Principal')
   })
 
   it('When the destination alias equals the excluded origin alias, Then it shows a same-address error on submit', async () => {

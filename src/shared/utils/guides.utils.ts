@@ -15,6 +15,7 @@ import {
   GUIDE_STATUS,
   GET_GUIDES_DB_ENDPOINT,
   DELETE_GUIDE_DB_ENDPOINT,
+  UPDATE_GUIDE_DB_ENDPOINT,
   GUIDE_DB_FAILURE_MESSAGES,
   GUIDE_DB_GENERIC_FAILURE_MESSAGE,
 } from "../constants/guides.constants";
@@ -45,13 +46,17 @@ import {
   CreateGuideDbResponse,
   DeleteGuideDbResponse,
   CreateGuideDbParcelPayload,
+  CreateGuideDbAddressPayload,
   CreateGuideDbFormValues,
+  GuideDbRecord,
   PackageDimensions,
   GetGuidesDbParams,
   GetGuidesDbResponse,
   GetGuidesDbResponseData,
   GuidesDbStatus,
   GuideDbFailureInfo,
+  UpdateGuideDbPayload,
+  UpdateGuideDbResponse,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
 import { formatNumberToCurrency } from "./global.utils";
@@ -154,6 +159,25 @@ export const deleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbRes
   return res.data;
 };
 
+/**
+ * Sends full replacements for changed objects only; quote and notifyMe are not editable.
+ * Rejects empty updates before making a request.
+ */
+export const updateGuideDbCb = async (
+  kraftId: string,
+  data: UpdateGuideDbPayload,
+): Promise<UpdateGuideDbResponse['data']> => {
+  if (!data.parcel && !data.origin && !data.destination) {
+    throw new Error('At least one editable object is required')
+  }
+
+  const res: AxiosResponse<UpdateGuideDbResponse> = await axios.patch(
+    `${UPDATE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}`,
+    data,
+  )
+  return res.data.data
+};
+
 export const hardDeleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbResponse> => {
   const res: AxiosResponse<DeleteGuideDbResponse> = await axios.delete(
     `${DELETE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}/hard`,
@@ -216,6 +240,131 @@ export const toGuideDbParcelPayload = (
       payload.quantity = quantity
     }
   }
+
+  return payload
+}
+
+const guideDbAddressToFormValues = (
+  address: GuideDbRecord['origin'],
+): CreateGuideAddressFormValuesMn => {
+  const fullLastName = ` ${address.lastName}`
+  const name = address.lastName && address.name.endsWith(fullLastName)
+    ? address.name.slice(0, -fullLastName.length)
+    : address.name
+
+  return {
+    alias: address.alias,
+    name,
+    lastName: address.lastName,
+    phone: address.phone,
+    email: address.email,
+    company: address.company,
+    street1: address.street1,
+    external_number: address.external_number,
+    neighborhood: address.neighborhood,
+    city: address.city,
+    town: address.town,
+    state: address.state,
+    zipcode: address.zipcode,
+    reference: address.reference,
+  }
+}
+
+export const guideDbRecordToEditForm = (guide: GuideDbRecord): {
+  formData: CreateGuideDbFormValues;
+  packageDimensions: PackageDimensions;
+  searchProductSat: string;
+} => ({
+  formData: {
+    originAddress: guideDbAddressToFormValues(guide.origin),
+    destinationAddress: guideDbAddressToFormValues(guide.destination),
+    parcelInfo: {
+      content: guide.parcel.content,
+      value: guide.parcel.value?.toString() ?? '',
+      quantity: guide.parcel.quantity?.toString() ?? '',
+      notifyMe: false,
+    },
+  },
+  packageDimensions: {
+    length: guide.parcel.length.toString(),
+    width: guide.parcel.width.toString(),
+    height: guide.parcel.height.toString(),
+    weight: guide.parcel.weight.toString(),
+  },
+  searchProductSat: guide.parcel.satProductId,
+})
+
+export const toGuideDbAddressPayload = (
+  address: CreateGuideAddressFormValuesMn,
+): CreateGuideDbAddressPayload => ({
+  ...verifyAndUpdateAddressGuideDb(address),
+  alias: address.alias ?? '',
+  street1: address.street1,
+  external_number: address.external_number,
+  neighborhood: address.neighborhood,
+  city: address.city,
+  town: address.town ?? '',
+  state: address.state,
+  zipcode: address.zipcode ?? '',
+  country: 'MX',
+})
+
+const normalizeGuideDbAddress = (address: CreateGuideDbAddressPayload) => ({
+  alias: address.alias.trim(),
+  name: address.name.trim(),
+  lastName: address.lastName.trim(),
+  phone: address.phone.trim(),
+  email: address.email.trim(),
+  company: address.company.trim(),
+  street1: address.street1.trim(),
+  external_number: address.external_number.trim(),
+  neighborhood: address.neighborhood.trim(),
+  city: address.city.trim(),
+  town: address.town.trim(),
+  state: address.state.trim(),
+  zipcode: address.zipcode.trim(),
+  country: address.country.trim(),
+  reference: address.reference.trim(),
+})
+
+const isSameGuideDbAddress = (
+  current: CreateGuideDbAddressPayload,
+  original: GuideDbRecord['origin'],
+) => JSON.stringify(normalizeGuideDbAddress(current)) === JSON.stringify(normalizeGuideDbAddress(original))
+
+export const buildUpdateGuideDbPayload = (
+  originalGuide: GuideDbRecord,
+  currentFormData: CreateGuideDbFormValues,
+  selectedProduct: SearchProduct | null,
+): UpdateGuideDbPayload => {
+  const origin = {
+    ...toGuideDbAddressPayload(currentFormData.originAddress),
+    country: originalGuide.origin.country.trim() || 'MX',
+  }
+  const destination = {
+    ...toGuideDbAddressPayload(currentFormData.destinationAddress),
+    country: originalGuide.destination.country.trim() || 'MX',
+  }
+  const satProductId = selectedProduct?.code ?? originalGuide.parcel.satProductId
+  const parcel: CreateGuideDbParcelPayload = {
+    length: originalGuide.parcel.length,
+    width: originalGuide.parcel.width,
+    height: originalGuide.parcel.height,
+    weight: originalGuide.parcel.weight,
+    content: currentFormData.parcelInfo.content,
+    satProductId,
+  }
+
+  if (originalGuide.parcel.value !== undefined) parcel.value = originalGuide.parcel.value
+  if (originalGuide.parcel.quantity !== undefined) parcel.quantity = originalGuide.parcel.quantity
+
+  const payload: UpdateGuideDbPayload = {}
+  if (!isSameGuideDbAddress(origin, originalGuide.origin)) payload.origin = origin
+  if (!isSameGuideDbAddress(destination, originalGuide.destination)) payload.destination = destination
+  if (
+    parcel.content.trim() !== originalGuide.parcel.content.trim() ||
+    parcel.satProductId !== originalGuide.parcel.satProductId
+  ) payload.parcel = parcel
 
   return payload
 }

@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Button } from "flowbite-react"
-import { RiArrowLeftLine, RiDeleteBinLine } from "@remixicon/react"
+import { RiArrowLeftLine, RiDeleteBinLine, RiEditLine } from "@remixicon/react"
 import clsx from "clsx"
 
 import { GuideDbRecord } from "@/shared/types/guides.types"
@@ -32,9 +32,10 @@ interface GuideDbDetailsProps {
   isAdmin?: boolean
   onBack: () => void
   onDeleteGuide?: (guide: GuideDbRecord, permanent: boolean) => void
+  onEditGuide?: (guide: GuideDbRecord) => void
 }
 
-export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide }: GuideDbDetailsProps) => {
+export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide, onEditGuide }: GuideDbDetailsProps) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const createdAt = new Date(guide.createdAt)
   const updatedAt = new Date(guide.updatedAt)
@@ -71,19 +72,34 @@ export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide }: GuideD
           <RiArrowLeftLine size={18} />
           Volver a guías
         </button>
-        { onDeleteGuide && (isAdmin || guide.deletedAt == null) && (
-          <Button
-            type="button"
-            color="red"
-            outline
-            data-testid="guide-db-delete-button"
-            onClick={() => setIsConfirmOpen(true)}
-            className="inline-flex items-center gap-2"
-            aria-label="Eliminar guía"
-          >
-            <RiDeleteBinLine size={18} />
-          </Button>
-        ) }
+        <div className="flex items-center gap-3">
+          { onEditGuide && guide.status === 'failed' && guide.deletedAt == null && (
+            <Button
+              type="button"
+              color="gray"
+              outline
+              data-testid="guide-db-edit-button"
+              onClick={() => onEditGuide(guide)}
+              className="inline-flex items-center gap-2"
+              aria-label="Editar guía"
+            >
+              <RiEditLine size={18} />
+            </Button>
+          ) }
+          { onDeleteGuide && (isAdmin || guide.deletedAt == null) && (
+            <Button
+              type="button"
+              color="red"
+              outline
+              data-testid="guide-db-delete-button"
+              onClick={() => setIsConfirmOpen(true)}
+              className="inline-flex items-center gap-2"
+              aria-label="Eliminar guía"
+            >
+              <RiDeleteBinLine size={18} />
+            </Button>
+          ) }
+        </div>
       </div>
 
       <article data-testid="guide-db-details-header" className={clsx(cardShell, "flex flex-col gap-3")}>

@@ -1,19 +1,23 @@
 import { Button } from "flowbite-react";
 import { RiCheckboxCircleLine, RiErrorWarningLine } from "@remixicon/react";
 
-import { CreateGuideDbResponseData } from "@/shared/types/guides.types";
+import { GuideDbResultData } from "@/shared/types/guides.types";
 import {
   GUIDE_DB_GENERIC_ERROR_MESSAGE,
   GUIDE_DB_GENERIC_FAILED_MESSAGE,
   GUIDE_DB_PROVIDER_FAILED_MESSAGE,
+  GUIDE_DB_RESULT_ERROR_HEADINGS,
+  GUIDE_DB_RESULT_PROVIDER_FAILED_HEADINGS,
+  GUIDE_DB_RESULT_SUCCESS_HEADINGS,
 } from "@/shared/constants/guides.constants";
 
 interface ResultGuideDbScreenProps {
-  result: CreateGuideDbResponseData | undefined;
+  result: GuideDbResultData | undefined;
   isSuccess: boolean;
   isError: boolean;
   errorMessage?: string;
   closeModal: () => void;
+  mode?: 'create' | 'edit';
 }
 
 const KNOWN_FAILURE_PREFIXES = [
@@ -36,11 +40,12 @@ export const ResultGuideDbScreen = ({
   isError,
   errorMessage,
   closeModal,
+  mode = 'create',
 }: ResultGuideDbScreenProps) => {
   if (isError) {
     return (
       <section className="flex flex-col gap-6">
-        <h4 className="text-xl font-bold text-center">Error al crear la guía</h4>
+        <h4 className="text-xl font-bold text-center">{GUIDE_DB_RESULT_ERROR_HEADINGS[mode]}</h4>
         <p className="text-red-600 text-center">
           {errorMessage ?? GUIDE_DB_GENERIC_ERROR_MESSAGE}
         </p>
@@ -56,12 +61,12 @@ export const ResultGuideDbScreen = ({
   if (isSuccess && result?.status === "created") {
     return (
       <section className="flex flex-col gap-6">
-        <h4 className="text-xl font-bold text-center">Guía creada con éxito</h4>
+        <h4 className="text-xl font-bold text-center">{GUIDE_DB_RESULT_SUCCESS_HEADINGS[mode]}</h4>
         <div className="flex flex-col items-center gap-4">
           <RiCheckboxCircleLine size={48} className="text-green-600" />
           <p className="text-center">
-            La guía <strong>#{result.kraftId}</strong> se guardó en Kraft y el
-            proveedor <strong>{result.provider}</strong> la creó correctamente.
+            La guía <span className="font-bold">#{result.kraftId}</span> se guardó en Kraft y el
+            proveedor <span className="font-bold">{result.provider}</span> la creó correctamente.
           </p>
         </div>
         <div className="flex justify-center">
@@ -85,7 +90,7 @@ export const ResultGuideDbScreen = ({
     return (
       <section className="flex flex-col gap-6">
         <h4 className="text-xl font-bold text-center">
-          Guía guardada en Kraft
+          {GUIDE_DB_RESULT_PROVIDER_FAILED_HEADINGS[mode]}
         </h4>
         <div className="flex flex-col items-center gap-4">
           <RiErrorWarningLine size={48} className="text-yellow-500" />

@@ -20,9 +20,10 @@ Read in order:
 1. **The planning document** provided by the user, or selected from `ai-planning/*.md`. This is the source of truth for implementation; do not invent changes that are not in the plan.
 2. `REPO_CONTEXT.md` - architecture map, route inventory, auth/cookie flow, testing notes, conventions, and open questions.
 3. `AGENTS.md` - compact commands, env, app structure, API-route, test, and styling guidance.
-4. `.github/copilot-instructions.md` - unit test conventions. Treat it as a hard constraint.
-5. `package.json` - dependencies and scripts.
-6. The research doc the plan references, usually `ai-research/{story-name}.md`, for ACs and assumptions.
+4. `IMPLEMENTATION_GUIDELINES` - client error handling, user-facing message constants, and readability rules. Treat it as a hard constraint.
+5. `.github/copilot-instructions.md` - unit test conventions. Treat it as a hard constraint.
+6. `package.json` - dependencies and scripts.
+7. The research doc the plan references, usually `ai-research/{story-name}.md`, for ACs and assumptions.
 
 There are no CI workflow files in this checkout. Do not assume branch, label, release, changelog, or deployment automation unless the user provides it.
 

@@ -1,3 +1,15 @@
+## v0.51.0 (2026-07-17)
+
+### Pull Requests
+[#110](https://github.com/RafaelMoro/kraft-envios-fe/pull/110) | Add edit guide db modal
+
+
+## v0.50.0 (2026-07-17)
+
+### Pull Requests
+[#109](https://github.com/RafaelMoro/kraft-envios-fe/pull/109) | Add PATCH guide db
+
+
 ## v0.49.0 (2026-07-06)
 
 ### Pull Requests

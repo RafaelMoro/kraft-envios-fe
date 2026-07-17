@@ -19,9 +19,11 @@ interface AddTempAddressGuideDbProps {
   goNext: () => void
   updateAddress: (data: CreateGuideAddressFormValuesMn) => void
   toggleTempAddress: () => void
+  nextButtonLabel?: string
+  editMode?: boolean
 }
 
-export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress }: AddTempAddressGuideDbProps) => {
+export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress, nextButtonLabel, editMode = false }: AddTempAddressGuideDbProps) => {
   const {
     register,
     handleSubmit,
@@ -30,7 +32,8 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
     clearErrors,
     setError,
   } = useForm<CreateGuideAddressFormValuesMn>({
-    resolver: yupResolver(CreateGuideAddressFormSchemaMn) as never
+    resolver: yupResolver(CreateGuideAddressFormSchemaMn) as never,
+    defaultValues: addressData,
   })
   const clearManualAddressRegionFields = () => {
     setValue("neighborhood", "");
@@ -74,13 +77,16 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
       return
     }
 
-    const isZipcodeValid = validateZipcodeErrors()
+    const hasChangedZipcode = zipcode !== addressData.zipcode
+    const canReuseExistingRegion = editMode && !hasChangedZipcode
+    const isZipcodeValid = canReuseExistingRegion || validateZipcodeErrors()
     if (!isZipcodeValid && !showManualFields) return
 
-    const isNeighborhoodValid = isValidNeighborhood()
+    const isNeighborhoodValid = canReuseExistingRegion || isValidNeighborhood()
     if (!isNeighborhoodValid && !showManualFields) return
 
     updateAddress({
+      ...addressData,
       ...data,
       alias: data.alias?.trim() || '',
       town: data.town?.trim() || '',
@@ -208,6 +214,8 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
                 setCity={setCitySelected}
                 cityError={errors?.city?.message ?? ""}
                 formData={addressData}
+                skipInitialZipcodeLookup={editMode}
+                resetCityAndStateOnLookup={editMode}
               />
             }
           />
@@ -218,7 +226,7 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
           Volver
         </Button>
         <Button data-testid={`${addressType}-address-guide-db-temp-next-button`} type="submit" className="hover:cursor-pointer">
-          Siguiente
+          {nextButtonLabel ?? 'Siguiente'}
         </Button>
       </div>
     </form>

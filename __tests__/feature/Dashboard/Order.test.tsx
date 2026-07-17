@@ -2189,4 +2189,48 @@ describe('Order', () => {
       expect(mockedHardDeleteGuideDbCb).not.toHaveBeenCalled();
     });
   });
+
+  describe('When editing a failed DB guide', () => {
+    it('opens and closes the edit modal from the card and details', async () => {
+      const failedGuide: GuideDbRecord = {
+        kraftId: 'KB-EDIT',
+        quote: { id: 'quote-edit', service: 'Estafeta', total: 100, typeService: 'standard', courier: 'Estafeta' },
+        externalId: null,
+        trackingNumber: null,
+        shipmentNumber: null,
+        carrier: null,
+        price: null,
+        guideLink: null,
+        labelUrl: null,
+        file: null,
+        status: 'failed',
+        provider: 'Mn',
+        isProviderTrackingSynced: false,
+        failureInfo: null,
+        origin: { alias: 'Origen', name: 'Juan', lastName: 'Perez', phone: '5512345678', email: 'juan@example.com', company: '', street1: 'Calle 1', external_number: '1', neighborhood: 'Centro', city: 'CDMX', town: '', state: 'CDMX', zipcode: '01000', country: 'Mexico', reference: '' },
+        destination: { alias: 'Destino', name: 'Maria', lastName: 'Garcia', phone: '5587654321', email: 'maria@example.com', company: '', street1: 'Calle 2', external_number: '2', neighborhood: 'Centro', city: 'CDMX', town: '', state: 'CDMX', zipcode: '01000', country: 'Mexico', reference: '' },
+        parcel: { length: 10, width: 10, height: 10, weight: 1, content: 'Caja', satProductId: 'SAT-001' },
+        createdAt: '2026-07-13T10:00:00Z',
+        updatedAt: '2026-07-13T10:00:00Z',
+        deletedAt: null,
+        deletedBy: null,
+      }
+      mockedUseMediaQuery.mockReturnValue({ isMobile: false, isTablet: false, isTabletDesktop: true, isMobileTablet: false, isDesktop: true, isDesktopX2: false });
+      mockedGetGuidesCb.mockResolvedValue({ guides: mockGuides, messages: [] });
+      mockedGetGuidesDbCb.mockResolvedValue({ guides: [failedGuide], total: 1, page: 1, limit: 10, totalPages: 1 });
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+      await waitFor(() => expect(screen.getByTestId('guide-db-edit-button')).toBeInTheDocument());
+
+      await userEvent.click(screen.getByTestId('guide-db-edit-button'));
+      expect(screen.getAllByTestId('guide-db-edit-modal')).not.toHaveLength(0);
+      await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+      await waitFor(() => expect(screen.queryAllByTestId('guide-db-edit-modal')).toHaveLength(0));
+
+      await userEvent.click(screen.getByTestId('guide-db-details-button'));
+      await userEvent.click(screen.getByTestId('guide-db-edit-button'));
+      expect(screen.getAllByTestId('guide-db-edit-modal')).not.toHaveLength(0);
+    });
+  });
 });
