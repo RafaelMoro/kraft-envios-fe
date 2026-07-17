@@ -99,13 +99,15 @@ export const useDebouncedAutocompleteZipcode = ({
 
       // Set selected values based on formData or auto-select single options.
       setNeighborhood(
-        selectAddressValue(
-          formData?.neighborhood,
-          newNeighborhoods,
-          INITIAL_STATE_SELECT_NEIGHBORHOOD,
-          hasExistingFormData,
-        ),
-      );
+        shouldResetCityAndState
+          ? INITIAL_STATE_SELECT_NEIGHBORHOOD
+          : selectAddressValue(
+              formData?.neighborhood,
+              newNeighborhoods,
+              INITIAL_STATE_SELECT_NEIGHBORHOOD,
+              hasExistingFormData,
+            ),
+      )
       setState(shouldResetCityAndState
         ? INITIAL_STATE_SELECT_STATE
         : selectAddressValue(formData?.state, newStates, INITIAL_STATE_SELECT_STATE, hasExistingFormData),
