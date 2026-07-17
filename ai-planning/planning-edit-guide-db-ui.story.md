@@ -234,7 +234,7 @@ Add only copy used by the edit UI.
 
 ```ts
 export const GUIDES_DB_EDIT_STEPS = ['Origen', 'Destino', 'Paquete', 'Confirmar']
-export const GUIDES_DB_EDIT_NO_CHANGES_MESSAGE = 'Cambia al menos un campo editable para poder guardar los cambios.'
+export const GUIDES_DB_EDIT_NO_CHANGES_MESSAGE = 'Para continuar, modifica al menos un dato de la guía.'
 export const GUIDES_DB_EDIT_REQUOTE_MESSAGE = 'Estos datos vienen de la cotización y no se pueden editar aquí. Para cambiarlos, genera una nueva cotización.'
 ```
 
