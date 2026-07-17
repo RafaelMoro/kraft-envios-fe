@@ -50,6 +50,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   const formData = useRef<CreateGuideDbFormValues | null>(null)
   const packageDimensions = useRef<PackageDimensions | null>(null)
   const selectedProduct = useRef<SearchProduct | null>(null)
+  const destinationStepRef = useRef<HTMLDivElement>(null)
   const [searchProductSat, setSearchProductSat] = useState('')
   const [errorProductSat, setErrorProductSat] = useState('')
   const [noChangesDismissed, setNoChangesDismissed] = useState(false)
@@ -66,6 +67,11 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
     resetSteps()
   // ponytail: local wizard state is enough until this flow needs persistence.
   }, [guide, open, resetSteps])
+
+  useEffect(() => {
+    if (step !== 2 || !destinationStepRef.current) return
+    destinationStepRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [step])
 
   const resetForm = () => {
     formData.current = null
@@ -140,21 +146,23 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
           />
         )}
         {step === 2 && (
-          <AddAddressGuideDb
-            title="Domicilio destino"
-            goNext={goNext}
-            goPrev={goPrev}
-            toggleModal={closeModal}
-            updateAddress={updateDestinationAddress}
-            aliasSaved={aliasesMn.destination}
-            updateSavedAlias={updateDestinationAliasMn}
-            addressData={formData.current.destinationAddress}
-            isMobileTablet={isMobileTablet}
-            isDestination
-            excludedAlias={aliasesMn.origin.alias}
-            initialUseTempAddress
-            editMode
-          />
+          <div ref={destinationStepRef}>
+            <AddAddressGuideDb
+              title="Domicilio destino"
+              goNext={goNext}
+              goPrev={goPrev}
+              toggleModal={closeModal}
+              updateAddress={updateDestinationAddress}
+              aliasSaved={aliasesMn.destination}
+              updateSavedAlias={updateDestinationAliasMn}
+              addressData={formData.current.destinationAddress}
+              isMobileTablet={isMobileTablet}
+              isDestination
+              excludedAlias={aliasesMn.origin.alias}
+              initialUseTempAddress
+              editMode
+            />
+          </div>
         )}
         {step === 3 && (
           <ParcelInfoGuideDbForm
