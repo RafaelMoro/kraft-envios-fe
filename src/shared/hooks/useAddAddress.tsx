@@ -8,13 +8,14 @@ interface UseAddAddressProps {
   alias: string
   toggleModal: () => void
   goPrev: () => void
+  initialUseTempAddress?: boolean
 }
 
 /**
  * This hook is the repeated code in each AddAddress component for Guides
  */
-export const useAddAddress = ({ isDestination, alias, toggleModal, goPrev }: UseAddAddressProps) => {
-  const [useTempAddress, setUseTempAddress] = useState(false);
+export const useAddAddress = ({ isDestination, alias, toggleModal, goPrev, initialUseTempAddress = false }: UseAddAddressProps) => {
+  const [useTempAddress, setUseTempAddress] = useState(initialUseTempAddress);
   const toggleTempAddress = () => setUseTempAddress((prev) => !prev);
 
   const cancelColorButton = isDestination ? "light" : "red"

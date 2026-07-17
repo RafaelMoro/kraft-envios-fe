@@ -282,6 +282,21 @@ export const GUIDE_DB_GENERIC_FAILED_MESSAGE =
 export const GUIDE_DB_GENERIC_ERROR_MESSAGE =
   'Ocurrió un error al crear la guía. Por favor, intente nuevamente.'
 
+export const GUIDE_DB_RESULT_ERROR_HEADINGS = {
+  create: 'Error al crear la guía',
+  edit: 'Error al editar la guía',
+} as const
+
+export const GUIDE_DB_RESULT_SUCCESS_HEADINGS = {
+  create: 'Guía creada con éxito',
+  edit: 'Guía editada con éxito',
+} as const
+
+export const GUIDE_DB_RESULT_PROVIDER_FAILED_HEADINGS = {
+  create: 'Guía guardada en Kraft',
+  edit: 'Guía actualizada en Kraft',
+} as const
+
 export const GUIDES_DB_EMPTY_MESSAGE = 'No hay guias para el mes seleccionado.'
 
 export const GUIDES_DB_ERROR_MESSAGE = 'Ha sucedido un error. Intentelo nuevamente'
@@ -299,6 +314,9 @@ export const GUIDES_DB_DELETE_MODAL_CONFIRM = 'Eliminar'
 export const GUIDES_DB_DELETE_MODAL_CANCEL = 'Cancelar'
 export const GUIDES_DB_DELETE_ERROR_MESSAGE = 'No se pudo eliminar la guía. Por favor, intenta nuevamente.'
 export const GUIDES_DB_EDIT_MODAL_TITLE = 'Editar guía'
+export const GUIDES_DB_EDIT_NO_CHANGES_MESSAGE = 'Para continuar, modifica al menos un dato de la guía.'
+export const GUIDES_DB_EDIT_REQUOTE_MESSAGE = 'Estos datos vienen de la cotización y no se pueden editar aquí. Para cambiarlos, genera una nueva cotización.'
+export const GUIDES_DB_REQUOTE_MESSAGE = 'Las dimensiones del paquete vienen de tu cotización. Para cambiarlas, vuelve a cotizar.'
 
 export const GUIDES_DB_HARD_DELETE_MODAL_TITLE = '¿Eliminar permanentemente esta guía?'
 export const GUIDES_DB_HARD_DELETE_MODAL_BODY = 'Esta acción removerá el registro de la base de datos de forma permanente. No se puede deshacer.'

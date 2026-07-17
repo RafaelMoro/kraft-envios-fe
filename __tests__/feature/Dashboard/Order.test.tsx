@@ -2225,7 +2225,7 @@ describe('Order', () => {
 
       await userEvent.click(screen.getByTestId('guide-db-edit-button'));
       expect(screen.getAllByTestId('guide-db-edit-modal')).not.toHaveLength(0);
-      await userEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Close' }));
       await waitFor(() => expect(screen.queryAllByTestId('guide-db-edit-modal')).toHaveLength(0));
 
       await userEvent.click(screen.getByTestId('guide-db-details-button'));

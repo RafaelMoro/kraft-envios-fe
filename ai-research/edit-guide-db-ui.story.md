@@ -27,10 +27,10 @@ This is a single story. The quote re-flow is documented separately under `docs/`
 ### Acceptance Criteria
 
 1. `GuideDbEditModal` is converted from a placeholder shell into a real multi-step edit modal for a selected `GuideDbRecord`, opened from the existing edit button on failed, non-deleted records.
-2. The modal lets the user edit `origin`, `destination`, and `parcel` data only. `quote` and `notifyMe` remain out of the update payload for this story.
+2. The modal lets the user edit `origin`, `destination`, and non-dimension `parcel` data only. `quote`, `notifyMe`, and quote-derived parcel dimensions (`length`, `width`, `height`, `weight`) remain out of the editable surface for this story.
 3. The edit flow reuses the existing Guides DB address and parcel form components where practical, with minimal prop additions rather than duplicated forms.
 4. Initial form state is prefilled from the selected `GuideDbRecord.origin`, `GuideDbRecord.destination`, and `GuideDbRecord.parcel`.
-5. The submit button is disabled until at least one editable field differs from the original guide. If no fields changed, `updateGuideDbCb` is never called.
+5. The submit button is disabled until at least one editable field differs from the original guide. When disabled, it shows a Flowbite React `Popover` explaining that the user must change at least one editable field before submitting. If no fields changed, `updateGuideDbCb` is never called.
 6. On submit, the modal builds an `UpdateGuideDbPayload` containing only changed top-level objects (`origin`, `destination`, `parcel`), and every included object is complete.
 7. On success, the UI invalidates `['guides', 'db']`, closes or advances the modal to a result state, and returns from details to the list when appropriate so the refetched record is visible.
 8. If the backend re-attempt returns `status: 'created'`, the user sees a success result. If it returns `status: 'failed'`, the user sees a saved-but-provider-failed result with the new provider error context.
@@ -74,7 +74,7 @@ Feature UI:
 - `src/features/Dashboard/subscreens/GuideDbCard.tsx` and `GuideDbDetails.tsx` already render the edit button only when `onEditGuide && guide.status === 'failed' && guide.deletedAt == null`; no visibility change needed.
 - `src/features/Guides-DB/AddAddressGuideDb.tsx` is reusable for origin/destination if it can accept prefilled alias state and edit-specific copy. It currently relies on `useAddAddress` and saved alias refs. Reuse likely requires either pre-seeding alias refs from the guide or allowing an edit mode that defaults to the guide's current address.
 - `src/features/Guides-DB/AddTempAddressGuideDb.tsx` is reusable for editing a full manual address because it accepts `addressData` and already supports default values.
-- `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` currently disables dimensions and displays copy telling the user to re-quote to change dimensions. That conflicts with the PATCH example where parcel dimensions are editable. This component needs a small edit-mode prop that makes dimensions editable for guide DB edit, while preserving disabled dimensions in create flow.
+- `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` currently disables dimensions because they come from the quote. Keep `length`, `width`, `height`, and `weight` disabled in edit mode too, and add Flowbite React `Popover` copy explaining they require a new quote to change. The backend currently allows these fields, but the frontend should not expose editing them; backend validation will be fixed separately.
 - `src/features/Guides/Mn/ProductSatDropdown.tsx` is reusable for SAT product search/selection. The edit modal needs to initialize `searchProductSat` from the current parcel's `satProductId` best-effort. Because the saved guide only has `satProductId`, not the SAT product description, the input may show the ID until the user searches/selects a different product.
 - `src/features/Guides-DB/ResultGuideDbScreen.tsx` handles create result semantics using `CreateGuideDbResponseData`. The update response shape is compatible on `status`, `kraftId`, `provider`, and `failureInfo`; either generalize the prop to a shared result type or add `ResultUpdateGuideDbScreen` if type friction is simpler. Prefer the smaller change: widen the result prop type to the shared subset.
 
@@ -138,7 +138,7 @@ Step 1/2:
 
 Step 3:
 
-- Reuse `ParcelInfoGuideDbForm` with an edit mode that enables dimensions (`length`, `width`, `height`, `weight`) and preloads parcel values from `guide.parcel`.
+- Reuse `ParcelInfoGuideDbForm` with an edit mode that preloads parcel values from `guide.parcel`, keeps dimensions (`length`, `width`, `height`, `weight`) disabled, and shows a Flowbite React `Popover` explaining that dimensions come from the quote and cannot be changed here.
 - Keep SAT product selection via `ProductSatDropdown`.
 - Include `value`/`quantity` only when supplied, same as `toGuideDbParcelPayload`.
 - Do not include `notifyMe` in the update payload. The existing form includes it for create; edit mode should hide it or ignore it. Prefer hiding it in edit mode to avoid a control that does nothing.
@@ -147,7 +147,7 @@ Step 4:
 
 - Show a confirmation summary of changed sections only: origin, destination, parcel.
 - If no sections changed, show an inline message and keep submit disabled.
-- Submit button text should be `Guardar cambios` or `Reintentar creación`; choose one in planning. Since PATCH re-attempts provider creation, `Guardar cambios y reintentar` is clearest.
+- Submit button text should be `Editar`.
 
 Step 5:
 
@@ -189,7 +189,7 @@ Normalization rules:
 - Soft-deleted guides have no edit button; modal should still handle a stale selected soft-deleted guide defensively by disabling submit or closing.
 - Quote expiration is not solved here. If provider failure requires a new quote, show provider error and leave re-quote flow to the separate story.
 - SAT product description may not be available from `satProductId`. The UI can display the saved ID and require a new search only if the user changes SAT product.
-- Create flow must not regress: dimensions remain disabled when creating from a quote unless edit mode is explicitly enabled.
+- Create flow must not regress: dimensions remain disabled when creating from a quote and when editing an existing failed guide.
 - Avoid adding broader abstractions for “wizard” state. `useSteps`, refs/state, and local helpers are enough.
 
 ### Dependencies And Integration Points
@@ -225,44 +225,32 @@ Smallest useful test set:
 - Transport rejection shows an error state and does not close prematurely.
 - `Order` opens the real modal from card and details, and closes it.
 
-## Open Questions
+## Resolved Decisions
 
 Backend contract:
 
-- I: Question: Does the backend accept updates to parcel dimensions (`length`, `width`, `height`, `weight`) without a new quote?
-  - Status: pending
-  - Context: The user-provided PATCH example edits parcel length and sends all parcel fields. Existing create UI says dimensions come from quote and require re-quote. This story assumes dimensions are editable via PATCH for failed guide retry, but backend/provider behavior should be confirmed.
-- II: Question: If the provider rejects because the quote expired, can editing origin/destination/parcel and reusing the old quote ever succeed?
-  - Status: pending
-  - Context: Quote re-flow is out of scope and documented separately. This affects UX copy when PATCH returns another failed response.
+- I: Parcel dimensions (`length`, `width`, `height`, `weight`) should not be editable in this UI, even though the backend currently permits them. Disable those fields and add Flowbite React `Popover` copy explaining they come from the quote and require a new quote to change. Backend validation will be fixed separately.
+- II: The backend may currently allow update/retry cases that should later be blocked, including stale quote scenarios. Do not solve that in this UI story; show the normal success or provider-failed result from the backend response for now.
 
 UI/product decisions:
 
-- I: Question: Confirm submit button copy: `Guardar cambios y reintentar`?
-  - Status: pending
-  - Context: PATCH both saves changes and re-attempts provider creation. This copy is clearer than plain `Guardar cambios`.
-- II: Question: Should the modal close automatically on `status: 'created'`, or show the success result until the user clicks `Finalizar`?
-  - Status: pending
-  - Context: Existing `ResultGuideDbScreen` shows a result screen. Research recommends keeping the result screen for parity.
+- I: Submit button copy is `Editar`.
+- II: On `status: 'created'`, show the success result instead of closing immediately.
 
 Authorization:
 
-- I: Question: Should all-guides admin view hide edit buttons for guides not owned by the admin if owner metadata becomes available later?
-  - Status: pending
-  - Context: Current records do not expose a reliable owner field in the researched type. Backend owner-only auth remains the gate.
+- I: Admins can edit other Guides DB records.
 
 Quote flow:
 
-- I: Question: Should the future re-quote flow launch from this edit modal result when the provider reports quote expiration?
-  - Status: pending
-  - Context: Out of scope here; captured under `docs/guide-db-existing-guide-quote-flow.md`.
+- I: Existing-guide quote flow will be designed later. Do not launch or design it in this story.
 
 ## Assumptions
 
-- This story is only for `origin`, `destination`, and `parcel` edits.
+- This story is only for `origin`, `destination`, and non-dimension `parcel` edits.
 - `quote` remains out of `UpdateGuideDbPayload` for this UI, even though backend can edit it after a re-quote.
 - Existing form components are reused with small edit-mode props; no duplicated address/parcel form stack.
-- Parcel dimensions become editable only in edit mode.
+- Parcel dimensions remain disabled in edit mode; backend enforcement is a separate backend fix.
 - `notifyMe` is hidden or ignored in edit mode because it is not part of `UpdateGuideDbPayload`.
 - The modal owns the mutation and invalidates `['guides', 'db']` on every successful HTTP response, regardless of returned `status`.
 - The update response is displayed as a result snapshot, not used to mutate a full guide record in-place.

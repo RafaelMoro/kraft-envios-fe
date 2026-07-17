@@ -1,0 +1,6 @@
+# Implementation Guidelines
+
+- Do not throw errors directly from client UI flows. Surface expected failures through the established notification or in-context error UI.
+- Store user-facing messages in shared constants when a message has two or more variants.
+- Format JSX props and conditional branches across lines when one line is no longer easy to scan.
+- Keep JSX declarative; place event-handler logic in named functions before the component return.

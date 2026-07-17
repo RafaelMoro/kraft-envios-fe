@@ -387,6 +387,11 @@ export type UpdateGuideDbResponse = {
   data: UpdateGuideDbResponseData;
 };
 
+export type GuideDbResultData = Pick<
+  UpdateGuideDbResponseData,
+  'status' | 'kraftId' | 'provider' | 'failureInfo'
+>;
+
 export type GuideDbAddress = {
   alias: string;
   name: string;

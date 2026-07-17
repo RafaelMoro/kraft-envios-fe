@@ -245,6 +245,15 @@ export const Order = ({ userInfo }: OrderProps) => {
     setIsEditOpen(true)
   }
 
+  const handleCloseEditGuide = () => {
+    setIsEditOpen(false)
+    setEditGuide(null)
+  }
+
+  const handleUpdatedGuide = () => {
+    setSelectedDbGuide(null)
+  }
+
   const canDelete = (selectedSource === 'ownDb') || (selectedSource === 'allDb' && isAdmin)
 
   const activeDbData = selectedSource === 'allDb' ? adminDbData : dbData
@@ -470,7 +479,8 @@ export const Order = ({ userInfo }: OrderProps) => {
       )}
       <GuideDbEditModal
         open={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
+        onClose={handleCloseEditGuide}
+        onUpdated={handleUpdatedGuide}
         guide={editGuide}
       />
     </main>
