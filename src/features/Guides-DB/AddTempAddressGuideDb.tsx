@@ -60,7 +60,6 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
     formData: addressData,
     syncCityForm: true,
     setError,
-    skipInitialZipcodeLookup: editMode,
   });
   const { showManualFields, toggleShowManualFields } = useAddressRegionSelector({ clearManualAddressRegionFields })
 
