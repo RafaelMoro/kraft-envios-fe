@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface UseStepsProps {
   firstStep: number
@@ -8,13 +8,13 @@ interface UseStepsProps {
 export const useSteps = ({ firstStep }: UseStepsProps) => {
   const [step, setStep] = useState<number>(firstStep);
 
-  const goNext = () => {
+  const goNext = useCallback(() => {
     setStep((prev) => prev + 1);
-  }
-  const goPrev = () => {
+  }, [])
+  const goPrev = useCallback(() => {
     setStep((prev) => (prev > firstStep ? prev - 1 : prev));
-  }
-  const resetSteps = () => setStep(firstStep);
+  }, [firstStep])
+  const resetSteps = useCallback(() => setStep(firstStep), [firstStep])
 
   return {
     step,

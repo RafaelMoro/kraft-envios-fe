@@ -117,6 +117,20 @@ describe('ResultGuideDbScreen', () => {
     })
   })
 
+  it('uses edit-specific headings for an update result', () => {
+    render(
+      <ResultGuideDbScreen
+        mode="edit"
+        result={baseResult}
+        isSuccess
+        isError={false}
+        closeModal={mockCloseModal}
+      />,
+    )
+
+    expect(screen.getByText('Guía editada con éxito')).toBeInTheDocument()
+  })
+
   describe('Given HTTP 201 with status failed', () => {
     it('When status is failed with a known errorCode, Then it shows the friendly provider-failed copy', () => {
       const failed: CreateGuideDbResponseData = {
