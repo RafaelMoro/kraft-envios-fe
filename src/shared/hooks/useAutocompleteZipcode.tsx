@@ -32,7 +32,7 @@ export const useAutocompleteZipcode = <T extends Record<string, unknown>>({
   setError,
   clearErrors,
 }: UseAutocompleteZipcodeProps<T>) => {
-  const [zipcode, setZipcode] = useState<string>("");
+  const [zipcode, setZipcode] = useState<string>(formData?.zipcode ?? "");
   const [zipcodeError, setZipcodeError] = useState<string>("");
   const handleZipcodeChange = (newZipcode: string) => {
     setZipcode(newZipcode);

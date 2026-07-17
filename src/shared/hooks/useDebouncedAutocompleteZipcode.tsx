@@ -16,13 +16,14 @@ interface UseDebouncedAutocompleteZipcodeProps {
   setNeighborhood: (newNeighborhood: string) => void;
   setState: (newState: string) => void;
   setCity: (newCity: string) => void;
+  skipInitialZipcodeLookup?: boolean;
 }
 
 /**
  * This hook fetches the information related to neighborhoods, states and cities based on a debounced zipcode input
  */
 export const useDebouncedAutocompleteZipcode = ({
-  zipcode, formData, setNeighborhood, setState, setCity
+  zipcode, formData, setNeighborhood, setState, setCity, skipInitialZipcodeLookup = false,
 }: UseDebouncedAutocompleteZipcodeProps) => {
   const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
@@ -42,7 +43,8 @@ export const useDebouncedAutocompleteZipcode = ({
 
   // Debounce zipcode to avoid firing queries back to back
   useEffect(() => {
-    if (zipcode.length === 5 && onlyNumberRegex.test(zipcode)) {
+    const shouldLookup = !skipInitialZipcodeLookup || zipcode !== formData?.zipcode
+    if (shouldLookup && zipcode.length === 5 && onlyNumberRegex.test(zipcode)) {
       const timeoutId = setTimeout(() => {
         setDebouncedZipcode(zipcode);
       }, 2000);
@@ -51,7 +53,7 @@ export const useDebouncedAutocompleteZipcode = ({
     } else {
       setDebouncedZipcode("");
     }
-  }, [zipcode]);
+  }, [formData?.zipcode, skipInitialZipcodeLookup, zipcode]);
 
   /**
    * Effect to update neighborhoods, cities and states when data changes

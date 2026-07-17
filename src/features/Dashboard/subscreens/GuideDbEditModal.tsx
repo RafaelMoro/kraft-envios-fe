@@ -136,6 +136,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
             addressData={formData.current.originAddress}
             isMobileTablet={isMobileTablet}
             initialUseTempAddress
+            editMode
           />
         )}
         {step === 2 && (
@@ -152,6 +153,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
             isDestination
             excludedAlias={aliasesMn.origin.alias}
             initialUseTempAddress
+            editMode
           />
         )}
         {step === 3 && (

@@ -45,10 +45,11 @@ interface AddAddressGuideDbProps {
   }) => void
   initialUseTempAddress?: boolean
   nextButtonLabel?: string
+  editMode?: boolean
 }
 
 export const AddAddressGuideDb = ({
-  isDestination = false, title, addressData, aliasSaved, excludedAlias, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias, initialUseTempAddress, nextButtonLabel,
+  isDestination = false, title, addressData, aliasSaved, excludedAlias, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias, initialUseTempAddress, nextButtonLabel, editMode,
 }: AddAddressGuideDbProps) => {
   const {
     aliasSelected,
@@ -135,6 +136,7 @@ export const AddAddressGuideDb = ({
         isMobileTablet={isMobileTablet}
         toggleTempAddress={toggleTempAddress}
         nextButtonLabel={nextButtonLabel}
+        editMode={editMode}
       />
     )
   }
