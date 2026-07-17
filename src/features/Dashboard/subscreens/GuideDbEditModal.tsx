@@ -31,6 +31,11 @@ type GuideDbEditModalProps = {
   guide: GuideDbRecord | null
 }
 
+type UpdateGuideDbMutation = {
+  kraftId: string
+  payload: UpdateGuideDbPayload
+}
+
 const changedSectionLabels: Record<keyof UpdateGuideDbPayload, string> = {
   origin: 'Origen',
   destination: 'Destino',
@@ -78,8 +83,8 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
     onClose()
   }
 
-  const mutation = useMutation<UpdateGuideDbResponse['data'], GeneralApiError, UpdateGuideDbPayload>({
-    mutationFn: (payload) => updateGuideDbCb(guide?.kraftId ?? '', payload),
+  const mutation = useMutation<UpdateGuideDbResponse['data'], GeneralApiError, UpdateGuideDbMutation>({
+    mutationFn: ({ kraftId, payload }) => updateGuideDbCb(kraftId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['guides', 'db'] })
       onUpdated?.()
@@ -185,7 +190,9 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
             <div className="flex justify-between">
               <Button color="light" onClick={goPrev}>Regresar</Button>
               <Button
-                onClick={() => { if (canSubmit) mutation.mutate(payload) }}
+                onClick={() => {
+                  if (canSubmit) mutation.mutate({ kraftId: guide.kraftId, payload })
+                }}
                 disabled={!canSubmit}
               >
                 {mutation.isPending ? <Spinner size="sm" /> : 'Editar'}
