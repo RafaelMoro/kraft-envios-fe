@@ -125,6 +125,42 @@ describe('Feature: GuideDbDetails delete control', () => {
     });
   });
 
+  describe('Scenario: Edit control visibility', () => {
+    it('renders only for a failed, non-deleted guide with an edit callback', () => {
+      const onEditGuide = jest.fn();
+      const failedGuide = createMockDbRecord({ status: 'failed' });
+      const deletedFailedGuide = createMockDbRecord({
+        status: 'failed',
+        deletedAt: '2026-06-15T10:00:00Z',
+      });
+
+      const { rerender } = render(
+        <GuideDbDetails {...baseProps} guide={failedGuide} onEditGuide={onEditGuide} />,
+      );
+      expect(screen.getByTestId('guide-db-edit-button')).toBeInTheDocument();
+
+      rerender(<GuideDbDetails {...baseProps} guide={createMockDbRecord()} onEditGuide={onEditGuide} />);
+      expect(screen.queryByTestId('guide-db-edit-button')).not.toBeInTheDocument();
+
+      rerender(<GuideDbDetails {...baseProps} guide={failedGuide} />);
+      expect(screen.queryByTestId('guide-db-edit-button')).not.toBeInTheDocument();
+
+      rerender(<GuideDbDetails {...baseProps} guide={deletedFailedGuide} onEditGuide={onEditGuide} />);
+      expect(screen.queryByTestId('guide-db-edit-button')).not.toBeInTheDocument();
+    });
+
+    it('calls onEditGuide with the selected failed guide', async () => {
+      const user = userEvent.setup();
+      const onEditGuide = jest.fn();
+      const guide = createMockDbRecord({ status: 'failed' });
+      render(<GuideDbDetails {...baseProps} guide={guide} onEditGuide={onEditGuide} />);
+
+      await user.click(screen.getByTestId('guide-db-edit-button'));
+
+      expect(onEditGuide).toHaveBeenCalledWith(guide);
+    });
+  });
+
   describe('Scenario: Back button', () => {
     it('Given the details are rendered, When the user clicks Volver a guías, Then onBack is called', async () => {
       const user = userEvent.setup();

@@ -15,6 +15,7 @@ import {
   GUIDE_STATUS,
   GET_GUIDES_DB_ENDPOINT,
   DELETE_GUIDE_DB_ENDPOINT,
+  UPDATE_GUIDE_DB_ENDPOINT,
   GUIDE_DB_FAILURE_MESSAGES,
   GUIDE_DB_GENERIC_FAILURE_MESSAGE,
 } from "../constants/guides.constants";
@@ -52,6 +53,8 @@ import {
   GetGuidesDbResponseData,
   GuidesDbStatus,
   GuideDbFailureInfo,
+  UpdateGuideDbPayload,
+  UpdateGuideDbResponse,
 } from "../types/guides.types";
 import { CreateAddressFormValues } from "../types/addresses.types";
 import { formatNumberToCurrency } from "./global.utils";
@@ -152,6 +155,25 @@ export const deleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbRes
     `${DELETE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}`,
   );
   return res.data;
+};
+
+/**
+ * Sends full replacements for changed objects only; quote and notifyMe are not editable.
+ * Rejects empty updates before making a request.
+ */
+export const updateGuideDbCb = async (
+  kraftId: string,
+  data: UpdateGuideDbPayload,
+): Promise<UpdateGuideDbResponse['data']> => {
+  if (!data.parcel && !data.origin && !data.destination) {
+    throw new Error('At least one editable object is required')
+  }
+
+  const res: AxiosResponse<UpdateGuideDbResponse> = await axios.patch(
+    `${UPDATE_GUIDE_DB_ENDPOINT}/${encodeURIComponent(kraftId)}`,
+    data,
+  )
+  return res.data.data
 };
 
 export const hardDeleteGuideDbCb = async (kraftId: string): Promise<DeleteGuideDbResponse> => {

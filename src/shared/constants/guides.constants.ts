@@ -260,6 +260,7 @@ export const GET_GUIDES_ENDPOINT = '/api/guides/get-guides'
 export const CREATE_ADDRESS_GE_ENDPOINT = '/api/ge-address'
 export const GET_GUIDES_DB_ENDPOINT = '/api/guides-db'
 export const DELETE_GUIDE_DB_ENDPOINT = '/api/guides-db'
+export const UPDATE_GUIDE_DB_ENDPOINT = '/api/guides-db'
 
 export const initialStateFormGuideDb: CreateGuideDbFormValues = {
   originAddress: { ...initialStateAddressForm },
@@ -297,6 +298,7 @@ export const GUIDES_DB_DELETE_MODAL_BODY = 'Esta acción no se puede deshacer.'
 export const GUIDES_DB_DELETE_MODAL_CONFIRM = 'Eliminar'
 export const GUIDES_DB_DELETE_MODAL_CANCEL = 'Cancelar'
 export const GUIDES_DB_DELETE_ERROR_MESSAGE = 'No se pudo eliminar la guía. Por favor, intenta nuevamente.'
+export const GUIDES_DB_EDIT_MODAL_TITLE = 'Editar guía'
 
 export const GUIDES_DB_HARD_DELETE_MODAL_TITLE = '¿Eliminar permanentemente esta guía?'
 export const GUIDES_DB_HARD_DELETE_MODAL_BODY = 'Esta acción removerá el registro de la base de datos de forma permanente. No se puede deshacer.'
