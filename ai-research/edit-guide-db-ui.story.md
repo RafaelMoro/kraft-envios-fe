@@ -30,7 +30,7 @@ This is a single story. The quote re-flow is documented separately under `docs/`
 2. The modal lets the user edit `origin`, `destination`, and `parcel` data only. `quote` and `notifyMe` remain out of the update payload for this story.
 3. The edit flow reuses the existing Guides DB address and parcel form components where practical, with minimal prop additions rather than duplicated forms.
 4. Initial form state is prefilled from the selected `GuideDbRecord.origin`, `GuideDbRecord.destination`, and `GuideDbRecord.parcel`.
-5. The submit button is disabled until at least one editable field differs from the original guide. If no fields changed, `updateGuideDbCb` is never called.
+5. The submit button is disabled until at least one editable field differs from the original guide. When disabled, it shows a Flowbite React `Popover` explaining that the user must change at least one editable field before submitting. If no fields changed, `updateGuideDbCb` is never called.
 6. On submit, the modal builds an `UpdateGuideDbPayload` containing only changed top-level objects (`origin`, `destination`, `parcel`), and every included object is complete.
 7. On success, the UI invalidates `['guides', 'db']`, closes or advances the modal to a result state, and returns from details to the list when appropriate so the refetched record is visible.
 8. If the backend re-attempt returns `status: 'created'`, the user sees a success result. If it returns `status: 'failed'`, the user sees a saved-but-provider-failed result with the new provider error context.
