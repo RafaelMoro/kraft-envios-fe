@@ -19,9 +19,10 @@ interface AddTempAddressGuideDbProps {
   goNext: () => void
   updateAddress: (data: CreateGuideAddressFormValuesMn) => void
   toggleTempAddress: () => void
+  nextButtonLabel?: string
 }
 
-export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress }: AddTempAddressGuideDbProps) => {
+export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobileTablet, goNext, updateAddress, toggleTempAddress, nextButtonLabel }: AddTempAddressGuideDbProps) => {
   const {
     register,
     handleSubmit,
@@ -218,7 +219,7 @@ export const AddTempAddressGuideDb = ({ addressData, addressType, title, isMobil
           Volver
         </Button>
         <Button data-testid={`${addressType}-address-guide-db-temp-next-button`} type="submit" className="hover:cursor-pointer">
-          Siguiente
+          {nextButtonLabel ?? 'Siguiente'}
         </Button>
       </div>
     </form>

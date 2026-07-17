@@ -43,10 +43,12 @@ interface AddAddressGuideDbProps {
       reference: string
     }; town: string; city: string
   }) => void
+  initialUseTempAddress?: boolean
+  nextButtonLabel?: string
 }
 
 export const AddAddressGuideDb = ({
-  isDestination = false, title, addressData, aliasSaved, excludedAlias, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias,
+  isDestination = false, title, addressData, aliasSaved, excludedAlias, isMobileTablet, goNext, goPrev, toggleModal, updateAddress, updateSavedAlias, initialUseTempAddress, nextButtonLabel,
 }: AddAddressGuideDbProps) => {
   const {
     aliasSelected,
@@ -63,7 +65,7 @@ export const AddAddressGuideDb = ({
     cancelColorButton,
     useTempAddress,
     toggleTempAddress,
-  } = useAddAddress({ isDestination, alias: aliasSaved.alias, toggleModal, goPrev });
+  } = useAddAddress({ isDestination, alias: aliasSaved.alias, toggleModal, goPrev, initialUseTempAddress });
 
   const {
     register,
@@ -132,6 +134,7 @@ export const AddAddressGuideDb = ({
         addressData={addressData}
         isMobileTablet={isMobileTablet}
         toggleTempAddress={toggleTempAddress}
+        nextButtonLabel={nextButtonLabel}
       />
     )
   }
@@ -160,7 +163,7 @@ export const AddAddressGuideDb = ({
               {cancelButtonText}
             </Button>
             <Button data-testid={`${addressType}-address-guide-db-next-button`} type="submit" className="hover:cursor-pointer">
-              Siguiente
+              {nextButtonLabel ?? 'Siguiente'}
             </Button>
           </div>
         }

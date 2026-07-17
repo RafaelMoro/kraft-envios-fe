@@ -8,6 +8,7 @@ import {
   SearchProduct,
 } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
+import { GUIDES_DB_EDIT_REQUOTE_MESSAGE } from "@/shared/constants/guides.constants"
 
 interface ParcelInfoGuideDbFormProps {
   children: ReactNode
@@ -20,6 +21,9 @@ interface ParcelInfoGuideDbFormProps {
   goPrev: () => void
   updateParcelInfo: (data: CreateGuideDbFormValues['parcelInfo']) => void
   updateErrorProductSat: (message: string) => void
+  editMode?: boolean
+  existingSatProductId?: string
+  nextButtonLabel?: string
 }
 
 export const ParcelInfoGuideDbForm = ({
@@ -33,6 +37,9 @@ export const ParcelInfoGuideDbForm = ({
   goPrev,
   updateParcelInfo,
   updateErrorProductSat,
+  editMode = false,
+  existingSatProductId,
+  nextButtonLabel,
 }: ParcelInfoGuideDbFormProps) => {
   const [content, setContent] = useState<string>(parcelInfo.content)
   const [value, setValue] = useState<string>(parcelInfo.value)
@@ -48,7 +55,7 @@ export const ParcelInfoGuideDbForm = ({
       updateErrorProductSat('Debes de buscar un producto para categorizarlo')
       return
     }
-    if (!selectedProduct) {
+    if (!selectedProduct && (!editMode || searchProductSat.trim() !== existingSatProductId)) {
       updateErrorProductSat('Debes de seleccionar un producto válido de la lista')
       return
     }
@@ -76,7 +83,7 @@ export const ParcelInfoGuideDbForm = ({
         <h5 className="text-xl font-bold text-center mb-5">Información del paquete</h5>
       )}
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        Las dimensiones del paquete vienen de tu cotización. Para cambiarlas, vuelve a cotizar.
+        {editMode ? GUIDES_DB_EDIT_REQUOTE_MESSAGE : 'Las dimensiones del paquete vienen de tu cotización. Para cambiarlas, vuelve a cotizar.'}
       </p>
       <section className="flex flex-col gap-4">
         {children}
@@ -153,6 +160,7 @@ export const ParcelInfoGuideDbForm = ({
             type="number"
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            disabled={editMode}
           />
         </div>
         <div>
@@ -165,6 +173,7 @@ export const ParcelInfoGuideDbForm = ({
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
+            disabled={editMode}
           />
         </div>
         <div className="flex items-center gap-2">
@@ -173,6 +182,7 @@ export const ParcelInfoGuideDbForm = ({
             data-testid="db-notify-me"
             checked={notifyMe}
             onChange={(e) => setNotifyMe(e.target.checked)}
+            disabled={editMode}
           />
           <Label htmlFor="db-notify-me">Notificarme sobre el envío</Label>
         </div>
@@ -187,7 +197,7 @@ export const ParcelInfoGuideDbForm = ({
           Regresar
         </Button>
         <Button data-testid="db-parcel-next-button" type="submit" className="hover:cursor-pointer">
-          Siguiente
+          {nextButtonLabel ?? 'Siguiente'}
         </Button>
       </div>
     </form>

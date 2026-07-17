@@ -299,6 +299,9 @@ export const GUIDES_DB_DELETE_MODAL_CONFIRM = 'Eliminar'
 export const GUIDES_DB_DELETE_MODAL_CANCEL = 'Cancelar'
 export const GUIDES_DB_DELETE_ERROR_MESSAGE = 'No se pudo eliminar la guía. Por favor, intenta nuevamente.'
 export const GUIDES_DB_EDIT_MODAL_TITLE = 'Editar guía'
+export const GUIDES_DB_EDIT_STEPS = ['Origen', 'Destino', 'Paquete', 'Confirmar']
+export const GUIDES_DB_EDIT_NO_CHANGES_MESSAGE = 'Para continuar, modifica al menos un dato de la guía.'
+export const GUIDES_DB_EDIT_REQUOTE_MESSAGE = 'Estos datos vienen de la cotización y no se pueden editar aquí. Para cambiarlos, genera una nueva cotización.'
 
 export const GUIDES_DB_HARD_DELETE_MODAL_TITLE = '¿Eliminar permanentemente esta guía?'
 export const GUIDES_DB_HARD_DELETE_MODAL_BODY = 'Esta acción removerá el registro de la base de datos de forma permanente. No se puede deshacer.'
