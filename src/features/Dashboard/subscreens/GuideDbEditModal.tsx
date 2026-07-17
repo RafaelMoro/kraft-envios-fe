@@ -111,6 +111,9 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   const updateDestinationAddress = (data: CreateGuideAddressFormValuesMn) => { formData.current!.destinationAddress = data }
   const updateParcelInfo = (data: CreateGuideDbFormValues['parcelInfo']) => { formData.current!.parcelInfo = data }
   const updateSelectedProduct = (option: SearchProduct) => { selectedProduct.current = option }
+  const submitUpdate = () => {
+    if (canSubmit) mutation.mutate({ kraftId: guide.kraftId, payload })
+  }
 
   return (
     <Modal show={open} onClose={closeModal} size="3xl" data-testid="guide-db-edit-modal">
@@ -190,9 +193,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
             <div className="flex justify-between">
               <Button color="light" onClick={goPrev}>Regresar</Button>
               <Button
-                onClick={() => {
-                  if (canSubmit) mutation.mutate({ kraftId: guide.kraftId, payload })
-                }}
+                onClick={submitUpdate}
                 disabled={!canSubmit}
               >
                 {mutation.isPending ? <Spinner size="sm" /> : 'Editar'}
