@@ -112,7 +112,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   const updateParcelInfo = (data: CreateGuideDbFormValues['parcelInfo']) => { formData.current!.parcelInfo = data }
   const updateSelectedProduct = (option: SearchProduct) => { selectedProduct.current = option }
   const submitUpdate = () => {
-    if (canSubmit) mutation.mutate({ kraftId: guide.kraftId, payload })
+    mutation.mutate({ kraftId: guide.kraftId, payload })
   }
 
   return (
