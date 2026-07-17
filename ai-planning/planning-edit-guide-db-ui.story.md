@@ -8,8 +8,8 @@ Story: Add the full UI flow for editing an existing failed Guides DB record.
 
 ## Assumptions
 
-- Scope is limited to editing `origin`, `destination`, and non-dimension `parcel` fields.
-- `quote`, `notifyMe`, `length`, `width`, `height`, and `weight` are not user-editable in this story.
+- Scope is limited to editing `origin`, `destination`, and parcel `content` / `satProductId` only.
+- `quote`, `notifyMe`, parcel `value`, parcel `quantity`, and quote-derived dimensions (`length`, `width`, `height`, `weight`) are not user-editable in this story.
 - Existing-guide quote/re-quote flow is out of scope and remains a separate story.
 - Backend owner/admin rules are enforced by the backend; this UI only surfaces submit errors.
 - `GuideDbEditModal` owns the mutation and invalidates `['guides', 'db']` after any successful HTTP response.
@@ -18,10 +18,10 @@ Story: Add the full UI flow for editing an existing failed Guides DB record.
 ## Acceptance Criteria
 
 1. `GuideDbEditModal` is converted from a placeholder shell into a real multi-step edit modal for a selected `GuideDbRecord`, opened from the existing edit button on failed, non-deleted records.
-2. The modal lets the user edit `origin`, `destination`, and non-dimension `parcel` data only. `quote`, `notifyMe`, and quote-derived parcel dimensions (`length`, `width`, `height`, `weight`) remain out of the editable surface for this story.
+2. The modal lets the user edit `origin`, `destination`, and parcel `content` / `satProductId` only. `quote`, `notifyMe`, parcel `value`, parcel `quantity`, and quote-derived parcel dimensions (`length`, `width`, `height`, `weight`) remain out of the editable surface for this story.
 3. The edit flow reuses the existing Guides DB address and parcel form components where practical, with minimal prop additions rather than duplicated forms.
 4. Initial form state is prefilled from the selected `GuideDbRecord.origin`, `GuideDbRecord.destination`, and `GuideDbRecord.parcel`.
-5. The submit button is disabled until at least one editable field differs from the original guide. When disabled, it shows a Flowbite React `Popover` explaining that the user must change at least one editable field before submitting. If no fields changed, `updateGuideDbCb` is never called.
+5. The submit button is disabled until at least one editable field differs from the original guide. While disabled, the modal shows a dismissible Flowbite React info message explaining that the user must change at least one editable field before submitting; the message is removed from the UI once any editable input has changed and the button is enabled. If no fields changed, `updateGuideDbCb` is never called.
 6. On submit, the modal builds an `UpdateGuideDbPayload` containing only changed top-level objects (`origin`, `destination`, `parcel`), and every included object is complete.
 7. On success, the UI invalidates `['guides', 'db']`, closes or advances the modal to a result state, and returns from details to the list when appropriate so the refetched record is visible.
 8. If the backend re-attempt returns `status: 'created'`, the user sees a success result. If it returns `status: 'failed'`, the user sees a saved-but-provider-failed result with the new provider error context.
@@ -47,7 +47,7 @@ Story: Add the full UI flow for editing an existing failed Guides DB record.
 - `src/features/Dashboard/subscreens/GuideDbDetails.tsx` - No planned change; edit button gating already matches AC.
 - `src/features/Guides-DB/AddAddressGuideDb.tsx` - Modify; add edit-prefill support through small props.
 - `src/features/Guides-DB/AddTempAddressGuideDb.tsx` - Modify only if button copy or default manual-edit behavior needs a prop.
-- `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` - Modify; add edit-mode behavior, dimension popovers, hide `notifyMe`, allow saved SAT ID.
+- `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` - Modify; add edit-mode behavior, dimension popovers, hide non-editable parcel fields, allow saved SAT ID.
 - `src/features/Guides-DB/ResultGuideDbScreen.tsx` - Modify; accept update result subset and edit-mode copy.
 - `src/features/Guides/Mn/ProductSatDropdown.tsx` - No planned change unless tests prove it cannot display the saved SAT ID via existing `searchProductSat` prop.
 
@@ -63,7 +63,7 @@ Story: Add the full UI flow for editing an existing failed Guides DB record.
 - `__tests__/feature/Guides-DB/guideDbEditPayload.test.ts` - Create or equivalent focused helper test file.
 - `__tests__/feature/Dashboard/GuideDbEditModal.test.tsx` - Create.
 - `__tests__/feature/Dashboard/Order.test.tsx` - Modify; add card/details edit-modal open and success-list-return coverage.
-- `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx` - Modify; cover edit-mode `notifyMe` hiding and dimension popover copy.
+- `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx` - Modify; cover edit-mode `notifyMe`, `value`, and `quantity` hiding plus dimension popover copy.
 - `__tests__/feature/Guides-DB/ResultGuideDbScreen.test.tsx` - Modify; cover edit-mode result copy and update-result shape.
 
 ### Docs And Config
@@ -99,7 +99,7 @@ export const buildUpdateGuideDbPayload = (
 ): UpdateGuideDbPayload
 ```
 
-`guideDbRecordToEditForm` maps `origin`, `destination`, and `parcel` into existing create-flow form shapes. `parcel.value` and `parcel.quantity` become empty strings when absent; dimensions become `PackageDimensions` string values; `searchProductSat` starts as `guide.parcel.satProductId`.
+`guideDbRecordToEditForm` maps `origin`, `destination`, and editable parcel data into existing create-flow form shapes. `parcel.value` and `parcel.quantity` stay available only as original values for payload preservation, not as editable form controls; dimensions become `PackageDimensions` string values; `searchProductSat` starts as `guide.parcel.satProductId`.
 
 `toGuideDbAddressPayload` should reuse `verifyAndUpdateAddressGuideDb` and add all address payload fields, including `country`. Preserve create semantics for default email/company/reference.
 
@@ -109,9 +109,9 @@ Critical conditions:
 
 - Origin dirty means any normalized origin field differs, then include full `origin`.
 - Destination dirty means any normalized destination field differs, then include full `destination`.
-- Parcel dirty means any normalized editable parcel field differs, then include full `parcel` including original dimensions.
+- Parcel dirty means `content` or `satProductId` differs, then include full `parcel` including original dimensions and any original `value` / `quantity`.
 - `satProductId` comes from `selectedProduct.code` when present, otherwise `originalGuide.parcel.satProductId`.
-- Empty optional `value`/`quantity` remain absent, not `0`, unless the user supplied a finite number.
+- Original optional `value`/`quantity` remain absent when absent, and are preserved when present; they are not editable in this story.
 
 Edge cases:
 
@@ -213,7 +213,7 @@ interface ParcelInfoGuideDbFormProps {
 
 Critical behavior:
 
-- In edit mode, hide the `notifyMe` checkbox and submit `notifyMe: false` in the existing form state shape because update payload ignores it.
+- In edit mode, hide `notifyMe`, `value`, and `quantity`; update payload ignores `notifyMe`, and `value` / `quantity` are preserved from the original guide when the parcel object is dirty.
 - In edit mode, allow submit when `searchProductSat.trim() === existingSatProductId` and `selectedProduct` is null.
 - If the user changes the SAT search text away from `existingSatProductId`, require a selected product from the dropdown.
 - Keep dimensions disabled in all modes.
@@ -234,7 +234,7 @@ Add only copy used by the edit UI.
 
 ```ts
 export const GUIDES_DB_EDIT_STEPS = ['Origen', 'Destino', 'Paquete', 'Confirmar']
-export const GUIDES_DB_EDIT_NO_CHANGES_MESSAGE = 'Cambia al menos un campo editable para continuar.'
+export const GUIDES_DB_EDIT_NO_CHANGES_MESSAGE = 'Cambia al menos un campo editable para poder guardar los cambios.'
 export const GUIDES_DB_EDIT_DIMENSIONS_POPOVER = 'Las dimensiones vienen de la cotización. Para cambiarlas, genera una nueva cotización.'
 ```
 
@@ -248,14 +248,14 @@ pnpm test -- __tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx __tests_
 
 Manual:
 
-- In the create guide DB modal, parcel dimensions remain disabled and `notifyMe` remains visible.
-- In the edit modal once Phase 3 is present, parcel dimensions are disabled with explanatory popover and `notifyMe` is not visible.
+- In the create guide DB modal, parcel dimensions remain disabled and `notifyMe`, `value`, and `quantity` remain visible.
+- In the edit modal once Phase 3 is present, parcel dimensions are disabled with explanatory popover and `notifyMe`, `value`, and `quantity` are not visible.
 
 ### Test Coverage
 
 | File | Coverage areas | Pattern reference |
 | --- | --- | --- |
-| `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` | edit-mode hides `notifyMe`, dimensions stay disabled, popover copy exists, saved SAT ID can pass without selecting a new product, changed SAT text still requires selection | Existing `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx`; use `userEvent` |
+| `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` | edit-mode hides `notifyMe`, `value`, and `quantity`; dimensions stay disabled; popover copy exists; saved SAT ID can pass without selecting a new product; changed SAT text still requires selection | Existing `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx`; use `userEvent` |
 | `src/features/Guides-DB/AddAddressGuideDb.tsx` | `initialUseTempAddress` starts manual/temp address form without changing create default | Existing `__tests__/feature/Guides-DB/AddAddressGuideDb.test.tsx` |
 
 ## Phase 3 - Replace `GuideDbEditModal` Shell
@@ -319,8 +319,8 @@ Confirm step behavior:
 
 - Build `payload = buildUpdateGuideDbPayload(guide, formData.current, selectedProduct.current)`.
 - Changed sections are `Object.keys(payload)` mapped to user labels `Origen`, `Destino`, `Paquete`.
-- If no changed sections, render an inline message and disable submit.
-- Wrap the disabled submit control with Flowbite `Popover` using `GUIDES_DB_EDIT_NO_CHANGES_MESSAGE`.
+- If no changed sections, disable submit and show a dismissible Flowbite `Alert`/info message controlled by local state; do not use `alert()`.
+- Remove the disabled-submit info message from the UI once any editable input has changed and the submit button is enabled.
 - If submit is disabled, do not call `updateGuideDbCb`.
 - If `guide.deletedAt != null`, block submit defensively and show a stale/deleted-guide message.
 
@@ -373,14 +373,14 @@ Manual:
 - Open a failed, non-deleted guide from a card, confirm the modal starts on origin with current guide data.
 - Navigate origin, destination, parcel, confirm, and back buttons on desktop.
 - Repeat the main navigation on mobile/tablet viewport.
-- Confirm unchanged data keeps `Editar` disabled and shows the popover message.
+- Confirm unchanged data keeps `Editar` disabled and shows the dismissible info message; changing any editable field enables submit and removes that message.
 - Change parcel content only and confirm the UI reaches a result state after submit.
 
 ### Test Coverage
 
 | File | Coverage areas | Pattern reference |
 | --- | --- | --- |
-| `src/features/Dashboard/subscreens/GuideDbEditModal.tsx` | prefilled state, step navigation, disabled no-change submit, parcel-only payload, origin-only payload, multiple-section payload, created result, failed result, transport error result | New `__tests__/feature/Dashboard/GuideDbEditModal.test.tsx`; Testing Library + real internal forms; mock `updateGuideDbCb` network function only |
+| `src/features/Dashboard/subscreens/GuideDbEditModal.tsx` | prefilled state, step navigation, disabled no-change submit, dismissible no-change info message, info message removal after edits, parcel-only payload, origin-only payload, multiple-section payload, created result, failed result, transport error result | New `__tests__/feature/Dashboard/GuideDbEditModal.test.tsx`; Testing Library + real internal forms; mock `updateGuideDbCb` network function only |
 | `src/features/Guides-DB/ResultGuideDbScreen.tsx` | update-result shape, edit success heading, edit transport-error heading, failed-provider branch preserved | Existing `__tests__/feature/Guides-DB/ResultGuideDbScreen.test.tsx` |
 
 ## Phase 4 - Parent Dashboard Wiring
@@ -464,10 +464,10 @@ pnpm lint
 
 Manual:
 
-- Desktop: failed guide list card opens edit modal, prefilled data appears, unchanged submit is blocked, changed submit reaches result.
+- Desktop: failed guide list card opens edit modal, prefilled data appears, unchanged submit is blocked with dismissible info copy, changed submit removes that copy and reaches result.
 - Desktop: failed guide details edit returns to list after success.
 - Mobile/tablet: same main edit navigation works and mobile headings remain readable.
-- Create Guides DB flow still shows `notifyMe`, keeps quote dimensions disabled, and can advance through parcel step.
+- Create Guides DB flow still shows `notifyMe`, `value`, and `quantity`, keeps quote dimensions disabled, and can advance through parcel step.
 
 ### Test Coverage
 
@@ -488,7 +488,7 @@ Manual:
 ## Open Questions / Out Of Scope
 
 - Open questions: none blocking. Research decisions resolved backend, quote-flow, and admin-edit behavior.
-- Out of scope: editing `quote`, `notifyMe`, dimensions, or provider quote refresh.
+- Out of scope: editing `quote`, `notifyMe`, parcel `value`, parcel `quantity`, dimensions, or provider quote refresh.
 - Out of scope: backend validation changes for dimensions or stale quote cases.
 - Out of scope: new route handlers, new pages, new dependencies, new env vars, new state library, telemetry, logging, caching, or broad dashboard refactors.
 - Out of scope: changing `GuideDbCard`/`GuideDbDetails` edit visibility unless tests reveal a regression from this story.
