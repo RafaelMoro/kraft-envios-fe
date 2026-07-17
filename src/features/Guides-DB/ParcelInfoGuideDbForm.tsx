@@ -8,7 +8,7 @@ import {
   SearchProduct,
 } from "@/shared/types/guides.types"
 import { ErrorMessage } from "@/shared/ui/atoms/ErrorMessage"
-import { GUIDES_DB_EDIT_REQUOTE_MESSAGE } from "@/shared/constants/guides.constants"
+import { GUIDES_DB_EDIT_REQUOTE_MESSAGE, GUIDES_DB_REQUOTE_MESSAGE } from "@/shared/constants/guides.constants"
 
 interface ParcelInfoGuideDbFormProps {
   children: ReactNode
@@ -83,7 +83,7 @@ export const ParcelInfoGuideDbForm = ({
         <h5 className="text-xl font-bold text-center mb-5">Información del paquete</h5>
       )}
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        {editMode ? GUIDES_DB_EDIT_REQUOTE_MESSAGE : 'Las dimensiones del paquete vienen de tu cotización. Para cambiarlas, vuelve a cotizar.'}
+        {editMode ? GUIDES_DB_EDIT_REQUOTE_MESSAGE : GUIDES_DB_REQUOTE_MESSAGE}
       </p>
       <section className="flex flex-col gap-4">
         {children}
