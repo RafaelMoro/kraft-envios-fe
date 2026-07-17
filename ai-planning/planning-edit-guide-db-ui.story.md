@@ -47,7 +47,7 @@ Story: Add the full UI flow for editing an existing failed Guides DB record.
 - `src/features/Dashboard/subscreens/GuideDbDetails.tsx` - No planned change; edit button gating already matches AC.
 - `src/features/Guides-DB/AddAddressGuideDb.tsx` - Modify; add edit-prefill support through small props.
 - `src/features/Guides-DB/AddTempAddressGuideDb.tsx` - Modify only if button copy or default manual-edit behavior needs a prop.
-- `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` - Modify; add edit-mode behavior, dimension popovers, hide non-editable parcel fields, allow saved SAT ID.
+- `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` - Modify; add edit-mode behavior, dimension/non-editable-field help copy, show non-editable parcel fields as disabled/read-only, allow saved SAT ID.
 - `src/features/Guides-DB/ResultGuideDbScreen.tsx` - Modify; accept update result subset and edit-mode copy.
 - `src/features/Guides/Mn/ProductSatDropdown.tsx` - No planned change unless tests prove it cannot display the saved SAT ID via existing `searchProductSat` prop.
 
@@ -63,7 +63,7 @@ Story: Add the full UI flow for editing an existing failed Guides DB record.
 - `__tests__/feature/Guides-DB/guideDbEditPayload.test.ts` - Create or equivalent focused helper test file.
 - `__tests__/feature/Dashboard/GuideDbEditModal.test.tsx` - Create.
 - `__tests__/feature/Dashboard/Order.test.tsx` - Modify; add card/details edit-modal open and success-list-return coverage.
-- `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx` - Modify; cover edit-mode `notifyMe`, `value`, and `quantity` hiding plus dimension popover copy.
+- `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx` - Modify; cover edit-mode disabled/read-only `notifyMe`, `value`, and `quantity` plus re-quote help copy.
 - `__tests__/feature/Guides-DB/ResultGuideDbScreen.test.tsx` - Modify; cover edit-mode result copy and update-result shape.
 
 ### Docs And Config
@@ -213,11 +213,11 @@ interface ParcelInfoGuideDbFormProps {
 
 Critical behavior:
 
-- In edit mode, hide `notifyMe`, `value`, and `quantity`; update payload ignores `notifyMe`, and `value` / `quantity` are preserved from the original guide when the parcel object is dirty.
+- In edit mode, show `notifyMe`, `value`, and `quantity` as disabled/read-only fields with a small message explaining they are not editable here and require a new quote to change. Update payload ignores `notifyMe`, and `value` / `quantity` are preserved from the original guide when the parcel object is dirty.
 - In edit mode, allow submit when `searchProductSat.trim() === existingSatProductId` and `selectedProduct` is null.
 - If the user changes the SAT search text away from `existingSatProductId`, require a selected product from the dropdown.
 - Keep dimensions disabled in all modes.
-- Add Flowbite `Popover` copy around dimension help in edit mode: dimensions come from the quote and require a new quote to change.
+- Add small inline help copy near dimensions and other disabled/read-only parcel fields: they come from the quote and require a new quote to change.
 
 Edge cases:
 
@@ -235,7 +235,7 @@ Add only copy used by the edit UI.
 ```ts
 export const GUIDES_DB_EDIT_STEPS = ['Origen', 'Destino', 'Paquete', 'Confirmar']
 export const GUIDES_DB_EDIT_NO_CHANGES_MESSAGE = 'Cambia al menos un campo editable para poder guardar los cambios.'
-export const GUIDES_DB_EDIT_DIMENSIONS_POPOVER = 'Las dimensiones vienen de la cotización. Para cambiarlas, genera una nueva cotización.'
+export const GUIDES_DB_EDIT_REQUOTE_MESSAGE = 'Estos datos vienen de la cotización y no se pueden editar aquí. Para cambiarlos, genera una nueva cotización.'
 ```
 
 ### Success Criteria
@@ -249,13 +249,13 @@ pnpm test -- __tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx __tests_
 Manual:
 
 - In the create guide DB modal, parcel dimensions remain disabled and `notifyMe`, `value`, and `quantity` remain visible.
-- In the edit modal once Phase 3 is present, parcel dimensions are disabled with explanatory popover and `notifyMe`, `value`, and `quantity` are not visible.
+- In the edit modal once Phase 3 is present, parcel dimensions, `notifyMe`, `value`, and `quantity` are visible but disabled/read-only with re-quote help copy.
 
 ### Test Coverage
 
 | File | Coverage areas | Pattern reference |
 | --- | --- | --- |
-| `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` | edit-mode hides `notifyMe`, `value`, and `quantity`; dimensions stay disabled; popover copy exists; saved SAT ID can pass without selecting a new product; changed SAT text still requires selection | Existing `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx`; use `userEvent` |
+| `src/features/Guides-DB/ParcelInfoGuideDbForm.tsx` | edit-mode shows `notifyMe`, `value`, and `quantity` disabled/read-only; dimensions stay disabled; re-quote help copy exists; saved SAT ID can pass without selecting a new product; changed SAT text still requires selection | Existing `__tests__/feature/Guides-DB/ParcelInfoGuideDbForm.test.tsx`; use `userEvent` |
 | `src/features/Guides-DB/AddAddressGuideDb.tsx` | `initialUseTempAddress` starts manual/temp address form without changing create default | Existing `__tests__/feature/Guides-DB/AddAddressGuideDb.test.tsx` |
 
 ## Phase 3 - Replace `GuideDbEditModal` Shell
@@ -482,7 +482,7 @@ Manual:
 - Query invalidation: invalidate `['guides', 'db']`, matching existing delete behavior in `Order.tsx`.
 - Dashboard layouts: `Order` relies on `useMediaQuery`; modal/forms must work with `isMobileTablet` headings and desktop stepper.
 - SAT product lookup: keep existing `ProductSatDropdown` and `/api/product-sat` behavior; saved records may only show `satProductId` until the user searches/selects a new product.
-- Styling: Flowbite `Modal`, `Button`, `Alert`, `Spinner`, and `Popover`; primary action for `Editar`, gray/light for back/cancel; preserve dark-mode classes.
+- Styling: Flowbite `Modal`, `Button`, `Alert`, and `Spinner`; primary action for `Editar`, gray/light for back/cancel; preserve dark-mode classes.
 - Testing: use `userEvent`, `screen`, real internal components, relative-path `jest.mock()` only for network/browser hooks, no CSS assertions, no file extensions in imports, no default-export mocks.
 
 ## Open Questions / Out Of Scope
