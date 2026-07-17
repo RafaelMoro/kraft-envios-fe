@@ -1,17 +1,18 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Alert, Button, Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react"
+import { Alert, Modal, ModalBody, ModalHeader } from "flowbite-react"
 
 import { AddAddressGuideDb } from "@/features/Guides-DB/AddAddressGuideDb"
 import { ParcelInfoGuideDbForm } from "@/features/Guides-DB/ParcelInfoGuideDbForm"
+import { ConfirmGuideDbEditData } from "@/features/Guides-DB/ConfirmGuideDbEditData"
 import { ResultGuideDbScreen } from "@/features/Guides-DB/ResultGuideDbScreen"
 import { ProductSatDropdown } from "@/features/Guides/Mn/ProductSatDropdown"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useSaveAlias } from "@/shared/hooks/useAlias"
 import { useSteps } from "@/shared/hooks/useSteps"
 import { Stepper } from "@/shared/ui/atoms/Stepper"
-import { CREATE_GUIDE_STEPS, GUIDES_DB_EDIT_MODAL_TITLE, GUIDES_DB_EDIT_NO_CHANGES_MESSAGE } from "@/shared/constants/guides.constants"
+import { CREATE_GUIDE_STEPS, GUIDES_DB_EDIT_MODAL_TITLE } from "@/shared/constants/guides.constants"
 import { GeneralApiError } from "@/shared/types/global.types"
 import {
   CreateGuideAddressFormValuesMn,
@@ -34,12 +35,6 @@ type GuideDbEditModalProps = {
 type UpdateGuideDbMutation = {
   kraftId: string
   payload: UpdateGuideDbPayload
-}
-
-const changedSectionLabels: Record<keyof UpdateGuideDbPayload, string> = {
-  origin: 'Origen',
-  destination: 'Destino',
-  parcel: 'Paquete',
 }
 
 export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEditModalProps) => {
@@ -109,9 +104,8 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   }
 
   const payload = buildUpdateGuideDbPayload(guide, formData.current, selectedProduct.current)
-  const changedSections = (Object.keys(payload) as (keyof UpdateGuideDbPayload)[]).map((key) => changedSectionLabels[key])
+  const changedSections = Object.keys(payload) as (keyof UpdateGuideDbPayload)[]
   const isDeleted = guide.deletedAt != null
-  const canSubmit = changedSections.length > 0 && !isDeleted && !mutation.isPending
 
   const updateOriginAddress = (data: CreateGuideAddressFormValuesMn) => { formData.current!.originAddress = data }
   const updateDestinationAddress = (data: CreateGuideAddressFormValuesMn) => { formData.current!.destinationAddress = data }
@@ -186,28 +180,19 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
           </ParcelInfoGuideDbForm>
         )}
         {step === 4 && (
-          <section className="flex flex-col gap-6">
-            <h4 className="text-xl font-bold text-center">Confirmar cambios</h4>
-            {isDeleted && (
-              <Alert color="failure">Esta guía fue eliminada y ya no puede editarse.</Alert>
-            )}
-            {changedSections.length > 0 ? (
-              <p>Cambios: {changedSections.join(', ')}.</p>
-            ) : !noChangesDismissed && (
-              <Alert color="info" onDismiss={() => setNoChangesDismissed(true)}>
-                {GUIDES_DB_EDIT_NO_CHANGES_MESSAGE}
-              </Alert>
-            )}
-            <div className="flex justify-between">
-              <Button color="light" onClick={goPrev}>Regresar</Button>
-              <Button
-                onClick={submitUpdate}
-                disabled={!canSubmit}
-              >
-                {mutation.isPending ? <Spinner size="sm" /> : 'Editar'}
-              </Button>
-            </div>
-          </section>
+          <ConfirmGuideDbEditData
+            originAddress={formData.current.originAddress}
+            destinationAddress={formData.current.destinationAddress}
+            parcelInfo={formData.current.parcelInfo}
+            satProductLabel={selectedProduct.current?.description ?? guide.parcel.satProductId}
+            changedSections={changedSections}
+            isDeleted={isDeleted}
+            isPending={mutation.isPending}
+            noChangesDismissed={noChangesDismissed}
+            dismissNoChanges={() => setNoChangesDismissed(true)}
+            goPrev={goPrev}
+            onSubmit={submitUpdate}
+          />
         )}
         {step === 5 && (
           <ResultGuideDbScreen
