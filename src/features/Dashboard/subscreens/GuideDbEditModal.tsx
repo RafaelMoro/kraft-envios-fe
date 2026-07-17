@@ -50,7 +50,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   const formData = useRef<CreateGuideDbFormValues | null>(null)
   const packageDimensions = useRef<PackageDimensions | null>(null)
   const selectedProduct = useRef<SearchProduct | null>(null)
-  const destinationStepRef = useRef<HTMLDivElement>(null)
+  const stepperRef = useRef<HTMLDivElement>(null)
   const [searchProductSat, setSearchProductSat] = useState('')
   const [errorProductSat, setErrorProductSat] = useState('')
   const [noChangesDismissed, setNoChangesDismissed] = useState(false)
@@ -69,8 +69,8 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   }, [guide, open, resetSteps])
 
   useEffect(() => {
-    if (step !== 2 || !destinationStepRef.current) return
-    destinationStepRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (step !== 2 || !stepperRef.current) return
+    stepperRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [step])
 
   const resetForm = () => {
@@ -126,7 +126,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
       <ModalHeader>{GUIDES_DB_EDIT_MODAL_TITLE}</ModalHeader>
       <ModalBody>
         {!isMobileTablet && (
-          <div className="py-6 flex justify-center">
+          <div ref={stepperRef} className="py-6 flex justify-center">
             <Stepper steps={new Set(CREATE_GUIDE_STEPS)} currentStep={step} />
           </div>
         )}
@@ -146,23 +146,21 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
           />
         )}
         {step === 2 && (
-          <div ref={destinationStepRef}>
-            <AddAddressGuideDb
-              title="Domicilio destino"
-              goNext={goNext}
-              goPrev={goPrev}
-              toggleModal={closeModal}
-              updateAddress={updateDestinationAddress}
-              aliasSaved={aliasesMn.destination}
-              updateSavedAlias={updateDestinationAliasMn}
-              addressData={formData.current.destinationAddress}
-              isMobileTablet={isMobileTablet}
-              isDestination
-              excludedAlias={aliasesMn.origin.alias}
-              initialUseTempAddress
-              editMode
-            />
-          </div>
+          <AddAddressGuideDb
+            title="Domicilio destino"
+            goNext={goNext}
+            goPrev={goPrev}
+            toggleModal={closeModal}
+            updateAddress={updateDestinationAddress}
+            aliasSaved={aliasesMn.destination}
+            updateSavedAlias={updateDestinationAliasMn}
+            addressData={formData.current.destinationAddress}
+            isMobileTablet={isMobileTablet}
+            isDestination
+            excludedAlias={aliasesMn.origin.alias}
+            initialUseTempAddress
+            editMode
+          />
         )}
         {step === 3 && (
           <ParcelInfoGuideDbForm
