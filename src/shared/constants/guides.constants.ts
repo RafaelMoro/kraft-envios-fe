@@ -282,6 +282,21 @@ export const GUIDE_DB_GENERIC_FAILED_MESSAGE =
 export const GUIDE_DB_GENERIC_ERROR_MESSAGE =
   'Ocurrió un error al crear la guía. Por favor, intente nuevamente.'
 
+export const GUIDE_DB_RESULT_ERROR_HEADINGS = {
+  create: 'Error al crear la guía',
+  edit: 'Error al editar la guía',
+} as const
+
+export const GUIDE_DB_RESULT_SUCCESS_HEADINGS = {
+  create: 'Guía creada con éxito',
+  edit: 'Guía editada con éxito',
+} as const
+
+export const GUIDE_DB_RESULT_PROVIDER_FAILED_HEADINGS = {
+  create: 'Guía guardada en Kraft',
+  edit: 'Guía actualizada en Kraft',
+} as const
+
 export const GUIDES_DB_EMPTY_MESSAGE = 'No hay guias para el mes seleccionado.'
 
 export const GUIDES_DB_ERROR_MESSAGE = 'Ha sucedido un error. Intentelo nuevamente'

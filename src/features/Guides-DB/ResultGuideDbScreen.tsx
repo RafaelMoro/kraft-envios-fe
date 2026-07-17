@@ -6,6 +6,9 @@ import {
   GUIDE_DB_GENERIC_ERROR_MESSAGE,
   GUIDE_DB_GENERIC_FAILED_MESSAGE,
   GUIDE_DB_PROVIDER_FAILED_MESSAGE,
+  GUIDE_DB_RESULT_ERROR_HEADINGS,
+  GUIDE_DB_RESULT_PROVIDER_FAILED_HEADINGS,
+  GUIDE_DB_RESULT_SUCCESS_HEADINGS,
 } from "@/shared/constants/guides.constants";
 
 interface ResultGuideDbScreenProps {
@@ -42,7 +45,7 @@ export const ResultGuideDbScreen = ({
   if (isError) {
     return (
       <section className="flex flex-col gap-6">
-        <h4 className="text-xl font-bold text-center">{mode === 'edit' ? 'Error al editar la guía' : 'Error al crear la guía'}</h4>
+        <h4 className="text-xl font-bold text-center">{GUIDE_DB_RESULT_ERROR_HEADINGS[mode]}</h4>
         <p className="text-red-600 text-center">
           {errorMessage ?? GUIDE_DB_GENERIC_ERROR_MESSAGE}
         </p>
@@ -58,7 +61,7 @@ export const ResultGuideDbScreen = ({
   if (isSuccess && result?.status === "created") {
     return (
       <section className="flex flex-col gap-6">
-        <h4 className="text-xl font-bold text-center">{mode === 'edit' ? 'Guía editada con éxito' : 'Guía creada con éxito'}</h4>
+        <h4 className="text-xl font-bold text-center">{GUIDE_DB_RESULT_SUCCESS_HEADINGS[mode]}</h4>
         <div className="flex flex-col items-center gap-4">
           <RiCheckboxCircleLine size={48} className="text-green-600" />
           <p className="text-center">
@@ -87,7 +90,7 @@ export const ResultGuideDbScreen = ({
     return (
       <section className="flex flex-col gap-6">
         <h4 className="text-xl font-bold text-center">
-          {mode === 'edit' ? 'Guía actualizada en Kraft' : 'Guía guardada en Kraft'}
+          {GUIDE_DB_RESULT_PROVIDER_FAILED_HEADINGS[mode]}
         </h4>
         <div className="flex flex-col items-center gap-4">
           <RiErrorWarningLine size={48} className="text-yellow-500" />

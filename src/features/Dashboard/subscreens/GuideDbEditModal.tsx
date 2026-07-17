@@ -79,10 +79,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   }
 
   const mutation = useMutation<UpdateGuideDbResponse['data'], GeneralApiError, UpdateGuideDbPayload>({
-    mutationFn: (payload) => {
-      if (!guide) throw new Error('No guide selected')
-      return updateGuideDbCb(guide.kraftId, payload)
-    },
+    mutationFn: (payload) => updateGuideDbCb(guide.kraftId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['guides', 'db'] })
       onUpdated?.()
@@ -114,22 +111,98 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
     <Modal show={open} onClose={closeModal} size="3xl" data-testid="guide-db-edit-modal">
       <ModalHeader>{GUIDES_DB_EDIT_MODAL_TITLE}</ModalHeader>
       <ModalBody>
-        {!isMobileTablet && <div className="py-6 flex justify-center"><Stepper steps={new Set(CREATE_GUIDE_STEPS)} currentStep={step} /></div>}
-        {step === 1 && <AddAddressGuideDb title="Domicilio origen" goNext={goNext} goPrev={goPrev} toggleModal={closeModal} updateAddress={updateOriginAddress} aliasSaved={aliasesMn.origin} updateSavedAlias={updateOriginAliasMn} addressData={formData.current.originAddress} isMobileTablet={isMobileTablet} initialUseTempAddress />}
-        {step === 2 && <AddAddressGuideDb title="Domicilio destino" goNext={goNext} goPrev={goPrev} toggleModal={closeModal} updateAddress={updateDestinationAddress} aliasSaved={aliasesMn.destination} updateSavedAlias={updateDestinationAliasMn} addressData={formData.current.destinationAddress} isMobileTablet={isMobileTablet} isDestination excludedAlias={aliasesMn.origin.alias} initialUseTempAddress />}
-        {step === 3 && <ParcelInfoGuideDbForm parcelInfo={formData.current.parcelInfo} packageDimensions={packageDimensions.current} isMobileTablet={isMobileTablet} searchProductSat={searchProductSat} selectedProduct={selectedProduct.current} goNext={goNext} goPrev={goPrev} updateParcelInfo={updateParcelInfo} updateErrorProductSat={setErrorProductSat} editMode existingSatProductId={guide.parcel.satProductId}>
-          <ProductSatDropdown searchProductSat={searchProductSat} errorProductSat={errorProductSat} setSearchProductSat={setSearchProductSat} updateSelectedOption={updateSelectedProduct} updateErrorProductSat={setErrorProductSat} />
-        </ParcelInfoGuideDbForm>}
-        {step === 4 && <section className="flex flex-col gap-6">
-          <h4 className="text-xl font-bold text-center">Confirmar cambios</h4>
-          {isDeleted && <Alert color="failure">Esta guía fue eliminada y ya no puede editarse.</Alert>}
-          {changedSections.length > 0 ? <p>Cambios: {changedSections.join(', ')}.</p> : !noChangesDismissed && <Alert color="info" onDismiss={() => setNoChangesDismissed(true)}>{GUIDES_DB_EDIT_NO_CHANGES_MESSAGE}</Alert>}
-          <div className="flex justify-between">
-            <Button color="light" onClick={goPrev}>Regresar</Button>
-            <Button onClick={() => { if (canSubmit) mutation.mutate(payload) }} disabled={!canSubmit}>{mutation.isPending ? <Spinner size="sm" /> : 'Editar'}</Button>
+        {!isMobileTablet && (
+          <div className="py-6 flex justify-center">
+            <Stepper steps={new Set(CREATE_GUIDE_STEPS)} currentStep={step} />
           </div>
-        </section>}
-        {step === 5 && <ResultGuideDbScreen mode="edit" result={mutation.data} isSuccess={mutation.isSuccess} isError={mutation.isError} errorMessage={mutation.error?.response?.data?.message} closeModal={closeModal} />}
+        )}
+        {step === 1 && (
+          <AddAddressGuideDb
+            title="Domicilio origen"
+            goNext={goNext}
+            goPrev={goPrev}
+            toggleModal={closeModal}
+            updateAddress={updateOriginAddress}
+            aliasSaved={aliasesMn.origin}
+            updateSavedAlias={updateOriginAliasMn}
+            addressData={formData.current.originAddress}
+            isMobileTablet={isMobileTablet}
+            initialUseTempAddress
+          />
+        )}
+        {step === 2 && (
+          <AddAddressGuideDb
+            title="Domicilio destino"
+            goNext={goNext}
+            goPrev={goPrev}
+            toggleModal={closeModal}
+            updateAddress={updateDestinationAddress}
+            aliasSaved={aliasesMn.destination}
+            updateSavedAlias={updateDestinationAliasMn}
+            addressData={formData.current.destinationAddress}
+            isMobileTablet={isMobileTablet}
+            isDestination
+            excludedAlias={aliasesMn.origin.alias}
+            initialUseTempAddress
+          />
+        )}
+        {step === 3 && (
+          <ParcelInfoGuideDbForm
+            parcelInfo={formData.current.parcelInfo}
+            packageDimensions={packageDimensions.current}
+            isMobileTablet={isMobileTablet}
+            searchProductSat={searchProductSat}
+            selectedProduct={selectedProduct.current}
+            goNext={goNext}
+            goPrev={goPrev}
+            updateParcelInfo={updateParcelInfo}
+            updateErrorProductSat={setErrorProductSat}
+            editMode
+            existingSatProductId={guide.parcel.satProductId}
+          >
+            <ProductSatDropdown
+              searchProductSat={searchProductSat}
+              errorProductSat={errorProductSat}
+              setSearchProductSat={setSearchProductSat}
+              updateSelectedOption={updateSelectedProduct}
+              updateErrorProductSat={setErrorProductSat}
+            />
+          </ParcelInfoGuideDbForm>
+        )}
+        {step === 4 && (
+          <section className="flex flex-col gap-6">
+            <h4 className="text-xl font-bold text-center">Confirmar cambios</h4>
+            {isDeleted && (
+              <Alert color="failure">Esta guía fue eliminada y ya no puede editarse.</Alert>
+            )}
+            {changedSections.length > 0 ? (
+              <p>Cambios: {changedSections.join(', ')}.</p>
+            ) : !noChangesDismissed && (
+              <Alert color="info" onDismiss={() => setNoChangesDismissed(true)}>
+                {GUIDES_DB_EDIT_NO_CHANGES_MESSAGE}
+              </Alert>
+            )}
+            <div className="flex justify-between">
+              <Button color="light" onClick={goPrev}>Regresar</Button>
+              <Button
+                onClick={() => { if (canSubmit) mutation.mutate(payload) }}
+                disabled={!canSubmit}
+              >
+                {mutation.isPending ? <Spinner size="sm" /> : 'Editar'}
+              </Button>
+            </div>
+          </section>
+        )}
+        {step === 5 && (
+          <ResultGuideDbScreen
+            mode="edit"
+            result={mutation.data}
+            isSuccess={mutation.isSuccess}
+            isError={mutation.isError}
+            errorMessage={mutation.error?.response?.data?.message}
+            closeModal={closeModal}
+          />
+        )}
       </ModalBody>
     </Modal>
   )
