@@ -79,7 +79,7 @@ export const GuideDbEditModal = ({ open, onClose, onUpdated, guide }: GuideDbEdi
   }
 
   const mutation = useMutation<UpdateGuideDbResponse['data'], GeneralApiError, UpdateGuideDbPayload>({
-    mutationFn: (payload) => updateGuideDbCb(guide.kraftId, payload),
+    mutationFn: (payload) => updateGuideDbCb(guide?.kraftId ?? '', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['guides', 'db'] })
       onUpdated?.()
