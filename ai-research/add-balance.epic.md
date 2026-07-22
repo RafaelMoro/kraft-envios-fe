@@ -77,7 +77,7 @@ Allow a user to request a positive MXN addition through `POST /balance/requests`
 
 Acceptance criteria:
 
-1. The form accepts only values greater than zero with no more than two decimal places and submits `{ "amount": number }`.
+1. The form accepts MXN values from `0.01` through `100000.00` with no more than two decimal places and submits `{ "amount": number }`.
 2. Duplicate network submission is prevented while the create mutation is in flight; this does not prevent the user from creating multiple pending requests afterward.
 3. A successful response shows the amount and a Spanish message explaining that the payment will be checked in the bank account before an admin approves the request.
 4. The successful request becomes visible in the user's request history without requiring a full-page reload.
@@ -230,7 +230,7 @@ TanStack Query:
 Forms and validation:
 
 - Existing forms use `react-hook-form`, `yup`, and `@hookform/resolvers`; no new form dependency is needed.
-- Amount validation must preserve two decimal places and reject zero, negative, malformed, and over-precision input.
+- Amount validation must enforce `0.01` through `100000.00` and reject zero, negative, malformed, and over-precision input so users do not encounter the backend's silent truncation behavior.
 - Approval must require `paymentReference`; rejection reason remains optional according to the supplied contract.
 
 Flowbite, Tailwind, and design:
@@ -252,6 +252,12 @@ Current balance:
 
 - `GET /balance`
 - Data: `{ balance: { amount: number } }`
+
+Amount contract:
+
+- API values are MXN major-unit numbers; backend storage uses integer cents with a safe-integer guard.
+- Effective minimum is `0.01`; maximum is `100000.00` through backend `@Max(100000)` validation.
+- Backend conversion truncates rather than rounds after two decimal places: `1.159` becomes `1.15`, and `1.999` becomes `1.99`.
 
 Own requests:
 
@@ -301,8 +307,8 @@ Missing contract for accepted deep link:
 ### Edge Cases And Constraints
 
 - Zero balance must display; the current shared formatter hides it.
-- MXN values are user-confirmed as positive amounts with up to two decimal places, but backend minimum/maximum values remain unknown.
-- JavaScript numbers can introduce binary decimal artifacts. The supplied API uses JSON numbers, so the exact backend precision/rounding policy must be documented.
+- MXN request values have an effective range of `0.01` through `100000.00`. Backend storage uses integer cents guarded by `Number.isSafeInteger`-equivalent validation.
+- The backend truncates over-precision values to two decimal places rather than rounding. FE should reject more than two decimal places to avoid silently changing a user's requested amount.
 - A request may be approved, rejected, or cancelled between list rendering and action submission.
 - Cancellation eligibility is not explicitly documented. The likely rule is pending-only, but it must not be invented in implementation.
 - The reject response does not include the submitted reason, so own/admin history cannot reliably display it from the shown contract.
@@ -395,14 +401,16 @@ Smallest useful coverage by story:
   - Status: answered
   - Answer: MXN, greater than zero, with up to two decimal places.
 - II: Question: What backend minimum, maximum, and rounding policy applies to `amount`?
-  - Status: pending
-  - Context: Client rules can enforce positivity and decimal precision, but cannot invent operational limits.
+  - Status: answered
+  - Answer: Effective minimum is `0.01`, maximum is `100000.00`, and values are truncated to two decimal places rather than rounded. Backend storage uses integer cents with an additional safe-integer guard.
+  - Context: `1.159` becomes `1.15`; `1.999` becomes `1.99`. FE should reject over-precision input instead of silently relying on truncation.
 - III: Question: When does the user make the bank payment relative to creating the request?
   - Status: answered
   - Answer: The user creates the balance-addition request first and makes the bank payment afterward.
-- IV: Question: Where do bank instructions or the user's transfer reference come from?
-  - Status: pending
-  - Context: The create payload contains only `amount`; no bank instructions, user-entered reference, or receipt contract has been supplied.
+- IV: Question: How does the admin know whether the user made the bank payment?
+  - Status: answered
+  - Answer: The admin receives a notification outside the web app and independently confirms the payment before choosing `Aprobar` or `Rechazar`.
+  - Context: The frontend request payload remains amount-only; bank instructions, receipts, and user-entered transfer references are not part of this web-app flow.
 - V: Question: May one user have multiple pending requests, including duplicate amounts?
   - Status: answered
   - Answer: Yes. Multiple pending requests and duplicate amounts are allowed.
@@ -417,23 +425,25 @@ Smallest useful coverage by story:
   - Answer: Research documents responsive UX needs only; the design tool will decide exact placement.
   - Context: There is no shared desktop/mobile dashboard header. Persistent candidates differ: desktop sidebar and mobile header/drawer.
 - II: Question: Should the recommended Spanish confirmation copy be accepted as written?
-  - Status: pending
-  - Context: The default and compact variants avoid claiming the balance was already added and avoid an unconfirmed approval timeframe.
-- III: Question: Should cancelling a request require a confirmation dialog, and what warning copy should it use?
-  - Status: pending
-  - Context: This research assumes confirmation because cancellation is destructive, but final interaction and copy belong to product/design.
+  - Status: answered
+  - Answer: Yes. The default confirmation variant is approved.
+  - Context: It avoids claiming the balance was already added and avoids an unconfirmed approval timeframe.
+- III: Question: Should cancelling a request require a confirmation dialog?
+  - Status: answered
+  - Answer: Yes. Cancellation requires confirmation before the mutation.
 - IV: Question: Should users see rejection reasons in their own history?
   - Status: answered
   - Answer: No. Rejection reasons are not returned by the documented list/detail contract.
 - V: Question: Should users see approved payment references in their own history?
-  - Status: pending
-  - Context: Payment references appear in approved user-list examples, but their intended visibility has not been confirmed.
-- VI: Question: How should an open user session learn that an admin approved a request?
-  - Status: pending
-  - Context: Options include normal query refresh on navigation/focus, manual refresh, or polling. Real-time transport is out of scope.
+  - Status: answered
+  - Answer: Yes. Show the payment reference when it is present on an approved request.
+- VI: Question: How does a user learn that an admin approved the request?
+  - Status: answered
+  - Answer: The user receives an approval confirmation email.
 - VII: Question: Should the direct admin request route render a full page, drawer, or modal-like detail surface?
-  - Status: pending
-  - Context: The route must remain deep-linkable regardless of the visual presentation; the design tool will decide the interaction.
+  - Status: answered
+  - Answer: Render the direct admin request route as a full page.
+  - Context: It remains deep-linkable from the admin email CTA.
 
 ### Authorization And Routing
 
@@ -480,7 +490,7 @@ Smallest useful coverage by story:
 
 - All supplied balance endpoints are served from the existing `BACKEND_URI` and accept the current bearer token.
 - Backend responses retain the `{ version, data, message, error }` envelope shown in the examples.
-- Amounts are JSON numbers in MXN major units, not integer centavos.
+- The frontend exchanges JSON numbers in MXN major units; the backend stores them as integer cents.
 - Request IDs are opaque strings and safe to use as URL path segments after encoding.
 - Creating a request does not change balance; only backend approval changes it.
 - Cancellation and decision actions use authoritative backend responses and do not optimistically change financial data.
