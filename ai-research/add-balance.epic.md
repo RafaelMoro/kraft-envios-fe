@@ -1,0 +1,472 @@
+# Add Balance Epic Research
+
+## Story Definition
+
+### Epic Title
+
+Add balance visibility, funding requests, and administrative approval.
+
+### Epic Description
+
+Authenticated users need to see their current account balance, request an addition after making a bank payment, review their requests, and cancel requests that are still eligible. Administrators need to review requests across users, filter the queue by the backend-supported month, year, and `pending | all` status, and approve or reject a request.
+
+The backend sends administrators an email when a request is created. That email must gain a button linking to a specific request in this frontend. The accepted URL direction is a dynamic route such as `/dashboard/requests/{requestId}`. The supplied backend contract does not include a way to fetch one request by ID, so that deep-link flow has an unresolved backend dependency.
+
+Visual design is intentionally outside this research document. A design tool will decide the final surfaces and presentation after receiving the UX requirements, states, copy, responsive constraints, and existing design-system references documented here.
+
+### Scope Classification
+
+Epic spanning five independently deliverable stories.
+
+### Research Mode
+
+Full research, with contracts and architecture prioritized.
+
+### User-Confirmed Decisions
+
+- Research the complete epic rather than one story.
+- Document UX requirements but defer visual design and exact placement to a design tool.
+- Use MXN amounts greater than zero with up to two decimal places.
+- Prefer a dynamic request route and record the missing single-request API as a backend gap.
+- Defer admin filtering by user because the paginated endpoint has no user-filter query.
+- Admin status filtering means `pending` or `all`, matching the supplied endpoint contract.
+
+### Epic Acceptance Criteria
+
+1. An authenticated user can see an accurate MXN balance on the dashboard on desktop and mobile/tablet, including an explicit `$0.00` state.
+2. A user can submit a valid balance-addition request, receive clear Spanish confirmation that bank-payment verification and admin approval are pending, and see the new request in their history.
+3. A user can review their own paginated requests and cancel an eligible request, with status changes reflected from authoritative backend data.
+4. An admin can review requests for a selected month/year using `pending` or `all`, open a request, and approve it with a payment reference or reject it with an optional reason.
+5. An authenticated admin can follow an email button to a deep-linkable request detail route; non-admin and unauthenticated access remains blocked by backend authorization and appropriate frontend access handling.
+
+### Out Of Scope
+
+- Visual design, component mockups, and final choice between header, sidebar, card, drawer, modal, or full-page presentation.
+- Admin filtering by user until the backend supports filtering across the full paginated result set.
+- Admin status filters beyond `pending` and `all`.
+- Uploading payment receipts or other proof-of-payment files; no endpoint supports it.
+- Editing a request amount after creation.
+- Automatic bank reconciliation, payment-provider integration, refunds, withdrawals, debits, or a transaction ledger.
+- Real-time updates through WebSockets or server-sent events.
+- Changes to the external backend email implementation; this repository can only define the frontend URL contract it must target.
+- Global normalization of existing BFF response or error shapes.
+
+## Epic Structure
+
+### Story 1: Display Current Balance
+
+Description:
+
+Expose the authenticated user's current balance throughout the dashboard with responsive parity and a clear entry point into balance-request actions.
+
+Acceptance criteria:
+
+1. The UI retrieves the current user's balance from `GET /balance` through an authenticated Next route handler.
+2. The amount is formatted as MXN with two decimal places, and zero is rendered as `$0.00` rather than hidden.
+3. Loading, error, and loaded states do not block unrelated dashboard navigation.
+4. The balance surface is available in equivalent desktop and mobile/tablet experiences.
+
+### Story 2: Create A Balance Request
+
+Description:
+
+Allow a user to request a positive MXN addition through `POST /balance/requests` and explain the manual bank-verification process in Spanish.
+
+Acceptance criteria:
+
+1. The form accepts only values greater than zero with no more than two decimal places and submits `{ "amount": number }`.
+2. Duplicate submission is prevented while the request is pending in the client.
+3. A successful response shows the amount and a Spanish message explaining that the payment will be checked in the bank account before an admin approves the request.
+4. The successful request becomes visible in the user's request history without requiring a full-page reload.
+5. Backend validation or transport failures are shown without presenting a false success state.
+
+Recommended confirmation copy for design review:
+
+> **Solicitud recibida**
+>
+> Recibimos tu solicitud para agregar **{amount} MXN** a tu saldo. Verificaremos que el pago se refleje en nuestra cuenta bancaria. Cuando lo confirmemos, un administrador aprobará la solicitud y actualizaremos tu saldo. Puedes consultar el estado en **Solicitudes de saldo**.
+
+Short variant for a toast or compact result:
+
+> Recibimos tu solicitud. Verificaremos el pago en nuestra cuenta bancaria antes de aprobarla y agregar el monto a tu saldo.
+
+Copy guidance:
+
+- Use `solicitud recibida`, not `saldo agregado`, because creation does not change the balance.
+- Do not promise an approval time until an operational service level is defined.
+- Keep the amount visible so the user can verify what was submitted.
+- Point to request history so the message does not imply email or real-time notification behavior that is not specified.
+
+### Story 3: Review And Cancel Own Requests
+
+Description:
+
+Give users a list of their own requests from `GET /balance/requests`, including status and date information, and allow cancellation through `PATCH /balance/requests/{balance-id}/cancel` when the request is eligible.
+
+Acceptance criteria:
+
+1. A user sees only their own requests with amount, Spanish status, creation date, and decision date when supplied.
+2. The list supports backend pagination using `page`, `limit`, `total`, and `totalPages` once the request-query contract is confirmed.
+3. A cancellation action is available only for backend-defined cancellable statuses and requires confirmation before the mutation.
+4. Successful cancellation updates the request to `cancelled`; failed or conflicting cancellation preserves the authoritative prior state and shows an error.
+5. Loading, empty, error, and populated states work on desktop and mobile/tablet.
+
+Suggested status labels:
+
+- `pending`: `Pendiente`
+- `approved`: `Aprobada`
+- `rejected`: `Rechazada`
+- `cancelled`: `Cancelada`
+
+### Story 4: Admin Request Queue And Decisions
+
+Description:
+
+Allow admins to query all requests for a selected month and year, switch between `pending` and `all`, inspect a request, and make one approve/reject decision.
+
+Acceptance criteria:
+
+1. Admin queries include month, year, page, limit, and `status=pending|all`; all server-affecting values are represented in cached query identity.
+2. The queue shows request amount, status, timestamps, user name/email, payment reference when present, and admin in charge when present.
+3. Approval requires a non-empty `paymentReference`; rejection permits an optional reason.
+4. After either successful decision, affected request lists and current balance data are treated as stale and authoritative backend state is retrieved.
+5. Non-admin users do not see admin controls, while the backend remains the authorization source of truth for direct calls.
+
+### Story 5: Email Deep Link To Admin Review
+
+Description:
+
+Provide a stable frontend destination for the email button so an admin can open the specific request and approve or reject it without first locating it in the queue.
+
+Acceptance criteria:
+
+1. The frontend exposes a route shaped as `/dashboard/requests/{requestId}` using the opaque request ID from the email.
+2. The route loads the identified request from an authenticated, admin-authorized backend contract rather than searching only the current page of a monthly list.
+3. An authenticated admin sees request details and eligible decision actions; an already-decided, cancelled, or missing request shows its current state without actionable approval controls.
+4. Unauthenticated access enters the login flow without exposing request data, and non-admin access cannot retrieve or decide the request.
+5. The backend email button uses `FRONTEND_URI` plus the encoded request route and request ID.
+
+## Technical Research
+
+### Current State Summary
+
+- No balance feature, balance API route, DTO, query, constant, fixture, or test exists in `src` or `__tests__`.
+- `src/app/dashboard/page.tsx` is the only dashboard page. It reads auth cookies server-side and dynamically renders the client-only `Dashboard`.
+- `src/features/Dashboard/Dashboard.tsx` switches dashboard content with local `DashboardScreens` state. Screen selection does not alter the URL, browser history, or deep-link state.
+- `src/shared/types/dashboard.types.ts` only permits `quotes`, `overview`, `marginProfit`, and `addresses`.
+- Desktop and mobile/tablet use separate shell branches. Persistent desktop UI is the sidebar in `src/shared/ui/organisms/Aside.tsx`; persistent mobile UI is the header and `HeaderMenuDrawer`.
+- There is no common content header shared by every dashboard screen. Existing subscreens repeat their own welcome heading.
+- Admin role is represented by `LoginData.data.user.role: ('user' | 'admin')[]` and checked with `role.includes('admin')`.
+- `src/features/QueryProviderWrapper.tsx` provides TanStack Query with a per-provider `QueryClient` and a default 60-second `staleTime`.
+- Existing paginated admin UI in `Order.tsx` already models month/year/limit state, query keys, responsive filters, cards/details, and pagination.
+- Existing BFF handlers proxy `BACKEND_URI` with `getAccessToken()` and a bearer token. `src/app/api/guides-db/route.ts` is the closest collection/list precedent.
+- Existing backend envelopes are inconsistent. Guides DB returns `{ version, data, message, error }` unchanged and is the closest match to the supplied balance responses.
+- `formatNumberToCurrency()` in `src/shared/utils/global.utils.ts` is not suitable unchanged: it formats USD and returns an empty string for `0`.
+- The supplied examples mix API versions `1.5.0` and `1.6.0`; frontend DTOs should not branch behavior on those example version values.
+
+### Affected Areas
+
+Routes/pages:
+
+- `src/app/dashboard/page.tsx`: existing authenticated dashboard boundary and Flowbite theme context.
+- `src/app/dashboard/requests/[requestId]/page.tsx`: likely route boundary for the accepted deep link. This path does not exist and cannot be represented by current local dashboard screen state alone.
+- Any nested route must preserve the auth, theme, desktop/mobile shell, and role context currently owned directly by `dashboard/page.tsx`; there is no `src/app/dashboard/layout.tsx` today.
+
+API route handlers:
+
+- Authenticated proxy coverage is needed for current balance, own request collection, admin request collection, cancellation, decision, and the missing single-request lookup.
+- Existing route layout under `src/app/api/**/route.ts` supports collection and dynamic-ID handlers.
+- Dynamic IDs should be URL encoded before constructing upstream URLs, matching `src/app/api/guides-db/[kraftId]/route.ts`.
+- Admin decision and single-request access may use a defensive Next-side role check like the hard-delete guide route, but backend authorization remains mandatory because the `user-info` cookie is not an authoritative security boundary.
+
+Feature UI:
+
+- Domain UI belongs in a new `src/features/Balance/` boundary rather than expanding unrelated quote, guide, or margin components.
+- Dashboard shell integration affects `src/features/Dashboard/Dashboard.tsx`, `src/shared/ui/organisms/Aside.tsx`, and `src/shared/ui/organisms/HeaderMenuDrawer.tsx` if requests become a dashboard destination.
+- Desktop and mobile navigation must be handled together. The existing margin screen is hidden for non-admins on desktop but exposed in the mobile drawer, demonstrating the risk of one-sided role changes.
+- `Order.tsx` is the closest active precedent for user/admin list modes, month/year filters, query enablement, cards/details, and pagination.
+- Existing Flowbite modal patterns support request creation, cancellation confirmation, and decisions if design chooses modals. Existing in-place `GuideDbDetails` supports a list/detail alternative. Final choice is deferred.
+
+Shared code:
+
+- Balance request/status/response types belong under `src/shared/types`.
+- API endpoint constants belong under `src/shared/constants`.
+- Axios callbacks that call only the local `/api` BFF belong under `src/shared/utils`, following guides and addresses.
+- No centralized service layer, query-key factory, role hook, or state store exists; none is required for research scope.
+- MXN formatting needs an explicit zero-safe formatter decision rather than silently reusing the USD helper.
+
+Tests:
+
+- Feature behavior belongs under `__tests__/feature/Balance/` or the matching dashboard feature boundary.
+- Shared reusable UI tests belong under `__tests__/components/`.
+- `__tests__/mocks/` may hold typed fixtures but is ignored as a suite.
+- No route-handler test convention currently exists; focused callback and feature tests are the established practical coverage.
+
+### Existing Patterns To Follow
+
+App Router server/client split:
+
+- Read session and user cookies only in server code.
+- Browser code calls local `/api` handlers and never exposes `BACKEND_URI` or the bearer token.
+- Client components own TanStack Query, forms, filters, mutations, and interactive Flowbite components.
+- A deep link must be represented by an App Router path, not only `Dashboard` local state.
+
+TanStack Query:
+
+- Keep the `QueryClient` inside `QueryProviderWrapper`; do not move it to module scope.
+- Include month, year, page, limit, status, role/scope, and request ID in the relevant query keys.
+- Gate admin queries by role and active surface with `enabled` where appropriate.
+- After create, cancel, approve, or reject, invalidate the common balance/request query prefix rather than maintaining speculative money state.
+- Avoid optimistic balance updates; the bank-verification and admin-decision flow requires authoritative server results.
+
+Forms and validation:
+
+- Existing forms use `react-hook-form`, `yup`, and `@hookform/resolvers`; no new form dependency is needed.
+- Amount validation must preserve two decimal places and reject zero, negative, malformed, and over-precision input.
+- Approval must require `paymentReference`; rejection reason remains optional according to the supplied contract.
+
+Flowbite, Tailwind, and design:
+
+- `DESIGN.md` requires Flowbite React, Tailwind v4, Geist Sans, neutral dashboard surfaces, primary blue actions, danger styling for destructive actions, and existing dark-mode behavior.
+- Balance and request experiences need explicit loading, error, empty, populated, submitting, success, stale/conflict, and unauthorized states for design input.
+- Cards are the active responsive dashboard list pattern; the only Flowbite table is unused. This is context for design, not a mandated final layout.
+
+Route-handler proxy style:
+
+- Preserve authenticated bearer forwarding and the direct balance backend envelope.
+- Explicitly allowlist forwarded query parameters rather than forwarding arbitrary search params.
+- Existing handlers commonly collapse errors to HTTP 400; decision/cancellation conflicts and forbidden access need contract confirmation before deciding whether this domain preserves upstream statuses.
+- Do not normalize unrelated existing routes as part of this epic.
+
+### Backend Contracts Supplied By The User
+
+Current balance:
+
+- `GET /balance`
+- Data: `{ balance: { amount: number } }`
+
+Own requests:
+
+- `POST /balance/requests` with `{ amount: number }`
+- `GET /balance/requests` returning `{ requests, total, page, limit, totalPages }`
+- `PATCH /balance/requests/{balance-id}/cancel` with no body
+
+Admin requests:
+
+- `GET /balance/requests/admin`
+- Queries: `month`, `year`, `page`, `limit`, `status=pending|all`
+- `PATCH /balance/requests/{balance-id}/decision`
+- Approve body: `{ action: "approve", paymentReference: string }`
+- Reject body: `{ action: "reject", reason?: string }`
+
+Common request fields observed across responses:
+
+- Required: `id`, `amount`, `status`, `createdAt`, `updatedAt`
+- Conditional: `paymentReference`, `decisionAt`, `userEmail`, `userName`, `adminInCharge`
+- Status values observed: `pending`, `approved`, `rejected`, `cancelled`
+
+Missing contract for accepted deep link:
+
+- A single-request lookup such as `GET /balance/requests/{balance-id}` for an authorized admin.
+- Response behavior for missing, forbidden, cancelled, or already-decided IDs.
+- Whether a regular user may use the same endpoint for an owned request or it is admin-only.
+
+### Data And Cache Relationships
+
+- Creating a request affects own request history but does not immediately increase current balance.
+- Cancelling affects own request history but should not change current balance.
+- Rejecting affects admin request lists and the request detail but should not change current balance.
+- Approving affects admin request lists, request detail, the request owner's history, and the owner's current balance.
+- Because admin and user sessions are separate clients, local invalidation after admin approval cannot push an update into the user's open browser. Refresh behavior remains a product decision.
+- Query data is user-sensitive. The existing per-mounted-provider QueryClient prevents module-level sharing and must remain unchanged.
+
+### Authorization And Security
+
+- The access token is held in an httpOnly session cookie and extracted by Next server code.
+- `user-info` is a separate httpOnly JSON cookie used for UI role gating. It is not sufficient as the only authorization control.
+- Backend enforcement is required for admin list, single-request review, approve, and reject.
+- Backend enforcement is required to ensure a regular user can list and cancel only their own requests.
+- Request IDs in URLs must be treated as untrusted input and URL encoded for upstream requests.
+- Decision actions should tolerate stale links and concurrent admin decisions by displaying the backend's authoritative status rather than assuming the requested transition succeeded.
+
+### Edge Cases And Constraints
+
+- Zero balance must display; the current shared formatter hides it.
+- MXN values are user-confirmed as positive amounts with up to two decimal places, but backend minimum/maximum values remain unknown.
+- JavaScript numbers can introduce binary decimal artifacts. The supplied API uses JSON numbers, so the exact backend precision/rounding policy must be documented.
+- A request may be approved, rejected, or cancelled between list rendering and action submission.
+- Cancellation eligibility is not explicitly documented. The likely rule is pending-only, but it must not be invented in implementation.
+- The reject response does not include the submitted reason, so own/admin history cannot reliably display it from the shown contract.
+- `paymentReference` appears only after approval and is mandatory in the approve payload, but format and uniqueness rules are unknown.
+- The regular-user GET example is paginated, but its accepted query parameters are not listed.
+- Admin requests are month/year scoped. The timezone used to assign a request to a month is not documented.
+- The current date formatter uses browser-local time and omits the year; request history may require a locale/timezone-safe display decision.
+- The current dashboard has no nested layout and no shared responsive header, so design must account for desktop sidebar and mobile header separately.
+- The dashboard's saved screen cookie is written but not read on initial load. Request navigation must not rely on preference restoration.
+- Existing `LoginRequiredModal` can be dismissed while the dashboard remains mounted. Deep-link authentication behavior needs an explicit decision rather than inheriting that behavior unnoticed.
+- Tests always collect coverage, which can make even focused runs slower.
+- `product-sat` uses a separate external URI; it is unrelated to this epic. Balance routes use `BACKEND_URI`.
+
+### Dependencies And Integration Points
+
+- No new frontend dependency is required.
+- Existing dependencies cover HTTP, server routing, queries, forms, validation, responsive Flowbite UI, icons, and tests.
+- No new frontend environment variable is required if the browser continues calling local `/api` routes.
+- `BACKEND_URI` is the upstream base for all supplied balance endpoints.
+- `FRONTEND_URI` is the existing origin the backend email service can use to construct the dynamic request URL.
+- Backend/email work must place the request ID in the button URL and needs deployment coordination with the frontend route.
+- The separate design tool needs this document plus `DESIGN.md` and representative dashboard files before producing UI artifacts.
+
+### Testing Rules To Follow
+
+From `.github/copilot-instructions.md`:
+
+- Use `userEvent`, not `fireEvent`.
+- Do not mock internal feature/shared components to avoid rendering their behavior.
+- Mock network callbacks and unavailable browser APIs only.
+- Use relative paths in `jest.mock()` for project hooks/modules.
+- Use a fresh QueryClient with retries disabled for query-driven feature tests.
+- Do not assert CSS classes, colors, layout, or other visual implementation details.
+- Query by role, accessible name, label, visible text, or a justified test ID.
+- Use explicit balance DTO types in fixtures; do not use `any` or `unknown`.
+- Ensure mock data matches the callback's actual unwrapped shape.
+- Preserve existing skipped tests.
+
+Smallest useful coverage by story:
+
+- Balance: loading/error/zero/positive display and desktop/mobile access behavior.
+- Create: amount validation, exact payload, duplicate-submit prevention, success copy, and request-list invalidation.
+- Own list: populated/empty/error/pagination states and cancellation success/conflict behavior.
+- Admin: role gating, month/year/status query values, approval reference validation, optional rejection reason, and decision invalidation.
+- Deep link: request ID loading, admin/unauthorized states, already-decided state, and approve/reject from the direct route.
+
+## Open Questions
+
+### Backend Contract
+
+- I: Question: What endpoint returns one request by ID for `/dashboard/requests/{requestId}`?
+  - Status: pending
+  - Context: The accepted dynamic route cannot reliably use a paginated, month-scoped list to find one email-linked request.
+  - Explanation: Define the path, role rules, response envelope, and behavior for missing, forbidden, cancelled, and already-decided requests.
+- II: Question: Which query parameters does regular-user `GET /balance/requests` accept?
+  - Status: pending
+  - Context: Its response contains pagination metadata, but only the admin endpoint's queries were documented.
+  - Explanation: Confirm at least `page` and `limit`, their defaults/ranges, and whether month/year or status are supported.
+- III: Question: Which status transitions are legal for cancel, approve, and reject?
+  - Status: pending
+  - Context: UI controls and stale-request handling depend on whether only `pending` requests are actionable.
+- IV: Question: Does the admin endpoint support only `status=pending|all` for the first delivery?
+  - Status: answered
+  - Answer: Yes. An admin can visualize all requests or only pending requests.
+- V: Question: Should backend HTTP statuses such as 401, 403, 404, 409, and validation failures be preserved by new BFF handlers?
+  - Status: pending
+  - Context: Existing BFF handlers often collapse all upstream errors to 400, but decision conflicts and authorization states have distinct UX meaning.
+- VI: Question: Is the rejection reason persisted and available from list/detail responses?
+  - Status: pending
+  - Context: The supplied reject response omits `reason`, so the frontend cannot show it later from the documented shape.
+- VII: Question: What timezone determines the month/year scope and displayed request dates?
+  - Status: pending
+  - Context: Backend timestamps use UTC ISO strings while the current frontend formats with browser-local getters.
+
+### Create Payload And Payment Flow
+
+- I: Question: What currency and client amount format should be used?
+  - Status: answered
+  - Answer: MXN, greater than zero, with up to two decimal places.
+- II: Question: What backend minimum, maximum, and rounding policy applies to `amount`?
+  - Status: pending
+  - Context: Client rules can enforce positivity and decimal precision, but cannot invent operational limits.
+- III: Question: Does the user make the bank payment before creating the request, and where do bank instructions or transfer references come from?
+  - Status: pending
+  - Context: The workflow says an admin checks the bank account, but the create payload contains only `amount` and no bank/payment reference or receipt.
+- IV: Question: May one user have multiple pending requests, including duplicate amounts?
+  - Status: pending
+  - Context: This affects warnings, duplicate-request handling, and whether the backend returns a conflict.
+- V: Question: What validation rules apply to the admin `paymentReference`?
+  - Status: pending
+  - Context: It is mandatory for approval, but length, allowed characters, uniqueness, and source are unspecified.
+
+### UI And Product Decisions
+
+- I: Question: Where should current balance and the request entry point appear?
+  - Status: answered
+  - Answer: Research documents responsive UX needs only; the design tool will decide exact placement.
+  - Context: There is no shared desktop/mobile dashboard header. Persistent candidates differ: desktop sidebar and mobile header/drawer.
+- II: Question: Should the recommended Spanish confirmation copy be accepted as written?
+  - Status: pending
+  - Context: The default and compact variants avoid claiming the balance was already added and avoid an unconfirmed approval timeframe.
+- III: Question: Should cancelling a request require a confirmation dialog, and what warning copy should it use?
+  - Status: pending
+  - Context: This research assumes confirmation because cancellation is destructive, but final interaction and copy belong to product/design.
+- IV: Question: Should users see rejection reasons and approved payment references in their own history?
+  - Status: pending
+  - Context: Payment references appear in approved user-list examples; rejection reasons do not appear in the supplied response.
+- V: Question: How should an open user session learn that an admin approved a request?
+  - Status: pending
+  - Context: Options include normal query refresh on navigation/focus, manual refresh, or polling. Real-time transport is out of scope.
+- VI: Question: Should the direct admin request route render a full page, drawer, or modal-like detail surface?
+  - Status: pending
+  - Context: The route must remain deep-linkable regardless of the visual presentation; the design tool will decide the interaction.
+
+### Authorization And Routing
+
+- I: Question: How is admin role detected for frontend presentation?
+  - Status: answered
+  - Answer: Use the existing `userInfo.data.user.role.includes('admin')` signal for presentation; backend authorization remains authoritative.
+- II: Question: What should happen when an unauthenticated admin follows the email link?
+  - Status: pending
+  - Context: The current dashboard shows a dismissible login-required modal and does not preserve a return URL.
+  - Explanation: Decide whether login should redirect back to the original request route after authentication.
+- III: Question: May a regular user open `/dashboard/requests/{requestId}` for one of their own requests, or is that route admin-only?
+  - Status: pending
+  - Context: Story 5 is admin-focused, while Story 3 can remain list-based unless product wants user deep links too.
+- IV: Question: Is backend authorization required even if admin controls are hidden in the frontend?
+  - Status: answered
+  - Answer: Yes. Frontend role checks are presentation controls only.
+
+### Admin Filtering
+
+- I: Question: Should the first delivery filter admin requests by user?
+  - Status: answered
+  - Answer: No. Defer user filtering because the backend endpoint has no server-side user-filter query.
+  - Context: Filtering only the current page would miss matching requests on other pages and would not satisfy a true all-record user filter.
+- II: Question: Which admin status filters are included?
+  - Status: answered
+  - Answer: `pending` and `all`, matching the backend contract.
+- III: Question: What default month, year, page, and limit should the admin queue use?
+  - Status: pending
+  - Context: Existing Guides DB lists use the current browser month/year, page 1, and limit 10, but balance defaults were not explicitly confirmed.
+
+### Email Integration
+
+- I: Question: What frontend URL shape should the email button use?
+  - Status: answered
+  - Answer: Prefer `/dashboard/requests/{requestId}` and require a backend single-request lookup contract.
+- II: Question: Which service owns the email template and button generation?
+  - Status: pending
+  - Context: No email template or sending code exists in this frontend repository; the supplied screenshot appears to come from the backend notification flow.
+- III: Question: What should the email button label be?
+  - Status: pending
+  - Context: Candidate Spanish copy is `Revisar solicitud`, but product approval is required.
+
+## Assumptions
+
+- All supplied balance endpoints are served from the existing `BACKEND_URI` and accept the current bearer token.
+- Backend responses retain the `{ version, data, message, error }` envelope shown in the examples.
+- Amounts are JSON numbers in MXN major units, not integer centavos.
+- Request IDs are opaque strings and safe to use as URL path segments after encoding.
+- Creating a request does not change balance; only backend approval changes it.
+- Cancellation and decision actions use authoritative backend responses and do not optimistically change financial data.
+- The design tool will account for both desktop and mobile/tablet shells and all functional states listed in this document.
+- No new package, state manager, date library, or environment variable is required for the frontend epic.
+- User filtering is absent from the first admin delivery, not approximated on the current page.
+- Status filtering is limited to `pending` and `all`.
+
+## Non-Obvious Findings
+
+- The existing dashboard cannot satisfy an email deep link through `DashboardScreens`; it has only `/dashboard` plus local state. A real nested App Router route is required for bookmarkable request identity.
+- There is no shared dashboard header. A globally visible balance requires separate desktop and mobile design treatment unless a later design introduces a shared shell.
+- The current money formatter is actively unsafe for this feature because it formats USD and turns a valid zero balance into an empty string.
+- The closest reusable architecture is the Guides DB flow: direct backend envelope, explicit query allowlist, paginated TanStack Query keys, responsive list/detail states, and prefix invalidation.
+- Correct user filtering cannot be implemented from the documented paginated admin response without backend query support; deferring it avoids a misleading current-page-only filter.
+- The email button itself is not frontend code in this repository. Frontend delivery can provide the route contract, but the sending service must be changed elsewhere.
