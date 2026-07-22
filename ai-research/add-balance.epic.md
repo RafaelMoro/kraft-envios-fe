@@ -59,9 +59,11 @@ Full research, with contracts and architecture prioritized.
 
 ### Story 1: Display Current Balance
 
+Status: Completed
+
 Description:
 
-Expose the authenticated user's current balance throughout the dashboard with responsive parity and a clear entry point into balance-request actions.
+Expose the authenticated user's current balance throughout the dashboard with responsive parity.
 
 Acceptance criteria:
 
@@ -177,7 +179,7 @@ Suggested action: `Volver al panel`.
 
 ### Current State Summary
 
-- No balance feature, balance API route, DTO, query, constant, fixture, or test exists in `src` or `__tests__`.
+- Story 1 is complete: `src/features/Balance/BalanceDisplay.tsx` retrieves the current balance through `src/app/api/balance/route.ts`, formats zero-safe MXN values, and is covered by focused route, feature, and dashboard tests.
 - `src/app/dashboard/page.tsx` is the only dashboard page. It reads auth cookies server-side and dynamically renders the client-only `Dashboard`.
 - `src/features/Dashboard/Dashboard.tsx` switches dashboard content with local `DashboardScreens` state. Screen selection does not alter the URL, browser history, or deep-link state.
 - `src/shared/types/dashboard.types.ts` only permits `quotes`, `overview`, `marginProfit`, and `addresses`.
@@ -188,7 +190,7 @@ Suggested action: `Volver al panel`.
 - Existing paginated admin UI in `Order.tsx` already models month/year/limit state, query keys, responsive filters, cards/details, and pagination.
 - Existing BFF handlers proxy `BACKEND_URI` with `getAccessToken()` and a bearer token. `src/app/api/guides-db/route.ts` is the closest collection/list precedent.
 - Existing backend envelopes are inconsistent. Guides DB returns `{ version, data, message, error }` unchanged and is the closest match to the supplied balance responses.
-- `formatNumberToCurrency()` in `src/shared/utils/global.utils.ts` is not suitable unchanged: it formats USD and returns an empty string for `0`.
+- Balance uses the dedicated zero-safe `formatBalanceMxn()` formatter in `src/shared/utils/balance.utils.ts`; `formatNumberToCurrency()` remains unsuitable for this domain because it formats USD and hides `0`.
 - The supplied examples mix API versions `1.5.0` and `1.6.0`; frontend DTOs should not branch behavior on those example version values.
 
 ### Affected Areas
@@ -201,14 +203,14 @@ Routes/pages:
 
 API route handlers:
 
-- Authenticated proxy coverage is needed for current balance, own request collection, admin request collection, cancellation, decision, and the missing single-request lookup.
+- Authenticated current-balance proxy coverage exists; further handlers are needed for own request collection, admin request collection, cancellation, decision, and the missing single-request lookup.
 - Existing route layout under `src/app/api/**/route.ts` supports collection and dynamic-ID handlers.
 - Dynamic IDs should be URL encoded before constructing upstream URLs, matching `src/app/api/guides-db/[kraftId]/route.ts`.
 - Admin decision and single-request access may use a defensive Next-side role check like the hard-delete guide route, but backend authorization remains mandatory because the `user-info` cookie is not an authoritative security boundary.
 
 Feature UI:
 
-- Domain UI belongs in a new `src/features/Balance/` boundary rather than expanding unrelated quote, guide, or margin components.
+- Further balance domain UI belongs in the existing `src/features/Balance/` boundary rather than expanding unrelated quote, guide, or margin components.
 - Dashboard shell integration affects `src/features/Dashboard/Dashboard.tsx`, `src/shared/ui/organisms/Aside.tsx`, and `src/shared/ui/organisms/HeaderMenuDrawer.tsx` if requests become a dashboard destination.
 - Desktop and mobile navigation must be handled together. The existing margin screen is hidden for non-admins on desktop but exposed in the mobile drawer, demonstrating the risk of one-sided role changes.
 - `Order.tsx` is the closest active precedent for user/admin list modes, month/year filters, query enablement, cards/details, and pagination.
@@ -220,14 +222,14 @@ Shared code:
 - API endpoint constants belong under `src/shared/constants`.
 - Axios callbacks that call only the local `/api` BFF belong under `src/shared/utils`, following guides and addresses.
 - No centralized service layer, query-key factory, role hook, or state store exists; none is required for research scope.
-- MXN formatting needs an explicit zero-safe formatter decision rather than silently reusing the USD helper.
+- The existing dedicated Balance formatter is zero-safe and reusable for balance-request confirmation amounts.
 
 Tests:
 
 - Feature behavior belongs under `__tests__/feature/Balance/` or the matching dashboard feature boundary.
 - Shared reusable UI tests belong under `__tests__/components/`.
 - `__tests__/mocks/` may hold typed fixtures but is ignored as a suite.
-- No route-handler test convention currently exists; focused callback and feature tests are the established practical coverage.
+- `__tests__/api/balance.route.test.ts` is the focused route-handler precedent for further balance BFF methods.
 
 ### Existing Patterns To Follow
 
@@ -281,6 +283,11 @@ Amount contract:
 Own requests:
 
 - `POST /balance/requests` with `{ amount: number }`
+- POST success is `201 Created` with `{ version, data: { request }, message: null, error: null }`.
+- The created request has `id`, `amount`, optional `paymentReference`, `status: 'pending'`, `decisionReason: null`, `decisionAt: null`, and UTC ISO `createdAt`/`updatedAt` values.
+- POST DTO validation returns `400` with Nest's raw `{ statusCode, message: string[], error }` body nested under the standard envelope's `error`.
+- POST domain failures use `{ code, message, technicalDetails? }` under the standard envelope's `error`: `401 BAL-AUTH-001`, `400 BAL-BUS-003`, or `400 BAL-BDN-001`.
+- Admin notification is best-effort after request creation, and the service has no duplicate-pending-request check.
 - `GET /balance/requests` returning `{ requests, total, page, limit, totalPages }`
 - Optional GET queries: integer `month` from 1-12, integer `year` greater than or equal to 1, positive integer `page` defaulting to 1, and positive integer `limit` defaulting to 10.
 - `PATCH /balance/requests/{balance-id}/cancel` with no body
@@ -383,8 +390,8 @@ Smallest useful coverage by story:
 
 ## Story Readiness And Blockers
 
-- Story 1, Display Current Balance: not blocked by a pending contract question. Final visual placement remains delegated to design.
-- Story 2, Create A Balance Request: not blocked by a pending contract question.
+- Story 1, Display Current Balance: completed.
+- Story 2, Create A Balance Request: ready; payload, `201` success response, validation errors, and domain errors are confirmed.
 - Story 3, Review And Cancel Own Requests: no longer blocked by a pending timezone decision. It depends on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries, plus matching frontend `NEXT_PUBLIC_BUSINESS_TIMEZONE` configuration.
 - Story 4, Admin Request Queue And Decisions: no longer blocked by a pending timezone decision. It has the same backend Luxon and synchronized deployment-configuration dependency as Story 3.
 - Story 5, Email Deep Link To Admin Review: blocked until the backend supplies or confirms the single-request GET endpoint used to render `/dashboard/requests/{requestId}`. The frontend route and decision mutation alone cannot load the request details.
@@ -523,7 +530,7 @@ Email template ownership, generation, and CTA label are backend implementation d
 ## Assumptions
 
 - All supplied balance endpoints are served from the existing `BACKEND_URI` and accept the current bearer token.
-- Backend responses retain the `{ version, data, message, error }` envelope shown in the examples.
+- Supplied balance responses retain the `{ version, data, message, error }` envelope; Story 2's endpoint-specific success and error nesting is confirmed above.
 - The frontend exchanges JSON numbers in MXN major units; the backend stores them as integer cents.
 - Request IDs are opaque strings and safe to use as URL path segments after encoding.
 - Creating a request does not change balance; only backend approval changes it.
