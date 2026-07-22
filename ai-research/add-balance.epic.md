@@ -249,6 +249,7 @@ Own requests:
 
 - `POST /balance/requests` with `{ amount: number }`
 - `GET /balance/requests` returning `{ requests, total, page, limit, totalPages }`
+- Optional GET queries: integer `month` from 1-12, integer `year` greater than or equal to 1, positive integer `page` defaulting to 1, and positive integer `limit` defaulting to 10.
 - `PATCH /balance/requests/{balance-id}/cancel` with no body
 
 Admin requests:
@@ -298,7 +299,7 @@ Missing contract for accepted deep link:
 - Cancellation eligibility is not explicitly documented. The likely rule is pending-only, but it must not be invented in implementation.
 - The reject response does not include the submitted reason, so own/admin history cannot reliably display it from the shown contract.
 - `paymentReference` appears only after approval and is mandatory in the approve payload, but format and uniqueness rules are unknown.
-- The regular-user GET example is paginated, but its accepted query parameters are not listed.
+- The regular-user list supports optional month/year filters and positive page/limit values; status filtering is not part of its documented query DTO.
 - Admin requests are month/year scoped. The timezone used to assign a request to a month is not documented.
 - The current date formatter uses browser-local time and omits the year; request history may require a locale/timezone-safe display decision.
 - The current dashboard has no nested layout and no shared responsive header, so design must account for desktop sidebar and mobile header separately.
@@ -344,29 +345,34 @@ Smallest useful coverage by story:
 
 ### Backend Contract
 
-- I: Question: What endpoint returns one request by ID for `/dashboard/requests/{requestId}`?
+- I: Question: How does the email CTA open and act on a balance request?
+  - Status: answered
+  - Answer: The email CTA opens `/dashboard/requests/{requestId}`. That frontend UI shows Approve and Reject actions, and each action calls `PATCH /balance/requests/{balance-id}/decision` using the supplied decision contract.
+- II: Question: What endpoint returns one request by ID so `/dashboard/requests/{requestId}` can load its details before a decision?
   - Status: pending
-  - Context: The accepted dynamic route cannot reliably use a paginated, month-scoped list to find one email-linked request.
-  - Explanation: Define the path, role rules, response envelope, and behavior for missing, forbidden, cancelled, and already-decided requests.
-- II: Question: Which query parameters does regular-user `GET /balance/requests` accept?
-  - Status: pending
-  - Context: Its response contains pagination metadata, but only the admin endpoint's queries were documented.
-  - Explanation: Confirm at least `page` and `limit`, their defaults/ranges, and whether month/year or status are supported.
-- III: Question: Which status transitions are legal for cancel, approve, and reject?
+  - Context: The request ID and decision mutation are defined, but the frontend still needs request data to render. The dynamic route cannot reliably find that data through a paginated, month-scoped list.
+  - Explanation: Confirm whether a single-request GET endpoint exists. If so, define its path, role rules, response envelope, and behavior for missing, forbidden, cancelled, and already-decided requests.
+- III: Question: Which query parameters does regular-user `GET /balance/requests` accept?
+  - Status: answered
+  - Answer: It accepts optional integer `month` (1-12), optional integer `year` (minimum 1), optional positive integer `page` (default 1), and optional positive integer `limit` (default 10). It does not document a status query.
+  - Context: The response pagination fields correspond to the optional `page` and `limit` queries.
+- IV: Question: Which status transitions are legal for cancel, approve, and reject?
   - Status: pending
   - Context: UI controls and stale-request handling depend on whether only `pending` requests are actionable.
-- IV: Question: Does the admin endpoint support only `status=pending|all` for the first delivery?
+- V: Question: Does the admin endpoint support only `status=pending|all` for the first delivery?
   - Status: answered
   - Answer: Yes. An admin can visualize all requests or only pending requests.
-- V: Question: Should backend HTTP statuses such as 401, 403, 404, 409, and validation failures be preserved by new BFF handlers?
+- VI: Question: Should backend HTTP statuses such as 401, 403, 404, 409, and validation failures be preserved by new BFF handlers?
+  - Status: answered
+  - Answer: Yes. New balance BFF handlers should preserve the relevant upstream HTTP status.
+  - Context: Decision conflicts, authorization failures, missing requests, and validation failures require distinct frontend handling even though older BFF handlers often collapse errors to 400.
+- VII: Question: Is the rejection reason persisted and available from list/detail responses?
+  - Status: answered
+  - Answer: No. The rejection reason is not available from the documented list/detail response data and should not be shown as persisted history in the frontend.
+- VIII: Question for the backend agent: What canonical timezone should FE and BE use for balance-request month/year filtering and timestamp display, and what exact normalization contract should both sides follow?
   - Status: pending
-  - Context: Existing BFF handlers often collapse all upstream errors to 400, but decision conflicts and authorization states have distinct UX meaning.
-- VI: Question: Is the rejection reason persisted and available from list/detail responses?
-  - Status: pending
-  - Context: The supplied reject response omits `reason`, so the frontend cannot show it later from the documented shape.
-- VII: Question: What timezone determines the month/year scope and displayed request dates?
-  - Status: pending
-  - Context: Backend timestamps use UTC ISO strings while the current frontend formats with browser-local getters.
+  - Context: Backend timestamps are UTC ISO strings, while the current frontend formats dates with browser-local getters. Without a shared rule, a request near midnight can appear on a different day or month in the UI than the month used by the backend query.
+  - Explanation: Please confirm whether month/year filters are evaluated in UTC or a named business timezone such as `America/Mexico_City`; whether the backend will continue returning UTC ISO 8601 timestamps; and whether the frontend should convert those timestamps to the agreed display timezone. Include the expected behavior for daylight-saving changes and month-boundary records.
 
 ### Create Payload And Payment Flow
 
