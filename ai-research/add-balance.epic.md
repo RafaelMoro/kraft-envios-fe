@@ -8,7 +8,7 @@ Add balance visibility, funding requests, and administrative approval.
 
 ### Epic Description
 
-Authenticated users need to see their current account balance, request an addition after making a bank payment, review their requests, and cancel requests that are still eligible. Administrators need to review requests across users, filter the queue by the backend-supported month, year, and `pending | all` status, and approve or reject a request.
+Authenticated users need to see their current account balance, create an addition request, make the bank payment, review their requests, and cancel requests that are still pending. Administrators need to review requests across users, filter the queue by the backend-supported month, year, and `pending | all` status, and approve or reject a pending request.
 
 The backend sends administrators an email when a request is created. That email must gain a button linking to a specific request in this frontend. The accepted URL direction is a dynamic route such as `/dashboard/requests/{requestId}`. The supplied backend contract does not include a way to fetch one request by ID, so that deep-link flow has an unresolved backend dependency.
 
@@ -30,6 +30,9 @@ Full research, with contracts and architecture prioritized.
 - Prefer a dynamic request route and record the missing single-request API as a backend gap.
 - Defer admin filtering by user because the paginated endpoint has no user-filter query.
 - Admin status filtering means `pending` or `all`, matching the supplied endpoint contract.
+- Only `pending` requests can be cancelled, approved, or rejected.
+- Users may have multiple pending requests, including duplicate amounts.
+- The user makes the bank payment after creating the balance-addition request.
 
 ### Epic Acceptance Criteria
 
@@ -70,12 +73,12 @@ Acceptance criteria:
 
 Description:
 
-Allow a user to request a positive MXN addition through `POST /balance/requests` and explain the manual bank-verification process in Spanish.
+Allow a user to request a positive MXN addition through `POST /balance/requests`, then make the bank payment, and explain the manual verification process in Spanish.
 
 Acceptance criteria:
 
 1. The form accepts only values greater than zero with no more than two decimal places and submits `{ "amount": number }`.
-2. Duplicate submission is prevented while the request is pending in the client.
+2. Duplicate network submission is prevented while the create mutation is in flight; this does not prevent the user from creating multiple pending requests afterward.
 3. A successful response shows the amount and a Spanish message explaining that the payment will be checked in the bank account before an admin approves the request.
 4. The successful request becomes visible in the user's request history without requiring a full-page reload.
 5. Backend validation or transport failures are shown without presenting a false success state.
@@ -84,11 +87,11 @@ Recommended confirmation copy for design review:
 
 > **Solicitud recibida**
 >
-> Recibimos tu solicitud para agregar **{amount} MXN** a tu saldo. Verificaremos que el pago se refleje en nuestra cuenta bancaria. Cuando lo confirmemos, un administrador aprobará la solicitud y actualizaremos tu saldo. Puedes consultar el estado en **Solicitudes de saldo**.
+> Recibimos tu solicitud para agregar **{amount} MXN** a tu saldo. Después de que realices el pago, verificaremos que se refleje en nuestra cuenta bancaria. Cuando lo confirmemos, un administrador aprobará la solicitud y actualizaremos tu saldo. Puedes consultar el estado en **Solicitudes de saldo**.
 
 Short variant for a toast or compact result:
 
-> Recibimos tu solicitud. Verificaremos el pago en nuestra cuenta bancaria antes de aprobarla y agregar el monto a tu saldo.
+> Recibimos tu solicitud. Después de que realices el pago, lo verificaremos en nuestra cuenta bancaria antes de aprobar la solicitud y agregar el monto a tu saldo.
 
 Copy guidance:
 
@@ -107,7 +110,7 @@ Acceptance criteria:
 
 1. A user sees only their own requests with amount, Spanish status, creation date, and decision date when supplied.
 2. The list supports backend pagination using `page`, `limit`, `total`, and `totalPages` once the request-query contract is confirmed.
-3. A cancellation action is available only for backend-defined cancellable statuses and requires confirmation before the mutation.
+3. A cancellation action is available only while the request status is `pending` and requires confirmation before the mutation.
 4. Successful cancellation updates the request to `cancelled`; failed or conflicting cancellation preserves the authoritative prior state and shows an error.
 5. Loading, empty, error, and populated states work on desktop and mobile/tablet.
 
@@ -128,7 +131,7 @@ Acceptance criteria:
 
 1. Admin queries include month, year, page, limit, and `status=pending|all`; all server-affecting values are represented in cached query identity.
 2. The queue shows request amount, status, timestamps, user name/email, payment reference when present, and admin in charge when present.
-3. Approval requires a non-empty `paymentReference`; rejection permits an optional reason.
+3. For a `pending` request, the detail UI presents a positive `Aprobar` action requiring a non-empty `paymentReference` and a negative `Rechazar` action permitting an optional reason; other statuses are read-only.
 4. After either successful decision, affected request lists and current balance data are treated as stale and authoritative backend state is retrieved.
 5. Non-admin users do not see admin controls, while the backend remains the authorization source of truth for direct calls.
 
@@ -145,6 +148,11 @@ Acceptance criteria:
 3. An authenticated admin sees request details and eligible decision actions; an already-decided, cancelled, or missing request shows its current state without actionable approval controls.
 4. Unauthenticated access enters the login flow without exposing request data, and non-admin access cannot retrieve or decide the request.
 5. The backend email button uses `FRONTEND_URI` plus the encoded request route and request ID.
+
+Follow-up dependency owned by this story:
+
+- Add or confirm an authenticated, admin-authorized backend GET endpoint that returns one balance request by `requestId`, so `/dashboard/requests/{requestId}` can render request details before showing `Aprobar` and `Rechazar`.
+- The endpoint contract must define its response envelope and behavior for missing, forbidden, cancelled, and already-decided requests.
 
 ## Technical Research
 
@@ -298,10 +306,11 @@ Missing contract for accepted deep link:
 - A request may be approved, rejected, or cancelled between list rendering and action submission.
 - Cancellation eligibility is not explicitly documented. The likely rule is pending-only, but it must not be invented in implementation.
 - The reject response does not include the submitted reason, so own/admin history cannot reliably display it from the shown contract.
-- `paymentReference` appears only after approval and is mandatory in the approve payload, but format and uniqueness rules are unknown.
+- `paymentReference` appears only after approval and is mandatory in the approve payload; no additional format, length, or uniqueness rule exists yet.
 - The regular-user list supports optional month/year filters and positive page/limit values; status filtering is not part of its documented query DTO.
-- Admin requests are month/year scoped. The timezone used to assign a request to a month is not documented.
-- The current date formatter uses browser-local time and omits the year; request history may require a locale/timezone-safe display decision.
+- Admin month/year filters currently use the Node host-local timezone, so behavior is deployment-dependent until the backend adopts an agreed IANA business timezone.
+- Backend dates remain UTC ISO 8601 strings. FE must eventually convert them to the agreed named display timezone rather than browser-local time or a fixed UTC offset.
+- Month filters must use inclusive local-month start and exclusive next-month start boundaries converted with timezone-aware rules. Records belong to the month in the business timezone, including across DST and UTC month boundaries.
 - The current dashboard has no nested layout and no shared responsive header, so design must account for desktop sidebar and mobile header separately.
 - The dashboard's saved screen cookie is written but not read on initial load. Request navigation must not rely on preference restoration.
 - Existing `LoginRequiredModal` can be dismissed while the dashboard remains mounted. Deep-link authentication behavior needs an explicit decision rather than inheriting that behavior unnoticed.
@@ -356,23 +365,29 @@ Smallest useful coverage by story:
   - Status: answered
   - Answer: It accepts optional integer `month` (1-12), optional integer `year` (minimum 1), optional positive integer `page` (default 1), and optional positive integer `limit` (default 10). It does not document a status query.
   - Context: The response pagination fields correspond to the optional `page` and `limit` queries.
-- IV: Question: Which status transitions are legal for cancel, approve, and reject?
-  - Status: pending
-  - Context: UI controls and stale-request handling depend on whether only `pending` requests are actionable.
-- V: Question: Does the admin endpoint support only `status=pending|all` for the first delivery?
+- IV: Question: Which decision controls should the admin UI show?
+  - Status: answered
+  - Answer: Show a positive `Aprobar` button and a negative `Rechazar` button. Both call `PATCH /balance/requests/{balance-id}/decision` with their corresponding action payload.
+- V: Question: From which request statuses are cancel, approve, and reject legally allowed?
+  - Status: answered
+  - Answer: Only requests with status `pending` can be cancelled, approved, or rejected. Other statuses are read-only.
+- VI: Question: Does the admin endpoint support only `status=pending|all` for the first delivery?
   - Status: answered
   - Answer: Yes. An admin can visualize all requests or only pending requests.
-- VI: Question: Should backend HTTP statuses such as 401, 403, 404, 409, and validation failures be preserved by new BFF handlers?
+- VII: Question: Should backend HTTP statuses such as 401, 403, 404, 409, and validation failures be preserved by new BFF handlers?
   - Status: answered
   - Answer: Yes. New balance BFF handlers should preserve the relevant upstream HTTP status.
   - Context: Decision conflicts, authorization failures, missing requests, and validation failures require distinct frontend handling even though older BFF handlers often collapse errors to 400.
-- VII: Question: Is the rejection reason persisted and available from list/detail responses?
+- VIII: Question: Is the rejection reason persisted and available from list/detail responses?
   - Status: answered
   - Answer: No. The rejection reason is not available from the documented list/detail response data and should not be shown as persisted history in the frontend.
-- VIII: Question for the backend agent: What canonical timezone should FE and BE use for balance-request month/year filtering and timestamp display, and what exact normalization contract should both sides follow?
+- IX: Question: What timezone normalization contract will FE and BE follow for balance-request month filters and timestamp display?
+  - Status: answered
+  - Answer: The backend will continue returning UTC ISO 8601 timestamps. After a canonical IANA timezone is selected, backend month/year filters will use that timezone's inclusive local-month start and exclusive next-month start, converted with timezone-aware rules. The frontend will convert UTC timestamps to the same named timezone for display. Fixed UTC offsets must not be used; DST and month-boundary records follow the business timezone.
+  - Context: Filters currently use the Node host-local timezone and are deployment-dependent. For example, if `America/Mexico_City` at UTC-06:00 is selected, `2026-02-01T05:59:59.999Z` belongs to January and `2026-02-01T06:00:00.000Z` belongs to February. The backend team recorded this research in its `ai-research/timezone-month-filters.md` document.
+- X: Question: What canonical IANA business and display timezone should FE and BE use?
   - Status: pending
-  - Context: Backend timestamps are UTC ISO strings, while the current frontend formats dates with browser-local getters. Without a shared rule, a request near midnight can appear on a different day or month in the UI than the month used by the backend query.
-  - Explanation: Please confirm whether month/year filters are evaluated in UTC or a named business timezone such as `America/Mexico_City`; whether the backend will continue returning UTC ISO 8601 timestamps; and whether the frontend should convert those timestamps to the agreed display timezone. Include the expected behavior for daylight-saving changes and month-boundary records.
+  - Context: `America/Mexico_City` is an example, not yet the agreed canonical timezone.
 
 ### Create Payload And Payment Flow
 
@@ -382,15 +397,18 @@ Smallest useful coverage by story:
 - II: Question: What backend minimum, maximum, and rounding policy applies to `amount`?
   - Status: pending
   - Context: Client rules can enforce positivity and decimal precision, but cannot invent operational limits.
-- III: Question: Does the user make the bank payment before creating the request, and where do bank instructions or transfer references come from?
+- III: Question: When does the user make the bank payment relative to creating the request?
+  - Status: answered
+  - Answer: The user creates the balance-addition request first and makes the bank payment afterward.
+- IV: Question: Where do bank instructions or the user's transfer reference come from?
   - Status: pending
-  - Context: The workflow says an admin checks the bank account, but the create payload contains only `amount` and no bank/payment reference or receipt.
-- IV: Question: May one user have multiple pending requests, including duplicate amounts?
-  - Status: pending
-  - Context: This affects warnings, duplicate-request handling, and whether the backend returns a conflict.
-- V: Question: What validation rules apply to the admin `paymentReference`?
-  - Status: pending
-  - Context: It is mandatory for approval, but length, allowed characters, uniqueness, and source are unspecified.
+  - Context: The create payload contains only `amount`; no bank instructions, user-entered reference, or receipt contract has been supplied.
+- V: Question: May one user have multiple pending requests, including duplicate amounts?
+  - Status: answered
+  - Answer: Yes. Multiple pending requests and duplicate amounts are allowed.
+- VI: Question: What validation rules apply to the admin `paymentReference`?
+  - Status: answered
+  - Answer: No specific validation rule exists yet beyond the field being mandatory for approval.
 
 ### UI And Product Decisions
 
@@ -404,13 +422,16 @@ Smallest useful coverage by story:
 - III: Question: Should cancelling a request require a confirmation dialog, and what warning copy should it use?
   - Status: pending
   - Context: This research assumes confirmation because cancellation is destructive, but final interaction and copy belong to product/design.
-- IV: Question: Should users see rejection reasons and approved payment references in their own history?
+- IV: Question: Should users see rejection reasons in their own history?
+  - Status: answered
+  - Answer: No. Rejection reasons are not returned by the documented list/detail contract.
+- V: Question: Should users see approved payment references in their own history?
   - Status: pending
-  - Context: Payment references appear in approved user-list examples; rejection reasons do not appear in the supplied response.
-- V: Question: How should an open user session learn that an admin approved a request?
+  - Context: Payment references appear in approved user-list examples, but their intended visibility has not been confirmed.
+- VI: Question: How should an open user session learn that an admin approved a request?
   - Status: pending
   - Context: Options include normal query refresh on navigation/focus, manual refresh, or polling. Real-time transport is out of scope.
-- VI: Question: Should the direct admin request route render a full page, drawer, or modal-like detail surface?
+- VII: Question: Should the direct admin request route render a full page, drawer, or modal-like detail surface?
   - Status: pending
   - Context: The route must remain deep-linkable regardless of the visual presentation; the design tool will decide the interaction.
 
