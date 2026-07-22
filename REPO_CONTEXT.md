@@ -72,6 +72,7 @@ Key invariants:
 | `Guides/` | Guide creation/viewing for MN, GE, PKK, and Tone flows. |
 | `Guides-DB/` | DB-backed create flow (pre-select, multi-step modal, result semantics for `created`/`failed`). |
 | `ProfitMargin/` | Courier profit-margin forms/cards. |
+| `Balance/` | Current MXN balance display owned by the dashboard shell; uses `/api/balance` through TanStack Query and is not persisted. |
 | `QueryProviderWrapper.tsx` | App-wide TanStack Query provider. |
 | `AppRouterContextProviderMock.tsx` | Test helper for router context. |
 

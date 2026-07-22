@@ -3,6 +3,7 @@ import { Button } from "flowbite-react"
 import { RiArticleLine, RiContactsBookLine, RiLineChartLine, RiMoneyDollarBoxLine } from "@remixicon/react"
 
 import { DashboardAsideLink } from "@/features/Dashboard/DashboardAsideLink"
+import { BalanceDisplay } from "@/features/Balance/BalanceDisplay"
 import { Logo } from "../atoms/Logo"
 import { ToggleDarkMode } from "../atoms/ToggleDarkMode"
 import { DashboardScreens } from "@/shared/types/dashboard.types"
@@ -44,6 +45,9 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
           </DashboardAsideLink>
         ) }
       </nav>
+      <div className="mb-6">
+        <BalanceDisplay />
+      </div>
       <Button color="dark" onClick={handleSignOut}>Cerrar sesión</Button>
     </aside>
   )
