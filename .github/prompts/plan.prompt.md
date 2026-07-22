@@ -129,7 +129,7 @@ Describe **what** to test, not full test implementations.
 
 ## Step 7 - Write the planning doc
 
-File path: `ai-planning/planning-{story-name}.md` (create the directory if it does not exist).
+File path: `ai-planning/planning-{story-name}.md` for a standalone story (create the directory if it does not exist). If creating a planning document from an epic, first check for `ai-planning/{epic-name}/`; create it if missing, then write the story plan as `ai-planning/{epic-name}/planning-{story-name}.story-{story-number}.md`.
 
 The planning doc should include:
 
