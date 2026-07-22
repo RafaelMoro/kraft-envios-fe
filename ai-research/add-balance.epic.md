@@ -283,6 +283,11 @@ Amount contract:
 Own requests:
 
 - `POST /balance/requests` with `{ amount: number }`
+- POST success is `201 Created` with `{ version, data: { request }, message: null, error: null }`.
+- The created request has `id`, `amount`, optional `paymentReference`, `status: 'pending'`, `decisionReason: null`, `decisionAt: null`, and UTC ISO `createdAt`/`updatedAt` values.
+- POST DTO validation returns `400` with Nest's raw `{ statusCode, message: string[], error }` body nested under the standard envelope's `error`.
+- POST domain failures use `{ code, message, technicalDetails? }` under the standard envelope's `error`: `401 BAL-AUTH-001`, `400 BAL-BUS-003`, or `400 BAL-BDN-001`.
+- Admin notification is best-effort after request creation, and the service has no duplicate-pending-request check.
 - `GET /balance/requests` returning `{ requests, total, page, limit, totalPages }`
 - Optional GET queries: integer `month` from 1-12, integer `year` greater than or equal to 1, positive integer `page` defaulting to 1, and positive integer `limit` defaulting to 10.
 - `PATCH /balance/requests/{balance-id}/cancel` with no body
@@ -386,7 +391,7 @@ Smallest useful coverage by story:
 ## Story Readiness And Blockers
 
 - Story 1, Display Current Balance: completed.
-- Story 2, Create A Balance Request: payload and behavior are defined, but the exact POST success/error envelope remains pending and must be confirmed before final callback typing.
+- Story 2, Create A Balance Request: ready; payload, `201` success response, validation errors, and domain errors are confirmed.
 - Story 3, Review And Cancel Own Requests: no longer blocked by a pending timezone decision. It depends on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries, plus matching frontend `NEXT_PUBLIC_BUSINESS_TIMEZONE` configuration.
 - Story 4, Admin Request Queue And Decisions: no longer blocked by a pending timezone decision. It has the same backend Luxon and synchronized deployment-configuration dependency as Story 3.
 - Story 5, Email Deep Link To Admin Review: blocked until the backend supplies or confirms the single-request GET endpoint used to render `/dashboard/requests/{requestId}`. The frontend route and decision mutation alone cannot load the request details.
@@ -525,7 +530,7 @@ Email template ownership, generation, and CTA label are backend implementation d
 ## Assumptions
 
 - All supplied balance endpoints are served from the existing `BACKEND_URI` and accept the current bearer token.
-- Backend responses retain the `{ version, data, message, error }` envelope shown in the examples.
+- Supplied balance responses retain the `{ version, data, message, error }` envelope; Story 2's endpoint-specific success and error nesting is confirmed above.
 - The frontend exchanges JSON numbers in MXN major units; the backend stores them as integer cents.
 - Request IDs are opaque strings and safe to use as URL path segments after encoding.
 - Creating a request does not change balance; only backend approval changes it.
