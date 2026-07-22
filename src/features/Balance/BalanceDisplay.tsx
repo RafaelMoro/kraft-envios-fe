@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
+import { BalanceRequestDialog } from '@/features/Balance/BalanceRequestDialog'
 import { formatBalanceMxn, getBalanceCb } from '@/shared/utils/balance.utils'
 
 export const BalanceDisplay = (): JSX.Element => {
@@ -45,6 +46,7 @@ export const BalanceDisplay = (): JSX.Element => {
       {!showSkeleton && !isError && hasAmount && (
         <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">Monto disponible en MXN</p>
       )}
+      <BalanceRequestDialog />
     </section>
   )
 }
