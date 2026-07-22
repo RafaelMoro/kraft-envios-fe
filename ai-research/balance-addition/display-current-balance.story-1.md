@@ -7,16 +7,15 @@ Display the authenticated user's current balance.
 
 ### Description
 
-Expose the authenticated user's current MXN balance in a persistent dashboard
-header across the existing Quotes, Guides, Addresses, and Profit Margin areas.
+Expose the authenticated user's current MXN balance in the persistent dashboard
+shell across the existing Quotes, Guides, Addresses, and Profit Margin areas.
 The experience must provide equivalent information on desktop and
 mobile/tablet without blocking navigation while balance data loads or fails.
 
 The balance comes from the backend `GET /balance` endpoint through an
 authenticated Next.js route handler. The first dashboard visit performs an
-authoritative fetch. A server-managed cookie snapshot alongside user
-information is the requested persistence direction, but it must not replace
-the backend as the financial source of truth.
+authoritative fetch. Balance is not persisted in a cookie because approval can
+happen outside the user's browser and make a stored snapshot stale.
 
 Story 1 displays balance only. Creating, listing, cancelling, approving, and
 rejecting balance-addition requests remain in later epic stories.
@@ -24,7 +23,7 @@ rejecting balance-addition requests remain in later epic stories.
 ### Scope Classification
 
 Single independently deliverable story with cross-feature dashboard-shell,
-API, shared-data, persistence, and test integration.
+API, shared-data, query-cache, and test integration.
 
 ### Research Mode
 
@@ -32,12 +31,15 @@ Full research.
 
 ### User-Confirmed Decisions
 
-- Show balance in a persistent header shared across dashboard areas.
+- Show balance in the persistent shell shared across dashboard areas.
+- On desktop, place it in the sidebar below the navigation buttons.
+- On mobile/tablet, place it below the menu.
 - Cover all current dashboard feature areas rather than one subscreen.
 - Support desktop and mobile/tablet experiences.
 - Fetch the current balance on first use.
-- Save a balance snapshot with server-managed user cookie information.
-- Refetch authoritative balance data after a balance-changing action.
+- Do not save balance in a cookie.
+- Do not add a cookie, polling, or real-time update mechanism; approval is
+  communicated to the user by email.
 - Keep Story 1 display-only; defer the request action entry point.
 - Provide enough verified UI references for a separate design tool.
 - Store this research at
@@ -53,17 +55,16 @@ Full research.
    numeric zero is visibly rendered as `$0.00` rather than hidden.
 4. Initial loading, background refresh, error, and loaded states remain compact
    and do not block or disable unrelated dashboard navigation.
-5. The first mounted dashboard shell performs an authoritative fetch; future
-   local balance-changing flows can refetch/invalidate the same balance data,
-   and any cookie snapshot remains non-authoritative.
+5. The first mounted dashboard shell performs an authoritative fetch, and the
+   balance is not persisted in a cookie.
 
 ### Delivery Boundaries
 
 - Cover the dashboard shell and all feature areas currently switched within it.
 - Cover the local balance BFF contract and authenticated data flow.
 - Cover a zero-safe MXN display contract.
-- Cover balance-query freshness and future invalidation integration.
-- Cover the requested server-managed cookie snapshot and its limitations.
+- Cover balance-query caching and freshness.
+- Keep balance out of session and user-info cookies.
 - Cover focused responsive, loading, error, zero, and positive-value tests.
 - Do not include balance-request creation or an actionable request entry point.
 - Do not add a dedicated balance screen, nested route, transaction ledger,
@@ -195,31 +196,15 @@ the httpOnly session cookie.
 - The login response gives the cookie a five-day maximum age.
 - Sign-out deletes both session and user-info cookies.
 
-### Cookie Snapshot Assessment
+### Balance Persistence Decision
 
-Saving balance with user cookie information is technically possible only in
-server-controlled code, such as a route-handler response or server action.
-
-Verified constraints:
-
-- `GET /balance` remains authoritative; a cookie stores only a snapshot.
-- The required initial fetch means a cookie cannot suppress the first balance
-  request without changing the accepted behavior.
-- A backend approval may occur in another admin session, so a user's cookie can
-  become stale without any event in the user's open browser.
-- One browser cannot invalidate another user's TanStack Query cache or cookie.
-- `user-info` contains plain JSON and is not signed or encrypted.
-- httpOnly protects ordinary client access but does not make balance or roles
-  authoritative for security or financial decisions.
-- Adding balance increases cookie size and sends duplicated snapshot data with
-  matching requests.
-- Replacing the current `LoginData` cookie requires preserving its existing
-  shape and fields.
-- Immediate display should use the query response; the client cannot reread an
-  updated httpOnly cookie after the balance request.
-
-The cookie may support a later server-rendered snapshot, but it does not remove
-the need for TanStack Query cache, invalidation, and refetch behavior.
+- Balance will not be saved in the session or user-info cookie.
+- Backend approval can happen outside the user's browser, so a persisted value
+  could become stale without a corresponding frontend event.
+- The user receives an approval email; no additional real-time balance update
+  mechanism is part of this story.
+- `GET /balance` remains the sole authoritative balance source.
+- TanStack Query may cache the fetched response for the active browser session.
 
 ### Query And Freshness Patterns
 
@@ -234,10 +219,8 @@ the need for TanStack Query cache, invalidation, and refetch behavior.
   keys, conditional `enabled` behavior, and prefix invalidation after mutation.
 - `src/shared/hooks/useGetAddress.tsx` and
   `MarginProfitSubscreen.tsx` demonstrate exposing and calling `refetch`.
-- Future balance-changing mutations should invalidate or refetch authoritative
-  balance data rather than calculating an optimistic financial value.
-- Story 1 contains no balance-changing mutation; it establishes the shared
-  query identity that later stories can refresh.
+- Story 1 contains no balance-changing mutation and adds no explicit polling or
+  real-time refresh mechanism.
 
 ### Currency Formatting
 
@@ -297,15 +280,16 @@ Provide these value and state references:
 
 ### UI Design Constraints
 
-- Design a persistent header across all current dashboard areas.
+- Design a persistent balance surface across all current dashboard areas.
 - Mobile/tablet already has a top header at widths through 1023px.
-- Desktop starts at 1024px, reserves 20% for a sidebar, and needs a new shared
-  content-header treatment.
+- Desktop starts at 1024px and reserves 20% for a sidebar; show balance below
+  the sidebar navigation buttons.
+- On mobile/tablet, show balance below the menu.
 - Equivalent information and states are required at both breakpoints; geometry
   does not need to be identical.
-- Show a clear label such as current or available balance and identify MXN.
-- Define positive, explicit `$0.00`, initial loading, background refresh,
-  stale/snapshot, and error states.
+- Use the display pattern `Saldo: $31.45`, with the amount formatted as MXN.
+- Define positive, explicit `$0.00`, loading-skeleton, refresh, and error states.
+- Replace the amount with a compact skeleton while it is loading.
 - Keep loading and error states compact so navigation remains stable and usable.
 - Do not hide the last loaded value solely because a background refetch fails.
 - Support existing light and dark themes.
@@ -373,14 +357,15 @@ Smallest useful Story 1 coverage:
   explicitly guarantees that fallback.
 - The balance response may fail independently of all other dashboard data.
 - A refetch can fail after a previous value loaded.
-- A cookie snapshot can be older than the query response or backend value.
+- An open browser can retain an older query value after approval occurs in a
+  separate admin session.
 - Admin approval in another session cannot automatically update this browser.
 - Current 60-second query freshness affects automatic refetch timing.
 - Dashboard screen changes unmount subscreens but not the shell.
 - Future nested routes will not inherit the current shell without a dashboard
   layout; nested-route support is outside Story 1.
-- User-info cookie data is presentation context, not an authorization or
-  financial trust boundary.
+- User-info cookie data remains authentication presentation context; balance is
+  not added to it.
 - The current root document uses `lang="en"` while dashboard copy is Spanish;
   this existing mismatch is relevant to accessibility review but outside this
   story's source scope.
@@ -393,72 +378,47 @@ Smallest useful Story 1 coverage:
 
 - I: Question: Does the full `GET /balance` response retain the parent epic's
   assumed `{ version, data, message, error }` envelope in every success case?
-  Status: pending
-  Context: The supplied data shape is `{ balance: { amount: number } }`, but the
-  exact local callback shape must match the complete upstream response.
-  Explanation: Confirming the envelope prevents fixtures and UI parsing from
-  depending on an inferred wrapper.
+  Status: answered
+  Answer: Yes. The supplied success response is the success response that
+  `GET /balance` will always return.
+  Context: The local callback and fixtures can use that complete response shape
+  as the stable success contract.
 
-- II: Question: Which upstream HTTP status and error body represent an
-  authenticated user whose balance record does not yet exist?
+- II: Question: For `GET /balance`, which upstream HTTP status and error body
+  represent an authenticated user whose balance record does not yet exist?
   Status: pending
   Context: Missing data must not be silently displayed as a financial zero.
 
-### Cache And Cookie Persistence
+### Cache And Freshness
 
-- I: Question: What user-visible or server-rendering need must the balance
-  cookie snapshot satisfy beyond TanStack Query's browser-session cache?
-  Status: pending
-  Context: The requested snapshot is feasible, but the first dashboard load
-  still performs `GET /balance`, and client JavaScript cannot read the httpOnly
-  cookie directly.
-  Explanation: The answer determines whether the cookie has an observable role
-  or only duplicates query data and request overhead.
-
-- II: Question: Should balance be added inside the existing `LoginData`
-  `user-info` shape, or stored in a separate server-managed cookie?
-  Status: pending
-  Context: Existing helpers replace the complete `LoginData` cookie and provide
-  no merge operation. A separate cookie avoids changing the authentication DTO,
-  while the requested direction was to keep it alongside user information.
-
-- III: Question: What freshness policy applies when the cookie snapshot,
-  TanStack Query cache, and authoritative backend value disagree?
-  Status: pending
-  Context: Admin approval may occur in another session and cannot invalidate
-  the user's open browser or cookie.
-  Explanation: `GET /balance` must remain authoritative; the product still
-  needs to define whether a stale snapshot is shown, labelled, or ignored.
-
-- IV: Question: Which future events count as balance updates that must trigger
-  refetch or invalidation?
+- I: Question: How does the user's open dashboard learn that an external admin
+  approved the balance request?
   Status: answered
-  Answer: Later local balance-changing flows should refetch or invalidate the
-  shared balance query after authoritative success. Creating, cancelling, or
-  rejecting a request does not change balance; backend approval does.
-  Context: Story 1 establishes the shared data boundary but contains no update
-  mutation itself.
+  Answer: The user receives an approval email. Story 1 adds no other
+  notification, polling, or real-time balance update mechanism.
+  Context: A subsequent authoritative balance fetch returns the updated value.
 
 ### UI And Product Decisions
 
-- I: Question: Where should the persistent balance header sit on desktop while
+- I: Question: Where should the persistent balance surface sit on desktop while
   preserving the existing 20% sidebar and repeated subscreen headings?
-  Status: pending
-  Context: Mobile/tablet already has a shared top header, but desktop has only a
-  persistent sidebar.
-  Explanation: The separate design tool should decide the exact desktop and
-  responsive composition using the references in this document.
+  Status: answered
+  Answer: On desktop, show balance in the sidebar below the navigation buttons.
+  On mobile/tablet, show it below the menu.
+  Context: The separate design tool can determine the exact composition within
+  these confirmed placements.
 
 - II: Question: What Spanish label should accompany the amount?
-  Status: pending
-  Context: The label should distinguish current or available balance and make
-  MXN unambiguous even when `Intl.NumberFormat('es-MX')` displays only `$`.
+  Status: answered
+  Answer: Use `Saldo: $31.45` as the display pattern.
+  Context: The numeric portion remains formatted as MXN with two decimals.
 
 - III: Question: Should a background refetch expose a visible refreshing or
   stale indicator while retaining the last loaded amount?
-  Status: pending
-  Context: The story requires a refresh state that does not block navigation,
-  but the exact user-facing treatment belongs to design/product review.
+  Status: answered
+  Answer: Show a skeleton in place of the amount while it is loading.
+  Context: The loading treatment remains local to the amount and does not block
+  dashboard navigation.
 
 - IV: Question: Should Story 1 include an entry point to balance-request
   actions?
@@ -470,16 +430,10 @@ Smallest useful Story 1 coverage:
 
 - I: Question: Is current balance available to every authenticated role using
   the same `GET /balance` contract?
-  Status: pending
-  Context: The dashboard supports `user` and `admin` roles, and the balance
-  header is requested across all current areas, including the admin-only Profit
-  Margin screen.
-
-- II: Question: May cookie balance data ever be used for authorization,
-  eligibility, or financial validation?
   Status: answered
-  Answer: No. Cookie balance is a non-authoritative presentation snapshot only;
-  backend data and authorization remain authoritative.
+  Answer: Yes. Every authenticated role uses the same `GET /balance` contract.
+  Context: The dashboard supports `user` and `admin` roles, including the
+  admin-only Profit Margin area.
 
 ## Assumptions
 
@@ -487,14 +441,13 @@ Smallest useful Story 1 coverage:
 - It accepts the existing bearer token extracted from the session cookie.
 - `amount` is an MXN major-unit number returned by the backend.
 - The four current local dashboard screens are the complete Story 1 reach.
-- “Persistent header” means a shell-level surface, not repeated feature-level
+- “Persistent balance surface” means shell-level UI, not repeated feature-level
   balance components.
 - Equivalent responsive behavior does not require identical desktop and mobile
   geometry.
 - The first shell mount always requests authoritative balance data.
-- A cookie snapshot does not replace the first fetch or query cache.
+- Balance is not persisted in a cookie.
 - Story 1 does not add a polling, WebSocket, or server-sent-event mechanism.
-- Later balance-changing mutations will share one balance-query identity.
 - Existing dependencies are sufficient.
 - Final component geometry, spacing, and visual hierarchy will be produced by a
   separate design tool using the handoff references above.
