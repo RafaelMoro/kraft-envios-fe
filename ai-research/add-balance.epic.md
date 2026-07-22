@@ -114,6 +114,11 @@ Acceptance criteria:
 4. Successful cancellation updates the request to `cancelled`; failed or conflicting cancellation preserves the authoritative prior state and shows an error.
 5. Loading, empty, error, and populated states work on desktop and mobile/tablet.
 
+Backend dependency for this story:
+
+- Implement regular-user month filtering with Luxon and the agreed canonical IANA business timezone, using an inclusive local-month start and exclusive next-month start.
+- Continue returning UTC ISO 8601 timestamps so the frontend can display them in the same agreed IANA timezone.
+
 Suggested status labels:
 
 - `pending`: `Pendiente`
@@ -134,6 +139,11 @@ Acceptance criteria:
 3. For a `pending` request, the detail UI presents a positive `Aprobar` action requiring a non-empty `paymentReference` and a negative `Rechazar` action permitting an optional reason; other statuses are read-only.
 4. After either successful decision, affected request lists and current balance data are treated as stale and authoritative backend state is retrieved.
 5. Non-admin users do not see admin controls, while the backend remains the authorization source of truth for direct calls.
+
+Backend dependency for this story:
+
+- Implement admin month filtering with Luxon and the agreed canonical IANA business timezone, using an inclusive local-month start and exclusive next-month start.
+- Continue returning UTC ISO 8601 timestamps so the frontend can display them in the same agreed IANA timezone.
 
 ### Story 5: Email Deep Link To Admin Review
 
@@ -370,8 +380,8 @@ Smallest useful coverage by story:
 
 - Story 1, Display Current Balance: not blocked by a pending contract question. Final visual placement remains delegated to design.
 - Story 2, Create A Balance Request: not blocked by a pending contract question.
-- Story 3, Review And Cancel Own Requests: partially blocked by the canonical IANA timezone decision for month filtering and timestamp display. Own-list, pagination, statuses, and pending-only cancellation contracts are otherwise resolved.
-- Story 4, Admin Request Queue And Decisions: partially blocked by the same canonical timezone decision for month filtering and timestamp display. Queue pagination, status filtering, and decision contracts are otherwise resolved.
+- Story 3, Review And Cancel Own Requests: partially blocked until the canonical IANA timezone is selected and the backend implements Luxon-based month boundaries. Own-list, pagination, statuses, and pending-only cancellation contracts are otherwise resolved.
+- Story 4, Admin Request Queue And Decisions: partially blocked until the same canonical timezone is selected and the backend implements Luxon-based month boundaries. Queue pagination, status filtering, and decision contracts are otherwise resolved.
 - Story 5, Email Deep Link To Admin Review: blocked until the backend supplies or confirms the single-request GET endpoint used to render `/dashboard/requests/{requestId}`. The frontend route and decision mutation alone cannot load the request details.
 
 ## Open Questions
@@ -411,7 +421,7 @@ Smallest useful coverage by story:
   - Context: Filters currently use the Node host-local timezone and are deployment-dependent. For example, if `America/Mexico_City` at UTC-06:00 is selected, `2026-02-01T05:59:59.999Z` belongs to January and `2026-02-01T06:00:00.000Z` belongs to February. The backend team recorded this research in its `ai-research/timezone-month-filters.md` document.
 - X: Question: What canonical IANA business and display timezone should FE and BE use?
   - Status: pending
-  - Context: `America/Mexico_City` is an example, not yet the agreed canonical timezone.
+  - Context: The backend will implement timezone-aware month boundaries with Luxon for Stories 3 and 4. `America/Mexico_City` is an example, not yet the agreed canonical timezone name.
 
 ### Create Payload And Payment Flow
 
