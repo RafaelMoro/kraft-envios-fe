@@ -1,3 +1,9 @@
+## v0.53.0 (2026-07-22)
+
+### Pull Requests
+[#113](https://github.com/RafaelMoro/kraft-envios-fe/pull/113) | Add balance request
+
+
 ## v0.52.0 (2026-07-22)
 
 ### Pull Requests
