@@ -33,6 +33,7 @@ Full research, with contracts and architecture prioritized.
 - Only `pending` requests can be cancelled, approved, or rejected.
 - Users may have multiple pending requests, including duplicate amounts.
 - The user makes the bank payment after creating the balance-addition request.
+- The canonical business and display timezone is `America/Mexico_City`; backend and frontend deployments must use the same configured value.
 
 ### Epic Acceptance Criteria
 
@@ -116,7 +117,7 @@ Acceptance criteria:
 
 Backend dependency for this story:
 
-- Implement regular-user month filtering with Luxon and the agreed canonical IANA business timezone, using an inclusive local-month start and exclusive next-month start.
+- Add a validated `BUSINESS_TIMEZONE=America/Mexico_City` backend environment variable and implement regular-user month filtering with Luxon, using an inclusive local-month start and exclusive next-month start.
 - Continue returning UTC ISO 8601 timestamps so the frontend can display them in the same agreed IANA timezone.
 
 Suggested status labels:
@@ -142,7 +143,7 @@ Acceptance criteria:
 
 Backend dependency for this story:
 
-- Implement admin month filtering with Luxon and the agreed canonical IANA business timezone, using an inclusive local-month start and exclusive next-month start.
+- Add a validated `BUSINESS_TIMEZONE=America/Mexico_City` backend environment variable and implement admin month filtering with Luxon, using an inclusive local-month start and exclusive next-month start.
 - Continue returning UTC ISO 8601 timestamps so the frontend can display them in the same agreed IANA timezone.
 
 ### Story 5: Email Deep Link To Admin Review
@@ -330,13 +331,14 @@ Missing contract for accepted deep link:
 - MXN request values have an effective range of `0.01` through `100000.00`. Backend storage uses integer cents guarded by `Number.isSafeInteger`-equivalent validation.
 - The backend truncates over-precision values to two decimal places rather than rounding. FE should reject more than two decimal places to avoid silently changing a user's requested amount.
 - A request may be approved, rejected, or cancelled between list rendering and action submission.
-- Cancellation eligibility is not explicitly documented. The likely rule is pending-only, but it must not be invented in implementation.
+- Cancellation, approval, and rejection are allowed only while the request status is `pending`.
 - The reject response does not include the submitted reason, so own/admin history cannot reliably display it from the shown contract.
 - `paymentReference` appears only after approval and is mandatory in the approve payload; no additional format, length, or uniqueness rule exists yet.
 - The regular-user list supports optional month/year filters and positive page/limit values; status filtering is not part of its documented query DTO.
-- Admin month/year filters currently use the Node host-local timezone, so behavior is deployment-dependent until the backend adopts an agreed IANA business timezone.
-- Backend dates remain UTC ISO 8601 strings. FE must eventually convert them to the agreed named display timezone rather than browser-local time or a fixed UTC offset.
+- Admin month/year filters currently use the Node host-local timezone, so behavior is deployment-dependent until the backend adopts `BUSINESS_TIMEZONE=America/Mexico_City` with Luxon.
+- Backend dates remain UTC ISO 8601 strings. FE must convert them with `NEXT_PUBLIC_BUSINESS_TIMEZONE=America/Mexico_City` rather than browser-local time or a fixed UTC offset.
 - Month filters must use inclusive local-month start and exclusive next-month start boundaries converted with timezone-aware rules. Records belong to the month in the business timezone, including across DST and UTC month boundaries.
+- Browser-local timezone is not an allowed fallback. Missing or invalid frontend timezone configuration must surface as a configuration error rather than silently changing date semantics.
 - The current dashboard has no nested layout and no shared responsive header, so design must account for desktop sidebar and mobile header separately.
 - The dashboard's saved screen cookie is written but not read on initial load. Request navigation must not rely on preference restoration.
 - Existing `LoginRequiredModal` can be dismissed while the dashboard remains mounted. Deep-link authentication behavior needs an explicit decision rather than inheriting that behavior unnoticed.
@@ -347,7 +349,10 @@ Missing contract for accepted deep link:
 
 - No new frontend dependency is required.
 - Existing dependencies cover HTTP, server routing, queries, forms, validation, responsive Flowbite UI, icons, and tests.
-- No new frontend environment variable is required if the browser continues calling local `/api` routes.
+- Add `NEXT_PUBLIC_BUSINESS_TIMEZONE=America/Mexico_City` to frontend deployment configuration and `.env.example`. Next.js exposes this value to browser code at build time.
+- Backend deployment configuration must set and validate `BUSINESS_TIMEZONE=America/Mexico_City` as an IANA timezone.
+- Both deployments must use the same timezone value; browser-local timezone must not be used as fallback policy.
+- A public backend configuration endpoint may expose the effective timezone for stronger runtime consistency, but it is optional when deployments are managed together.
 - `BACKEND_URI` is the upstream base for all supplied balance endpoints.
 - `FRONTEND_URI` is the existing origin the backend email service can use to construct the dynamic request URL.
 - Backend/email work must place the request ID in the button URL and needs deployment coordination with the frontend route.
@@ -372,16 +377,16 @@ Smallest useful coverage by story:
 
 - Balance: loading/error/zero/positive display and desktop/mobile access behavior.
 - Create: amount validation, exact payload, duplicate-submit prevention, success copy, and request-list invalidation.
-- Own list: populated/empty/error/pagination states and cancellation success/conflict behavior.
-- Admin: role gating, month/year/status query values, approval reference validation, optional rejection reason, and decision invalidation.
+- Own list: populated/empty/error/pagination states, cancellation success/conflict behavior, and timestamp display using `America/Mexico_City` rather than browser-local time.
+- Admin: role gating, month/year/status query values, timezone-boundary records, approval reference validation, optional rejection reason, and decision invalidation.
 - Deep link: request ID loading, admin/unauthorized states, already-decided state, and approve/reject from the direct route.
 
 ## Story Readiness And Blockers
 
 - Story 1, Display Current Balance: not blocked by a pending contract question. Final visual placement remains delegated to design.
 - Story 2, Create A Balance Request: not blocked by a pending contract question.
-- Story 3, Review And Cancel Own Requests: partially blocked until the canonical IANA timezone is selected and the backend implements Luxon-based month boundaries. Own-list, pagination, statuses, and pending-only cancellation contracts are otherwise resolved.
-- Story 4, Admin Request Queue And Decisions: partially blocked until the same canonical timezone is selected and the backend implements Luxon-based month boundaries. Queue pagination, status filtering, and decision contracts are otherwise resolved.
+- Story 3, Review And Cancel Own Requests: no longer blocked by a pending timezone decision. It depends on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries, plus matching frontend `NEXT_PUBLIC_BUSINESS_TIMEZONE` configuration.
+- Story 4, Admin Request Queue And Decisions: no longer blocked by a pending timezone decision. It has the same backend Luxon and synchronized deployment-configuration dependency as Story 3.
 - Story 5, Email Deep Link To Admin Review: blocked until the backend supplies or confirms the single-request GET endpoint used to render `/dashboard/requests/{requestId}`. The frontend route and decision mutation alone cannot load the request details.
 
 ## Open Questions
@@ -417,11 +422,12 @@ Smallest useful coverage by story:
   - Answer: No. The rejection reason is not available from the documented list/detail response data and should not be shown as persisted history in the frontend.
 - IX: Question: What timezone normalization contract will FE and BE follow for balance-request month filters and timestamp display?
   - Status: answered
-  - Answer: The backend will continue returning UTC ISO 8601 timestamps. After a canonical IANA timezone is selected, backend month/year filters will use that timezone's inclusive local-month start and exclusive next-month start, converted with timezone-aware rules. The frontend will convert UTC timestamps to the same named timezone for display. Fixed UTC offsets must not be used; DST and month-boundary records follow the business timezone.
+  - Answer: The backend will continue returning UTC ISO 8601 timestamps. Backend month/year filters will use `America/Mexico_City` local-month boundaries with an inclusive start and exclusive next-month start, converted with Luxon. The frontend will convert UTC timestamps to `America/Mexico_City` for display. Fixed UTC offsets must not be used; DST and month-boundary records follow the business timezone.
   - Context: Filters currently use the Node host-local timezone and are deployment-dependent. For example, if `America/Mexico_City` at UTC-06:00 is selected, `2026-02-01T05:59:59.999Z` belongs to January and `2026-02-01T06:00:00.000Z` belongs to February. The backend team recorded this research in its `ai-research/timezone-month-filters.md` document.
 - X: Question: What canonical IANA business and display timezone should FE and BE use?
-  - Status: pending
-  - Context: The backend will implement timezone-aware month boundaries with Luxon for Stories 3 and 4. `America/Mexico_City` is an example, not yet the agreed canonical timezone name.
+  - Status: answered
+  - Answer: Use `America/Mexico_City`. Backend sets and validates `BUSINESS_TIMEZONE`; frontend uses public `NEXT_PUBLIC_BUSINESS_TIMEZONE`; both deployments must configure the same value.
+  - Context: Backend Stories 3 and 4 implement timezone-aware month boundaries with Luxon. Frontend date display uses the configured IANA timezone and never falls back to browser-local timezone. An optional public backend configuration endpoint can provide stronger runtime consistency.
 
 ### Create Payload And Payment Flow
 
@@ -523,7 +529,7 @@ Email template ownership, generation, and CTA label are backend implementation d
 - Creating a request does not change balance; only backend approval changes it.
 - Cancellation and decision actions use authoritative backend responses and do not optimistically change financial data.
 - The design tool will account for both desktop and mobile/tablet shells and all functional states listed in this document.
-- No new package, state manager, date library, or environment variable is required for the frontend epic.
+- No new frontend package, state manager, or date library is required. The frontend does require `NEXT_PUBLIC_BUSINESS_TIMEZONE` configuration.
 - User filtering is absent from the first admin delivery, not approximated on the current page.
 - Status filtering is limited to `pending` and `all`.
 
