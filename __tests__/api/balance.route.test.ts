@@ -84,4 +84,15 @@ describe('GET /api/balance', () => {
     expect(response.status).toBe(401)
     await expect(response.json()).resolves.toEqual(upstreamErrorResponse)
   })
+
+  it('returns a compact server error for transport failures', async () => {
+    mockedGetAccessToken.mockResolvedValue('token-123')
+    mockedAxios.isAxiosError.mockReturnValue(false)
+    mockedAxios.get.mockRejectedValue(new Error('Connection failed'))
+
+    const response = await GET()
+
+    expect(response.status).toBe(500)
+    await expect(response.json()).resolves.toEqual({ message: 'Failed to fetch balance' })
+  })
 })
