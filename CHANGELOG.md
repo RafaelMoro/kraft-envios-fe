@@ -1,3 +1,9 @@
+## v0.52.0 (2026-07-22)
+
+### Pull Requests
+[#112](https://github.com/RafaelMoro/kraft-envios-fe/pull/112) | Add Balance epic and story 1
+
+
 ## v0.51.0 (2026-07-17)
 
 ### Pull Requests
