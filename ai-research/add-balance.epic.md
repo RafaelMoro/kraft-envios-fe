@@ -146,13 +146,21 @@ Acceptance criteria:
 1. The frontend exposes a route shaped as `/dashboard/requests/{requestId}` using the opaque request ID from the email.
 2. The route loads the identified request from an authenticated, admin-authorized backend contract rather than searching only the current page of a monthly list.
 3. An authenticated admin sees request details and eligible decision actions; an already-decided, cancelled, or missing request shows its current state without actionable approval controls.
-4. Unauthenticated access enters the login flow without exposing request data, and non-admin access cannot retrieve or decide the request.
+4. Unauthenticated access redirects to login while preserving the request URL when feasible. A loaded non-admin user sees an unauthorized screen, and backend database authorization still prevents request retrieval or decisions.
 5. The backend email button uses `FRONTEND_URI` plus the encoded request route and request ID.
 
 Follow-up dependency owned by this story:
 
 - Add or confirm an authenticated, admin-authorized backend GET endpoint that returns one balance request by `requestId`, so `/dashboard/requests/{requestId}` can render request details before showing `Aprobar` and `Rechazar`.
 - The endpoint contract must define its response envelope and behavior for missing, forbidden, cancelled, and already-decided requests.
+
+Recommended unauthorized copy for design review:
+
+> **No tienes acceso a esta solicitud**
+>
+> Esta página está disponible únicamente para administradores. Inicia sesión con una cuenta de administrador o vuelve al panel principal.
+
+Suggested action: `Volver al panel`.
 
 ## Technical Research
 
@@ -299,7 +307,9 @@ Missing contract for accepted deep link:
 
 - The access token is held in an httpOnly session cookie and extracted by Next server code.
 - `user-info` is a separate httpOnly JSON cookie used for UI role gating. It is not sufficient as the only authorization control.
+- Loaded `user-info` without the `admin` role is sufficient to present an unauthorized screen, but not to make the final authorization decision.
 - Backend enforcement is required for admin list, single-request review, approve, and reject.
+- The backend validates the current user's admin role against the database rather than trusting a role claim from the bearer JWT.
 - Backend enforcement is required to ensure a regular user can list and cancel only their own requests.
 - Request IDs in URLs must be treated as untrusted input and URL encoded for upstream requests.
 - Decision actions should tolerate stale links and concurrent admin decisions by displaying the backend's authoritative status rather than assuming the requested transition succeeded.
@@ -451,12 +461,12 @@ Smallest useful coverage by story:
   - Status: answered
   - Answer: Use the existing `userInfo.data.user.role.includes('admin')` signal for presentation; backend authorization remains authoritative.
 - II: Question: What should happen when an unauthenticated admin follows the email link?
-  - Status: pending
-  - Context: The current dashboard shows a dismissible login-required modal and does not preserve a return URL.
-  - Explanation: Decide whether login should redirect back to the original request route after authentication.
+  - Status: answered
+  - Answer: Recommend redirecting to login and preserving `/dashboard/requests/{requestId}` as the post-login return destination when feasible. The frontend cannot determine authoritative admin access before authentication; the backend verifies the user's admin role against the database rather than trusting the JWT role.
+  - Context: This intentionally differs from the current dismissible `LoginRequiredModal`, which does not preserve a return URL.
 - III: Question: May a regular user open `/dashboard/requests/{requestId}` for one of their own requests, or is that route admin-only?
-  - Status: pending
-  - Context: Story 5 is admin-focused, while Story 3 can remain list-based unless product wants user deep links too.
+  - Status: answered
+  - Answer: The route is admin-only. If loaded `userInfo.data.user.role` does not include `admin`, show the Spanish unauthorized screen. The backend database role check remains authoritative.
 - IV: Question: Is backend authorization required even if admin controls are hidden in the frontend?
   - Status: answered
   - Answer: Yes. Frontend role checks are presentation controls only.
@@ -470,21 +480,20 @@ Smallest useful coverage by story:
 - II: Question: Which admin status filters are included?
   - Status: answered
   - Answer: `pending` and `all`, matching the backend contract.
-- III: Question: What default month, year, page, and limit should the admin queue use?
+- III: Question: What month and year should the admin queue use when those queries are omitted?
+  - Status: answered
+  - Answer: The backend uses the current month and year when they are not provided.
+- IV: Question: What defaults should the admin queue use when `page` and `limit` are omitted?
   - Status: pending
-  - Context: Existing Guides DB lists use the current browser month/year, page 1, and limit 10, but balance defaults were not explicitly confirmed.
+  - Context: The supplied admin contract includes both queries but does not state their defaults.
 
 ### Email Integration
 
 - I: Question: What frontend URL shape should the email button use?
   - Status: answered
   - Answer: Prefer `/dashboard/requests/{requestId}` and require a backend single-request lookup contract.
-- II: Question: Which service owns the email template and button generation?
-  - Status: pending
-  - Context: No email template or sending code exists in this frontend repository; the supplied screenshot appears to come from the backend notification flow.
-- III: Question: What should the email button label be?
-  - Status: pending
-  - Context: Candidate Spanish copy is `Revisar solicitud`, but product approval is required.
+
+Email template ownership, generation, and CTA label are backend implementation details. They are not frontend research questions; the only frontend integration requirement is the stable request URL above.
 
 ## Assumptions
 
