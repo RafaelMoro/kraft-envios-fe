@@ -353,8 +353,8 @@ Smallest useful Story 1 coverage:
 ### Edge Cases And Constraints
 
 - Numeric zero is valid balance data.
-- Missing balance data is not equivalent to zero unless the backend contract
-  explicitly guarantees that fallback.
+- `GET /balance` returns HTTP 200 with `data.balance.amount: 0` when no balance
+  record exists; missing balance is implicitly zero, not an error state.
 - The balance response may fail independently of all other dashboard data.
 - A refetch can fail after a previous value loaded.
 - An open browser can retain an older query value after approval occurs in a
@@ -386,8 +386,11 @@ Smallest useful Story 1 coverage:
 
 - II: Question: For `GET /balance`, which upstream HTTP status and error body
   represent an authenticated user whose balance record does not yet exist?
-  Status: pending
-  Context: Missing data must not be silently displayed as a financial zero.
+  Status: answered
+  Answer: HTTP 200 with the normal `{ version, data, message, error }` success
+  envelope, `data.balance.amount: 0`, `message: null`, and `error: null`.
+  Context: `balanceService.getBalance` defaults a missing balance record's
+  cents to zero. It does not throw a not-found error for this read path.
 
 ### Cache And Freshness
 
