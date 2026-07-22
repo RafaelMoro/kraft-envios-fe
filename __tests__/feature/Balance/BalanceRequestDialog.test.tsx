@@ -194,6 +194,9 @@ describe('BalanceRequestDialog', () => {
     } as AxiosResponse<CreateBalanceRequestResponse>)
 
     expect(await screen.findByText(/solicitud recibida/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /^ok$/i }))
+    await user.click(screen.getByRole('button', { name: /solicitar saldo/i }))
+    await fillAmount(user, screen.getByLabelText(/monto a solicitar/i), '31.45')
     await user.click(screen.getByRole('button', { name: /enviar solicitud/i }))
 
     await waitFor(() => {
@@ -215,6 +218,12 @@ describe('BalanceRequestDialog', () => {
     expect(screen.getByText(/\$31\.45 MXN/i)).toBeInTheDocument()
     expect(screen.getByText(/verificaremos que se refleje en nuestra cuenta bancaria/i)).toBeInTheDocument()
     expect(screen.getByText(/un administrador aprobará la solicitud/i)).toBeInTheDocument()
+    expect(screen.queryByLabelText(/monto a solicitar/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /enviar solicitud/i })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /^ok$/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: /solicitar saldo/i })).not.toBeInTheDocument()
+    })
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['balance', 'requests'] })
     expect(queryClient.getQueryData(['balance'])).toBe(500)
   })

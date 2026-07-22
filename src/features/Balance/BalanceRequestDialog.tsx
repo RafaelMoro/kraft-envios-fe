@@ -55,7 +55,11 @@ export const BalanceRequestDialog = (): JSX.Element => {
   })
 
   const closeModal = () => setOpenModal(false)
-  const openRequestModal = () => setOpenModal(true)
+  const openRequestModal = () => {
+    mutation.reset()
+    setSubmittedAmount(null)
+    setOpenModal(true)
+  }
 
   const submitRequest: SubmitHandler<BalanceRequestFormValues> = (values) => {
     if (mutation.isPending) return
@@ -75,40 +79,8 @@ export const BalanceRequestDialog = (): JSX.Element => {
       <Modal show={openModal} onClose={closeModal} size="md">
         <ModalHeader>Solicitar saldo</ModalHeader>
         <ModalBody>
-          <form onSubmit={handleSubmit(submitRequest)} className="space-y-4">
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="balance-request-amount">Monto a solicitar (MXN)</Label>
-              </div>
-              <TextInput
-                id="balance-request-amount"
-                type="text"
-                inputMode="decimal"
-                placeholder="Ej. 500.00"
-                aria-invalid={Boolean(errors.amount)}
-                aria-describedby={amountErrorId}
-                {...register('amount')}
-              />
-              {errors.amount?.message && (
-                <p id="balance-request-amount-error" className="mt-1 text-sm text-red-700 dark:text-red-400">
-                  {errors.amount.message}
-                </p>
-              )}
-            </div>
-
-            {mutation.isPending && (
-              <p role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-300">
-                Enviando solicitud...
-              </p>
-            )}
-
-            {serverError && (
-              <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
-                {serverError}
-              </p>
-            )}
-
-            {mutation.isSuccess && submittedAmount !== null && (
+          {mutation.isSuccess && submittedAmount !== null ? (
+            <div className="space-y-4">
               <div
                 role="status"
                 aria-live="polite"
@@ -123,12 +95,49 @@ export const BalanceRequestDialog = (): JSX.Element => {
                   Puedes consultar el estado en <span className="font-bold">Solicitudes de saldo</span>.
                 </p>
               </div>
-            )}
+              <Button onClick={closeModal} className="w-full hover:cursor-pointer">
+                OK
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit(submitRequest)} className="space-y-4">
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="balance-request-amount">Monto a solicitar (MXN)</Label>
+                </div>
+                <TextInput
+                  id="balance-request-amount"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="Ej. 500.00"
+                  aria-invalid={Boolean(errors.amount)}
+                  aria-describedby={amountErrorId}
+                  {...register('amount')}
+                />
+                {errors.amount?.message && (
+                  <p id="balance-request-amount-error" className="mt-1 text-sm text-red-700 dark:text-red-400">
+                    {errors.amount.message}
+                  </p>
+                )}
+              </div>
 
-            <Button disabled={mutation.isPending} type="submit" className="w-full hover:cursor-pointer">
-              {mutation.isPending ? <Spinner aria-label="Enviando solicitud de saldo" size="sm" /> : 'Enviar solicitud'}
-            </Button>
-          </form>
+              {mutation.isPending && (
+                <p role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-300">
+                  Enviando solicitud...
+                </p>
+              )}
+
+              {serverError && (
+                <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+                  {serverError}
+                </p>
+              )}
+
+              <Button disabled={mutation.isPending} type="submit" className="w-full hover:cursor-pointer">
+                {mutation.isPending ? <Spinner aria-label="Enviando solicitud de saldo" size="sm" /> : 'Enviar solicitud'}
+              </Button>
+            </form>
+          )}
         </ModalBody>
       </Modal>
     </>
