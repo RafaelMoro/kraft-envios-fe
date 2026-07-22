@@ -366,6 +366,14 @@ Smallest useful coverage by story:
 - Admin: role gating, month/year/status query values, approval reference validation, optional rejection reason, and decision invalidation.
 - Deep link: request ID loading, admin/unauthorized states, already-decided state, and approve/reject from the direct route.
 
+## Story Readiness And Blockers
+
+- Story 1, Display Current Balance: not blocked by a pending contract question. Final visual placement remains delegated to design.
+- Story 2, Create A Balance Request: not blocked by a pending contract question.
+- Story 3, Review And Cancel Own Requests: partially blocked by the canonical IANA timezone decision for month filtering and timestamp display. Own-list, pagination, statuses, and pending-only cancellation contracts are otherwise resolved.
+- Story 4, Admin Request Queue And Decisions: partially blocked by the same canonical timezone decision for month filtering and timestamp display. Queue pagination, status filtering, and decision contracts are otherwise resolved.
+- Story 5, Email Deep Link To Admin Review: blocked until the backend supplies or confirms the single-request GET endpoint used to render `/dashboard/requests/{requestId}`. The frontend route and decision mutation alone cannot load the request details.
+
 ## Open Questions
 
 ### Backend Contract
@@ -484,8 +492,9 @@ Smallest useful coverage by story:
   - Status: answered
   - Answer: The backend uses the current month and year when they are not provided.
 - IV: Question: What defaults should the admin queue use when `page` and `limit` are omitted?
-  - Status: pending
-  - Context: The supplied admin contract includes both queries but does not state their defaults.
+  - Status: answered
+  - Answer: Both queries are optional. The frontend does not need to send `page` or `limit` for the initial/default request and can use the pagination values returned by the backend response.
+  - Context: Month and year may also be omitted for the default filter, in which case the backend uses the current month and year.
 
 ### Email Integration
 
