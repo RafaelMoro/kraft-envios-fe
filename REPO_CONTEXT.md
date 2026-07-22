@@ -1,6 +1,6 @@
 # Repository Context - kraft-envios-fe
 
-**Last Updated:** 2026-07-05
+**Last Updated:** 2026-07-21
 
 A living reference for AI agents and developers working in this repository. It documents the app wiring, module boundaries, data flow, and conventions that are not obvious from a single file read.
 
@@ -100,6 +100,7 @@ Most proxy routes read `getAccessToken()` from `src/shared/lib/auth.lib.ts`, ret
 | `/api/quotes` | `POST` | Proxies quote requests to `${BACKEND_URI}/quotes`. |
 | `/api/address-info` | `GET` | Requires `zipcode`; proxies to `${BACKEND_URI}/quotes/address-info/{zipcode}` and returns neighborhoods. |
 | `/api/address` | `GET`, `POST`, `PUT`, `DELETE` | CRUD proxy for `${BACKEND_URI}/addresses`; delete encodes the address alias in the URL. |
+| `/api/balance` | `GET` | Authenticated current-balance proxy to `${BACKEND_URI}/balance`; forwards the upstream success envelope/status and preserves available upstream error status/body. |
 | `/api/ge-address` | `GET`, `POST`, `PUT`, `DELETE` | GE address proxy for `${BACKEND_URI}/ge/addresses` and `${BACKEND_URI}/ge/address/{id}`; PUT blocks alias edits. |
 | `/api/guides/get-guides` | `GET` | Proxies to `${BACKEND_URI}/guides`. |
 | `/api/guides-db` | `GET`, `POST` | `GET` proxies list to `${BACKEND_URI}/guides/db` (params `page`, `month`, `year`, `limit`); when `scope=all\|own` is present it branches to `${BACKEND_URI}/guides/db/admin` instead. `POST` proxies create to `${BACKEND_URI}/guides/db/create`; returns 201 even when upstream `data.status === 'failed'` (saved DB record, not transport error). |
