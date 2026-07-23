@@ -315,9 +315,10 @@ Smallest useful timezone coverage:
   - Answer: The fields are independently optional. A partial range returns `200` using only `$gte` or `$lte`; a reversed range returns `200` with no matches. Clearly malformed values fail DTO validation with `400`, while some pattern-matching invalid calendar dates can escape as an unstructured `500`.
   - Context: Frontend validation should reject reversed ranges, but the backend still has a trust-boundary validation and exception-handling gap.
 - V: Question: Will the backend reject semantically invalid calendar dates with a structured `400` instead of allowing `parseOffsetDateTime()` to produce an unstructured `500`?
-  - Status: pending
-  - Context: The current plain `Error` is not handled by the backend's `HttpException` filter and conflicts with its no-500 convention.
-  - Explanation: Frontend validation does not replace backend validation for direct or non-browser callers.
+  - Status: answered
+  - Answer: No. The current backend accepts pattern-valid but impossible calendar dates through DTO validation, then returns an unstructured `500` when Luxon rejects the value and `parseOffsetDateTime()` throws a plain `Error`.
+  - Context: `buildBaseQuery()` does not catch the error, its callers do not catch it, and `GeneralAppExceptionFilter` catches only `HttpException`. The error therefore falls through to Nest's default handler.
+  - Explanation: This is an accepted current backend gap. Frontend validation reduces normal UI exposure but does not replace backend trust-boundary validation for direct or non-browser callers.
 
 ### Configuration
 
