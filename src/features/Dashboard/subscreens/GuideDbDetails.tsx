@@ -5,7 +5,8 @@ import { RiArrowLeftLine, RiDeleteBinLine, RiEditLine } from "@remixicon/react"
 import clsx from "clsx"
 
 import { GuideDbRecord } from "@/shared/types/guides.types"
-import { formatDateToSpanish, formatInternalPricingBasis, getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
+import { formatInternalPricingBasis, getGuideDbFailureMessage, getGuideDbStatusLabel } from "@/shared/utils/guides.utils"
+import { formatDateToSpanish } from "@/shared/utils/date.utils"
 import { formatNumberToCurrency } from "@/shared/utils/global.utils"
 import { greySecondaryCSS } from "@/shared/constants/global.constants"
 import { DEFAULT_COMPANY_NAME, DEFAULT_EMAIL_VALUE } from "@/shared/constants/addresses.constants"
@@ -37,10 +38,8 @@ interface GuideDbDetailsProps {
 
 export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide, onEditGuide }: GuideDbDetailsProps) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
-  const createdAt = new Date(guide.createdAt)
-  const updatedAt = new Date(guide.updatedAt)
-  const createdDate = formatDateToSpanish(createdAt)
-  const updatedDate = formatDateToSpanish(updatedAt)
+  const createdDate = formatDateToSpanish(guide.createdAt)
+  const updatedDate = formatDateToSpanish(guide.updatedAt)
   const price = formatNumberToCurrency(Number(guide.price ?? guide.quote.total))
   const failureMessage = getGuideDbFailureMessage(guide.failureInfo)
   const statusLabel = getGuideDbStatusLabel(guide.status)
@@ -235,7 +234,7 @@ export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide, onEditGu
             </div>
             { guide.failureInfo.timestamp && (
               <span className="text-xs text-red-700 dark:text-red-300">
-                {formatDateToSpanish(new Date(guide.failureInfo.timestamp)).fullDateTime} hrs
+                {formatDateToSpanish(guide.failureInfo.timestamp).fullDateTime} hrs
               </span>
             )}
           </div>
@@ -248,7 +247,7 @@ export const GuideDbDetails = ({ guide, isAdmin, onBack, onDeleteGuide, onEditGu
           <div className="flex flex-col gap-1 text-sm text-amber-800 dark:text-amber-200">
             <span>
               {GUIDES_DB_DELETED_MESSAGE
-                .replace('{date}', formatDateToSpanish(new Date(guide.deletedAt)).date)
+                .replace('{date}', formatDateToSpanish(guide.deletedAt).date)
                 .replace('{deletedBy}', guide.deletedBy ?? '—')}
             </span>
           </div>

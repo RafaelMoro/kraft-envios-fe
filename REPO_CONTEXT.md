@@ -83,7 +83,7 @@ Key invariants:
 | `ui/atoms`, `ui/organisms`, `ui/icons` | Reusable UI primitives and compositions. There is no `molecules` folder in this repo. |
 | `hooks` | Reusable client hooks such as media query, notifications, address lookup, autocomplete, and steps. |
 | `lib` | Server-oriented helpers: auth/session cookies and preferences. |
-| `utils` | Pure helpers for quotes, guides, addresses, login, local storage, and globals. |
+| `utils` | Pure helpers for quotes, guides, addresses, login, local storage, globals, and `date.utils.ts` (the single timezone/date conversion boundary: `formatDateToSpanish`, `getBusinessCalendarMonthYear`, `toBusinessDateRange`, all pinned to `BUSINESS_TIMEZONE`). |
 | `constants` | Route paths, API endpoints, messages, local-storage keys, and domain constants. |
 | `types` | Shared TypeScript DTOs and UI types. |
 
@@ -104,7 +104,7 @@ Most proxy routes read `getAccessToken()` from `src/shared/lib/auth.lib.ts`, ret
 | `/api/balance` | `GET`, `POST` | Authenticated Balance proxy. `GET` fetches current balance from `${BACKEND_URI}/balance`. `POST` creates a balance-addition request at `${BACKEND_URI}/balance/requests`, forwards only `{ amount }`, and preserves upstream success/error bodies and statuses. |
 | `/api/ge-address` | `GET`, `POST`, `PUT`, `DELETE` | GE address proxy for `${BACKEND_URI}/ge/addresses` and `${BACKEND_URI}/ge/address/{id}`; PUT blocks alias edits. |
 | `/api/guides/get-guides` | `GET` | Proxies to `${BACKEND_URI}/guides`. |
-| `/api/guides-db` | `GET`, `POST` | `GET` proxies list to `${BACKEND_URI}/guides/db` (params `page`, `month`, `year`, `limit`); when `scope=all\|own` is present it branches to `${BACKEND_URI}/guides/db/admin` instead. `POST` proxies create to `${BACKEND_URI}/guides/db/create`; returns 201 even when upstream `data.status === 'failed'` (saved DB record, not transport error). |
+| `/api/guides-db` | `GET`, `POST` | `GET` proxies list to `${BACKEND_URI}/guides/db` (params `page`, `month`, `year`, `startDate`, `endDate`, `limit`); when `scope=all\|own` is present it branches to `${BACKEND_URI}/guides/db/admin` instead. `month`/`year` and `startDate`/`endDate` are mutually exclusive by typed browser-caller/UI contract (`GetGuidesDbParams` union), not route-level validation. `POST` proxies create to `${BACKEND_URI}/guides/db/create`; returns 201 even when upstream `data.status === 'failed'` (saved DB record, not transport error). |
 | `/api/guides-db/[kraftId]` | `DELETE` | Soft-deletes a guide owned by the current user. Proxies `DELETE ${BACKEND_URI}/guides/db/{kraftId}` (URL-encoded). Forwards the upstream `{ version, message, error, data: { guide: { kraftId } } }` envelope on success; collapses any non-2xx to `{ message }` 400. |
 | `/api/guides-db/[kraftId]/hard` | `DELETE` | Hard-deletes a guide for admin users. Proxies `DELETE ${BACKEND_URI}/guides/db/{kraftId}/hard` (URL-encoded); forwards the upstream `DeleteGuideDbResponse` envelope on success; 403 when the caller is not an admin via `getUserInfo()`; collapses any other non-2xx to `{ message }` 400. **Only Next-side role-guarded BFF route.** |
 | `/api/guides/mn` | `POST` | Creates MN guide via `${BACKEND_URI}/mn/create-guide`; treats null-guide or embedded 400 message as failure. |
@@ -134,6 +134,14 @@ Required values are documented in `.env.example`:
 - `NEXT_PUBLIC_GET_SAT_PRODUCT_URI` - external SAT product search endpoint.
 - `NEXT_PUBLIC_DEFAULT_EMAIL` - default email used for external API data.
 
+Confirmed cross-feature timezone contract:
+
+- Backend timestamps remain UTC ISO 8601 strings; frontend state and API handling preserve those raw values.
+- Frontend display and business-calendar defaults use `America/Mexico_City`, configured as `NEXT_PUBLIC_BUSINESS_TIMEZONE` to match backend `BUSINESS_TIMEZONE`.
+- Month/year filters are calendar values, not browser-derived UTC boundaries. Guide date ranges use explicit ISO instants derived from Mexico City calendar dates.
+- Browser-local time and fixed UTC offsets are not valid fallbacks.
+- Frontend configuration must fail dev/build/start loading unless `NEXT_PUBLIC_BUSINESS_TIMEZONE` exactly equals `America/Mexico_City`; tests set it explicitly.
+
 ## Commands
 
 | Command | Purpose |
@@ -156,6 +164,7 @@ Required values are documented in `.env.example`:
 ## Testing Conventions
 
 - Jest uses `next/jest`, `testEnvironment: "jsdom"`, and `jest.setup.ts`.
+- `next/jest` loads `next.config.mjs` while constructing Jest configuration, before `setupFilesAfterEnv`; environment values required by Next config must be set in `jest.config.ts`, not only `jest.setup.ts`.
 - `jest.setup.ts` imports `@testing-library/jest-dom`, installs `TextEncoder`/`TextDecoder`, and adds a JSON-based `structuredClone` fallback.
 - `__tests__/mocks/` and `__tests__/utils-test/` are ignored as test suites. Use them for fixtures/helpers imported by real tests.
 - Real tests currently live under `__tests__/feature/*`, `__tests__/components/*`, and `__tests__/home.test.tsx`.
@@ -181,6 +190,7 @@ Required values are documented in `.env.example`:
 - Avoid adding new state libraries. This repo uses local React state, cookies/server actions, TanStack Query, and local-storage helpers; there is no Zustand store.
 - Balance request creation invalidates the future request-history prefix `['balance', 'requests']` only; it must not optimistically change or invalidate current balance `['balance']`.
 - The hard-delete BFF (`/api/guides-db/[kraftId]/hard`) is the only route with a Next-side role check via `getUserInfo()`. Do not retrofit onto other BFF routes; backend authorization remains the source of truth (the role-guard is marked with a `// ponytail:` comment in the route handler).
+- Guides DB backend date filters use silent precedence: either `month` or `year` selects business-month mode and ignores `startDate`/`endDate`; range mode requires both month and year to be absent. Partial ranges are accepted, reversed ranges return an empty `200`, and some pattern-valid but impossible dates can escape backend parsing as an unstructured `500`.
 
 ## Key Files
 

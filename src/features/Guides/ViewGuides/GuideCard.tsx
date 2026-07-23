@@ -5,7 +5,8 @@ import clsx from "clsx"
 import { primaryButtonCSS } from "@/shared/constants/global.constants";
 import { GetGuidesData, GuideUI } from "@/shared/types/guides.types"
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
-import { formatDateToSpanish, getGuideStatusLabel } from "@/shared/utils/guides.utils";
+import { getGuideStatusLabel } from "@/shared/utils/guides.utils";
+import { formatDateToSpanish } from "@/shared/utils/date.utils";
 import { formatNumberToCurrency } from "@/shared/utils/global.utils";
 
 import { CourierImage } from "@/shared/ui/atoms/CourierImage";
@@ -41,7 +42,7 @@ export const GuideCard = ({ guide, isPending, updatePkkGuide, isDesktop }: Guide
     primaryButtonCSS,
     "w-fit inline-flex gap-2"
   )
-  const dateTimeFormatted = guide?.startDate ? formatDateToSpanish(new Date(guide.startDate)) : { date: null, time: null }
+  const dateTimeFormatted = guide?.startDate ? formatDateToSpanish(guide.startDate) : { date: null, time: null }
   const { date, time } = dateTimeFormatted
 
   if (isDesktop) {

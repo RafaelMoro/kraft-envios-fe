@@ -460,15 +460,27 @@ export type GuideDbRecord = {
   deletedBy?: string | null;
 };
 
-export type GetGuidesDbParams = {
-  page: number;
+type GuidesDbMonthFilter = {
   month: number;
   year: number;
+  startDate?: never;
+  endDate?: never;
+};
+
+type GuidesDbRangeFilter = {
+  month?: never;
+  year?: never;
+  startDate: string;
+  endDate: string;
+};
+
+export type GetGuidesDbParams = {
+  page: number;
   limit?: 10 | 50 | 100;
   scope?: 'all' | 'own';
   includeDeleted?: boolean;
   includeInternalPricing?: boolean;
-};
+} & (GuidesDbMonthFilter | GuidesDbRangeFilter);
 
 export type GetGuidesDbResponseData = {
   guides: GuideDbRecord[];
@@ -656,7 +668,7 @@ export interface GetGuidesData extends GlobalCreateGuideResponse {
   origin: AddressGuide;
   courier: QuoteCourier | null;
   content?: string | null; // Used in Pkk as it returns first not enough data.
-  startDate?: Date | null; // Used in Pkk as it returns first not enough data.
+  startDate?: string | null; // Used in Pkk as it returns first not enough data.
   destination: AddressGuide;
 }
 

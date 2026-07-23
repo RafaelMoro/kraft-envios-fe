@@ -6,7 +6,8 @@ import { RiCalendarLine, RiFileDownloadLine, RiFileTextLine } from "@remixicon/r
 import { DEFAULT_IMAGE_LOGO_PROVIDER } from "@/shared/constants/quotes.constants";
 import { GeneralApiError } from "@/shared/types/global.types";
 import { GetGuidesData, GuideUI } from "@/shared/types/guides.types";
-import { formatDateToSpanish, getGuideStatusLabel, getPkkGuide } from "@/shared/utils/guides.utils";
+import { getGuideStatusLabel, getPkkGuide } from "@/shared/utils/guides.utils";
+import { formatDateToSpanish } from "@/shared/utils/date.utils";
 import { CourierImage } from "@/shared/ui/atoms/CourierImage";
 
 interface GuideCardPkkProps {
@@ -51,7 +52,7 @@ export const GuideCardPkk = ({ guide, updatePkkGuide, isDesktop }: GuideCardPkkP
   const handleGetInformation = () => {
     setFetchGuide(true)
   }
-  const dateTimeFormatted = guide?.startDate ? formatDateToSpanish(new Date(guide.startDate)) : { fullDateTime: null }
+  const dateTimeFormatted = guide?.startDate ? formatDateToSpanish(guide.startDate) : { fullDateTime: null }
   const { fullDateTime } = dateTimeFormatted
 
   if (isDesktop) {
