@@ -53,7 +53,8 @@ Phase 2 depends on Phase 1's callback/DTO/constant contracts. Phase 3 depends on
 ### `src/features/**`
 
 - Create `src/features/Balance/BalanceRequestsScreen.tsx`.
-- Create `src/features/Balance/BalanceRequestCard.tsx`.
+- Create `src/features/Balance/BalanceRequestCard.tsx` (card + `BalanceRequestCardSkeleton`).
+- Modify `src/features/Balance/BalanceRequestDialog.tsx` (reusable trigger for the empty-state CTA).
 - Modify `src/features/Dashboard/Dashboard.tsx`.
 
 ### `src/shared/**`
@@ -75,7 +76,7 @@ Phase 2 depends on Phase 1's callback/DTO/constant contracts. Phase 3 depends on
 ### Deliberately Unchanged
 
 - `src/app/api/balance/route.ts`: Story 1/2 `GET`/`POST` behavior stays as-is; the new list/cancel handlers live under `balance/requests/`.
-- `src/features/Balance/BalanceDisplay.tsx` and `BalanceRequestDialog.tsx`: current-balance display and create flow are untouched; the create dialog already invalidates the shared prefix.
+- `src/features/Balance/BalanceDisplay.tsx`: current-balance display is untouched (it renders `BalanceRequestDialog` with default props, so behavior is identical). Note: `BalanceRequestDialog` itself gains optional trigger props for the empty-state CTA — see Phase 3.
 - `src/features/QueryProviderWrapper.tsx`: reuse the per-provider `QueryClient`; do not add or move a client.
 - `__tests__/api/balance.route.test.ts` and existing Balance feature tests: no changes.
 - `src/app/dashboard/page.tsx`, `DESIGN.md`, dependencies, lockfile, env vars, and backend code.
@@ -403,11 +404,27 @@ The header block and the Mes/Año filter row stay mounted across every state (th
 
 - **Loading (`isPending`):** render ~3 `BalanceRequestCardSkeleton` cards inside a `role="status"` `aria-live="polite"` wrapper carrying an sr-only `BALANCE_REQUESTS_LOADING_MESSAGE` (non-blocking; the skeletons are `aria-hidden`).
 - **Error (`isError`):** the error card from `comps/error-comp-see-requests.png` — a bordered/rounded centered panel with a red circular refresh icon (`RiRefreshLine` in a light-red circle), eyebrow `BALANCE_REQUESTS_ERROR_EYEBROW`, title `BALANCE_REQUESTS_ERROR_TITLE`, body `BALANCE_REQUESTS_ERROR_BODY`, and a `BALANCE_REQUESTS_ERROR_RETRY` ("Reintentar") `Button` calling `refetch()`. Wrap the message in `role="alert"`. Same design across breakpoints — the panel is fluid width and centers on mobile/tablet (adapt spacing only; do not restyle). No fabricated rows.
-- **Empty:** settled + `data.requests.length === 0` → `BALANCE_REQUESTS_EMPTY_MESSAGE`.
+- **Empty:** settled + `data.requests.length === 0` → the empty panel from `comps/empty-state-comp-see-requests.png`: a dashed-border rounded container with a gray circular inbox icon (`RiInboxLine`), title `BALANCE_REQUESTS_EMPTY_TITLE`, body `BALANCE_REQUESTS_EMPTY_BODY`, and a `Crear solicitud` CTA. The CTA reuses Story 2's create flow by rendering `<BalanceRequestDialog triggerLabel={BALANCE_REQUESTS_EMPTY_CTA} />` (see below); a successful create invalidates `['balance', 'requests']`, so this screen refetches and the new request appears. Same panel design across desktop/tablet/mobile (fluid width, centered). The header + filter row stay mounted above it.
 - **Populated:** map `data.requests` to `BalanceRequestCard`, passing `isCancelling = mutation.isPending && requestToCancel?.id === request.id`.
 - **Pagination:** render Anterior / page numbers / Siguiente from `data.totalPages` only when `> 1`, reusing the `Order.tsx` button pattern.
 
 **Edge cases:** client component (hooks + TanStack Query). Keep DTO timestamps as raw strings and pass them straight to `formatDateToSpanish`. Month/year filtering happens on the backend across the full result set — never filter the current page client-side. A stale list may offer cancel on an already-transitioned request; tolerate the `409` by surfacing the error and letting the refetch reconcile.
+
+#### `src/features/Balance/BalanceRequestDialog.tsx`
+
+**Action:** Modify — make the trigger button reusable so the empty-state CTA opens the same create flow. Add optional props, fully backward-compatible (existing `BalanceDisplay` usage is unchanged).
+
+```ts
+interface BalanceRequestDialogProps {
+  triggerLabel?: string       // default 'Solicitar saldo'
+  triggerClassName?: string   // default the existing 'mt-3 w-full hover:cursor-pointer'
+}
+```
+
+- Use `triggerLabel` as the trigger button text and `triggerClassName` as its className; keep all current defaults so `BalanceDisplay` renders identically.
+- Do not change the mutation, success copy, or the `['balance', 'requests']` invalidation. The empty-state instance benefits from that same invalidation.
+
+**Edge case:** two `BalanceRequestDialog` instances can be mounted at once (the persistent `BalanceDisplay` one plus the empty-state one). Each owns independent local modal state, so this is safe; both invalidate the same prefix on success.
 
 #### `src/features/Dashboard/Dashboard.tsx`
 
@@ -422,7 +439,7 @@ The header block and the Mes/Año filter row stay mounted across every state (th
 
 | File | Coverage areas | Pattern reference |
 | --- | --- | --- |
-| `src/features/Balance/BalanceRequestsScreen.test.tsx` | default month/year derived from Mexico City when browser-local month differs; populated rows show amount, Spanish status, timezone-correct creation date, and decision date when present (status label when absent); payment reference rendered when `paymentReference` present (any status) and omitted when absent; `decisionReason` rendered when present and omitted when absent; total count reflects `data.total`; cancel action only on `pending`; confirmation required before the cancel callback runs; successful cancel invalidates `['balance', 'requests']` and reflects `cancelled` without touching `['balance']`; conflict (`409`) preserves prior state and shows the error; loading shows skeleton cards (via `role="status"`) not real rows; error state shows the "Reintentar" button and clicking it refetches (assert a second `axios.get`); empty state; filter row stays mounted in the error state; pagination resets page on month/year change | Fresh retry-disabled `QueryClient` + real callbacks from `BalanceDisplay.test.tsx` / `BalanceRequestDialog.test.tsx`; mock `axios` only |
+| `src/features/Balance/BalanceRequestsScreen.test.tsx` | default month/year derived from Mexico City when browser-local month differs; populated rows show amount, Spanish status, timezone-correct creation date, and decision date when present (status label when absent); payment reference rendered when `paymentReference` present (any status) and omitted when absent; `decisionReason` rendered when present and omitted when absent; total count reflects `data.total`; cancel action only on `pending`; confirmation required before the cancel callback runs; successful cancel invalidates `['balance', 'requests']` and reflects `cancelled` without touching `['balance']`; conflict (`409`) preserves prior state and shows the error; loading shows skeleton cards (via `role="status"`) not real rows; error state shows the "Reintentar" button and clicking it refetches (assert a second `axios.get`); empty state shows the "No tienes solicitudes todavía" panel and its "Crear solicitud" CTA opens the create modal (real `BalanceRequestDialog`, not mocked); filter row stays mounted in the empty and error states; pagination resets page on month/year change | Fresh retry-disabled `QueryClient` + real callbacks from `BalanceDisplay.test.tsx` / `BalanceRequestDialog.test.tsx`; mock `axios` only |
 
 - **Timezone default:** set a fixed system instant whose UTC month differs from the Mexico City month (e.g. `2026-02-01T05:30:00.000Z` → January in `America/Mexico_City`) via `jest.useFakeTimers`/`setSystemTime`, then assert the month `Select` defaults to `Enero`. Keep the real `date.utils` helpers active; do not mock `Intl`/Luxon/`BUSINESS_TIMEZONE`.
 - **Invalidation assertion:** spy the fresh client's `invalidateQueries` (or seed both `['balance']` and `['balance','requests',…]` and assert only the requests prefix refetches).
@@ -504,14 +521,14 @@ Dashboard shell screen-switching is exercised by `pnpm test`; add a `balance`-sc
 ## Open Questions / Out-Of-Scope
 
 **Resolved (comps + user decisions, 2026-07-23):**
-- Screen layout fixed by `comps/*.png` (desktop, tablet, two mobile, error). Nav label "Mis solicitudes" with `RiWalletLine`; current balance stays in the persistent `BalanceDisplay` (no in-screen duplicate); `decisionReason` shown; payment reference shown when the prop is present.
-- Loading = ~3 `BalanceRequestCardSkeleton` cards. Error = the `error-comp-see-requests.png` panel with a "Reintentar" button wired to `refetch`, same design adapted for mobile/tablet.
+- Screen layout fixed by `comps/*.png` (desktop, tablet, two mobile, error, empty). Nav label "Mis solicitudes" with `RiWalletLine`; current balance stays in the persistent `BalanceDisplay` (no in-screen duplicate); `decisionReason` shown; payment reference shown when the prop is present. Empty state reuses Story 2's `BalanceRequestDialog` for its "Crear solicitud" CTA.
+- Loading = ~3 `BalanceRequestCardSkeleton` cards. Error = the `error-comp-see-requests.png` panel with a "Reintentar" button wired to `refetch`. Empty = the `empty-state-comp-see-requests.png` dashed panel with a "Crear solicitud" CTA reusing `BalanceRequestDialog`. All three keep the same design across desktop/tablet/mobile.
 - "Decisión" cell with no `decisionAt`: "Pendiente" for a pending request (comp), neutral "—" for other statuses (e.g. cancelled). User may flip cancelled back to the status label.
 - Date format helper `formatBusinessDateShort` is a new `date.utils.ts` export (comp-driven "18 jul 2026"); adds behavior without changing existing exports.
 
 **Open (non-blocking, confirm during implementation):**
-- The **empty** state has no comp; plan uses a simple centered `BALANCE_REQUESTS_EMPTY_MESSAGE` following existing dashboard-subscreen conventions. Confirm if design wants the error-style panel treatment instead.
-- Exact error-icon export (`RiRefreshLine` proposed) — confirm the `@remixicon/react` name.
+- The empty-state copy ("No tienes solicitudes **todavía**") reads as "none ever," but this screen is month/year-filtered — it also shows when the *selected period* is empty while other months have requests. Using the comp verbatim; flag if period-specific copy is wanted.
+- Exact icon exports (`RiRefreshLine` for error, `RiInboxLine` for empty) — confirm the `@remixicon/react` names.
 
 **Out of scope (per research):**
 - Admin queue, approval, rejection, payment-reference entry, admin single-request lookup, and email deep links (Stories 4/5).
