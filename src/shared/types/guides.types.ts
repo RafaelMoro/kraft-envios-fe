@@ -460,15 +460,27 @@ export type GuideDbRecord = {
   deletedBy?: string | null;
 };
 
-export type GetGuidesDbParams = {
-  page: number;
+type GuidesDbMonthFilter = {
   month: number;
   year: number;
+  startDate?: never;
+  endDate?: never;
+};
+
+type GuidesDbRangeFilter = {
+  month?: never;
+  year?: never;
+  startDate: string;
+  endDate: string;
+};
+
+export type GetGuidesDbParams = {
+  page: number;
   limit?: 10 | 50 | 100;
   scope?: 'all' | 'own';
   includeDeleted?: boolean;
   includeInternalPricing?: boolean;
-};
+} & (GuidesDbMonthFilter | GuidesDbRangeFilter);
 
 export type GetGuidesDbResponseData = {
   guides: GuideDbRecord[];

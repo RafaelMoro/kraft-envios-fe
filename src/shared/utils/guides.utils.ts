@@ -710,8 +710,13 @@ export const generateGuideId = (guide: GetGuidesData): string => {
 export const getGuidesDbCb = async (params: GetGuidesDbParams): Promise<GetGuidesDbResponseData> => {
   const searchParams = new URLSearchParams();
   searchParams.append('page', String(params.page));
-  searchParams.append('month', String(params.month));
-  searchParams.append('year', String(params.year));
+  if ('month' in params) {
+    searchParams.append('month', String(params.month));
+    searchParams.append('year', String(params.year));
+  } else {
+    searchParams.append('startDate', params.startDate);
+    searchParams.append('endDate', params.endDate);
+  }
   if (params.limit !== undefined && params.limit !== 10) {
     searchParams.append('limit', String(params.limit));
   }
