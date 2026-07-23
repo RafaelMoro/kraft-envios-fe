@@ -13,9 +13,18 @@
 - Timestamps are UTC ISO 8601 strings and render through `formatDateToSpanish` without mutating stored values; default month/year comes from `getBusinessCalendarMonthYear()`.
 - Cancelling never changes current balance. On successful cancel we invalidate `['balance', 'requests']` only; we never touch `['balance']`.
 - The history query key is `['balance', 'requests', month, year, page, limit]`, keeping Story 2's `['balance', 'requests']` prefix-invalidation seam effective.
-- Current balance already renders persistently via `BalanceDisplay` (desktop aside + mobile header region). The new Saldo screen therefore focuses on the requests history and does not mount a second `['balance']` query. See Open Questions.
-- The Saldo nav entry is visible to all authenticated users (not admin-gated), matching the user list being self-scoped by the backend.
+- **Confirmed by comps:** current balance renders persistently via `BalanceDisplay` (desktop aside bottom-left "Saldo disponible" card + mobile/tablet top card). The requests screen focuses on the history and does not mount a second `['balance']` query.
+- The nav entry is visible to all authenticated users (not admin-gated), matching the user list being self-scoped by the backend.
 - Existing local missing-token behavior remains `400` with `{ message: 'missing access token' }`.
+
+### Comp-driven display decisions (supersede the research's UI scope)
+
+The user supplied comps (`comps/*.png`) and confirmed three display rules that override the research doc:
+
+- **Nav label is "Mis solicitudes"** (not "Saldo"). Screen uses an eyebrow "SALDO Y MOVIMIENTOS", an H1 "Mis solicitudes", a subtitle, a "Solicitudes recientes" section header, and a `data.total` count ("6 solicitudes").
+- **`decisionReason` is shown** when present, labeled "Razón de la cancelación" (reverses the research "never shown" decision). The field exists on `BalanceRequestDto` and is returned by the confirmed list contract.
+- **Payment reference shows whenever the `paymentReference` prop is present**, for any status (user override of both the research "approved-only" rule and the comps' "Por asignar"/"No aplica" placeholders — no placeholder text; the row is simply omitted when absent).
+- Dates render in the comp format "18 jul 2026" (day, lowercase Spanish month abbrev, year) via a new business-timezone helper — see Phase 1.
 
 ## Acceptance Criteria
 
@@ -51,6 +60,7 @@ Phase 2 depends on Phase 1's callback/DTO/constant contracts. Phase 3 depends on
 
 - Modify `src/shared/types/balance.types.ts`.
 - Modify `src/shared/utils/balance.utils.ts`.
+- Modify `src/shared/utils/date.utils.ts` (add `formatBusinessDateShort`).
 - Modify `src/shared/constants/global.constants.ts` (add list endpoint constant).
 - Create `src/shared/constants/balance.constants.ts`.
 - Modify `src/shared/types/dashboard.types.ts`.
@@ -134,13 +144,49 @@ export const BALANCE_STATUS_LABELS: Record<BalanceRequestStatus, string> = {
   cancelled: 'Cancelada',
 };
 
-export const BALANCE_REQUESTS_HEADING = 'Solicitudes de saldo';
-export const BALANCE_REQUESTS_EMPTY_MESSAGE =
-  'No tienes solicitudes de saldo para el periodo seleccionado.';
-export const BALANCE_REQUESTS_ERROR_MESSAGE =
-  'No pudimos cargar tus solicitudes de saldo. Intenta más tarde.';
+// Badge tone per status (comps: Pendiente amber, Aprobada green, Rechazada gray).
+// Cancelada has no comp; use a neutral/red tone. Tests must NOT assert these classes.
+export const BALANCE_STATUS_BADGE_COLOR: Record<BalanceRequestStatus, string> = {
+  pending: 'warning',
+  approved: 'success',
+  rejected: 'gray',
+  cancelled: 'failure',
+};
+
+// Page-level copy (comps).
+export const BALANCE_REQUESTS_EYEBROW = 'Saldo y movimientos';
+export const BALANCE_REQUESTS_HEADING = 'Mis solicitudes';
+export const BALANCE_REQUESTS_SUBTITLE =
+  'Consulta el estado de tus solicitudes de saldo y cancela las que aún estén pendientes.';
+export const BALANCE_REQUESTS_SECTION_TITLE = 'Solicitudes recientes';
+
+// Card field labels (comps).
+export const BALANCE_FIELD_AMOUNT = 'Monto solicitado';
+export const BALANCE_FIELD_CREATED = 'Creada';
+export const BALANCE_FIELD_DECISION = 'Decisión';
+export const BALANCE_FIELD_PAYMENT_REFERENCE = 'Referencia de pago';
+export const BALANCE_FIELD_DECISION_REASON = 'Razón de la cancelación';
+
+// Neutral placeholder for a "Decisión" cell with no date on a non-pending request.
+export const BALANCE_DECISION_NONE = '—';
+
+// Empty state (comps/empty-state-comp-see-requests.png).
+export const BALANCE_REQUESTS_EMPTY_TITLE = 'No tienes solicitudes todavía';
+export const BALANCE_REQUESTS_EMPTY_BODY =
+  'Cuando solicites saldo, podrás revisar aquí su avance y los datos de pago.';
+export const BALANCE_REQUESTS_EMPTY_CTA = 'Crear solicitud';
+
+// Error state (comps/error-comp-see-requests.png).
+export const BALANCE_REQUESTS_ERROR_EYEBROW = 'Error de conexión';
+export const BALANCE_REQUESTS_ERROR_TITLE = 'No pudimos cargar tus solicitudes de saldo';
+export const BALANCE_REQUESTS_ERROR_BODY =
+  'Ocurrió un problema al consultar la información. Revisa tu conexión e inténtalo de nuevo.';
+export const BALANCE_REQUESTS_ERROR_RETRY = 'Reintentar';
+
+// sr-only status text for the skeleton loading state.
 export const BALANCE_REQUESTS_LOADING_MESSAGE = 'Cargando solicitudes...';
 
+export const BALANCE_CANCEL_ACTION = 'Cancelar';
 export const BALANCE_CANCEL_CONFIRM_TITLE = 'Cancelar solicitud de saldo';
 export const BALANCE_CANCEL_CONFIRM_BODY =
   '¿Seguro que quieres cancelar esta solicitud de saldo? Esta acción no se puede deshacer.';
@@ -151,6 +197,27 @@ export const BALANCE_CANCEL_ERROR_MESSAGE =
 ```
 
 - The month option list (`Enero`…`Diciembre`) is defined locally in the screen mirroring `Order.tsx`; do not introduce a shared `MONTHS` constant.
+- The count line (`6 solicitudes`) renders `data.total` inline in the screen (e.g. `${total} ${total === 1 ? 'solicitud' : 'solicitudes'}`); no constant needed.
+
+#### `src/shared/utils/date.utils.ts`
+
+**Action:** Modify — add a business-timezone day-first date formatter matching the comps ("18 jul 2026"). Reuse the existing `getBusinessDateParts` + offset guard + `PLACEHOLDER`; do not change `formatDateToSpanish` or any existing export. This keeps `date.utils.ts` the single timezone boundary rather than formatting dates ad hoc in the card.
+
+```ts
+// Lowercase Spanish month abbreviations for the "18 jul 2026" comp format.
+const MONTHS_ES_LOWER = MONTHS_ES.map((m) => m.toLowerCase());
+
+export const formatBusinessDateShort = (timestamp: string): string => {
+  if (typeof timestamp !== 'string' || !hasExplicitOffset(timestamp)) return PLACEHOLDER.date;
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return PLACEHOLDER.date;
+  const parts = getBusinessDateParts(date);
+  const month = MONTHS_ES_LOWER[Number(parts.month) - 1];
+  return `${Number(parts.day)} ${month} ${parts.year}`;
+};
+```
+
+- Returns the `--` placeholder for null/offsetless input, so the card can treat a `--` result as "no date".
 
 #### `src/shared/utils/balance.utils.ts`
 
@@ -267,13 +334,20 @@ return NextResponse.json(response.data, { status: response.status })
 
 #### `src/features/Balance/BalanceRequestCard.tsx`
 
-**Action:** Create — presentational row for one request. Props: `{ request: BalanceRequestDto; onRequestCancel: (request: BalanceRequestDto) => void; isCancelling: boolean }`.
+**Action:** Create — presentational card for one request, matching the comps (columnar on desktop/tablet, stacked on mobile via responsive Tailwind; do not assert layout in tests). Props: `{ request: BalanceRequestDto; onRequestCancel: (request: BalanceRequestDto) => void; isCancelling: boolean }`.
 
-- Render amount via `formatBalanceMxn(request.amount)`, status label via `BALANCE_STATUS_LABELS[request.status]`, creation date via `formatDateToSpanish(request.createdAt).fullDateTime`.
-- Render decision date only when `request.decisionAt` is a non-null string with an explicit offset; otherwise render nothing (do not print the `--` placeholder for absent decisions).
-- Render payment reference only when `request.status === 'approved'` and `request.paymentReference` is present. Never render `decisionReason`.
-- Render a "Cancelar" `Button` only when `request.status === 'pending'`, calling `onRequestCancel(request)`; disable it while `isCancelling` is true.
-- Expose amount/status/dates as visible text queryable by role/text (no styling assertions).
+Field rules (comps + confirmed decisions):
+
+- **Monto solicitado:** `formatBalanceMxn(request.amount)` with a trailing "MXN".
+- **Creada:** `formatBusinessDateShort(request.createdAt)`.
+- **Decisión:** `formatBusinessDateShort(request.decisionAt)` when `decisionAt` is present. When absent: show `BALANCE_STATUS_LABELS.pending` ("Pendiente") for a `pending` request (matches the comp); show a neutral placeholder `BALANCE_DECISION_NONE` ("—") for any other status with no decision date (e.g. `cancelled`). Pass `decisionAt` to the formatter only when non-null.
+- **Referencia de pago:** render the row **only when `request.paymentReference` is present** (truthy), for any status; omit the row entirely when absent. No "Por asignar"/"No aplica" placeholder (user override of the comp).
+- **Razón de la cancelación:** render `request.decisionReason` **only when present** (truthy), for any status.
+- **Status badge:** `BALANCE_STATUS_LABELS[request.status]`, tone from `BALANCE_STATUS_BADGE_COLOR` (Flowbite `Badge` `color`).
+- **Cancelar action:** render only when `request.status === 'pending'`, calling `onRequestCancel(request)`; disabled while `isCancelling` is true.
+- Expose amounts, status labels, dates, references, and reason as visible text queryable by role/text; use the `BALANCE_FIELD_*` label constants.
+
+Also export a **`BalanceRequestCardSkeleton`** from this file: the same card frame with `animate-pulse` `bg-gray-200 dark:bg-gray-700` placeholder blocks in the amount/field/badge positions, `aria-hidden`. Follows the skeleton idiom already in `BalanceDisplay.tsx` (`animate-pulse rounded bg-gray-200`).
 
 #### `src/features/Balance/BalanceRequestsScreen.tsx`
 
@@ -296,11 +370,13 @@ const [requestToCancel, setRequestToCancel] = useState<BalanceRequestDto | null>
 Query:
 
 ```ts
-const { data, isPending, isError } = useQuery({
+const { data, isPending, isError, refetch } = useQuery({
   queryKey: ['balance', 'requests', selectedMonth, selectedYear, page, limit],
   queryFn: () => getBalanceRequestsCb({ month: selectedMonth, year: selectedYear, page, limit }),
 })
 ```
+
+- `refetch` powers the error-state "Reintentar" button.
 
 Cancel mutation:
 
@@ -319,13 +395,17 @@ const mutation = useMutation<BalanceRequestDto, AxiosError<CreateBalanceRequestE
 - Do **not** invalidate or mutate `['balance']`.
 
 Render states (Spanish copy from `balance.constants`):
-- Heading `BALANCE_REQUESTS_HEADING`.
-- Month `Select` (`Enero`…`Diciembre`) + year `Select` with visible `Label`s, mirroring `Order.tsx`.
-- Loading: `isPending` → `BALANCE_REQUESTS_LOADING_MESSAGE` in a `role="status"` region (non-blocking).
-- Error: `isError` → `BALANCE_REQUESTS_ERROR_MESSAGE`; no fabricated rows.
-- Empty: settled + `data.requests.length === 0` → `BALANCE_REQUESTS_EMPTY_MESSAGE`.
-- Populated: map `data.requests` to `BalanceRequestCard`, passing `isCancelling = mutation.isPending && requestToCancel?.id === request.id`.
-- Pagination: render Anterior / page numbers / Siguiente from `data.totalPages` only when `> 1`, reusing the `Order.tsx` button pattern.
+- Header block: eyebrow `BALANCE_REQUESTS_EYEBROW`, H1 `BALANCE_REQUESTS_HEADING`, subtitle `BALANCE_REQUESTS_SUBTITLE`.
+- Month `Select` (`Enero`…`Diciembre`) + year `Select` with visible `Label`s ("Mes"/"Año"), mirroring `Order.tsx`.
+- Section header `BALANCE_REQUESTS_SECTION_TITLE` alongside the count line derived from `data.total` (e.g. "6 solicitudes"), shown once data is available.
+
+The header block and the Mes/Año filter row stay mounted across every state (the error comp keeps them visible so the user can change the period); only the list region below swaps between loading / error / empty / populated.
+
+- **Loading (`isPending`):** render ~3 `BalanceRequestCardSkeleton` cards inside a `role="status"` `aria-live="polite"` wrapper carrying an sr-only `BALANCE_REQUESTS_LOADING_MESSAGE` (non-blocking; the skeletons are `aria-hidden`).
+- **Error (`isError`):** the error card from `comps/error-comp-see-requests.png` — a bordered/rounded centered panel with a red circular refresh icon (`RiRefreshLine` in a light-red circle), eyebrow `BALANCE_REQUESTS_ERROR_EYEBROW`, title `BALANCE_REQUESTS_ERROR_TITLE`, body `BALANCE_REQUESTS_ERROR_BODY`, and a `BALANCE_REQUESTS_ERROR_RETRY` ("Reintentar") `Button` calling `refetch()`. Wrap the message in `role="alert"`. Same design across breakpoints — the panel is fluid width and centers on mobile/tablet (adapt spacing only; do not restyle). No fabricated rows.
+- **Empty:** settled + `data.requests.length === 0` → `BALANCE_REQUESTS_EMPTY_MESSAGE`.
+- **Populated:** map `data.requests` to `BalanceRequestCard`, passing `isCancelling = mutation.isPending && requestToCancel?.id === request.id`.
+- **Pagination:** render Anterior / page numbers / Siguiente from `data.totalPages` only when `> 1`, reusing the `Order.tsx` button pattern.
 
 **Edge cases:** client component (hooks + TanStack Query). Keep DTO timestamps as raw strings and pass them straight to `formatDateToSpanish`. Month/year filtering happens on the backend across the full result set — never filter the current page client-side. A stale list may offer cancel on an already-transitioned request; tolerate the `409` by surfacing the error and letting the refetch reconcile.
 
@@ -342,7 +422,7 @@ Render states (Spanish copy from `balance.constants`):
 
 | File | Coverage areas | Pattern reference |
 | --- | --- | --- |
-| `src/features/Balance/BalanceRequestsScreen.test.tsx` | default month/year derived from Mexico City when browser-local month differs; populated rows show amount, Spanish status, timezone-correct creation/decision dates; payment reference only on approved + present; rejection reason never shown; cancel action only on `pending`; confirmation required before the cancel callback runs; successful cancel invalidates `['balance', 'requests']` and reflects `cancelled` without touching `['balance']`; conflict (`409`) preserves prior state and shows the error; empty and error states; pagination resets page on month/year change | Fresh retry-disabled `QueryClient` + real callbacks from `BalanceDisplay.test.tsx` / `BalanceRequestDialog.test.tsx`; mock `axios` only |
+| `src/features/Balance/BalanceRequestsScreen.test.tsx` | default month/year derived from Mexico City when browser-local month differs; populated rows show amount, Spanish status, timezone-correct creation date, and decision date when present (status label when absent); payment reference rendered when `paymentReference` present (any status) and omitted when absent; `decisionReason` rendered when present and omitted when absent; total count reflects `data.total`; cancel action only on `pending`; confirmation required before the cancel callback runs; successful cancel invalidates `['balance', 'requests']` and reflects `cancelled` without touching `['balance']`; conflict (`409`) preserves prior state and shows the error; loading shows skeleton cards (via `role="status"`) not real rows; error state shows the "Reintentar" button and clicking it refetches (assert a second `axios.get`); empty state; filter row stays mounted in the error state; pagination resets page on month/year change | Fresh retry-disabled `QueryClient` + real callbacks from `BalanceDisplay.test.tsx` / `BalanceRequestDialog.test.tsx`; mock `axios` only |
 
 - **Timezone default:** set a fixed system instant whose UTC month differs from the Mexico City month (e.g. `2026-02-01T05:30:00.000Z` → January in `America/Mexico_City`) via `jest.useFakeTimers`/`setSystemTime`, then assert the month `Select` defaults to `Enero`. Keep the real `date.utils` helpers active; do not mock `Intl`/Luxon/`BUSINESS_TIMEZONE`.
 - **Invalidation assertion:** spy the fresh client's `invalidateQueries` (or seed both `['balance']` and `['balance','requests',…]` and assert only the requests prefix refetches).
@@ -363,12 +443,12 @@ export type DashboardScreens = 'quotes' | 'overview' | 'marginProfit' | 'address
 
 #### `src/shared/ui/organisms/Aside.tsx`
 
-**Action:** Modify — add a Saldo link in the always-visible nav group (e.g. after Direcciones, before the admin-only Margen de ganancia). Import a wallet icon from `@remixicon/react` (e.g. `RiWallet3Line`; fall back to `RiWalletLine` if the former is unavailable).
+**Action:** Modify — add a "Mis solicitudes" link in the always-visible nav group (comps place it after Direcciones). Import `RiWalletLine` from `@remixicon/react` to match the comp's wallet glyph.
 
 ```tsx
 <DashboardAsideLink isSelected={screen === 'balance'} onClickCb={() => updateScreen('balance')}>
-  <RiWallet3Line />
-  Saldo
+  <RiWalletLine />
+  Mis solicitudes
 </DashboardAsideLink>
 ```
 
@@ -378,8 +458,8 @@ export type DashboardScreens = 'quotes' | 'overview' | 'marginProfit' | 'address
 
 ```tsx
 <MenuMobileLink isSelected={screen === 'balance'} onClickCb={() => handleClick(updateScreen, 'balance')}>
-  <RiWallet3Line />
-  Saldo
+  <RiWalletLine />
+  Mis solicitudes
 </MenuMobileLink>
 ```
 
@@ -423,14 +503,19 @@ Dashboard shell screen-switching is exercised by `pnpm test`; add a `balance`-sc
 
 ## Open Questions / Out-Of-Scope
 
-**Open (non-blocking):**
-- The Saldo screen's internal visual layout is deferred to design (research Open Question UI-IV). This plan fixes behavior, states, and entry-point placement; the design phase refines layout without changing the acceptance criteria.
-- Whether to also render current balance *inside* the Saldo screen. This plan keeps the single persistent `BalanceDisplay` (aside/header) and does not duplicate the `['balance']` query on the screen. If design requires an in-screen balance panel, reuse `BalanceDisplay` rather than mounting a second query.
-- Icon choice for the Saldo nav entry (`RiWallet3Line` proposed); confirm the exact `@remixicon/react` export during implementation.
+**Resolved (comps + user decisions, 2026-07-23):**
+- Screen layout fixed by `comps/*.png` (desktop, tablet, two mobile, error). Nav label "Mis solicitudes" with `RiWalletLine`; current balance stays in the persistent `BalanceDisplay` (no in-screen duplicate); `decisionReason` shown; payment reference shown when the prop is present.
+- Loading = ~3 `BalanceRequestCardSkeleton` cards. Error = the `error-comp-see-requests.png` panel with a "Reintentar" button wired to `refetch`, same design adapted for mobile/tablet.
+- "Decisión" cell with no `decisionAt`: "Pendiente" for a pending request (comp), neutral "—" for other statuses (e.g. cancelled). User may flip cancelled back to the status label.
+- Date format helper `formatBusinessDateShort` is a new `date.utils.ts` export (comp-driven "18 jul 2026"); adds behavior without changing existing exports.
+
+**Open (non-blocking, confirm during implementation):**
+- The **empty** state has no comp; plan uses a simple centered `BALANCE_REQUESTS_EMPTY_MESSAGE` following existing dashboard-subscreen conventions. Confirm if design wants the error-style panel treatment instead.
+- Exact error-icon export (`RiRefreshLine` proposed) — confirm the `@remixicon/react` name.
 
 **Out of scope (per research):**
 - Admin queue, approval, rejection, payment-reference entry, admin single-request lookup, and email deep links (Stories 4/5).
 - Increasing or optimistically changing current balance after cancellation.
-- Showing rejection reasons; client-side status filtering; backend timezone/month-boundary implementation.
+- Client-side status filtering; backend timezone/month-boundary implementation.
 - New dependencies, a state store, a service layer, or a query-key factory.
 - Normalizing unrelated API route response/error shapes (including the guides-db flatten-to-`400` behavior).
