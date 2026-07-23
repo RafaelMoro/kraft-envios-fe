@@ -41,7 +41,7 @@ Full research, prioritizing the list/cancel contract, cache/invalidation behavio
 1. Add own-request list/pagination and cancel DTOs to `src/shared/types/balance.types.ts` and Spanish status-label constants to a balance constants module.
 2. Add a `GET /api/balance/requests` list route and a `PATCH /api/balance/requests/{requestId}/cancel` route, both authenticated, allowlisting only `month`, `year`, `page`, `limit`, URL-encoding the request ID, and preserving meaningful upstream statuses/bodies.
 3. Add browser callbacks: a list callback serializing only the allowed queries and a cancel callback posting no body.
-4. Add a responsive Balance-domain history surface: month/year + pagination controls, request cards/rows, status labels, a confirmation dialog for cancellation, and the loading/empty/error/populated states.
+4. Add a new "Saldo" dashboard screen (new `DashboardScreens` value in `src/shared/types/dashboard.types.ts`) with paired navigation entries in the desktop sidebar (`Aside.tsx`) and the mobile drawer, hosting a responsive Balance-domain surface: current balance plus month/year + pagination controls, request cards/rows, status labels, a confirmation dialog for cancellation, and the loading/empty/error/populated states.
 5. Wire a `useQuery` keyed on `['balance', 'requests', month, year, page, limit]` and a cancel `useMutation` that invalidates `['balance', 'requests']` on success without touching `['balance']`.
 6. Add focused route and feature coverage for query serialization, pagination, timezone-correct timestamp display, cancel eligibility, confirmation, success invalidation, and conflict handling.
 
@@ -53,7 +53,7 @@ Full research, prioritizing the list/cancel contract, cache/invalidation behavio
 - Status filtering for the user list (the documented user query DTO has no status parameter).
 - Backend timezone/month-boundary implementation (owned by the backend; frontend consumes UTC strings).
 - New dependencies, a state store, a service layer, or a query-key factory.
-- Final visual placement; the design phase resolves the exact surface while this research fixes functional/responsive states.
+- The Balance screen's exact internal visual layout; the design phase resolves it while this research fixes the entry-point placement ("Saldo" sidebar/drawer screen) and functional/responsive states.
 - Normalizing unrelated API route response/error shapes.
 
 ## Technical Research
@@ -75,7 +75,7 @@ Full research, prioritizing the list/cancel contract, cache/invalidation behavio
 Routes/pages:
 
 - No new App Router page is required. `src/app/dashboard/page.tsx` remains the authenticated boundary; the deep-link route belongs to Story 5.
-- Final placement (dashboard screen, section near `BalanceDisplay`, or modal) is a design decision. Functionally this story needs one responsive Balance-domain surface with an entry point on both desktop and mobile/tablet shells. If a new dashboard screen is chosen, note `DashboardScreens` in `src/shared/types/dashboard.types.ts` currently allows only `quotes | overview | marginProfit | addresses`, and both `src/shared/ui/organisms/Aside.tsx` and the mobile drawer would need paired navigation entries to avoid a one-sided role/nav change.
+- Placement is decided (Open Question IV): a new "Saldo" dashboard screen reached from the desktop sidebar and the mobile drawer, showing current balance plus the requests history. This requires adding a new value (e.g. `balance`) to `DashboardScreens` in `src/shared/types/dashboard.types.ts` (currently `quotes | overview | marginProfit | addresses`) and paired navigation entries in both `src/shared/ui/organisms/Aside.tsx` and the mobile drawer so desktop and mobile stay in sync. The screen's exact visual layout is still to be confirmed with design.
 
 API route handlers:
 
@@ -315,9 +315,9 @@ Answer: Do not show rejection reasons (not returned by the documented contract).
 
 IV: Question: Where does the request-history surface live?
 
-Status: pending
+Status: answered (design confirmation still pending)
 
-Context: The epic defers visual placement to the design phase. Functionally this story needs one responsive Balance surface with an entry point on both desktop and mobile/tablet; the choice between a new dashboard screen, a section near `BalanceDisplay`, or a modal is a design decision, but it determines whether `DashboardScreens` and the two navigation shells change.
+Answer: Add a new "Saldo" option to the desktop sidebar (`Aside.tsx`) and the mobile drawer, opening a Balance dashboard screen that shows the current balance and the requests history. This introduces a new `DashboardScreens` value (e.g. `balance`) in `src/shared/types/dashboard.types.ts` and paired navigation entries in both `src/shared/ui/organisms/Aside.tsx` and the mobile drawer so the desktop and mobile shells stay in sync. The exact visual layout of the screen is still to be confirmed with the design phase, but the entry-point placement (sidebar + mobile drawer "Saldo") is decided. (User-confirmed for this story.)
 
 ### Authorization
 
@@ -334,7 +334,7 @@ Answer: The browser calls the local Next BFF, which reads the httpOnly session t
 - Timestamps are UTC ISO 8601 strings and are rendered through `formatDateToSpanish` without mutating stored values.
 - Cancelling never changes current balance; only backend approval does.
 - The history query adopts `['balance', 'requests', month, year, page, limit]`, keeping Story 2's `['balance', 'requests']` invalidation seam effective.
-- Final responsive placement is resolved during design without changing the behavioral acceptance criteria.
+- The surface is a new "Saldo" dashboard screen reached from the desktop sidebar and mobile drawer; only the screen's internal visual layout remains for design, without changing the behavioral acceptance criteria.
 
 ## Non-Obvious Findings
 
