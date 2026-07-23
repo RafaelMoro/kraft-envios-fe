@@ -351,9 +351,9 @@ Smallest useful timezone coverage:
   - Status: answered
   - Answer: No. `America/Mexico_City` is canonical configuration, not a user preference.
 - V: Question: Should the Guides DB UI permit an open-ended range with only a start date or only an end date?
-  - Status: pending
-  - Context: The backend accepts either boundary independently, while the confirmed end-date behavior only defines how to include a selected end calendar day.
-  - Explanation: Product behavior must decide whether to expose backend open-ended filtering or require both dates in the UI.
+  - Status: answered
+  - Answer: No. The frontend requires both start and end dates before submitting range mode.
+  - Context: The backend may retain independent open-ended boundaries for other callers, but the UI uses a bounded inclusive calendar-date range with an exclusive next-day instant boundary.
 
 ### Testing
 
