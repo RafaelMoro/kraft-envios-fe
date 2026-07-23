@@ -1,3 +1,9 @@
+## v0.54.0 (2026-07-23)
+
+### Pull Requests
+[#114](https://github.com/RafaelMoro/kraft-envios-fe/pull/114) | Add timezone config with IANA timezone and Luxon
+
+
 ## v0.53.0 (2026-07-22)
 
 ### Pull Requests
