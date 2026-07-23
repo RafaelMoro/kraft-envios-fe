@@ -134,6 +134,14 @@ Required values are documented in `.env.example`:
 - `NEXT_PUBLIC_GET_SAT_PRODUCT_URI` - external SAT product search endpoint.
 - `NEXT_PUBLIC_DEFAULT_EMAIL` - default email used for external API data.
 
+Confirmed cross-feature timezone contract:
+
+- Backend timestamps remain UTC ISO 8601 strings; frontend state and API handling preserve those raw values.
+- Frontend display and business-calendar defaults use `America/Mexico_City`, configured as `NEXT_PUBLIC_BUSINESS_TIMEZONE` to match backend `BUSINESS_TIMEZONE`.
+- Month/year filters are calendar values, not browser-derived UTC boundaries. Guide date ranges use explicit ISO instants derived from Mexico City calendar dates.
+- Browser-local time and fixed UTC offsets are not valid fallbacks.
+- Frontend configuration must fail dev/build/start loading unless `NEXT_PUBLIC_BUSINESS_TIMEZONE` exactly equals `America/Mexico_City`; tests set it explicitly.
+
 ## Commands
 
 | Command | Purpose |
@@ -181,6 +189,7 @@ Required values are documented in `.env.example`:
 - Avoid adding new state libraries. This repo uses local React state, cookies/server actions, TanStack Query, and local-storage helpers; there is no Zustand store.
 - Balance request creation invalidates the future request-history prefix `['balance', 'requests']` only; it must not optimistically change or invalidate current balance `['balance']`.
 - The hard-delete BFF (`/api/guides-db/[kraftId]/hard`) is the only route with a Next-side role check via `getUserInfo()`. Do not retrofit onto other BFF routes; backend authorization remains the source of truth (the role-guard is marked with a `// ponytail:` comment in the route handler).
+- Guides DB backend date filters use silent precedence: either `month` or `year` selects business-month mode and ignores `startDate`/`endDate`; range mode requires both month and year to be absent. Partial ranges are accepted, reversed ranges return an empty `200`, and some pattern-valid but impossible dates can escape backend parsing as an unstructured `500`.
 
 ## Key Files
 
