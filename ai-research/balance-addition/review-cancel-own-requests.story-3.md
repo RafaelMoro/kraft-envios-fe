@@ -142,15 +142,16 @@ Own request list (confirmed in the epic):
 
 - Method/path: `GET /balance/requests`.
 - Optional queries: integer `month` (1-12), integer `year` (>= 1), positive integer `page` (default 1), positive integer `limit` (default 10). No status query is documented for the user list.
-- Response: `{ requests, total, page, limit, totalPages }` (under the standard envelope; confirm exact nesting against the backend response DTO — see Open Question I).
-- Each request carries `id`, `amount`, `status`, `createdAt`, `updatedAt`, and conditional `paymentReference`, `decisionAt` (and, for admin responses, `userEmail`/`userName`/`adminInCharge`). Timestamps are UTC ISO 8601 strings.
+- Response (confirmed, Open Question I): `data.requests` array plus sibling `data.total`, `data.page`, `data.limit`, `data.totalPages`, all under the standard `{ version, data, message, error }` envelope.
+- Each request carries `id`, `amount`, `status`, `createdAt`, `updatedAt`, and conditional `paymentReference`, `decisionReason`, `decisionAt` (and, for admin responses, `userEmail`/`userName`/`adminInCharge`). Timestamps are UTC ISO 8601 strings.
 - Backend month/year boundaries use `America/Mexico_City` local-month start (inclusive) and next-month start (exclusive) via Luxon; timestamps remain UTC (epic Questions IX/X answered).
 
 Cancel (confirmed in the epic):
 
 - Method/path: `PATCH /balance/requests/{balance-id}/cancel`, no request body.
 - Allowed only while status is `pending`; other statuses are read-only.
-- Confirm the exact success envelope and the conflict status/body for a non-`pending` request (see Open Question II).
+- Success (confirmed, Open Question II): `200 OK` with the single request under `data.request` (status `cancelled`, `decisionReason`/`decisionAt` null), distinct from the list's `data.requests` array.
+- Non-`pending` conflict: `409 Conflict` with `error.code = "BAL-BUS-002"` and the Spanish message "La solicitud de saldo no se encuentra en un estado válido para esta operación."; the BFF preserves this status/body verbatim.
 
 Amount contract (unchanged from Story 2): MXN major units; effective range `0.01`-`100000.00`; zero renders as `$0.00` via `formatBalanceMxn()`.
 
@@ -237,19 +238,54 @@ Smallest useful feature coverage:
 
 I: Question: What is the exact success envelope and nesting for `GET /balance/requests`?
 
-Status: pending
+Status: answered
 
-Context: The epic documents the fields `{ requests, total, page, limit, totalPages }`, but the outer envelope nesting (e.g. `data: { requests, total, page, limit, totalPages }` under `{ version, data, message, error }`, matching the create and admin single-request shapes) should be confirmed against the backend list response DTO so the callback unwraps the correct path.
+Answer: Pagination fields sit directly under `data` alongside `requests`, under the standard envelope:
 
-Explanation: Confirm whether the pagination fields sit directly under `data` alongside `requests`, and whether `requests` items include `paymentReference`/`decisionAt` conditionally as elsewhere.
+```
+{
+  version: string,
+  data: {
+    requests: BalanceRequestDto[],
+    total: number,
+    page: number,
+    limit: number,
+    totalPages: number
+  },
+  message: string | null,
+  error: string | object | null
+}
+```
+
+Each request item always carries `id`, `amount`, `status`, `createdAt`, `updatedAt`; `paymentReference`, `decisionReason`, and `decisionAt` are optional and present based on request state. Status enum is `'pending' | 'approved' | 'rejected' | 'cancelled'`. The callback unwraps `data.requests` plus the sibling pagination fields. (This is the user endpoint; the admin endpoint `GET /balance/requests/admin` returns the same shape plus `userEmail`/`userName` per item and optional `adminInCharge` — admin is Stories 4/5, out of scope here.)
 
 II: Question: What status and body does `PATCH /balance/requests/{balance-id}/cancel` return on success and on a non-`pending` conflict?
 
-Status: pending
+Status: answered
 
-Context: Epic Open Question VII (answered) requires new balance BFF handlers to preserve upstream statuses. To handle a stale cancel, the frontend needs the exact success envelope and the conflict status/error code (e.g. a `409` with a KraftError `{ code, message }`).
+Answer: Success returns `200 OK` with a `BalanceRequestResponseDto` — the single request nested under `data.request` (not `data.requests`), matching the create/single-request shape:
 
-Explanation: Confirm the success response shape and the conflict/authorization/not-found statuses so the BFF preserves them and the UI can show authoritative status.
+```
+{
+  version: string,
+  data: { request: { id, amount, paymentReference?, status: "cancelled", decisionReason: null, decisionAt: null, createdAt, updatedAt } },
+  message: null,
+  error: null
+}
+```
+
+A non-`pending` cancel (approved, rejected, or already cancelled) returns `409 Conflict` with a KraftError:
+
+```
+{
+  version: string,
+  data: null,
+  message: null,
+  error: { code: "BAL-BUS-002", message: "La solicitud de saldo no se encuentra en un estado válido para esta operación.", technicalDetails: null }
+}
+```
+
+The BFF must preserve the `409` status and this error body verbatim so the UI can surface the authoritative state rather than a false `cancelled`. Note the success payload nests the single request under `data.request`, distinct from the list's `data.requests` array.
 
 III: Question: Which query parameters does `GET /balance/requests` accept?
 
@@ -294,7 +330,7 @@ Answer: The browser calls the local Next BFF, which reads the httpOnly session t
 ## Assumptions
 
 - `GET /balance/requests` and `PATCH /balance/requests/{id}/cancel` are served from `BACKEND_URI` and accept the existing bearer token.
-- The list response wraps `{ requests, total, page, limit, totalPages }` under the standard `{ version, data, message, error }` envelope, pending confirmation.
+- The list response wraps `requests` plus pagination siblings under `data` in the standard `{ version, data, message, error }` envelope (confirmed). The cancel success response nests the single request under `data.request` instead.
 - Timestamps are UTC ISO 8601 strings and are rendered through `formatDateToSpanish` without mutating stored values.
 - Cancelling never changes current balance; only backend approval does.
 - The history query adopts `['balance', 'requests', month, year, page, limit]`, keeping Story 2's `['balance', 'requests']` invalidation seam effective.
@@ -307,3 +343,5 @@ Answer: The browser calls the local Next BFF, which reads the httpOnly session t
 - `Order.tsx` is a near-complete template for this story's month/year + pagination + query-key identity; the main differences are the balance list/cancel contract and the confirmation dialog.
 - Cancellation must reflect authoritative `cancelled` state via refetch rather than optimistic edits, because a request can transition between list render and submission and because financial state must come from the backend.
 - The user list has no status query, so a status filter cannot be implemented correctly from the paginated response; only pagination and month/year filtering are supported for this delivery.
+- The list and cancel responses nest differently: the list unwraps `data.requests` (array + pagination siblings) while cancel success unwraps `data.request` (a single object). The two callbacks must not share an unwrap path.
+- The non-`pending` cancel conflict is a stable `409` with error code `BAL-BUS-002`; the BFF must preserve it (not flatten to `400`) so the UI can detect the stale-cancel case by status/code and surface authoritative state.
