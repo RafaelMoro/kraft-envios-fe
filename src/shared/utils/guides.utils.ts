@@ -451,45 +451,6 @@ export const getPkkGuide = async (guide: string) => {
 
 //#region Utils Fn
 /**
- * Formats a Date object to Spanish localized date and time components with abbreviated month
- * @param date - The date to format
- * @returns An object containing three formatted strings:
- *   - fullDateTime: Complete date and time in "MMM DD, HH:MM am/pm" format
- *   - date: Date only in "MMM DD" format
- *   - time: Time only in "HH:MM am/pm" format
- * @example 
- * formatDateToSpanish(new Date('2024-03-13T13:13:00'))
- * // Returns: { fullDateTime: 'Mar 13, 01:13 pm', date: 'Mar 13', time: '01:13 pm' }
- */
-export const formatDateToSpanish = (date: Date) => {
-  const months = [
-    'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
-  ];
-  
-  const month = months[date.getMonth()];
-  const day = date.getDate();
-  
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  
-  hours = hours % 12;
-  hours = hours ? hours : 12; // 0 should be 12
-  
-  const formattedHours = hours.toString().padStart(2, '0');
-  const formattedMinutes = minutes.toString().padStart(2, '0');
-  const dateFormatted = `${month} ${day}`
-  const timeFormatted = `${formattedHours}:${formattedMinutes} ${ampm}`;
-  
-  return {
-    fullDateTime: `${dateFormatted}, ${timeFormatted}`,
-    date: dateFormatted,
-    time: timeFormatted
-  };
-};
-
-/**
  * Maps guide status values to their Spanish display labels
  * @param status - The status value from the guide
  * @returns Spanish label for the status

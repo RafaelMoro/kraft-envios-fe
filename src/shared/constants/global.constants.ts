@@ -1,3 +1,6 @@
+// Business timezone
+export const BUSINESS_TIMEZONE = process.env.NEXT_PUBLIC_BUSINESS_TIMEZONE as string;
+
 // Cookie keys
 export const COOKIE_SESSION_KEY = "session";
 export const THEME_COOKIE_KEY = "theme";

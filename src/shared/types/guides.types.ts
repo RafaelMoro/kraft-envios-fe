@@ -656,7 +656,7 @@ export interface GetGuidesData extends GlobalCreateGuideResponse {
   origin: AddressGuide;
   courier: QuoteCourier | null;
   content?: string | null; // Used in Pkk as it returns first not enough data.
-  startDate?: Date | null; // Used in Pkk as it returns first not enough data.
+  startDate?: string | null; // Used in Pkk as it returns first not enough data.
   destination: AddressGuide;
 }
 

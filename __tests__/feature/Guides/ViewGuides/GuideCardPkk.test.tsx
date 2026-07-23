@@ -30,7 +30,7 @@ const mockPkkGuide: GuideUI = {
   file: null,
   courier: 'Paquetexpress',
   content: 'Documentos',
-  startDate: new Date('2024-01-15T10:30:00'),
+  startDate: '2024-01-15T16:30:00.000Z',
   hasBeenFetched: false,
   origin: {
     name: 'Juan Pérez',
@@ -76,7 +76,7 @@ const mockFetchedGuideData: GetGuidesData = {
   file: null,
   courier: 'Paquetexpress',
   content: 'Documentos',
-  startDate: new Date('2024-01-15T10:30:00'),
+  startDate: '2024-01-15T16:30:00.000Z',
   origin: {
     name: 'Juan Pérez',
     alias: 'Casa Principal',
