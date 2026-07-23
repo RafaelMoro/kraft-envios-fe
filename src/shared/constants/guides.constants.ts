@@ -297,7 +297,13 @@ export const GUIDE_DB_RESULT_PROVIDER_FAILED_HEADINGS = {
   edit: 'Guía actualizada en Kraft',
 } as const
 
-export const GUIDES_DB_EMPTY_MESSAGE = 'No hay guias para el mes seleccionado.'
+export const GUIDES_DB_EMPTY_MESSAGE = 'No hay guias para los filtros seleccionados.'
+
+export const GUIDES_DB_FILTER_MODE_MONTH_LABEL = 'Mes y año'
+export const GUIDES_DB_FILTER_MODE_RANGE_LABEL = 'Rango de fechas'
+export const GUIDES_DB_RANGE_PROMPT_MESSAGE = 'Selecciona una fecha de inicio y fin.'
+export const GUIDES_DB_RANGE_INCOMPLETE_MESSAGE = 'Ambas fechas son requeridas.'
+export const GUIDES_DB_RANGE_REVERSED_MESSAGE = 'La fecha final no puede ser anterior a la inicial.'
 
 export const GUIDES_DB_ERROR_MESSAGE = 'Ha sucedido un error. Intentelo nuevamente'
 

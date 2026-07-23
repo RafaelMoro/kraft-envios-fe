@@ -617,8 +617,7 @@ describe('Order', () => {
 
       mockedGetGuidesDbCb.mockClear();
 
-      const selects = screen.getAllByRole('combobox');
-      const monthSelect = selects[0];
+      const monthSelect = screen.getByLabelText('Mes:');
       await userEvent.selectOptions(monthSelect, '3');
 
       await waitFor(() => {
@@ -643,8 +642,7 @@ describe('Order', () => {
 
       mockedGetGuidesDbCb.mockClear();
 
-      const selects = screen.getAllByRole('combobox');
-      const yearSelect = selects[1];
+      const yearSelect = screen.getByLabelText('Año:');
       await userEvent.selectOptions(yearSelect, String(new Date().getFullYear() - 1));
 
       await waitFor(() => {
@@ -662,7 +660,7 @@ describe('Order', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
 
       await waitFor(() => {
-        expect(screen.getByText('No hay guias para el mes seleccionado.')).toBeInTheDocument();
+        expect(screen.getByText('No hay guias para los filtros seleccionados.')).toBeInTheDocument();
       }, { timeout: 3000 });
     });
 
@@ -1498,7 +1496,7 @@ describe('Order', () => {
         expect(screen.queryByTestId('guide-db-details-header')).not.toBeInTheDocument();
       });
       expect(
-        screen.getByText('No hay guias para el mes seleccionado.'),
+        screen.getByText('No hay guias para los filtros seleccionados.'),
       ).toBeInTheDocument();
     });
 
@@ -2231,6 +2229,333 @@ describe('Order', () => {
       await userEvent.click(screen.getByTestId('guide-db-details-button'));
       await userEvent.click(screen.getByTestId('guide-db-edit-button'));
       expect(screen.getAllByTestId('guide-db-edit-modal')).not.toHaveLength(0);
+    });
+  });
+
+  describe('When using the Guides DB date filter mode selector', () => {
+    const createMockDbRecord = (overrides: Partial<GuideDbRecord> = {}): GuideDbRecord => ({
+      kraftId: 'KB-12345',
+      quote: {
+        id: 'quote-123',
+        service: 'Estafeta Terrestre',
+        total: 178.56,
+        typeService: 'standard',
+        courier: 'Estafeta',
+      },
+      externalId: null,
+      trackingNumber: null,
+      shipmentNumber: null,
+      carrier: null,
+      price: null,
+      guideLink: null,
+      labelUrl: null,
+      file: null,
+      status: 'created',
+      provider: 'Mn',
+      isProviderTrackingSynced: false,
+      failureInfo: null,
+      origin: {
+        alias: 'Casa', name: 'Juan', lastName: 'Perez', phone: '5512345678', email: 'juan@example.com',
+        company: '', street1: 'Av Principal', external_number: '123', neighborhood: 'Centro', city: 'CDMX',
+        town: '', state: 'Ciudad de Mexico', zipcode: '06600', country: 'Mexico', reference: 'Entre calle 1 y 2',
+      },
+      destination: {
+        alias: 'Oficina', name: 'Maria', lastName: 'Garcia', phone: '5587654321', email: 'maria@example.com',
+        company: '', street1: 'Calle 2', external_number: '456', neighborhood: 'Polanco', city: 'CDMX',
+        town: '', state: 'Ciudad de Mexico', zipcode: '11560', country: 'Mexico', reference: 'Torre corporate',
+      },
+      parcel: {
+        length: 10, width: 10, height: 10, weight: 1, content: 'Electronica', satProductId: 'SAT-001', value: 500, quantity: 1,
+      },
+      createdAt: '2026-06-15T10:00:00Z',
+      updatedAt: '2026-06-15T10:00:00Z',
+      deletedAt: null,
+      deletedBy: null,
+      ...overrides,
+    });
+
+    const createMockDbResponse = (overrides: Partial<GetGuidesDbResponseData> = {}): GetGuidesDbResponseData => ({
+      guides: [createMockDbRecord()],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+      ...overrides,
+    });
+
+    const mockAdminUserInfo: LoginData = {
+      data: {
+        user: {
+          name: 'Admin User',
+          email: 'admin@example.com',
+          lastName: 'Admin',
+          role: ['admin'],
+        },
+      },
+      error: null,
+      message: null,
+      success: true,
+      version: '1.0',
+    };
+
+    beforeEach(() => {
+      mockedUseMediaQuery.mockReturnValue({
+        isMobile: false,
+        isTablet: false,
+        isTabletDesktop: true,
+        isMobileTablet: false,
+        isDesktop: true,
+        isDesktopX2: false,
+      });
+      mockedGetGuidesCb.mockResolvedValue({
+        guides: mockGuides,
+        messages: [],
+      });
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('Then should default to the Mexico City business month/year regardless of host system time', async () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-08-01T04:00:00.000Z'));
+      const user = userEvent.setup({ delay: null });
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await user.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({ month: 7, year: 2026 })
+        );
+      });
+    });
+
+    it('Then should render only month/year controls and send only month/year in month mode', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalled();
+      });
+
+      expect(screen.getByLabelText('Mes:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Año:')).toBeInTheDocument();
+      expect(screen.queryByLabelText('Fecha inicio:')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Fecha fin:')).not.toBeInTheDocument();
+
+      const call = mockedGetGuidesDbCb.mock.calls[0][0];
+      expect(call).not.toHaveProperty('startDate');
+      expect(call).not.toHaveProperty('endDate');
+    });
+
+    it('Then should switch to range mode and show only the native date controls', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalled();
+      });
+
+      await userEvent.selectOptions(screen.getByLabelText('Filtrar por:'), 'range');
+
+      expect(screen.queryByLabelText('Mes:')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Año:')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('Fecha inicio:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Fecha fin:')).toBeInTheDocument();
+    });
+
+    it('Then should show a validation message and never call getGuidesDbCb when only one boundary is selected', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalled();
+      });
+      mockedGetGuidesDbCb.mockClear();
+
+      await userEvent.selectOptions(screen.getByLabelText('Filtrar por:'), 'range');
+      await userEvent.type(screen.getByLabelText('Fecha inicio:'), '2026-02-01');
+
+      await waitFor(() => {
+        expect(screen.getByText('Ambas fechas son requeridas.')).toBeInTheDocument();
+      });
+      expect(mockedGetGuidesDbCb).not.toHaveBeenCalled();
+    });
+
+    it('Then should show a validation message and never call getGuidesDbCb when the end precedes the start', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalled();
+      });
+      mockedGetGuidesDbCb.mockClear();
+
+      await userEvent.selectOptions(screen.getByLabelText('Filtrar por:'), 'range');
+      await userEvent.type(screen.getByLabelText('Fecha inicio:'), '2026-02-10');
+      await userEvent.type(screen.getByLabelText('Fecha fin:'), '2026-02-01');
+
+      await waitFor(() => {
+        expect(screen.getByText('La fecha final no puede ser anterior a la inicial.')).toBeInTheDocument();
+      });
+      expect(mockedGetGuidesDbCb).not.toHaveBeenCalled();
+    });
+
+    it('Then should convert a valid range and call getGuidesDbCb with only startDate/endDate', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalled();
+      });
+      mockedGetGuidesDbCb.mockClear();
+
+      await userEvent.selectOptions(screen.getByLabelText('Filtrar por:'), 'range');
+      await userEvent.type(screen.getByLabelText('Fecha inicio:'), '2026-02-01');
+      await userEvent.type(screen.getByLabelText('Fecha fin:'), '2026-02-01');
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({
+            startDate: '2026-02-01T06:00:00.000Z',
+            endDate: '2026-02-02T06:00:00.000Z',
+          })
+        );
+      });
+
+      const lastCall = mockedGetGuidesDbCb.mock.calls[mockedGetGuidesDbCb.mock.calls.length - 1][0];
+      expect(lastCall).not.toHaveProperty('month');
+      expect(lastCall).not.toHaveProperty('year');
+    });
+
+    it('Then should reset page to 1 when a range boundary changes after paging forward', async () => {
+      mockedGetGuidesDbCb
+        .mockResolvedValueOnce(createMockDbResponse({ page: 1, totalPages: 2 }))
+        .mockResolvedValueOnce(createMockDbResponse({ page: 2, totalPages: 2 }))
+        .mockResolvedValueOnce(createMockDbResponse({ page: 1, totalPages: 2 }));
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(1);
+      });
+
+      await userEvent.selectOptions(screen.getByLabelText('Filtrar por:'), 'range');
+      await userEvent.type(screen.getByLabelText('Fecha inicio:'), '2026-02-01');
+      await userEvent.type(screen.getByLabelText('Fecha fin:'), '2026-02-05');
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(2);
+      });
+
+      await userEvent.click(screen.getByRole('button', { name: '2' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(3);
+      });
+      expect(mockedGetGuidesDbCb).toHaveBeenLastCalledWith(expect.objectContaining({ page: 2 }));
+
+      await userEvent.clear(screen.getByLabelText('Fecha fin:'));
+      await userEvent.type(screen.getByLabelText('Fecha fin:'), '2026-02-06');
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(4);
+      });
+      expect(mockedGetGuidesDbCb).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 1, endDate: '2026-02-07T06:00:00.000Z' })
+      );
+    });
+
+    it('Then should close the open detail view when returning to the list and changing a range boundary', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver mis guias' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledTimes(1);
+      });
+
+      await userEvent.selectOptions(screen.getByLabelText('Filtrar por:'), 'range');
+      await userEvent.type(screen.getByLabelText('Fecha inicio:'), '2026-02-01');
+      await userEvent.type(screen.getByLabelText('Fecha fin:'), '2026-02-05');
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('guide-db-details-button')[0]).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getAllByTestId('guide-db-details-button')[0]);
+      expect(screen.getByTestId('guide-db-details-header')).toBeInTheDocument();
+
+      await userEvent.click(screen.getByTestId('guide-db-details-back-button'));
+      await waitFor(() => {
+        expect(screen.queryByTestId('guide-db-details-header')).not.toBeInTheDocument();
+      });
+
+      await userEvent.clear(screen.getByLabelText('Fecha fin:'));
+      await userEvent.type(screen.getByLabelText('Fecha fin:'), '2026-02-06');
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('guide-db-details-header')).not.toBeInTheDocument();
+      });
+      expect(screen.getByLabelText('Fecha fin:')).toBeInTheDocument();
+    });
+
+    it('Then should send the same converted range shape through the admin source with scope/admin flags retained', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockAdminUserInfo} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ver todas las guias' }));
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalled();
+      });
+      mockedGetGuidesDbCb.mockClear();
+
+      await userEvent.selectOptions(screen.getByLabelText('Filtrar por:'), 'range');
+      await userEvent.type(screen.getByLabelText('Fecha inicio:'), '2026-02-01');
+      await userEvent.type(screen.getByLabelText('Fecha fin:'), '2026-02-01');
+
+      await waitFor(() => {
+        expect(mockedGetGuidesDbCb).toHaveBeenCalledWith(
+          expect.objectContaining({
+            scope: 'all',
+            startDate: '2026-02-01T06:00:00.000Z',
+            endDate: '2026-02-02T06:00:00.000Z',
+          })
+        );
+      });
+
+      const lastCall = mockedGetGuidesDbCb.mock.calls[mockedGetGuidesDbCb.mock.calls.length - 1][0];
+      expect(lastCall).not.toHaveProperty('month');
+      expect(lastCall).not.toHaveProperty('year');
+    });
+
+    it('Then should not affect the external guides source or its query', async () => {
+      mockedGetGuidesDbCb.mockResolvedValue(createMockDbResponse());
+
+      renderWithQueryClient(<Order userInfo={mockUserInfo} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('TRK123456')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByLabelText('Filtrar por:')).not.toBeInTheDocument();
+      expect(mockedGetGuidesDbCb).not.toHaveBeenCalled();
     });
   });
 });
