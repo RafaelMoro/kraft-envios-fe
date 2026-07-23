@@ -164,6 +164,7 @@ Confirmed cross-feature timezone contract:
 ## Testing Conventions
 
 - Jest uses `next/jest`, `testEnvironment: "jsdom"`, and `jest.setup.ts`.
+- `next/jest` loads `next.config.mjs` while constructing Jest configuration, before `setupFilesAfterEnv`; environment values required by Next config must be set in `jest.config.ts`, not only `jest.setup.ts`.
 - `jest.setup.ts` imports `@testing-library/jest-dom`, installs `TextEncoder`/`TextDecoder`, and adds a JSON-based `structuredClone` fallback.
 - `__tests__/mocks/` and `__tests__/utils-test/` are ignored as test suites. Use them for fixtures/helpers imported by real tests.
 - Real tests currently live under `__tests__/feature/*`, `__tests__/components/*`, and `__tests__/home.test.tsx`.
