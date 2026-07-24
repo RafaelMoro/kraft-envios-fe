@@ -28,7 +28,15 @@ const getBalanceRequestErrorMessage = (
   return 'No pudimos crear la solicitud de saldo. Intenta de nuevo.'
 }
 
-export const BalanceRequestDialog = (): JSX.Element => {
+interface BalanceRequestDialogProps {
+  triggerLabel?: string
+  triggerClassName?: string
+}
+
+export const BalanceRequestDialog = ({
+  triggerLabel = 'Solicitar saldo',
+  triggerClassName = 'mt-3 w-full hover:cursor-pointer'
+}: BalanceRequestDialogProps): JSX.Element => {
   const [openModal, setOpenModal] = useState(false)
   const [submittedAmount, setSubmittedAmount] = useState<number | null>(null)
   const queryClient = useQueryClient()
@@ -72,8 +80,8 @@ export const BalanceRequestDialog = (): JSX.Element => {
 
   return (
     <>
-      <Button className="mt-3 w-full hover:cursor-pointer" onClick={openRequestModal} size="sm">
-        Solicitar saldo
+      <Button className={triggerClassName} onClick={openRequestModal} size="sm">
+        {triggerLabel}
       </Button>
 
       <Modal show={openModal} onClose={closeModal} size="md">

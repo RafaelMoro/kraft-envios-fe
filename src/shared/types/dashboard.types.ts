@@ -1,1 +1,1 @@
-export type DashboardScreens = 'quotes' | 'overview' | 'marginProfit' | 'addresses';
+export type DashboardScreens = 'quotes' | 'overview' | 'marginProfit' | 'addresses' | 'balance';

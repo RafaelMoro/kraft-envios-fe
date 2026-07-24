@@ -105,6 +105,8 @@ Copy guidance:
 
 ### Story 3: Review And Cancel Own Requests
 
+Status: Completed
+
 Description:
 
 Give users a list of their own requests from `GET /balance/requests`, including status and date information, and allow cancellation through `PATCH /balance/requests/{balance-id}/cancel` when the request is eligible.
@@ -121,6 +123,7 @@ Backend dependency for this story:
 
 - Add a validated `BUSINESS_TIMEZONE=America/Mexico_City` backend environment variable and implement regular-user month filtering with Luxon, using an inclusive local-month start and exclusive next-month start.
 - Continue returning UTC ISO 8601 timestamps so the frontend can display them in the same agreed IANA timezone.
+- Frontend side is delivered: Story 6 shipped `NEXT_PUBLIC_BUSINESS_TIMEZONE` enforcement and `date.utils.ts`; this story consumes `formatDateToSpanish`/`getBusinessCalendarMonthYear`. See `review-cancel-own-requests.story-3.md`.
 
 Suggested status labels:
 
@@ -180,6 +183,8 @@ Suggested action: `Volver al panel`.
 ### Current State Summary
 
 - Story 1 is complete: `src/features/Balance/BalanceDisplay.tsx` retrieves the current balance through `src/app/api/balance/route.ts`, formats zero-safe MXN values, and is covered by focused route, feature, and dashboard tests.
+- Story 2 is complete: `src/features/Balance/BalanceRequestDialog.tsx` creates a request through `src/app/api/balance/route.ts` `POST` and already invalidates the `['balance', 'requests']` query prefix on success; no history query consumes that seam yet.
+- Story 6 (business-timezone configuration) is complete: `src/shared/utils/date.utils.ts` exports `formatDateToSpanish`, `getBusinessCalendarMonthYear`, and `toBusinessDateRange`, all pinned to `BUSINESS_TIMEZONE`. `NEXT_PUBLIC_BUSINESS_TIMEZONE=America/Mexico_City` is enforced at Next config load and set in `jest.config.ts`. Stories 3 and 4 consume these primitives directly; no new frontend timezone plumbing remains.
 - `src/app/dashboard/page.tsx` is the only dashboard page. It reads auth cookies server-side and dynamically renders the client-only `Dashboard`.
 - `src/features/Dashboard/Dashboard.tsx` switches dashboard content with local `DashboardScreens` state. Screen selection does not alter the URL, browser history, or deep-link state.
 - `src/shared/types/dashboard.types.ts` only permits `quotes`, `overview`, `marginProfit`, and `addresses`.
@@ -203,7 +208,7 @@ Routes/pages:
 
 API route handlers:
 
-- Authenticated current-balance proxy coverage exists; further handlers are needed for own request collection, admin request collection, cancellation, decision, and the missing single-request lookup.
+- Authenticated current-balance and create-request proxy coverage exists; further handlers are needed for own request collection, cancellation, admin request collection, decision, and the now-available admin single-request lookup (`GET /balance/requests/admin/{requestId}`).
 - Existing route layout under `src/app/api/**/route.ts` supports collection and dynamic-ID handlers.
 - Dynamic IDs should be URL encoded before constructing upstream URLs, matching `src/app/api/guides-db/[kraftId]/route.ts`.
 - Admin decision and single-request access may use a defensive Next-side role check like the hard-delete guide route, but backend authorization remains mandatory because the `user-info` cookie is not an authoritative security boundary.
@@ -306,11 +311,13 @@ Common request fields observed across responses:
 - Conditional: `paymentReference`, `decisionAt`, `userEmail`, `userName`, `adminInCharge`
 - Status values observed: `pending`, `approved`, `rejected`, `cancelled`
 
-Missing contract for accepted deep link:
+Admin single-request lookup (supplied by the backend; unblocks Story 5):
 
-- A single-request lookup such as `GET /balance/requests/{balance-id}` for an authorized admin.
-- Response behavior for missing, forbidden, cancelled, or already-decided IDs.
-- Whether a regular user may use the same endpoint for an owned request or it is admin-only.
+- `GET /balance/requests/admin/{requestId}` for an authorized admin.
+- Success envelope: `{ version, data: { request }, message: null, error: null }`.
+- Example `data.request`: `{ id, amount, status, createdAt, updatedAt, userEmail, userName, adminInCharge }`; a `pending` example returns `adminInCharge: null` and omits `paymentReference`/`decisionAt`/`decisionReason`, consistent with the conditional-field pattern.
+- The `/admin/` path segment makes this admin-only, matching the epic decision that `/dashboard/requests/{requestId}` is admin-only (Authorization Open Question III). A regular user does not use this endpoint.
+- Still to confirm with the backend: exact status/body for missing (`404`), forbidden (`401`/`403`), and the fields returned for already-decided (`approved`/`rejected`) or `cancelled` requests.
 
 ### Data And Cache Relationships
 
@@ -391,10 +398,11 @@ Smallest useful coverage by story:
 ## Story Readiness And Blockers
 
 - Story 1, Display Current Balance: completed.
-- Story 2, Create A Balance Request: ready; payload, `201` success response, validation errors, and domain errors are confirmed.
-- Story 3, Review And Cancel Own Requests: no longer blocked by a pending timezone decision. It depends on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries, plus matching frontend `NEXT_PUBLIC_BUSINESS_TIMEZONE` configuration.
-- Story 4, Admin Request Queue And Decisions: no longer blocked by a pending timezone decision. It has the same backend Luxon and synchronized deployment-configuration dependency as Story 3.
-- Story 5, Email Deep Link To Admin Review: blocked until the backend supplies or confirms the single-request GET endpoint used to render `/dashboard/requests/{requestId}`. The frontend route and decision mutation alone cannot load the request details.
+- Story 2, Create A Balance Request: completed.
+- Story 6, Business-Timezone Configuration: completed. Frontend `NEXT_PUBLIC_BUSINESS_TIMEZONE` is enforced and the shared `date.utils.ts` primitives are delivered. Researched and planned as `timezone-configuration.story-6.md`.
+- Story 3, Review And Cancel Own Requests: completed. Implementation delivered with timezone-aware date display and cancellation workflows; relies on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries.
+- Story 4, Admin Request Queue And Decisions: ready. The frontend timezone dependency is satisfied by Story 6; it has the same backend Luxon month-boundary dependency as Story 3.
+- Story 5, Email Deep Link To Admin Review: no longer blocked. The backend now supplies `GET /balance/requests/admin/{requestId}` to render `/dashboard/requests/{requestId}`; remaining confirmation is limited to status/body for missing, forbidden, and already-decided/cancelled requests.
 
 ## Open Questions
 
@@ -404,9 +412,10 @@ Smallest useful coverage by story:
   - Status: answered
   - Answer: The email CTA opens `/dashboard/requests/{requestId}`. That frontend UI shows Approve and Reject actions, and each action calls `PATCH /balance/requests/{balance-id}/decision` using the supplied decision contract.
 - II: Question: What endpoint returns one request by ID so `/dashboard/requests/{requestId}` can load its details before a decision?
-  - Status: pending
-  - Context: The request ID and decision mutation are defined, but the frontend still needs request data to render. The dynamic route cannot reliably find that data through a paginated, month-scoped list.
-  - Explanation: Confirm whether a single-request GET endpoint exists. If so, define its path, role rules, response envelope, and behavior for missing, forbidden, cancelled, and already-decided requests.
+  - Status: answered
+  - Answer: The backend now exposes `GET /balance/requests/admin/{requestId}` for authorized admins. It returns `{ version, data: { request }, message: null, error: null }`, where `request` includes `id`, `amount`, `status`, `createdAt`, `updatedAt`, `userEmail`, `userName`, and `adminInCharge` (a `pending` example returns `adminInCharge: null` and omits `paymentReference`/`decisionAt`/`decisionReason`). The `/admin/` path makes it admin-only, matching the admin-only `/dashboard/requests/{requestId}` decision.
+  - Context: This resolves the previously missing single-request contract and unblocks Story 5. The BFF should URL-encode `requestId`, forward the bearer token, and preserve upstream statuses.
+  - Explanation: Remaining backend confirmation is limited to exact status/body for missing (`404`), forbidden (`401`/`403`), and the fields returned for already-decided or cancelled requests.
 - III: Question: Which query parameters does regular-user `GET /balance/requests` accept?
   - Status: answered
   - Answer: It accepts optional integer `month` (1-12), optional integer `year` (minimum 1), optional positive integer `page` (default 1), and optional positive integer `limit` (default 10). It does not document a status query.
@@ -548,3 +557,5 @@ Email template ownership, generation, and CTA label are backend implementation d
 - The closest reusable architecture is the Guides DB flow: direct backend envelope, explicit query allowlist, paginated TanStack Query keys, responsive list/detail states, and prefix invalidation.
 - Correct user filtering cannot be implemented from the documented paginated admin response without backend query support; deferring it avoids a misleading current-page-only filter.
 - The email button itself is not frontend code in this repository. Frontend delivery can provide the route contract, but the sending service must be changed elsewhere.
+- The admin single-request lookup is now available as `GET /balance/requests/admin/{requestId}`, so Story 5's `/dashboard/requests/{requestId}` route can render request details from an authoritative admin endpoint rather than scanning a paginated monthly list.
+- The frontend business-timezone work (Story 6) is delivered, so Stories 3 and 4 reuse the shared `date.utils.ts` primitives instead of introducing any new date-conversion boundary.

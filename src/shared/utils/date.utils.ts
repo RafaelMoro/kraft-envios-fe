@@ -89,6 +89,18 @@ export const formatDateToSpanish = (
   };
 };
 
+// Lowercase Spanish month abbreviations for the "18 jul 2026" comp format.
+const MONTHS_ES_LOWER = MONTHS_ES.map((m) => m.toLowerCase());
+
+export const formatBusinessDateShort = (timestamp: string): string => {
+  if (typeof timestamp !== 'string' || !hasExplicitOffset(timestamp)) return PLACEHOLDER.date;
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return PLACEHOLDER.date;
+  const parts = getBusinessDateParts(date);
+  const month = MONTHS_ES_LOWER[Number(parts.month) - 1];
+  return `${Number(parts.day)} ${month} ${parts.year}`;
+};
+
 export const getBusinessCalendarMonthYear = (
   instant: Date = new Date(),
 ): BusinessMonthYear => {
