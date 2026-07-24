@@ -1,3 +1,9 @@
+## v0.55.0 (2026-07-24)
+
+### Pull Requests
+[#115](https://github.com/RafaelMoro/kraft-envios-fe/pull/115) | Balance Epic feature | Story 3: Cancel and review own requests
+
+
 ## v0.54.0 (2026-07-23)
 
 ### Pull Requests
