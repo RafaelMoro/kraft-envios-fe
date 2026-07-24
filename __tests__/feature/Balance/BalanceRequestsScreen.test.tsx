@@ -70,6 +70,13 @@ const buildListResponse = (
   error: null
 })
 
+/** The card renders the amount and "MXN" in separate spans, so match on the wrapping <p>'s full text. */
+const findAmountText = (amount: string) =>
+  screen.findByText((_, element) => Boolean(element && element.tagName === 'P' && element.textContent === amount))
+
+const queryAmountText = (amount: string) =>
+  screen.queryByText((_, element) => Boolean(element && element.tagName === 'P' && element.textContent === amount))
+
 const createQueryClient = () =>
   new QueryClient({
     defaultOptions: {
@@ -128,7 +135,7 @@ describe('BalanceRequestsScreen', () => {
 
     renderScreen()
 
-    expect(await screen.findByText('$31.45 MXN')).toBeInTheDocument()
+    expect(await findAmountText('$31.45 MXN')).toBeInTheDocument()
     expect(screen.getByText('Cancelada')).toBeInTheDocument()
     expect(screen.getByText('18 jul 2026')).toBeInTheDocument()
     expect(screen.getByText('20 jul 2026')).toBeInTheDocument()
@@ -145,7 +152,7 @@ describe('BalanceRequestsScreen', () => {
 
     renderScreen()
 
-    await screen.findByText('$31.45 MXN')
+    await findAmountText('$31.45 MXN')
     expect(screen.queryByText(/referencia de pago/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/razón de la cancelación/i)).not.toBeInTheDocument()
     expect(screen.getAllByText('Pendiente')).toHaveLength(2)
@@ -163,7 +170,7 @@ describe('BalanceRequestsScreen', () => {
 
     renderScreen()
 
-    await screen.findByText('$99.99 MXN')
+    await findAmountText('$99.99 MXN')
     expect(screen.getAllByRole('button', { name: /cancelar/i })).toHaveLength(1)
   })
 
@@ -175,7 +182,7 @@ describe('BalanceRequestsScreen', () => {
     )
 
     renderScreen()
-    await screen.findByText('$31.45 MXN')
+    await findAmountText('$31.45 MXN')
 
     await user.click(screen.getByRole('button', { name: /cancelar/i }))
     expect(await screen.findByText(/seguro que quieres cancelar/i)).toBeInTheDocument()
@@ -205,7 +212,7 @@ describe('BalanceRequestsScreen', () => {
     const queryClient = renderScreen()
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries')
 
-    await screen.findByText('$31.45 MXN')
+    await findAmountText('$31.45 MXN')
     await user.click(screen.getByRole('button', { name: /cancelar/i }))
     await user.click(await screen.findByRole('button', { name: /sí, cancelar/i }))
 
@@ -229,7 +236,7 @@ describe('BalanceRequestsScreen', () => {
     })
 
     renderScreen()
-    await screen.findByText('$31.45 MXN')
+    await findAmountText('$31.45 MXN')
     await user.click(screen.getByRole('button', { name: /cancelar/i }))
     await user.click(await screen.findByRole('button', { name: /sí, cancelar/i }))
 
@@ -243,7 +250,7 @@ describe('BalanceRequestsScreen', () => {
     renderScreen()
 
     expect(screen.getByRole('status', { name: '' })).toBeInTheDocument()
-    expect(screen.queryByText('$31.45 MXN')).not.toBeInTheDocument()
+    expect(queryAmountText('$31.45 MXN')).not.toBeInTheDocument()
   })
 
   it('shows the error state with a Reintentar button that refetches, keeping filters mounted', async () => {
@@ -289,7 +296,7 @@ describe('BalanceRequestsScreen', () => {
     )
 
     renderScreen()
-    await screen.findByText('$31.45 MXN')
+    await findAmountText('$31.45 MXN')
 
     mockedAxios.get.mockClear()
     await user.selectOptions(screen.getByLabelText('Mes'), 'Agosto')
