@@ -12,15 +12,14 @@ import {
   BALANCE_ADMIN_FIELD_ADMIN_IN_CHARGE,
   BALANCE_ADMIN_FIELD_UPDATED,
   BALANCE_ADMIN_FIELD_USER,
-  BALANCE_DECISION_NONE,
+  BALANCE_DETAIL_READ_ONLY_MESSAGE,
   BALANCE_FIELD_CREATED,
   BALANCE_FIELD_DECISION_REASON,
   BALANCE_STATUS_BADGE_COLOR,
   BALANCE_STATUS_LABELS
 } from '@/shared/constants/balance.constants'
 import { AdminBalanceRequestDto } from '@/shared/types/balance.types'
-import { formatBalanceMxn } from '@/shared/utils/balance.utils'
-import { formatBusinessDateShort, formatDateToSpanish } from '@/shared/utils/date.utils'
+import { formatBalanceDetailTimestamp, formatBalanceMxn } from '@/shared/utils/balance.utils'
 
 interface BalanceAdminRequestDrawerProps {
   request: AdminBalanceRequestDto | null
@@ -29,13 +28,6 @@ interface BalanceAdminRequestDrawerProps {
 
 const FIELD_LABEL_CLASS = 'text-sm text-gray-500 dark:text-gray-400'
 const FIELD_VALUE_CLASS = 'text-sm font-medium text-gray-900 dark:text-white'
-
-const formatDetailTimestamp = (timestamp: string): string => {
-  const date = formatBusinessDateShort(timestamp)
-  if (date === '--') return BALANCE_DECISION_NONE
-
-  return `${date} · ${formatDateToSpanish(timestamp).time}`
-}
 
 export const BalanceAdminRequestDrawer = ({ request, onClose }: BalanceAdminRequestDrawerProps): JSX.Element => {
   return (
@@ -72,7 +64,7 @@ export const BalanceAdminRequestDrawer = ({ request, onClose }: BalanceAdminRequ
 
             <div>
               <p className={FIELD_LABEL_CLASS}>{BALANCE_FIELD_CREATED}</p>
-              <p className={FIELD_VALUE_CLASS}>{formatDetailTimestamp(request.createdAt)}</p>
+              <p className={FIELD_VALUE_CLASS}>{formatBalanceDetailTimestamp(request.createdAt)}</p>
             </div>
 
             <div>
@@ -83,7 +75,7 @@ export const BalanceAdminRequestDrawer = ({ request, onClose }: BalanceAdminRequ
 
             <div>
               <p className={FIELD_LABEL_CLASS}>{BALANCE_ADMIN_FIELD_UPDATED}</p>
-              <p className={FIELD_VALUE_CLASS}>{formatDetailTimestamp(request.updatedAt)}</p>
+              <p className={FIELD_VALUE_CLASS}>{formatBalanceDetailTimestamp(request.updatedAt)}</p>
             </div>
 
             <div>
@@ -104,9 +96,7 @@ export const BalanceAdminRequestDrawer = ({ request, onClose }: BalanceAdminRequ
           {request.status === 'pending' ? (
             <BalanceDecisionForm requestId={request.id} onDecided={onClose} />
           ) : (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Esta solicitud ya fue decidida y no admite más acciones.
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{BALANCE_DETAIL_READ_ONLY_MESSAGE}</p>
           )}
         </DrawerItems>
       )}

@@ -123,3 +123,34 @@ export const BALANCE_ADMIN_ERROR_RETRY = 'Reintentar';
 
 // Nav label (Aside + mobile drawer).
 export const BALANCE_ADMIN_NAV_LABEL = 'Solicitudes de saldo';
+
+// Admin request detail page copy (comps/story-5-email-deep-link-comp.png).
+export const BALANCE_DETAIL_EYEBROW = 'Revisión administrativa';
+export const BALANCE_DETAIL_SUBTITLE = 'Revisa la información antes de registrar una decisión.';
+export const BALANCE_DETAIL_DECISION_SUBTITLE = 'Selecciona una acción para continuar.';
+export const BALANCE_DETAIL_BACK_ACTION = 'Volver al panel';
+
+// Promoted out of BalanceAdminRequestDrawer, which inlined this sentence.
+export const BALANCE_DETAIL_READ_ONLY_MESSAGE =
+  'Esta solicitud ya fue decidida y no admite más acciones.';
+
+// Detail states.
+export const BALANCE_DETAIL_LOADING_MESSAGE = 'Cargando solicitud de saldo...';
+export const BALANCE_DETAIL_ERROR_TITLE = 'No pudimos cargar la solicitud';
+export const BALANCE_DETAIL_ERROR_BODY =
+  'Ocurrió un problema al consultar la información. Revisa tu conexión e inténtalo de nuevo.';
+export const BALANCE_DETAIL_ERROR_RETRY = 'Reintentar';
+export const BALANCE_DETAIL_NOT_FOUND_TITLE = 'Solicitud no encontrada';
+export const BALANCE_DETAIL_NOT_FOUND_BODY =
+  'La solicitud no existe o ya no está disponible. Revisa el enlace del correo o vuelve al panel principal.';
+
+// Post-decision success panel (comps/story-5-email-deep-link-comp-decision-taken.png).
+export const BALANCE_DETAIL_SUCCESS_TITLE = 'Decisión registrada';
+export const BALANCE_DETAIL_SUCCESS_BODY =
+  'La solicitud se actualizó correctamente y ya está disponible en la cola administrativa.';
+export const BALANCE_DETAIL_SUCCESS_VIEW_ACTION = 'Ver solicitud actualizada';
+
+// Unauthorized screen (comps/story-5-email-deep-link-comp-unauthorized.png + epic copy).
+export const BALANCE_UNAUTHORIZED_TITLE = 'Acceso no autorizado';
+export const BALANCE_UNAUTHORIZED_BODY =
+  'No tienes acceso a esta solicitud. Esta página está disponible únicamente para administradores. Inicia sesión con una cuenta de administrador o vuelve al panel principal.';

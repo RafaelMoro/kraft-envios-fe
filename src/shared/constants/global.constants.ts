@@ -28,6 +28,14 @@ export const REGISTER_ROUTE = "/register";
 export const FORGOT_PASSWORD_ROUTE = "/forgot-password";
 export const LOGIN_ROUTE = "/";
 export const DASHBOARD_ROUTE = "/dashboard";
+export const DASHBOARD_REQUESTS_ROUTE = "/dashboard/requests";
+
+/** Stable email-deep-link destination. Changing this breaks already-sent emails. */
+export const buildBalanceRequestDetailRoute = (requestId: string): string =>
+  `${DASHBOARD_REQUESTS_ROUTE}/${encodeURIComponent(requestId)}`;
+
+/** Post-login return destination carried through the login route. */
+export const LOGIN_REDIRECT_PARAM = "redirect";
 
 export const primaryButtonCSS = "relative flex items-center justify-center rounded-lg text-center font-medium focus:outline-none focus:ring-4 h-10 px-5 text-sm bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 hover:cursor-pointer"
 

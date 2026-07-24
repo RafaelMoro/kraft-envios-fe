@@ -5,6 +5,7 @@ import {
   BALANCE_REQUESTS_ADMIN_API_ENDPOINT,
   BALANCE_REQUESTS_API_ENDPOINT
 } from '@/shared/constants/global.constants'
+import { BALANCE_DECISION_NONE } from '@/shared/constants/balance.constants'
 import {
   AdminBalanceRequestDto,
   AdminBalanceRequestListData,
@@ -17,10 +18,12 @@ import {
   CreateBalanceRequestPayload,
   CreateBalanceRequestResponse,
   DecideBalanceRequestResponse,
+  GetAdminBalanceRequestResponse,
   GetAdminBalanceRequestsResponse,
   GetBalanceRequestsResponse,
   GetBalanceResponse
 } from '@/shared/types/balance.types'
+import { formatBusinessDateShort, formatDateToSpanish } from '@/shared/utils/date.utils'
 
 const mxnFormatter = new Intl.NumberFormat('es-MX', {
   style: 'currency',
@@ -100,4 +103,21 @@ export const decideBalanceRequestCb = async ({
     payload
   )
   return response.data.data.request
+}
+
+export const getAdminBalanceRequestCb = async (
+  requestId: string
+): Promise<AdminBalanceRequestDto> => {
+  const response: AxiosResponse<GetAdminBalanceRequestResponse> = await axios.get(
+    `${BALANCE_REQUESTS_ADMIN_API_ENDPOINT}/${encodeURIComponent(requestId)}`
+  )
+  return response.data.data.request
+}
+
+/** `22 jul 2026 · 10:42 am` — the drawer's composition, now shared with the detail page. */
+export const formatBalanceDetailTimestamp = (timestamp: string): string => {
+  const date = formatBusinessDateShort(timestamp)
+  if (date === '--') return BALANCE_DECISION_NONE
+
+  return `${date} · ${formatDateToSpanish(timestamp).time}`
 }

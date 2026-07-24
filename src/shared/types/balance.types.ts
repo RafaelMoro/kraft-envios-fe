@@ -155,6 +155,23 @@ export interface BalanceDecisionConflictError {
   statusCode: number
 }
 
+// Single-request admin lookup mirrors create/cancel/decision success (data.request).
+export interface GetAdminBalanceRequestResponse {
+  version: string
+  data: { request: AdminBalanceRequestDto }
+  message: null
+  error: null
+}
+
+// The single-request 404 body is FLAT like the decision 409, but its code uses
+// underscores (BAL_NF_001) where the conflict uses hyphens (BAL-BUS-002).
+export interface BalanceRequestNotFoundError {
+  code: string
+  message: string
+  technicalDetails: object | null
+  statusCode: number
+}
+
 export const balanceRequestSchema: ObjectSchema<BalanceRequestFormValues> = object({
   amount: string()
     .required('Ingresa el monto a solicitar')
