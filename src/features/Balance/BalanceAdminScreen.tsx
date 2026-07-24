@@ -2,6 +2,7 @@
 
 import { RiInboxLine, RiRefreshLine } from '@remixicon/react'
 import { useQuery } from '@tanstack/react-query'
+import clsx from 'clsx'
 import { Button, ButtonGroup, Label, Select } from 'flowbite-react'
 import { useState } from 'react'
 
@@ -59,11 +60,11 @@ export const BalanceAdminScreen = ({ userInfo }: BalanceAdminScreenProps): JSX.E
 
   const [draftMonth, setDraftMonth] = useState(currentMonth)
   const [draftYear, setDraftYear] = useState(currentYear)
-  const [draftStatus, setDraftStatus] = useState<AdminBalanceRequestStatusFilter>('pending')
+  const [draftStatus, setDraftStatus] = useState<AdminBalanceRequestStatusFilter>('all')
 
   const [month, setMonth] = useState(currentMonth)
   const [year, setYear] = useState(currentYear)
-  const [status, setStatus] = useState<AdminBalanceRequestStatusFilter>('pending')
+  const [status, setStatus] = useState<AdminBalanceRequestStatusFilter>('all')
   const [page, setPage] = useState(1)
 
   const [selectedRequest, setSelectedRequest] = useState<AdminBalanceRequestDto | null>(null)
@@ -142,7 +143,9 @@ export const BalanceAdminScreen = ({ userInfo }: BalanceAdminScreenProps): JSX.E
                 color="alternative"
                 aria-pressed={draftStatus === option}
                 onClick={() => setDraftStatus(option)}
-                className="hover:cursor-pointer"
+                className={clsx('hover:cursor-pointer font-medium', {
+                  'text-primary-700 dark:text-primary-400': draftStatus === option
+                })}
               >
                 {BALANCE_ADMIN_STATUS_FILTER_LABELS[option]}
               </Button>

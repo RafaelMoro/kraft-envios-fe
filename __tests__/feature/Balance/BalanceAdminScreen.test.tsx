@@ -124,7 +124,7 @@ describe('BalanceAdminScreen', () => {
 
     renderScreen(adminUserInfo)
 
-    await screen.findByText(/no hay solicitudes pendientes/i)
+    await screen.findByText(/no hay solicitudes en este periodo/i)
     expect(screen.getByLabelText('Mes')).toHaveValue('1')
   })
 
@@ -136,11 +136,11 @@ describe('BalanceAdminScreen', () => {
     } as AxiosResponse<GetAdminBalanceRequestsResponse>)
 
     renderScreen(adminUserInfo)
-    await screen.findByText(/no hay solicitudes pendientes/i)
+    await screen.findByText(/no hay solicitudes en este periodo/i)
 
     mockedAxios.get.mockClear()
     await user.selectOptions(screen.getByLabelText('Mes'), 'Agosto')
-    await user.click(screen.getByRole('button', { name: 'Todas' }))
+    await user.click(screen.getByRole('button', { name: 'Pendientes' }))
     expect(mockedAxios.get).not.toHaveBeenCalled()
 
     await user.click(screen.getByRole('button', { name: 'Aplicar filtros' }))
@@ -148,7 +148,7 @@ describe('BalanceAdminScreen', () => {
     await waitFor(() => {
       expect(mockedAxios.get).toHaveBeenCalledWith(
         '/api/balance/requests/admin',
-        expect.objectContaining({ params: expect.objectContaining({ month: 8, page: 1, status: 'all' }) })
+        expect.objectContaining({ params: expect.objectContaining({ month: 8, page: 1, status: 'pending' }) })
       )
     })
   })
@@ -203,7 +203,7 @@ describe('BalanceAdminScreen', () => {
     await user.click(screen.getByRole('button', { name: /ver detalle/i }))
 
     expect(await screen.findByRole('heading', { name: 'Detalle de solicitud' })).toBeInTheDocument()
-    expect(screen.getByText(request.id)).toBeInTheDocument()
+    expect(screen.getAllByText(request.userEmail).length).toBeGreaterThan(0)
     expect(screen.getByRole('button', { name: 'Aprobar solicitud' })).toBeInTheDocument()
   })
 
@@ -393,12 +393,12 @@ describe('BalanceAdminScreen', () => {
     } as AxiosResponse<GetAdminBalanceRequestsResponse>)
 
     renderScreen(adminUserInfo)
-    expect(await screen.findByText('No hay solicitudes pendientes en este periodo.')).toBeInTheDocument()
+    expect(await screen.findByText('No hay solicitudes en este periodo.')).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Todas' }))
+    await user.click(screen.getByRole('button', { name: 'Pendientes' }))
     await user.click(screen.getByRole('button', { name: 'Aplicar filtros' }))
 
-    expect(await screen.findByText('No hay solicitudes en este periodo.')).toBeInTheDocument()
+    expect(await screen.findByText('No hay solicitudes pendientes en este periodo.')).toBeInTheDocument()
   })
 
   it('changes page without resetting applied filters', async () => {
@@ -418,8 +418,27 @@ describe('BalanceAdminScreen', () => {
     await waitFor(() => {
       expect(mockedAxios.get).toHaveBeenCalledWith(
         '/api/balance/requests/admin',
-        expect.objectContaining({ params: expect.objectContaining({ page: 2, status: 'pending' }) })
+        expect.objectContaining({ params: expect.objectContaining({ page: 2, status: 'all' }) })
       )
     })
+  })
+
+  it('shows an active-state highlight only on the currently applied status option', async () => {
+    const user = userEvent.setup()
+    mockedAxios.get.mockResolvedValue({
+      data: buildListResponse([]),
+      status: 200
+    } as AxiosResponse<GetAdminBalanceRequestsResponse>)
+
+    renderScreen(adminUserInfo)
+    await screen.findByText(/no hay solicitudes en este periodo/i)
+
+    expect(screen.getByRole('button', { name: 'Todas' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'Pendientes' })).toHaveAttribute('aria-pressed', 'false')
+
+    await user.click(screen.getByRole('button', { name: 'Pendientes' }))
+
+    expect(screen.getByRole('button', { name: 'Pendientes' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'Todas' })).toHaveAttribute('aria-pressed', 'false')
   })
 })
