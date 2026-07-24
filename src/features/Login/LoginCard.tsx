@@ -7,19 +7,21 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
 
-import { DASHBOARD_ROUTE, FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
+import { FORGOT_PASSWORD_ROUTE, REGISTER_ROUTE } from "@/shared/constants/global.constants"
 import { LinkButton } from "../../shared/ui/atoms/LinkButton"
 import { LoginData, LoginError, LoginPayload, LoginSchema } from "../../shared/types/login.types"
 import { ErrorMessage } from "../../shared/ui/atoms/ErrorMessage"
 import { LoginMutationCb } from "@/shared/utils/login.utils"
 import { ERROR_CREATE_USER_TITLE, ERROR_UNAUTHORIZED_LOGIN, ERROR_UNAUTHORIZED_LOGIN_MESSAGE } from "@/shared/constants/login.constants"
+import { sanitizeDashboardReturnUrl } from "@/shared/utils/global.utils"
 
 interface LoginCardProps {
   toggleNotification: () => void
   updateNotificationMessage: (message: string) => void
+  returnUrl?: string
 }
 
-export const LoginCard = ({ toggleNotification, updateNotificationMessage }: LoginCardProps) => {
+export const LoginCard = ({ toggleNotification, updateNotificationMessage, returnUrl }: LoginCardProps) => {
   const router = useRouter()
 
   const {
@@ -34,7 +36,7 @@ export const LoginCard = ({ toggleNotification, updateNotificationMessage }: Log
     mutationFn: LoginMutationCb,
     onSuccess: () => {
       setTimeout(() => {
-        router.push(DASHBOARD_ROUTE)
+        router.push(sanitizeDashboardReturnUrl(returnUrl))
       }, 1000)
     }
   })
