@@ -1,4 +1,4 @@
-import { BalanceRequestStatus } from "@/shared/types/balance.types";
+import { AdminBalanceRequestStatusFilter, BalanceRequestStatus } from "@/shared/types/balance.types";
 
 export const BALANCE_STATUS_LABELS: Record<BalanceRequestStatus, string> = {
   pending: 'Pendiente',
@@ -63,3 +63,63 @@ export const BALANCE_CANCEL_CONFIRM_ACTION = 'Sí, cancelar';
 export const BALANCE_CANCEL_DISMISS_ACTION = 'No, volver';
 export const BALANCE_CANCEL_ERROR_MESSAGE =
   'No pudimos cancelar la solicitud. Es posible que ya haya cambiado de estado. Actualiza e inténtalo de nuevo.';
+
+// Admin queue page copy (comps/admin-request-comp-desktop.png).
+export const BALANCE_ADMIN_EYEBROW = 'Panel administrativo';
+export const BALANCE_ADMIN_HEADING = 'Solicitudes de saldo';
+export const BALANCE_ADMIN_SUBTITLE =
+  'Revisa las solicitudes enviadas por usuarios y registra cada decisión desde un único flujo.';
+export const BALANCE_ADMIN_SECTION_TITLE_PENDING = 'Pendientes por revisar';
+export const BALANCE_ADMIN_SECTION_TITLE_ALL = 'Todas las solicitudes';
+
+// Filter controls.
+export const BALANCE_ADMIN_FILTER_STATUS_LABEL = 'Estado';
+export const BALANCE_ADMIN_STATUS_FILTER_LABELS: Record<AdminBalanceRequestStatusFilter, string> = {
+  pending: 'Pendientes',
+  all: 'Todas',
+};
+export const BALANCE_ADMIN_APPLY_FILTERS = 'Aplicar filtros';
+
+// Card / drawer field labels.
+export const BALANCE_ADMIN_FIELD_REFERENCE = 'Referencia';
+export const BALANCE_ADMIN_FIELD_ADMIN_IN_CHARGE = 'Admin a cargo';
+export const BALANCE_ADMIN_FIELD_REQUEST_ID = 'ID de solicitud';
+export const BALANCE_ADMIN_FIELD_USER = 'Usuario';
+export const BALANCE_ADMIN_FIELD_UPDATED = 'Última actualización';
+export const BALANCE_ADMIN_ADMIN_UNASSIGNED = 'Sin asignar';
+export const BALANCE_ADMIN_VIEW_DETAIL = 'Ver detalle';
+
+// Drawer.
+export const BALANCE_ADMIN_DRAWER_TITLE = 'Detalle de solicitud';
+export const BALANCE_ADMIN_DRAWER_CLOSE = 'Cerrar detalle';
+export const BALANCE_ADMIN_DRAWER_INFO_TITLE = 'Información de la solicitud';
+
+// Decision section (comps/admin-request-comp-confirm-approval|reject.png).
+export const BALANCE_DECISION_SECTION_TITLE = 'Registrar decisión';
+export const BALANCE_DECISION_APPROVE_ACTION = 'Aprobar solicitud';
+export const BALANCE_DECISION_REJECT_ACTION = 'Rechazar solicitud';
+export const BALANCE_DECISION_REFERENCE_LABEL = 'Referencia de pago';
+export const BALANCE_DECISION_REFERENCE_PLACEHOLDER = 'Ej. KRF-843210';
+export const BALANCE_DECISION_REASON_LABEL = 'Motivo (opcional)';
+export const BALANCE_DECISION_REASON_PLACEHOLDER = 'Agrega contexto para el usuario';
+export const BALANCE_DECISION_REASON_HELPER =
+  'El usuario verá este motivo en su historial y en el correo de decisión.';
+export const BALANCE_DECISION_DISMISS_ACTION = 'Cancelar';
+export const BALANCE_DECISION_CONFIRM_APPROVE = 'Confirmar aprobación';
+export const BALANCE_DECISION_CONFIRM_REJECT = 'Confirmar rechazo';
+export const BALANCE_DECISION_CONFLICT_MESSAGE =
+  'La solicitud ya cambió de estado y no se puede decidir. Actualiza la lista para ver el estado actual.';
+export const BALANCE_DECISION_ERROR_MESSAGE =
+  'No pudimos registrar la decisión. Inténtalo de nuevo.';
+
+// Admin queue states.
+export const BALANCE_ADMIN_LOADING_MESSAGE = 'Cargando solicitudes de saldo...';
+export const BALANCE_ADMIN_EMPTY_PENDING = 'No hay solicitudes pendientes en este periodo.';
+export const BALANCE_ADMIN_EMPTY_ALL = 'No hay solicitudes en este periodo.';
+export const BALANCE_ADMIN_ERROR_TITLE = 'No pudimos cargar las solicitudes de saldo';
+export const BALANCE_ADMIN_ERROR_BODY =
+  'Ocurrió un problema al consultar la información. Revisa tu conexión e inténtalo de nuevo.';
+export const BALANCE_ADMIN_ERROR_RETRY = 'Reintentar';
+
+// Nav label (Aside + mobile drawer).
+export const BALANCE_ADMIN_NAV_LABEL = 'Solicitudes de saldo';

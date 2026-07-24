@@ -6,6 +6,7 @@ import { DashboardAsideLink } from "@/features/Dashboard/DashboardAsideLink"
 import { BalanceDisplay } from "@/features/Balance/BalanceDisplay"
 import { Logo } from "../atoms/Logo"
 import { ToggleDarkMode } from "../atoms/ToggleDarkMode"
+import { BALANCE_ADMIN_NAV_LABEL } from "@/shared/constants/balance.constants"
 import { DashboardScreens } from "@/shared/types/dashboard.types"
 import { LoginData } from "@/shared/types/login.types"
 
@@ -38,10 +39,18 @@ export const Aside = ({ screen, updateScreen, handleSignOut, userInfo }: AsidePr
           <RiContactsBookLine />
           Direcciones
         </DashboardAsideLink>
-        <DashboardAsideLink isSelected={screen === 'balance'} onClickCb={() => updateScreen('balance')}>
-          <RiWalletLine />
-          Mis solicitudes
-        </DashboardAsideLink>
+        { !isAdmin && (
+          <DashboardAsideLink isSelected={screen === 'balance'} onClickCb={() => updateScreen('balance')}>
+            <RiWalletLine />
+            Mis solicitudes
+          </DashboardAsideLink>
+        ) }
+        { isAdmin && (
+          <DashboardAsideLink isSelected={screen === 'balanceAdmin'} onClickCb={() => updateScreen('balanceAdmin')}>
+            <RiWalletLine />
+            {BALANCE_ADMIN_NAV_LABEL}
+          </DashboardAsideLink>
+        ) }
         { isAdmin && (
           <DashboardAsideLink isSelected={screen === 'marginProfit'} onClickCb={() => updateScreen('marginProfit')}>
             <RiLineChartLine />

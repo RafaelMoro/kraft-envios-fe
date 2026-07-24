@@ -96,6 +96,65 @@ export interface CancelBalanceRequestResponse {
   error: null
 }
 
+export type AdminBalanceRequestStatusFilter = 'pending' | 'all'
+
+export interface AdminBalanceRequestDto {
+  id: string
+  amount: number
+  paymentReference?: string | null
+  status: BalanceRequestStatus
+  decisionReason?: string | null
+  decisionAt?: string | null
+  createdAt: string
+  updatedAt: string
+  userEmail: string
+  userName: string
+  adminInCharge: string | null
+}
+
+export interface AdminBalanceRequestListParams {
+  month?: number
+  year?: number
+  page?: number
+  limit?: number
+  status?: AdminBalanceRequestStatusFilter
+}
+
+export interface AdminBalanceRequestListData {
+  requests: AdminBalanceRequestDto[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface GetAdminBalanceRequestsResponse {
+  version: string
+  data: AdminBalanceRequestListData
+  message: null
+  error: null
+}
+
+export type BalanceDecisionPayload =
+  | { action: 'approve'; paymentReference: string }
+  | { action: 'reject'; reason?: string }
+
+// Decision success mirrors create/cancel (data.request), but with the admin item shape.
+export interface DecideBalanceRequestResponse {
+  version: string
+  data: { request: AdminBalanceRequestDto }
+  message: null
+  error: null
+}
+
+// The decision 409 body is FLAT — not nested under `error` like Story 3's cancel conflict.
+export interface BalanceDecisionConflictError {
+  code: string
+  message: string
+  technicalDetails: object | null
+  statusCode: number
+}
+
 export const balanceRequestSchema: ObjectSchema<BalanceRequestFormValues> = object({
   amount: string()
     .required('Ingresa el monto a solicitar')

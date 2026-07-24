@@ -14,6 +14,7 @@ import { Logo } from '@/shared/ui/atoms/Logo'
 import { HeaderMenuMobile } from '@/shared/ui/organisms/HeaderMenuDrawer'
 import { MarginProfitSubscreen } from './subscreens/MarginProfitSubscreen'
 import { AddressesSubscreen } from './subscreens/AddressesSubscreen'
+import { BalanceAdminScreen } from '@/features/Balance/BalanceAdminScreen'
 import { BalanceDisplay } from '@/features/Balance/BalanceDisplay'
 import { BalanceRequestsScreen } from '@/features/Balance/BalanceRequestsScreen'
 
@@ -42,7 +43,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
       <div className='mt-3 flex flex-col gap-4"'>
         <header className="p-4 flex flex-row justify-between items-center">
           <Logo isLogoBlue />
-          <HeaderMenuMobile screen={screen} updateScreen={updateScreen} handleSignOut={handleSignOut} />
+          <HeaderMenuMobile screen={screen} userInfo={userInfo} updateScreen={updateScreen} handleSignOut={handleSignOut} />
         </header>
         <BalanceDisplay />
         { screen === 'quotes' && (<QuotesSubscreen userInfo={userInfo} />) }
@@ -50,6 +51,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
         { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
         { screen === 'addresses' && (<AddressesSubscreen userInfo={userInfo} />) }
         { screen === 'balance' && (<BalanceRequestsScreen />) }
+        { screen === 'balanceAdmin' && (<BalanceAdminScreen userInfo={userInfo} />) }
       </div>
     )
   }
@@ -62,6 +64,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
       { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
       { screen === 'addresses' && (<AddressesSubscreen userInfo={userInfo} />) }
       { screen === 'balance' && (<BalanceRequestsScreen />) }
+      { screen === 'balanceAdmin' && (<BalanceAdminScreen userInfo={userInfo} />) }
     </div>
   )
 }

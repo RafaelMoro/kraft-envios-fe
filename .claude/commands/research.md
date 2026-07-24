@@ -94,7 +94,7 @@ Batch all of these into a single question UI call when the environment supports 
 
 ## Step 6 - Write the research doc
 
-File path: `ai-research/{name}.epic.md` if the research is a standalone epic, or `ai-research/{name}.story.md` if it is a standalone story. If creating a research document from an epic, first check for `ai-research/{epic-name}/`; create it if missing, then write the story file as `ai-research/{epic-name}/{story-name}.story-{story-number}.md`. Use the scope assessment from Step 3 to pick the suffix and folder.
+File path: `ai-research/{name}.epic.md` if the research is a standalone epic, or `ai-research/{name}.story.md` if it is a standalone story. If creating a research document from an epic, first check for `ai-research/{epic-name}/`; create it if missing, then write the story file as `ai-research/{epic-name}/{story-name}.story-{story-number}.md`. In that epic-story document, label it as `Story of epic` and reference the epic research document path near the top. Use the scope assessment from Step 3 to pick the suffix and folder.
 
 Length target: **~200-500 lines** for full mode, **~100-200 lines** for quick mode. Cut aggressively for small stories.
 
