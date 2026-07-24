@@ -15,6 +15,7 @@ import { HeaderMenuMobile } from '@/shared/ui/organisms/HeaderMenuDrawer'
 import { MarginProfitSubscreen } from './subscreens/MarginProfitSubscreen'
 import { AddressesSubscreen } from './subscreens/AddressesSubscreen'
 import { BalanceDisplay } from '@/features/Balance/BalanceDisplay'
+import { BalanceRequestsScreen } from '@/features/Balance/BalanceRequestsScreen'
 
 export interface DashboardProps {
   userInfo: LoginData | null
@@ -48,6 +49,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
         { screen === 'overview' && (<Order userInfo={userInfo} />) }
         { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
         { screen === 'addresses' && (<AddressesSubscreen userInfo={userInfo} />) }
+        { screen === 'balance' && (<BalanceRequestsScreen />) }
       </div>
     )
   }
@@ -59,6 +61,7 @@ export const Dashboard = ({ userInfo }: DashboardProps) => {
       { screen === 'overview' && (<Order userInfo={userInfo} />) }
       { screen === 'marginProfit' && (<MarginProfitSubscreen userInfo={userInfo} />) }
       { screen === 'addresses' && (<AddressesSubscreen userInfo={userInfo} />) }
+      { screen === 'balance' && (<BalanceRequestsScreen />) }
     </div>
   )
 }

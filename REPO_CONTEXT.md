@@ -72,7 +72,7 @@ Key invariants:
 | `Guides/` | Guide creation/viewing for MN, GE, PKK, and Tone flows. |
 | `Guides-DB/` | DB-backed create flow (pre-select, multi-step modal, result semantics for `created`/`failed`). |
 | `ProfitMargin/` | Courier profit-margin forms/cards. |
-| `Balance/` | Current MXN balance display and balance-addition request modal owned by the dashboard shell; uses `/api/balance` through TanStack Query and is not persisted. |
+| `Balance/` | Current MXN balance display, balance-addition request modal, and the "Mis solicitudes" history/cancel screen (`BalanceRequestsScreen`) owned by the dashboard shell; uses `/api/balance` and `/api/balance/requests` through TanStack Query. |
 | `QueryProviderWrapper.tsx` | App-wide TanStack Query provider. |
 | `AppRouterContextProviderMock.tsx` | Test helper for router context. |
 
@@ -102,6 +102,8 @@ Most proxy routes read `getAccessToken()` from `src/shared/lib/auth.lib.ts`, ret
 | `/api/address-info` | `GET` | Requires `zipcode`; proxies to `${BACKEND_URI}/quotes/address-info/{zipcode}` and returns neighborhoods. |
 | `/api/address` | `GET`, `POST`, `PUT`, `DELETE` | CRUD proxy for `${BACKEND_URI}/addresses`; delete encodes the address alias in the URL. |
 | `/api/balance` | `GET`, `POST` | Authenticated Balance proxy. `GET` fetches current balance from `${BACKEND_URI}/balance`. `POST` creates a balance-addition request at `${BACKEND_URI}/balance/requests`, forwards only `{ amount }`, and preserves upstream success/error bodies and statuses. |
+| `/api/balance/requests` | `GET` | Lists the current user's own balance requests from `${BACKEND_URI}/balance/requests`; forwards only the allowlisted `month`, `year`, `page`, `limit` query params; preserves upstream status/body. |
+| `/api/balance/requests/[requestId]/cancel` | `PATCH` | Cancels a pending balance request via `PATCH ${BACKEND_URI}/balance/requests/{requestId}/cancel` (URL-encoded id, no body); preserves upstream status/body verbatim, including the `409` `BAL-BUS-002` conflict when a request is no longer `pending`. |
 | `/api/ge-address` | `GET`, `POST`, `PUT`, `DELETE` | GE address proxy for `${BACKEND_URI}/ge/addresses` and `${BACKEND_URI}/ge/address/{id}`; PUT blocks alias edits. |
 | `/api/guides/get-guides` | `GET` | Proxies to `${BACKEND_URI}/guides`. |
 | `/api/guides-db` | `GET`, `POST` | `GET` proxies list to `${BACKEND_URI}/guides/db` (params `page`, `month`, `year`, `startDate`, `endDate`, `limit`); when `scope=all\|own` is present it branches to `${BACKEND_URI}/guides/db/admin` instead. `month`/`year` and `startDate`/`endDate` are mutually exclusive by typed browser-caller/UI contract (`GetGuidesDbParams` union), not route-level validation. `POST` proxies create to `${BACKEND_URI}/guides/db/create`; returns 201 even when upstream `data.status === 'failed'` (saved DB record, not transport error). |
@@ -188,7 +190,7 @@ Confirmed cross-feature timezone contract:
 - `src/app/api/product-sat/route.ts` does not use `BACKEND_URI`; it calls `NEXT_PUBLIC_GET_SAT_PRODUCT_URI` directly.
 - `src/features/Dashboard/Dashboard.tsx` is client-only and has separate mobile/tablet vs desktop rendering via `useMediaQuery()`.
 - Avoid adding new state libraries. This repo uses local React state, cookies/server actions, TanStack Query, and local-storage helpers; there is no Zustand store.
-- Balance request creation invalidates the future request-history prefix `['balance', 'requests']` only; it must not optimistically change or invalidate current balance `['balance']`.
+- Balance request creation and cancellation both invalidate only the request-history prefix `['balance', 'requests']`; neither optimistically changes nor invalidates current balance `['balance']`. The requests-history query key includes `month`, `year`, `page`, `limit` for full server-state representation.
 - The hard-delete BFF (`/api/guides-db/[kraftId]/hard`) is the only route with a Next-side role check via `getUserInfo()`. Do not retrofit onto other BFF routes; backend authorization remains the source of truth (the role-guard is marked with a `// ponytail:` comment in the route handler).
 - Guides DB backend date filters use silent precedence: either `month` or `year` selects business-month mode and ignores `startDate`/`endDate`; range mode requires both month and year to be absent. Partial ranges are accepted, reversed ranges return an empty `200`, and some pattern-valid but impossible dates can escape backend parsing as an unstructured `500`.
 
