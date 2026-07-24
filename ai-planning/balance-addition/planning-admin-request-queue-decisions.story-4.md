@@ -83,7 +83,6 @@ Phase 2 depends on Phase 1's DTOs. Phase 3 depends on Phases 1–2. Phase 4 depe
 - `src/app/dashboard/page.tsx` — the drawer theme override stays; see the Phase 3 edge case for how the detail drawer avoids it.
 - `src/shared/utils/date.utils.ts` — no new helper; the drawer composes the two existing exports.
 - `__tests__/api/balance.requests.route.test.ts` and existing Balance feature tests — no changes.
-- The `marginProfit` entry in `HeaderMenuDrawer.tsx` stays ungated (a pre-existing desktop-hidden/mobile-exposed asymmetry outside this story's ACs). See Open Questions.
 - `package.json`, `pnpm-lock.yaml`, env vars, `DESIGN.md`, backend code.
 
 ## Phase 1: Shared Contract (Types, Constants, Callbacks)
@@ -476,7 +475,7 @@ const formatDetailTimestamp = (timestamp: string): string => {
 }
 ```
 
-  This yields `22 jul 2026 · 10:42 am`. The comp shows `22 jul 2026 · 10:42` (24-hour); the am/pm suffix is a deliberate, minor deviation that keeps `date.utils.ts` the single timezone boundary with no new export. See Open Questions.
+  This yields `22 jul 2026 · 10:42 am`. The comp shows `22 jul 2026 · 10:42` (24-hour); **the user confirmed the composed format is what ships** — do not add a `formatBusinessDateTimeShort` helper to match the comp exactly. This keeps `date.utils.ts` the single timezone boundary with no new export.
 
 #### `src/features/Balance/BalanceAdminScreen.tsx`
 
@@ -529,7 +528,7 @@ const { data, isPending, isError, refetch } = useQuery({
 Render (Spanish copy from `balance.constants`):
 
 - Header block: eyebrow `BALANCE_ADMIN_EYEBROW`, H1 `BALANCE_ADMIN_HEADING`, subtitle `BALANCE_ADMIN_SUBTITLE`.
-- Filter panel (stays mounted in every state, matching the comps): `Mes` `Select` (`Enero`…`Diciembre`, local array as in `BalanceRequestsScreen`), `Año` `Select` from `YEARS`, an `Estado` segmented control, and the `BALANCE_ADMIN_APPLY_FILTERS` button. Each control has a visible `Label` bound via `htmlFor`.
+- Filter panel (stays mounted in every state, matching the comps): `Mes` `Select` (`Enero`…`Diciembre`, local array as in `BalanceRequestsScreen`), `Año` `Select` from `YEARS`, an `Estado` segmented control, and the `BALANCE_ADMIN_APPLY_FILTERS` button. Each control has a visible `Label` bound via `htmlFor`. **Decided:** `Año` is a standard Flowbite `Select` with its chevron and current styling, matching `Order.tsx` / `BalanceRequestsScreen`; the comp's chevron-less year box is not followed.
 - `Estado` control: a Flowbite `ButtonGroup` of two `Button`s labeled from `BALANCE_ADMIN_STATUS_FILTER_LABELS`, each carrying `aria-pressed={draftStatus === value}` so tests can query by role/name and assert selection without touching CSS. Mirrors the `Order.tsx` source-toggle idiom.
 - Section header: `BALANCE_ADMIN_SECTION_TITLE_PENDING` when the **applied** status is `pending`, else `BALANCE_ADMIN_SECTION_TITLE_ALL`, with a count line derived from `data.total` (`${total} ${total === 1 ? 'solicitud' : 'solicitudes'}`).
 - **Loading (`isPending`):** ~3 `BalanceAdminRequestCardSkeleton` inside a `role="status" aria-live="polite"` wrapper with an sr-only `BALANCE_ADMIN_LOADING_MESSAGE`. Non-blocking — the shell and filters stay usable.
@@ -582,14 +581,14 @@ export type DashboardScreens = 'quotes' | 'overview' | 'marginProfit' | 'address
 ) }
 { isAdmin && (
   <DashboardAsideLink isSelected={screen === 'balanceAdmin'} onClickCb={() => updateScreen('balanceAdmin')}>
-    <RiInboxLine />
+    <RiWalletLine />
     {BALANCE_ADMIN_NAV_LABEL}
   </DashboardAsideLink>
 ) }
 ```
 
 - Place the admin entry in the same slot as the current "Mis solicitudes" link (after Direcciones, before the admin-gated "Margen de ganancia"), matching the comp's sidebar order.
-- Confirm the `@remixicon/react` export name for the inbox glyph before use.
+- **Decided:** the admin entry reuses `RiWalletLine`, the same glyph as the non-admin "Mis solicitudes" entry. It is already imported in this file, so no new icon import is needed. The two entries are mutually exclusive by role, so they never appear side by side.
 
 #### `src/shared/ui/organisms/HeaderMenuDrawer.tsx`
 
@@ -604,8 +603,8 @@ interface HeaderMenuMobileProps {
 }
 ```
 
-- Gate the existing `Mis solicitudes` `MenuMobileLink` with `{ !isAdmin && ( … ) }` and add the paired admin entry under `{ isAdmin && ( … ) }` targeting `'balanceAdmin'`, in the same order as `Aside.tsx`.
-- Leave the `marginProfit` entry as-is; see Open Questions.
+- Gate the existing `Mis solicitudes` `MenuMobileLink` with `{ !isAdmin && ( … ) }` and add the paired admin entry under `{ isAdmin && ( … ) }` targeting `'balanceAdmin'`, in the same order as `Aside.tsx`. Reuse `RiWalletLine` for both, matching `Aside.tsx`.
+- **Also gate the existing `Margen de ganancia` entry with `{ isAdmin && ( … ) }`** (user-approved). It currently renders unconditionally here while `Aside.tsx` gates it to admins, so a non-admin can reach the admin-only margin screen from the mobile drawer. Since this phase already threads `isAdmin` into the component, closing that desktop-hidden/mobile-exposed gap is a one-line change and keeps both shells consistent.
 
 #### `src/features/Dashboard/Dashboard.tsx`
 
@@ -628,7 +627,7 @@ interface HeaderMenuMobileProps {
   - `pnpm build`.
 - **Manual (desktop + mobile/tablet):**
   1. Sign in as an **admin**: the sidebar and mobile drawer show "Solicitudes de saldo" and **not** "Mis solicitudes".
-  2. Sign in as a **non-admin**: the reverse — "Mis solicitudes" only, with no admin entry in either shell.
+  2. Sign in as a **non-admin**: the reverse — "Mis solicitudes" only, with no admin entry in either shell, and no "Margen de ganancia" entry in the mobile drawer either.
   3. On the admin queue, confirm the filters default to the current Mexico City month/year with `Pendientes` selected, and that changing a filter does nothing until `Aplicar filtros` is pressed (page then resets to 1).
   4. Confirm rows show amount, user name/email, `Creada`, `Por asignar`, and `Sin asignar`; open `Ver detalle` and verify the drawer title and body are legible in both light and dark mode (the dashboard drawer theme override does not affect it).
   5. Approve a pending request with a payment reference; confirm the queue and the sidebar/mobile balance card both refresh from the backend.
@@ -640,9 +639,10 @@ interface HeaderMenuMobileProps {
 
 | File | Coverage areas | Pattern reference |
 | --- | --- | --- |
-| `__tests__/feature/Dashboard/Dashboard.test.tsx` | only if the existing suite asserts nav membership: admin sees the admin Balance entry and not "Mis solicitudes"; non-admin sees the reverse | Existing `Dashboard.test.tsx` (admin `userInfo` fixture, mocked `useMediaQuery`, mocked `preferences.lib`) |
+| `__tests__/feature/Dashboard/Dashboard.test.tsx` | only if the existing suite asserts nav membership: admin sees the admin Balance entry and not "Mis solicitudes"; non-admin sees the reverse and no "Margen de ganancia" in the mobile drawer | Existing `Dashboard.test.tsx` (admin `userInfo` fixture, mocked `useMediaQuery`, mocked `preferences.lib`) |
 
 - The existing suite's `userInfo` fixture is already `role: ['admin']`, and no current test asserts on "Mis solicitudes", so the gating change should not break existing expectations — verify with `pnpm test` and adjust the fixture only if a failure proves otherwise.
+- Since the admin and non-admin Balance entries share the `RiWalletLine` glyph, query them by their distinct accessible names ("Solicitudes de saldo" vs "Mis solicitudes"), never by icon.
 - Do not assert styling or icon classes.
 
 ## Cross-Cutting Concerns
@@ -660,12 +660,12 @@ interface HeaderMenuMobileProps {
 
 ## Open Questions / Out-Of-Scope
 
-**Open (non-blocking, confirm during implementation):**
+**Resolved (user decisions, 2026-07-24) — no open questions remain:**
 
-- **Drawer timestamp format.** The plan composes `formatBusinessDateShort` + `formatDateToSpanish().time`, producing `22 jul 2026 · 10:42 am`; the comp shows `22 jul 2026 · 10:42` (24-hour). If exact comp fidelity is required, add a `formatBusinessDateTimeShort` export to `date.utils.ts` instead of composing — but that is a new date helper, so it needs a deliberate call.
-- **`Año` control type.** The comp renders the year in a plain box with no chevron. This plan uses a `Select` for consistency with `Order.tsx` and `BalanceRequestsScreen`; flag if a free-text year input is wanted.
-- **Icon export names.** Confirm `RiInboxLine` (admin nav) resolves in `@remixicon/react` before use.
-- **Ungated mobile `marginProfit`.** `HeaderMenuDrawer.tsx` renders "Margen de ganancia" unconditionally while `Aside.tsx` gates it to admins — a pre-existing asymmetry. This story threads `isAdmin` into the drawer but deliberately leaves that entry alone (it traces to no AC here). Say the word and it becomes a one-line fix in Phase 4.
+- **Drawer timestamp format.** Ship the composed `formatBusinessDateShort` + `formatDateToSpanish().time` result (`22 jul 2026 · 10:42 am`). Deliberately does not match the comp's 24-hour `10:42`; no new `date.utils.ts` export.
+- **`Año` control type.** Standard Flowbite `Select` with chevron and current styling, matching `Order.tsx` / `BalanceRequestsScreen`. The comp's chevron-less box is not followed.
+- **Admin nav icon.** Reuse `RiWalletLine`, the same glyph as the non-admin "Mis solicitudes" entry, in both `Aside.tsx` and `HeaderMenuDrawer.tsx`. Already imported in both files; no new icon import and nothing to verify in `@remixicon/react`.
+- **Ungated mobile `marginProfit`.** Fix it in Phase 4: gate the `HeaderMenuDrawer.tsx` "Margen de ganancia" entry with `isAdmin`, matching `Aside.tsx`. In scope because this phase already threads `isAdmin` into the component.
 
 **Out of scope (per research):**
 
