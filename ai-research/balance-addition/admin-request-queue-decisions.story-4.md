@@ -24,7 +24,7 @@ Full research, prioritizing the admin list/decision contract, admin role gating 
 
 ### User-Confirmed Decisions
 
-- The admin queue is a **new, admin-only dashboard screen** ("Solicitudes de saldo" per comps), separate from the Story 3 user screen ("Mis solicitudes"). Admins have no balance requests of their own, so this option hits only admin endpoints (`GET /balance/requests/admin`) and is gated to admin users.
+- The admin queue is a **new, admin-only dashboard screen** ("Solicitudes de saldo" per comps), separate from the Story 3 user screen ("Mis solicitudes"). Admins have no balance requests of their own, so this option hits only admin endpoints (`GET /balance/requests/admin`) and is gated to admin users. The Balance nav entries are **mutually exclusive by role**: admins see only "Solicitudes de saldo" (not "Mis solicitudes"), non-admins see only "Mis solicitudes".
 - Filters are month, year, and a `Pendientes | Todas` status toggle (`status=pending|all`), committed with an explicit **"Aplicar filtros"** button (per comps), defaulting to the current `America/Mexico_City` month/year. Backend defaults to the current month/year when omitted.
 - The queue rows expose a **"Ver detalle"** action that opens a right-side **detail drawer** (per comps). The drawer reuses the already-fetched list-row data; no per-request fetch is added in Story 4 (single-request fetch is Story 5).
 - The drawer's "Registrar decisión" section is a segmented flow: two persistent buttons `Aprobar solicitud` / `Rechazar solicitud`, each revealing its own form below. Approve reveals a **required** `Referencia de pago` input; reject reveals an **optional** `Motivo del rechazo` textarea (user-facing). Both call `PATCH /balance/requests/{id}/decision`.
@@ -46,7 +46,7 @@ Full research, prioritizing the admin list/decision contract, admin role gating 
 2. Add `src/app/api/balance/requests/admin/route.ts` (`GET` → `${BACKEND_URI}/balance/requests/admin`, allowlisting `month`, `year`, `page`, `limit`, `status`) and `src/app/api/balance/requests/[requestId]/decision/route.ts` (`PATCH` → `${BACKEND_URI}/balance/requests/{requestId}/decision`, URL-encoded id, forwarding the decision body). Both apply the defensive `getUserInfo()` admin guard and preserve meaningful upstream statuses/bodies.
 3. Add browser callbacks in `src/shared/utils/balance.utils.ts`: `getAdminBalanceRequestsCb(params)` and `decideBalanceRequestCb({ requestId, payload })`.
 4. Add the admin endpoint constant and admin screen/decision copy (status-filter labels `Pendientes`/`Todas`, drawer field labels, reject-reason copy) in the balance constants modules.
-5. Add a new admin `DashboardScreens` value (e.g. `balanceAdmin`) in `src/shared/types/dashboard.types.ts`, wire a conditional render in both branches of `Dashboard.tsx` passing `userInfo`, add an admin-gated `DashboardAsideLink` in `Aside.tsx`, and thread `userInfo`/`isAdmin` into `HeaderMenuDrawer.tsx` so the mobile entry is admin-gated too.
+5. Add a new admin `DashboardScreens` value (e.g. `balanceAdmin`) in `src/shared/types/dashboard.types.ts`, wire a conditional render in both branches of `Dashboard.tsx` passing `userInfo`, add an admin-gated `DashboardAsideLink` in `Aside.tsx`, gate the existing user "Mis solicitudes" entry to non-admins (`!isAdmin`), and thread `userInfo`/`isAdmin` into `HeaderMenuDrawer.tsx` so both the admin and user Balance entries are correctly gated on mobile.
 6. Build the admin queue screen in `src/features/Balance/`: month/year selects + status toggle + "Aplicar filtros", request cards, pagination, loading/empty/error/populated states, the detail drawer, and a reusable decision component (idle/approve/reject) with the decision mutation.
 7. Wire a `useQuery` keyed on `['balance', 'requests', 'admin', month, year, page, limit, status]` (enabled by `isAdmin` and the active surface) and a decision `useMutation` that on success invalidates `['balance', 'requests']` and `['balance']`.
 8. Add focused route and feature coverage (see Testing Rules).
@@ -104,8 +104,8 @@ Dashboard shell:
 
 - Add an admin `DashboardScreens` value in `src/shared/types/dashboard.types.ts`.
 - Render the admin screen in both the mobile and desktop branches of `Dashboard.tsx`, passing `userInfo` for gating.
-- Add an admin-gated `DashboardAsideLink` in `Aside.tsx` (wrap in `{ isAdmin && ( ... ) }`, matching the `marginProfit` precedent).
-- Thread `userInfo`/`isAdmin` into `HeaderMenuDrawer.tsx` (which currently receives none) so the mobile entry is admin-gated too — otherwise it would repeat the known "desktop-hidden-for-non-admin but mobile-exposed" asymmetry.
+- Add an admin-gated `DashboardAsideLink` in `Aside.tsx` (wrap in `{ isAdmin && ( ... ) }`, matching the `marginProfit` precedent), and gate the existing (currently unconditional) user "Mis solicitudes" entry to non-admins (`{ !isAdmin && ( ... ) }`) so admins see only "Solicitudes de saldo".
+- Thread `userInfo`/`isAdmin` into `HeaderMenuDrawer.tsx` (which currently receives none) so both the admin entry (`isAdmin`) and the user "Mis solicitudes" entry (`!isAdmin`) are correctly gated on mobile — otherwise it would repeat the known "desktop-hidden-for-non-admin but mobile-exposed" asymmetry.
 
 Tests:
 
@@ -280,9 +280,9 @@ Answer: A new admin-only dashboard screen ("Solicitudes de saldo" per comps), se
 
 II: Question: Should admins still see the user "Mis solicitudes" screen?
 
-Status: pending
+Status: answered
 
-Answer: Admins have no balance requests of their own, so the user screen would be empty for them. Recommendation: hide "Mis solicitudes" for admins and show only "Solicitudes de saldo". Confirm the exact sidebar/drawer composition for admin vs non-admin during design.
+Answer: No. Admins have no balance requests of their own, so "Mis solicitudes" is hidden for admin users; admins see only "Solicitudes de saldo". This means the existing (currently unconditional) user Balance nav entry in `Aside.tsx` and the mobile drawer must be gated to non-admins (`{ !isAdmin && ... }`), and the admin entry gated to admins (`{ isAdmin && ... }`), so the two audiences see mutually exclusive Balance entries. (User-confirmed.)
 
 III: Question: How are the approve and reject inputs captured?
 
@@ -323,7 +323,7 @@ Answer: Presentation gating uses `userInfo.data.user.role.includes('admin')`. Th
 
 ## Non-Obvious Findings
 
-- Admins have no balance of their own, so the admin queue is a distinct surface hitting only the admin endpoint; it must not reuse the user "Mis solicitudes" query or screen. This also means admin sidebar/drawer composition likely differs from a regular user's.
+- Admins have no balance of their own, so the admin queue is a distinct surface hitting only the admin endpoint; it must not reuse the user "Mis solicitudes" query or screen. The Balance nav entries are mutually exclusive by role: admins see only "Solicitudes de saldo", non-admins see only "Mis solicitudes". This requires gating the currently-unconditional Story 3 user entry to `!isAdmin`.
 - Decision invalidation must include `['balance']` (approval moves money), unlike Story 3's cancel which deliberately never touched `['balance']`. This is the one balance mutation that invalidates current balance.
 - The admin query key nests under the `['balance', 'requests']` prefix, so a single prefix invalidation covers both user and admin lists — no separate admin invalidation is required.
 - The comps resolve four decisions the epic left to design: an explicit "Aplicar filtros" button (vs the user list's implicit apply), a detail drawer (vs full page — the full page is Story 5), the segmented approve/reject reveal, and the required-reference / optional-user-facing-reason split.
