@@ -270,17 +270,19 @@ export const BalanceRequestsScreen = (): JSX.Element => {
           )}
         </ModalBody>
         <ModalFooter>
-          <Button
-            color="failure"
-            disabled={mutation.isPending}
-            onClick={confirmCancel}
-            className="hover:cursor-pointer"
-          >
-            {BALANCE_CANCEL_CONFIRM_ACTION}
-          </Button>
-          <Button color="alternative" onClick={closeCancelModal} className="hover:cursor-pointer">
-            {BALANCE_CANCEL_DISMISS_ACTION}
-          </Button>
+          <div className="w-full flex justify-between">
+            <Button color="alternative" onClick={closeCancelModal} className="hover:cursor-pointer">
+              {BALANCE_CANCEL_DISMISS_ACTION}
+            </Button>
+            <Button
+              color="red"
+              disabled={mutation.isPending}
+              onClick={confirmCancel}
+              className="hover:cursor-pointer"
+            >
+              {BALANCE_CANCEL_CONFIRM_ACTION}
+            </Button>
+          </div>
         </ModalFooter>
       </Modal>
     </main>

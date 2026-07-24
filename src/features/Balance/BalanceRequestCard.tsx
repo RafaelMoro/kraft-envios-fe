@@ -54,9 +54,13 @@ export const BalanceRequestCard = ({
   const showFooter = isPending || Boolean(request.decisionReason)
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div
+      className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+    >
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="grid flex-1 grid-cols-2 gap-x-6 gap-y-4 sm:flex sm:flex-wrap sm:items-start sm:justify-between">
+        <div
+          className="grid flex-1 grid-cols-2 gap-x-6 gap-y-4 sm:flex sm:flex-wrap sm:items-start sm:justify-between"
+        >
           <div>
             <p className={FIELD_LABEL_CLASS}>{BALANCE_FIELD_AMOUNT}</p>
             <p className="flex items-baseline gap-1">
