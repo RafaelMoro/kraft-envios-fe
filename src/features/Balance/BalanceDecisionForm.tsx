@@ -98,12 +98,12 @@ export const BalanceDecisionForm = ({ requestId, onDecided }: BalanceDecisionFor
     <div className="flex flex-col gap-4">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{BALANCE_DECISION_SECTION_TITLE}</h3>
 
-      <div className="flex flex-wrap gap-3">
-        <Button color="success" onClick={() => selectMode('approve')} className="hover:cursor-pointer">
-          {BALANCE_DECISION_APPROVE_ACTION}
-        </Button>
-        <Button color="red" onClick={() => selectMode('reject')} className="hover:cursor-pointer">
+      <div className="flex justify-between">
+        <Button color="red" outline onClick={() => selectMode('reject')} className="hover:cursor-pointer">
           {BALANCE_DECISION_REJECT_ACTION}
+        </Button>
+        <Button color="green" onClick={() => selectMode('approve')} className="hover:cursor-pointer">
+          {BALANCE_DECISION_APPROVE_ACTION}
         </Button>
       </div>
 
@@ -126,11 +126,11 @@ export const BalanceDecisionForm = ({ requestId, onDecided }: BalanceDecisionFor
           )}
 
           <div className="flex justify-between gap-3">
-            <Button color="alternative" onClick={handleCancel} className="hover:cursor-pointer">
+            <Button color="red" outline onClick={handleCancel} className="hover:cursor-pointer">
               {BALANCE_DECISION_DISMISS_ACTION}
             </Button>
             <Button
-              color="success"
+              color="green"
               disabled={!paymentReference.trim() || mutation.isPending}
               onClick={handleConfirmApprove}
               className="hover:cursor-pointer"

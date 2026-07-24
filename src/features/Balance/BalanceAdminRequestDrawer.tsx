@@ -72,11 +72,6 @@ export const BalanceAdminRequestDrawer = ({ request, onClose }: BalanceAdminRequ
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{BALANCE_ADMIN_DRAWER_INFO_TITLE}</h3>
 
             <div>
-              <p className={FIELD_LABEL_CLASS}>{BALANCE_ADMIN_FIELD_REQUEST_ID}</p>
-              <p className={FIELD_VALUE_CLASS}>{request.id}</p>
-            </div>
-
-            <div>
               <p className={FIELD_LABEL_CLASS}>{BALANCE_FIELD_CREATED}</p>
               <p className={FIELD_VALUE_CLASS}>{formatDetailTimestamp(request.createdAt)}</p>
             </div>
