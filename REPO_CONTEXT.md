@@ -177,7 +177,7 @@ Confirmed cross-feature timezone contract:
 
 - Tailwind v4 is configured only through `postcss.config.mjs` with `@tailwindcss/postcss`.
 - Flowbite React is in use; preserve the `withFlowbiteReact(nextConfig)` wrapper in `next.config.mjs`.
-- Dashboard customizes Flowbite `drawer` theme locally in `src/app/dashboard/page.tsx`.
+- Dashboard customizes Flowbite `drawer` theme locally in `src/app/dashboard/page.tsx`. That `createTheme` override forces `drawer.header.inner.titleText`/`titleCloseIcon`/`titleIcon` to `text-white` for **every** Flowbite `Drawer` rendered under the dashboard `ThemeProvider`, not just the blue mobile menu. A new light-surface drawer using `DrawerHeader` will render an invisible title; supply a custom header (or a per-instance `theme` override) instead.
 - Root layout sets `<html lang="en" data-theme={theme}>`; update deliberately if changing locale/theme behavior.
 
 ## Conventions And Gotchas
