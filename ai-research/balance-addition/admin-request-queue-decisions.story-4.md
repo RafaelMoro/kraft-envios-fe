@@ -10,7 +10,7 @@ Admin balance-request queue and approve/reject decisions.
 
 ### Story Description
 
-Give an authenticated admin a paginated, month/year-filterable queue of all users' balance-addition requests from `GET /balance/requests/admin`, with a `pending | all` status filter, plus a detail surface where the admin can approve a `pending` request with a required `paymentReference` or reject it with an optional internal reason through `PATCH /balance/requests/{balance-id}/decision`.
+Give an authenticated admin a paginated, month/year-filterable queue of all users' balance-addition requests from `GET /balance/requests/admin`, with a `pending | all` status filter, plus a detail surface where the admin can approve a `pending` request with a required `paymentReference` or reject it with an optional user-facing reason through `PATCH /balance/requests/{balance-id}/decision`.
 
 This document researches Story 4 from `ai-research/add-balance.epic.md`. Stories 1, 2, 3, and 6 are complete, so the shared Balance types/constants/callbacks, the date/timezone primitives in `src/shared/utils/date.utils.ts`, and the `Order.tsx` month/year + pagination precedent already exist. Story 4 adds the admin-only queue and the single decision flow; Story 5 (email deep link to a full-page `/dashboard/requests/{requestId}`) reuses the decision UX built here.
 
@@ -27,8 +27,8 @@ Full research, prioritizing the admin list/decision contract, admin role gating 
 - The admin queue is a **new, admin-only dashboard screen** ("Solicitudes de saldo" per comps), separate from the Story 3 user screen ("Mis solicitudes"). Admins have no balance requests of their own, so this option hits only admin endpoints (`GET /balance/requests/admin`) and is gated to admin users.
 - Filters are month, year, and a `Pendientes | Todas` status toggle (`status=pending|all`), committed with an explicit **"Aplicar filtros"** button (per comps), defaulting to the current `America/Mexico_City` month/year. Backend defaults to the current month/year when omitted.
 - The queue rows expose a **"Ver detalle"** action that opens a right-side **detail drawer** (per comps). The drawer reuses the already-fetched list-row data; no per-request fetch is added in Story 4 (single-request fetch is Story 5).
-- The drawer's "Registrar decisión" section is a segmented flow: two persistent buttons `Aprobar solicitud` / `Rechazar solicitud`, each revealing its own form below. Approve reveals a **required** `Referencia de pago` input; reject reveals an **optional** internal `Motivo del rechazo` textarea. Both call `PATCH /balance/requests/{id}/decision`.
-- The reject reason is treated as **write-only / internal**: the documented contract does not return it, so copy must not imply the user will see it.
+- The drawer's "Registrar decisión" section is a segmented flow: two persistent buttons `Aprobar solicitud` / `Rechazar solicitud`, each revealing its own form below. Approve reveals a **required** `Referencia de pago` input; reject reveals an **optional** `Motivo del rechazo` textarea (user-facing). Both call `PATCH /balance/requests/{id}/decision`.
+- The reject reason **is surfaced to the requesting user** (via a decision email and the `decisionReason` field in their `GET /balance/requests` history), so the reject copy is user-facing: the admin writes context the user will read.
 - The admin list + decision BFF routes carry a **defensive `getUserInfo()` admin guard** (mirroring `/api/guides-db/[kraftId]/hard`), with the backend remaining the authoritative authorization source.
 - The decision section is built as a **reusable component** so Story 5's full-page deep-link route can consume it.
 
@@ -42,7 +42,7 @@ Full research, prioritizing the admin list/decision contract, admin role gating 
 
 ### Task Breakdown
 
-1. Add admin balance DTOs to `src/shared/types/balance.types.ts`: an admin request item shape (base fields plus conditional `userEmail`, `userName`, `adminInCharge`), admin list params (`month`, `year`, `page`, `limit`, `status`), the admin list response envelope, the `status` filter union (`'pending' | 'all'`), and the decision payload union (`{ action: 'approve'; paymentReference: string } | { action: 'reject'; reason?: string }`).
+1. Add admin balance DTOs to `src/shared/types/balance.types.ts`: an admin request item shape (base fields plus always-present `userEmail`/`userName`, nullable `adminInCharge`, and conditional `paymentReference`/`decisionReason`/`decisionAt`; keep all timestamps typed as `string`), admin list params (`month`, `year`, `page`, `limit`, `status`), the admin list response envelope, the `status` filter union (`'pending' | 'all'`), and the decision payload union (`{ action: 'approve'; paymentReference: string } | { action: 'reject'; reason?: string }`).
 2. Add `src/app/api/balance/requests/admin/route.ts` (`GET` → `${BACKEND_URI}/balance/requests/admin`, allowlisting `month`, `year`, `page`, `limit`, `status`) and `src/app/api/balance/requests/[requestId]/decision/route.ts` (`PATCH` → `${BACKEND_URI}/balance/requests/{requestId}/decision`, URL-encoded id, forwarding the decision body). Both apply the defensive `getUserInfo()` admin guard and preserve meaningful upstream statuses/bodies.
 3. Add browser callbacks in `src/shared/utils/balance.utils.ts`: `getAdminBalanceRequestsCb(params)` and `decideBalanceRequestCb({ requestId, payload })`.
 4. Add the admin endpoint constant and admin screen/decision copy (status-filter labels `Pendientes`/`Todas`, drawer field labels, reject-reason copy) in the balance constants modules.
@@ -157,14 +157,16 @@ Admin request list (from the epic):
 
 - Method/path: `GET /balance/requests/admin`.
 - Queries: `month`, `year`, `page`, `limit`, and `status=pending|all`. Month/year/page/limit default on the backend (current month/year, page 1, limit 10) when omitted.
-- Response (assumed to match the user list plus admin fields): `data.requests` array plus sibling `data.total`, `data.page`, `data.limit`, `data.totalPages`, under the standard `{ version, data, message, error }` envelope. Each item carries `id`, `amount`, `status`, `createdAt`, `updatedAt`, plus conditional `paymentReference`, `decisionAt`, `userEmail`, `userName`, `adminInCharge`. Timestamps are UTC ISO 8601 strings. **Pending confirmation of the exact envelope/nesting** (Open Question I).
+- Response (confirmed): `data.requests` array plus sibling `data.total`, `data.page`, `data.limit`, `data.totalPages`, under the standard `{ version, data, message, error }` envelope. Each item carries `id` (opaque Mongo ObjectId string), `amount` (MXN major units), `status`, `createdAt`, `updatedAt`, always-present `userEmail`/`userName`, nullable `adminInCharge` (an admin email string or `null`), and conditional `paymentReference`/`decisionReason`/`decisionAt`. Timestamps serialize as UTC ISO 8601 strings; keep FE DTO timestamps as `string`.
 
-Decision (from the epic):
+Decision (confirmed):
 
 - Method/path: `PATCH /balance/requests/{balance-id}/decision`.
 - Approve body: `{ action: "approve", paymentReference: string }` (paymentReference mandatory and non-empty).
-- Reject body: `{ action: "reject", reason?: string }` (reason optional; omit when empty).
-- Allowed only while status is `pending`; other statuses are read-only. A decision on a non-`pending` request is expected to conflict (`409`-style); **exact success and conflict status/body pending confirmation** (Open Question II).
+- Reject body: `{ action: "reject", reason?: string }` (reason optional; omit when empty). A submitted reason is persisted as `decisionReason` and surfaced to the user via a decision email and their history.
+- Success: `200 OK` with the decided request nested under `data.request` (the full admin item shape, with `status`, `decisionReason`, `decisionAt`, and `adminInCharge` now populated), under the standard envelope.
+- Non-`pending` conflict: `409 Conflict` with a **flat** KraftError body `{ code: "BAL-BUS-002", message: "La solicitud de saldo no se encuentra en un estado válido para esta operación.", technicalDetails: null, statusCode: 409 }`. Note this is a top-level flat shape — **not** nested under the `{ version, data, message, error }` envelope like Story 3's cancel `409` (which put the KraftError under `error`). The BFF preserves this status/body verbatim, and the decision UI must read the flat `data.code` rather than `data.error.code`.
+- Allowed only while status is `pending`; other statuses are read-only.
 
 Amount contract (unchanged): MXN major units; effective range `0.01`-`100000.00`; zero renders as `$0.00` via `formatBalanceMxn`.
 
@@ -186,7 +188,7 @@ Status labels (from the epic): `pending → Pendiente`, `approved → Aprobada`,
 - Populated: cards with amount, user name/email, created date, payment reference (or `Por asignar` on pending), admin in charge (or `Sin asignar`), status badge, "Ver detalle".
 - Detail drawer: request info (id, created, user, last updated, admin in charge). For `pending`, show "Registrar decisión"; for other statuses, show read-only detail with no decision actions.
 - Approve: reveal a required `Referencia de pago` input (placeholder e.g. `Ej. KRF-843210`); confirm disabled until non-empty; submit `{ action: "approve", paymentReference }`.
-- Reject: reveal an optional internal reason textarea. Recommended copy — label `Motivo del rechazo (opcional)`, placeholder `Agrega una nota interna sobre el motivo del rechazo.`, caption `Uso interno del equipo. El usuario no recibe este motivo.`; submit `{ action: "reject", reason }` omitting `reason` when empty. Copy avoids implying the user will see it.
+- Reject: reveal an optional reason textarea. The reason is shown to the user (decision email + `decisionReason` in history), so copy is user-facing — label `Motivo del rechazo (opcional)`, placeholder `Agrega contexto para el usuario` (the comp copy), optionally a caption like `El usuario verá este motivo en su historial y en el correo de decisión.`; submit `{ action: "reject", reason }` omitting `reason` when empty.
 - Decision success: reflect the new status from an authoritative refetch; keep or close the drawer per design.
 - Decision conflict/failure: preserve the prior authoritative state and show a Spanish error; do not present a false approved/rejected state.
 
@@ -194,8 +196,8 @@ Status labels (from the epic): `pending → Pendiente`, `approved → Aprobada`,
 
 - All rendered timestamps use `America/Mexico_City`; a UTC instant such as `2026-02-01T05:59:59.999Z` belongs to January and `2026-02-01T06:00:00.000Z` to February in the business zone. Month/year filtering happens on the backend across the full result set; the frontend must not filter only the current page.
 - Admin accounts have no balance requests of their own; the admin queue must not be conflated with the user "Mis solicitudes" screen, and admin queries must hit only the admin endpoint.
-- `adminInCharge` and `paymentReference` are conditional; render `Sin asignar` / `Por asignar` placeholders when absent on a pending request rather than blank cells.
-- The reject reason is not returned by list/detail responses (write-only from the FE); never render it as persisted history.
+- `adminInCharge` is nullable (an admin email string or `null`) and `paymentReference` is conditional; render `Sin asignar` / `Por asignar` placeholders when absent on a pending request rather than blank cells.
+- `decisionReason` is returned on decided items and is user-visible, so the admin queue/drawer may show it for rejected/approved requests in the `Todas` view; the reject textarea is user-facing copy.
 - A stale queue can offer a decision on a request the backend already transitioned; tolerate the conflict by surfacing authoritative status.
 - Frontend role checks are presentation only; the defensive BFF guard reads the non-authoritative `user-info` cookie and is a secondary control — backend authorization is mandatory for the admin list and decisions.
 - The `SOL-2098` value shown in the drawer comp is stylistic; the real identifier is the opaque `id` (the email deep link uses `/dashboard/requests/6a61648b998ef7a461cf4ff6`). Display the opaque `id` unless the backend adds a human-friendly reference (Open Question III).
@@ -244,31 +246,29 @@ Smallest useful feature coverage:
 
 I: Question: What is the exact success envelope and per-item shape for `GET /balance/requests/admin`?
 
-Status: pending
+Status: answered
 
-Answer: Assumed to match the user list (`data.requests` + sibling `data.total`/`data.page`/`data.limit`/`data.totalPages` under `{ version, data, message, error }`) with each item adding conditional `userEmail`, `userName`, and `adminInCharge`. Confirm whether admin items also always include `paymentReference`/`decisionAt`/`decisionReason` fields (present-when-applicable) and confirm no additional fields are returned.
-
-Context: The Story 5 single-request example (`add-balance.epic.md:318`) returns `{ id, amount, status, createdAt, updatedAt, userEmail, userName, adminInCharge }` for a pending request, supporting this assumption for the list items.
+Answer: `{ version, data: { requests: AdminBalanceRequestItemDto[], total, page, limit, totalPages }, message, error }`. Each `AdminBalanceRequestItemDto` = `{ id: string; amount: number; paymentReference?: string; status: 'pending'|'approved'|'rejected'|'cancelled'; decisionReason?: string; decisionAt?: string; createdAt: string; updatedAt: string; userEmail: string; userName: string; adminInCharge: string | null }`. `userEmail`/`userName` are always present; `adminInCharge` is `null` until a decision assigns an admin email; `paymentReference`/`decisionReason`/`decisionAt` are `null`/absent while pending. Timestamps serialize as UTC ISO strings (typed `Date` server-side; keep FE DTO `string`). The callback unwraps `data.requests` + sibling pagination fields.
 
 II: Question: What status and body does `PATCH /balance/requests/{balance-id}/decision` return on success and on a non-`pending` conflict?
 
-Status: pending
+Status: answered
 
-Answer: Assumed `200 OK` with the decided request nested under `data.request` (matching create/cancel), and a `409`-style conflict with a KraftError (`error.code`/`message`) when the request is no longer `pending`, which the BFF must preserve verbatim. Confirm the exact success nesting, the conflict status and error code, and the body for `404`/`403`.
+Answer: Success is `200 OK` with the decided request nested under `data.request` (full admin item, `status`/`decisionReason`/`decisionAt`/`adminInCharge` populated) under the standard envelope. A non-`pending` decision returns `409 Conflict` with a **flat** KraftError body `{ code: "BAL-BUS-002", message: "La solicitud de saldo no se encuentra en un estado válido para esta operación.", technicalDetails: null, statusCode: 409 }` — top-level, not nested under `error`. The BFF preserves it verbatim; the decision UI reads `data.code` (flat), unlike Story 3's cancel conflict which read `data.error.code`.
 
-Context: Epic Open Question VII confirms new balance BFF handlers should preserve upstream statuses (not collapse to `400`).
+Context: This flat conflict shape differs from the enveloped conflict Story 3 documented for cancel; both are `409 BAL-BUS-002` but nested differently. Epic Open Question VII requires the BFF to preserve upstream statuses (not collapse to `400`).
 
 III: Question: Should the detail surface display the opaque request `id`, or does the backend provide a human-friendly reference (as `SOL-2098` in the comp suggests)?
 
-Status: pending
+Status: answered
 
-Answer: Default to displaying the opaque `id`. The email deep link uses the opaque id (`/dashboard/requests/6a61648b998ef7a461cf4ff6`), so `SOL-2098` appears to be a design placeholder. If a friendly reference is desired, it is a backend field gap.
+Answer: Display the opaque `id`. The backend returns only the Mongo ObjectId string (e.g. `507f1f77bcf86cd799439011`) via `formatRequest()`; there is no `referenceNumber` field. `SOL-2098` in the comp is a design placeholder, and the email deep link uses the opaque id. A friendly reference would be a new backend field (out of scope).
 
-IV: Question: Is the rejection reason ever surfaced to the requesting user (e.g. via email or a future field)?
+IV: Question: Is the rejection reason ever surfaced to the requesting user?
 
-Status: pending
+Status: answered
 
-Answer: The documented list/detail contract does not return it (epic Open Question VIII), so the FE treats it as write-only/internal and copy must not imply the user will see it. The reject comp's original placeholder (`Agrega contexto para el usuario`) implies otherwise; confirm whether the reason reaches the user through any backend channel. Until confirmed, use internal-only copy.
+Answer: Yes. The reason is surfaced in two places: (1) the decision email (`Motivo: {reason}` when present) and (2) the `decisionReason` field returned by `GET /balance/requests`, shown in the user's own history. The reason is optional but always shown when present. Therefore the admin reject textarea uses **user-facing** copy (the comp's `Agrega contexto para el usuario` is correct), reversing the earlier internal-only assumption and superseding epic Open Question VIII for this field. (Story 3's `BalanceRequestCard` already renders `decisionReason` when present, consistent with this.)
 
 ### UI And Product Decisions
 
@@ -288,7 +288,7 @@ III: Question: How are the approve and reject inputs captured?
 
 Status: answered
 
-Answer: A segmented "Registrar decisión" section with two persistent buttons; selecting Aprobar reveals a required `Referencia de pago` input + `Confirmar aprobación`, selecting Rechazar reveals an optional internal `Motivo del rechazo` textarea + `Confirmar rechazo` (danger), and `Cancelar` returns to idle. Confirmed by `admin-request-comp-confirm-approval.png` and `admin-request-comp-confirm-reject.png`. (User-confirmed.)
+Answer: A segmented "Registrar decisión" section with two persistent buttons; selecting Aprobar reveals a required `Referencia de pago` input + `Confirmar aprobación`, selecting Rechazar reveals an optional user-facing `Motivo del rechazo` textarea + `Confirmar rechazo` (danger), and `Cancelar` returns to idle. Confirmed by `admin-request-comp-confirm-approval.png` and `admin-request-comp-confirm-reject.png`. (User-confirmed.)
 
 IV: Question: Should the queue filters auto-apply or use an explicit apply button?
 
@@ -313,21 +313,22 @@ Answer: Presentation gating uses `userInfo.data.user.role.includes('admin')`. Th
 ## Assumptions
 
 - `GET /balance/requests/admin` and `PATCH /balance/requests/{id}/decision` are served from `BACKEND_URI` and accept the existing bearer token.
-- The admin list response matches the user list envelope plus conditional `userEmail`/`userName`/`adminInCharge` per item (pending confirmation, Open Question I).
-- The decision success response nests the single request under `data.request`, and a non-`pending` decision returns a preserved `409`-style conflict (pending confirmation, Open Question II).
+- The admin list response matches the user list envelope plus always-present `userEmail`/`userName` and nullable `adminInCharge` per item, with conditional `paymentReference`/`decisionReason`/`decisionAt` (confirmed, Open Question I).
+- The decision success response nests the decided request under `data.request`; a non-`pending` decision returns a preserved flat `409 BAL-BUS-002` KraftError read via `data.code` (confirmed, Open Question II).
 - Timestamps are UTC ISO 8601 strings rendered through the shared date helpers without mutating stored values.
 - Approving changes the request owner's balance; the admin session cannot push that change into the user's separate open session.
 - The admin query adopts `['balance', 'requests', 'admin', month, year, page, limit, status]`, keeping the `['balance', 'requests']` invalidation prefix effective; decision success also invalidates `['balance']`.
 - The admin surface is a new admin-only dashboard screen; only its internal visual layout remains for design, without changing the behavioral acceptance criteria.
-- The reject reason is write-only/internal until a backend channel to the user is confirmed.
+- The reject reason is user-facing (shown via email and history); the admin writes context the user will read.
 
 ## Non-Obvious Findings
 
 - Admins have no balance of their own, so the admin queue is a distinct surface hitting only the admin endpoint; it must not reuse the user "Mis solicitudes" query or screen. This also means admin sidebar/drawer composition likely differs from a regular user's.
 - Decision invalidation must include `['balance']` (approval moves money), unlike Story 3's cancel which deliberately never touched `['balance']`. This is the one balance mutation that invalidates current balance.
 - The admin query key nests under the `['balance', 'requests']` prefix, so a single prefix invalidation covers both user and admin lists — no separate admin invalidation is required.
-- The comps resolve four decisions the epic left to design: an explicit "Aplicar filtros" button (vs the user list's implicit apply), a detail drawer (vs full page — the full page is Story 5), the segmented approve/reject reveal, and the required-reference / optional-internal-reason split.
-- The reject comp's placeholder (`Agrega contexto para el usuario`) contradicts the documented contract (reason not returned to the user); the research replaces it with internal-only copy and flags the channel question.
-- `SOL-2098` in the drawer comp is stylistic; the authoritative identifier is the opaque `id` used by the email deep link, so no human-friendly reference field is assumed.
+- The comps resolve four decisions the epic left to design: an explicit "Aplicar filtros" button (vs the user list's implicit apply), a detail drawer (vs full page — the full page is Story 5), the segmented approve/reject reveal, and the required-reference / optional-user-facing-reason split.
+- The reject reason IS surfaced to the user (decision email + `decisionReason` in `GET /balance/requests`), so the reject textarea is user-facing (`Agrega contexto para el usuario`). This reverses the earlier internal-only assumption and supersedes epic Open Question VIII for this field; Story 3 already renders `decisionReason` when present, so the behavior is consistent.
+- The decision `409 BAL-BUS-002` conflict body is a **flat** KraftError (`{ code, message, technicalDetails, statusCode }`), unlike Story 3's cancel `409` which nests the same code under `error`. The decision error handling must read the flat `data.code`, not `data.error.code`, even though both are `409 BAL-BUS-002`.
+- `SOL-2098` in the drawer comp is stylistic; the backend returns only the opaque Mongo ObjectId string with no `referenceNumber` field, so the detail surface displays the opaque `id`.
 - The mobile drawer (`HeaderMenuDrawer.tsx`) currently receives no `userInfo` and renders `marginProfit` unconditionally; a correctly admin-gated mobile entry for the admin queue requires threading `userInfo`/`isAdmin` into it, avoiding the existing desktop-hidden/mobile-exposed asymmetry.
 - The decision UI is intentionally extracted as a reusable component so Story 5's full-page `/dashboard/requests/{requestId}` route can reuse the exact approve/reject behavior with a `Volver al panel de control` back button.
