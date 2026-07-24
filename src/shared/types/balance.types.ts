@@ -66,6 +66,36 @@ export interface CreateBalanceRequestErrorResponse {
   error?: BalanceValidationError | BalanceDomainError | null
 }
 
+export interface BalanceRequestListParams {
+  month?: number
+  year?: number
+  page?: number
+  limit?: number
+}
+
+export interface BalanceRequestListData {
+  requests: BalanceRequestDto[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface GetBalanceRequestsResponse {
+  version: string
+  data: BalanceRequestListData
+  message: null
+  error: null
+}
+
+// Cancel success mirrors the create/single-request shape (data.request).
+export interface CancelBalanceRequestResponse {
+  version: string
+  data: { request: BalanceRequestDto }
+  message: null
+  error: null
+}
+
 export const balanceRequestSchema: ObjectSchema<BalanceRequestFormValues> = object({
   amount: string()
     .required('Ingresa el monto a solicitar')

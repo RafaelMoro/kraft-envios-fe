@@ -16,6 +16,7 @@ export const SIGN_OUT_API_ENDPOINT = "/api/auth/sign-out";
 
 export const GET_QUOTE_API_ENDPOINT = "/api/quotes";
 export const BALANCE_API_ENDPOINT = "/api/balance";
+export const BALANCE_REQUESTS_API_ENDPOINT = "/api/balance/requests";
 export const MARGIN_PROFIT_API_ENDPOINT = "/api/margin-profit";
 export const ADDRESS_API_ENDPOINT = "/api/address";
 export const ADDRESS_GE_API_ENDPOINT = "/api/ge-address";
