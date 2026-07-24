@@ -105,6 +105,8 @@ Copy guidance:
 
 ### Story 3: Review And Cancel Own Requests
 
+Status: Completed
+
 Description:
 
 Give users a list of their own requests from `GET /balance/requests`, including status and date information, and allow cancellation through `PATCH /balance/requests/{balance-id}/cancel` when the request is eligible.
@@ -398,7 +400,7 @@ Smallest useful coverage by story:
 - Story 1, Display Current Balance: completed.
 - Story 2, Create A Balance Request: completed.
 - Story 6, Business-Timezone Configuration: completed. Frontend `NEXT_PUBLIC_BUSINESS_TIMEZONE` is enforced and the shared `date.utils.ts` primitives are delivered. Researched and planned as `timezone-configuration.story-6.md`.
-- Story 3, Review And Cancel Own Requests: ready and researched (`review-cancel-own-requests.story-3.md`). The frontend timezone dependency is satisfied by Story 6; it consumes `formatDateToSpanish` and `getBusinessCalendarMonthYear` directly. It still relies on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries; confirm the exact list envelope and cancel success/conflict statuses before or during planning.
+- Story 3, Review And Cancel Own Requests: completed. Implementation delivered with timezone-aware date display and cancellation workflows; relies on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries.
 - Story 4, Admin Request Queue And Decisions: ready. The frontend timezone dependency is satisfied by Story 6; it has the same backend Luxon month-boundary dependency as Story 3.
 - Story 5, Email Deep Link To Admin Review: no longer blocked. The backend now supplies `GET /balance/requests/admin/{requestId}` to render `/dashboard/requests/{requestId}`; remaining confirmation is limited to status/body for missing, forbidden, and already-decided/cancelled requests.
 
