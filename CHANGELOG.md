@@ -1,3 +1,9 @@
+## v0.56.0 (2026-07-24)
+
+### Pull Requests
+[#116](https://github.com/RafaelMoro/kraft-envios-fe/pull/116) | Balance feature epic | Story 4: Admin Request Queue And Decisions
+
+
 ## v0.55.0 (2026-07-24)
 
 ### Pull Requests
