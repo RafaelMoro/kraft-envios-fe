@@ -1,14 +1,45 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axios, { AxiosResponse } from 'axios'
 
 import { BalanceRequestsScreen } from '@/features/Balance/BalanceRequestsScreen'
-import { BalanceRequestDto, CancelBalanceRequestResponse, GetBalanceRequestsResponse } from '@/shared/types/balance.types'
+import { BALANCE_API_ENDPOINT, BALANCE_REQUESTS_API_ENDPOINT } from '@/shared/constants/global.constants'
+import {
+  BalanceRequestDto,
+  CancelBalanceRequestResponse,
+  GetBalanceRequestsResponse,
+  GetBalanceResponse
+} from '@/shared/types/balance.types'
 
 jest.mock('axios')
 
 const mockedAxios = axios as jest.Mocked<typeof axios>
+
+const balanceResponse: GetBalanceResponse = {
+  version: '1.0',
+  data: { balance: { amount: 4820 } },
+  message: null,
+  error: null
+}
+
+/** Routes axios.get by URL so the top balance card and the requests list can be mocked independently. */
+const mockAxiosGetByUrl = (
+  listImpl: (callIndex: number) => Promise<AxiosResponse<GetBalanceRequestsResponse>>
+) => {
+  let listCallIndex = 0
+  mockedAxios.get.mockImplementation((url: string) => {
+    if (url === BALANCE_REQUESTS_API_ENDPOINT) {
+      const response = listImpl(listCallIndex)
+      listCallIndex += 1
+      return response
+    }
+    if (url === BALANCE_API_ENDPOINT) {
+      return Promise.resolve({ data: balanceResponse, status: 200 } as AxiosResponse<GetBalanceResponse>)
+    }
+    return Promise.reject(new Error(`unexpected axios.get url: ${url}`))
+  })
+}
 
 const buildRequest = (overrides: Partial<BalanceRequestDto> = {}): BalanceRequestDto => ({
   id: '507f1f77bcf86cd799439011',
@@ -71,10 +102,9 @@ describe('BalanceRequestsScreen', () => {
 
   it('defaults the month select to the Mexico City calendar month when it differs from browser-local UTC', async () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-02-01T05:30:00.000Z'))
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse([]),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({ data: buildListResponse([]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     renderScreen()
 
@@ -89,10 +119,12 @@ describe('BalanceRequestsScreen', () => {
       decisionReason: 'Pago no confirmado',
       decisionAt: '2026-07-20T12:00:00.000Z'
     })
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse([request], { total: 6 }),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({
+        data: buildListResponse([request], { total: 6 }),
+        status: 200
+      } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     renderScreen()
 
@@ -107,10 +139,9 @@ describe('BalanceRequestsScreen', () => {
 
   it('omits payment reference and decision reason rows when absent, and shows the pending label with no decision date', async () => {
     const request = buildRequest({ paymentReference: null, decisionReason: null })
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse([request]),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({ data: buildListResponse([request]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     renderScreen()
 
@@ -123,10 +154,12 @@ describe('BalanceRequestsScreen', () => {
   it('shows Cancelar only for pending requests', async () => {
     const pending = buildRequest({ id: 'pending-1', status: 'pending', amount: 31.45 })
     const approved = buildRequest({ id: 'approved-1', status: 'approved', amount: 99.99, decisionAt: '2026-07-20T12:00:00.000Z' })
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse([pending, approved]),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({
+        data: buildListResponse([pending, approved]),
+        status: 200
+      } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     renderScreen()
 
@@ -137,10 +170,9 @@ describe('BalanceRequestsScreen', () => {
   it('requires confirmation before calling the cancel callback', async () => {
     const user = userEvent.setup()
     const pending = buildRequest()
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse([pending]),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({ data: buildListResponse([pending]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     renderScreen()
     await screen.findByText('$31.45 MXN')
@@ -158,9 +190,12 @@ describe('BalanceRequestsScreen', () => {
     const pending = buildRequest()
     const cancelled: BalanceRequestDto = { ...pending, status: 'cancelled', decisionAt: '2026-07-23T12:00:00.000Z' }
 
-    mockedAxios.get
-      .mockResolvedValueOnce({ data: buildListResponse([pending]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
-      .mockResolvedValueOnce({ data: buildListResponse([cancelled]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl((callIndex) =>
+      Promise.resolve({
+        data: buildListResponse([callIndex === 0 ? pending : cancelled]),
+        status: 200
+      } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     mockedAxios.patch.mockResolvedValue({
       data: { version: '1.0', data: { request: cancelled }, message: null, error: null },
@@ -182,10 +217,9 @@ describe('BalanceRequestsScreen', () => {
   it('preserves prior state and shows an error on a 409 conflict', async () => {
     const user = userEvent.setup()
     const pending = buildRequest()
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse([pending]),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({ data: buildListResponse([pending]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
     mockedAxios.isAxiosError.mockReturnValue(true)
     mockedAxios.patch.mockRejectedValue({
       response: {
@@ -214,7 +248,11 @@ describe('BalanceRequestsScreen', () => {
 
   it('shows the error state with a Reintentar button that refetches, keeping filters mounted', async () => {
     const user = userEvent.setup()
-    mockedAxios.get.mockRejectedValue(new Error('Network error'))
+    let listCallCount = 0
+    mockAxiosGetByUrl(() => {
+      listCallCount += 1
+      return Promise.reject(new Error('Network error'))
+    })
 
     renderScreen()
 
@@ -222,15 +260,14 @@ describe('BalanceRequestsScreen', () => {
     expect(screen.getByLabelText('Mes')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /reintentar/i }))
-    await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(listCallCount).toBe(2))
   })
 
   it('shows the empty state with a working Crear solicitud CTA and keeps filters mounted', async () => {
     const user = userEvent.setup()
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse([]),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({ data: buildListResponse([]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     renderScreen()
 
@@ -244,10 +281,12 @@ describe('BalanceRequestsScreen', () => {
   it('resets the page to 1 when the month changes', async () => {
     const user = userEvent.setup()
     const requests = Array.from({ length: 1 }, () => buildRequest())
-    mockedAxios.get.mockResolvedValue({
-      data: buildListResponse(requests, { totalPages: 3, page: 2 }),
-      status: 200
-    } as AxiosResponse<GetBalanceRequestsResponse>)
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({
+        data: buildListResponse(requests, { totalPages: 3, page: 2 }),
+        status: 200
+      } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
 
     renderScreen()
     await screen.findByText('$31.45 MXN')
