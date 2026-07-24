@@ -26,12 +26,18 @@ export const BALANCE_REQUESTS_SECTION_TITLE = 'Solicitudes recientes';
 // Card field labels (comps).
 export const BALANCE_FIELD_AMOUNT = 'Monto solicitado';
 export const BALANCE_FIELD_CREATED = 'Creada';
-export const BALANCE_FIELD_DECISION = 'Decisión';
+export const BALANCE_FIELD_DECISION = 'Fecha de resolución';
 export const BALANCE_FIELD_PAYMENT_REFERENCE = 'Referencia de pago';
 export const BALANCE_FIELD_DECISION_REASON = 'Razón de la cancelación';
 
 // Neutral placeholder for a "Decisión" cell with no date on a non-pending request.
 export const BALANCE_DECISION_NONE = '—';
+
+// Placeholder shown for "Referencia de pago" while a request is still pending (comp).
+export const BALANCE_PAYMENT_REFERENCE_PENDING_PLACEHOLDER = 'Por asignar';
+
+// Placeholder shown for "Referencia de pago" on a cancelled or rejected request with no reference.
+export const BALANCE_PAYMENT_REFERENCE_NOT_APPLICABLE = 'No aplica';
 
 // Empty state (comps/empty-state-comp-see-requests.png).
 export const BALANCE_REQUESTS_EMPTY_TITLE = 'No tienes solicitudes todavía';

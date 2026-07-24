@@ -27,6 +27,7 @@ import {
   BALANCE_REQUESTS_SECTION_TITLE,
   BALANCE_REQUESTS_SUBTITLE
 } from '@/shared/constants/balance.constants'
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { BalanceRequestDto, CreateBalanceRequestErrorResponse } from '@/shared/types/balance.types'
 import { cancelBalanceRequestCb, formatBalanceMxn, getBalanceCb, getBalanceRequestsCb } from '@/shared/utils/balance.utils'
 import { getBusinessCalendarMonthYear } from '@/shared/utils/date.utils'
@@ -49,6 +50,7 @@ const MONTHS = [
 const LIMIT = 10
 
 export const BalanceRequestsScreen = (): JSX.Element => {
+  const { isMobileTablet } = useMediaQuery()
   const { month: currentMonth, year: currentYear } = getBusinessCalendarMonthYear()
   const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
@@ -70,7 +72,8 @@ export const BalanceRequestsScreen = (): JSX.Element => {
     isError: isBalanceError
   } = useQuery({
     queryKey: ['balance'],
-    queryFn: getBalanceCb
+    queryFn: getBalanceCb,
+    enabled: !isMobileTablet
   })
 
   const mutation = useMutation<BalanceRequestDto, AxiosError<CreateBalanceRequestErrorResponse>, string>({
@@ -114,21 +117,23 @@ export const BalanceRequestsScreen = (): JSX.Element => {
 
   return (
     <main className="w-full p-4 flex flex-col gap-10">
-      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <p className="text-sm text-gray-600 dark:text-gray-300">Saldo disponible</p>
-        {isBalancePending ? (
-          <span
-            aria-hidden="true"
-            className="mt-1 inline-block h-7 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-          />
-        ) : isBalanceError || typeof balanceAmount !== 'number' ? (
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">No disponible</p>
-        ) : (
-          <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-            {formatBalanceMxn(balanceAmount)} MXN
-          </p>
-        )}
-      </section>
+      {!isMobileTablet && (
+        <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <p className="text-sm text-gray-600 dark:text-gray-300">Saldo disponible</p>
+          {isBalancePending ? (
+            <span
+              aria-hidden="true"
+              className="mt-1 inline-block h-7 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            />
+          ) : isBalanceError || typeof balanceAmount !== 'number' ? (
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">No disponible</p>
+          ) : (
+            <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+              {formatBalanceMxn(balanceAmount)} MXN
+            </p>
+          )}
+        </section>
+      )}
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-col gap-2">

@@ -70,6 +70,24 @@ const buildListResponse = (
   error: null
 })
 
+/** Mirrors useMediaQuery's exact media-query strings so isMobileTablet resolves to true. */
+const mockMobileMatchMedia = () => {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: jest.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 1023px)' || query === '(max-width: 767px)',
+      media: query,
+      onchange: null,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn()
+    }))
+  })
+}
+
 /** The card renders the amount and "MXN" in separate spans, so match on the wrapping <p>'s full text. */
 const findAmountText = (amount: string) =>
   screen.findByText((_, element) => Boolean(element && element.tagName === 'P' && element.textContent === amount))
@@ -105,6 +123,7 @@ describe('BalanceRequestsScreen', () => {
 
   afterEach(() => {
     jest.useRealTimers()
+    Reflect.deleteProperty(window, 'matchMedia')
   })
 
   it('defaults the month select to the Mexico City calendar month when it differs from browser-local UTC', async () => {
@@ -144,8 +163,28 @@ describe('BalanceRequestsScreen', () => {
     expect(screen.getByText(/6 solicitudes/i)).toBeInTheDocument()
   })
 
-  it('omits payment reference and decision reason rows when absent, and shows the pending label with no decision date', async () => {
+  it('shows a "Por asignar" payment reference placeholder and the pending label with no decision date for a pending request', async () => {
     const request = buildRequest({ paymentReference: null, decisionReason: null })
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({ data: buildListResponse([request]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
+
+    renderScreen()
+
+    await findAmountText('$31.45 MXN')
+    expect(screen.getByText(/referencia de pago/i)).toBeInTheDocument()
+    expect(screen.getByText('Por asignar')).toBeInTheDocument()
+    expect(screen.queryByText(/razón de la cancelación/i)).not.toBeInTheDocument()
+    expect(screen.getAllByText('Pendiente')).toHaveLength(2)
+  })
+
+  it('omits payment reference and decision reason rows when absent on an approved request', async () => {
+    const request = buildRequest({
+      status: 'approved',
+      paymentReference: null,
+      decisionReason: null,
+      decisionAt: '2026-07-20T12:00:00.000Z'
+    })
     mockAxiosGetByUrl(() =>
       Promise.resolve({ data: buildListResponse([request]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
     )
@@ -155,8 +194,28 @@ describe('BalanceRequestsScreen', () => {
     await findAmountText('$31.45 MXN')
     expect(screen.queryByText(/referencia de pago/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/razón de la cancelación/i)).not.toBeInTheDocument()
-    expect(screen.getAllByText('Pendiente')).toHaveLength(2)
   })
+
+  it.each(['cancelled', 'rejected'] as const)(
+    'shows a "No aplica" payment reference placeholder for a %s request with no reference',
+    async (status) => {
+      const request = buildRequest({
+        status,
+        paymentReference: null,
+        decisionReason: null,
+        decisionAt: '2026-07-20T12:00:00.000Z'
+      })
+      mockAxiosGetByUrl(() =>
+        Promise.resolve({ data: buildListResponse([request]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+      )
+
+      renderScreen()
+
+      await findAmountText('$31.45 MXN')
+      expect(screen.getByText(/referencia de pago/i)).toBeInTheDocument()
+      expect(screen.getByText('No aplica')).toBeInTheDocument()
+    }
+  )
 
   it('shows Cancelar only for pending requests', async () => {
     const pending = buildRequest({ id: 'pending-1', status: 'pending', amount: 31.45 })
@@ -283,6 +342,29 @@ describe('BalanceRequestsScreen', () => {
 
     await user.click(screen.getByRole('button', { name: /crear solicitud/i }))
     expect(await screen.findByRole('heading', { name: /solicitar saldo/i })).toBeInTheDocument()
+  })
+
+  it('shows the top balance card on desktop but hides it on mobile/tablet, where BalanceDisplay already shows it', async () => {
+    mockAxiosGetByUrl(() =>
+      Promise.resolve({ data: buildListResponse([]), status: 200 } as AxiosResponse<GetBalanceRequestsResponse>)
+    )
+
+    const { unmount } = render(
+      <QueryClientProvider client={createQueryClient()}>
+        <BalanceRequestsScreen />
+      </QueryClientProvider>
+    )
+    expect(await screen.findByText('Saldo disponible')).toBeInTheDocument()
+    unmount()
+
+    mockMobileMatchMedia()
+    render(
+      <QueryClientProvider client={createQueryClient()}>
+        <BalanceRequestsScreen />
+      </QueryClientProvider>
+    )
+    await screen.findByText(/no tienes solicitudes todavía/i)
+    expect(screen.queryByText('Saldo disponible')).not.toBeInTheDocument()
   })
 
   it('resets the page to 1 when the month changes', async () => {
