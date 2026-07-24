@@ -317,7 +317,8 @@ Admin single-request lookup (supplied by the backend; unblocks Story 5):
 - Success envelope: `{ version, data: { request }, message: null, error: null }`.
 - Example `data.request`: `{ id, amount, status, createdAt, updatedAt, userEmail, userName, adminInCharge }`; a `pending` example returns `adminInCharge: null` and omits `paymentReference`/`decisionAt`/`decisionReason`, consistent with the conditional-field pattern.
 - The `/admin/` path segment makes this admin-only, matching the epic decision that `/dashboard/requests/{requestId}` is admin-only (Authorization Open Question III). A regular user does not use this endpoint.
-- Still to confirm with the backend: exact status/body for missing (`404`), forbidden (`401`/`403`), and the fields returned for already-decided (`approved`/`rejected`) or `cancelled` requests.
+- Confirmed error contract: a missing request **or a malformed ObjectId** returns a flat `404` KraftError `{ code: "BAL_NF_001", message: "No se encontro la solicitud de saldo.", technicalDetails: null, statusCode: 404 }`; an authenticated non-admin returns an enveloped `403` `{ version, data: null, message: null, error: { message: "Forbidden", statusCode: 403 } }` from Nest's `RolesGuard`.
+- Confirmed decided/cancelled fields: approved and rejected requests populate `decisionReason`, `decisionAt`, and `adminInCharge`; cancelled requests leave `decisionReason`/`decisionAt` undefined and `adminInCharge` `null`.
 
 ### Data And Cache Relationships
 
@@ -402,7 +403,7 @@ Smallest useful coverage by story:
 - Story 6, Business-Timezone Configuration: completed. Frontend `NEXT_PUBLIC_BUSINESS_TIMEZONE` is enforced and the shared `date.utils.ts` primitives are delivered. Researched and planned as `timezone-configuration.story-6.md`.
 - Story 3, Review And Cancel Own Requests: completed. Implementation delivered with timezone-aware date display and cancellation workflows; relies on backend delivery of validated `BUSINESS_TIMEZONE=America/Mexico_City` and Luxon-based month boundaries.
 - Story 4, Admin Request Queue And Decisions: completed. Implemented per `ai-planning/balance-addition/planning-admin-request-queue-decisions.story-4.md`: admin DTOs/callbacks/constants (Phase 1); the `GET /api/balance/requests/admin` and `PATCH /api/balance/requests/[requestId]/decision` BFF routes with a defensive `getUserInfo()` admin guard and status-preserving proxying, including the flat `409 BAL-BUS-002` conflict (Phase 2); the `BalanceAdminScreen`/`BalanceAdminRequestCard`/`BalanceAdminRequestDrawer`/`BalanceDecisionForm` feature surface, with `BalanceDecisionForm` built for reuse by Story 5 (Phase 3); and dashboard wiring — the `balanceAdmin` screen value, mutually-exclusive role-gated nav entries in `Aside.tsx`/`HeaderMenuDrawer.tsx`, and closing the previously-ungated mobile "Margen de ganancia" entry (Phase 4). Full verification passed: `pnpm test` (92 suites, 1122 passed/3 pre-existing skipped), `pnpm exec tsc --noEmit`, `pnpm lint`, `pnpm build`.
-- Story 5, Email Deep Link To Admin Review: no longer blocked. The backend now supplies `GET /balance/requests/admin/{requestId}` to render `/dashboard/requests/{requestId}`; remaining confirmation is limited to status/body for missing, forbidden, and already-decided/cancelled requests.
+- Story 5, Email Deep Link To Admin Review: researched and unblocked; no open backend questions remain. The backend supplies `GET /balance/requests/admin/{requestId}` to render `/dashboard/requests/{requestId}`, and its success, `404`, `403`, and decided/cancelled contracts are all confirmed. Researched as `ai-research/balance-addition/email-deep-link-admin-review.story-5.md`.
 
 ## Open Questions
 
@@ -415,7 +416,7 @@ Smallest useful coverage by story:
   - Status: answered
   - Answer: The backend now exposes `GET /balance/requests/admin/{requestId}` for authorized admins. It returns `{ version, data: { request }, message: null, error: null }`, where `request` includes `id`, `amount`, `status`, `createdAt`, `updatedAt`, `userEmail`, `userName`, and `adminInCharge` (a `pending` example returns `adminInCharge: null` and omits `paymentReference`/`decisionAt`/`decisionReason`). The `/admin/` path makes it admin-only, matching the admin-only `/dashboard/requests/{requestId}` decision.
   - Context: This resolves the previously missing single-request contract and unblocks Story 5. The BFF should URL-encode `requestId`, forward the bearer token, and preserve upstream statuses.
-  - Explanation: Remaining backend confirmation is limited to exact status/body for missing (`404`), forbidden (`401`/`403`), and the fields returned for already-decided or cancelled requests.
+  - Explanation: The remaining error/field contract is now confirmed and recorded in `ai-research/balance-addition/email-deep-link-admin-review.story-5.md`: flat `404 BAL_NF_001` for missing or malformed IDs, enveloped `403 Forbidden` for authenticated non-admins, and list-identical fields for decided requests (`adminInCharge: null` with no decision fields when cancelled).
 - III: Question: Which query parameters does regular-user `GET /balance/requests` accept?
   - Status: answered
   - Answer: It accepts optional integer `month` (1-12), optional integer `year` (minimum 1), optional positive integer `page` (default 1), and optional positive integer `limit` (default 10). It does not document a status query.

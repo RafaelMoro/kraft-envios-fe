@@ -26,7 +26,10 @@ Full research, prioritizing the new route boundary, the single-request backend c
 
 - **Standalone full page, not the dashboard shell.** `/dashboard/requests/{requestId}` is its own server page that reads auth cookies and renders only the request detail plus a `Volver al panel` back action. It does not render `Aside`/`HeaderMenuMobile`; the dashboard shell chrome lives inside the client-only `Dashboard` component and is not extracted for this story.
 - **Login return URL is in scope.** The page redirects unauthenticated visitors to the login route carrying the request URL, and the login flow sends the admin back to that URL after a successful login, falling back to `/dashboard`. An open-redirect guard restricts accepted values to same-origin dashboard paths.
-- **After a successful decision the admin stays on the page.** The single request is refetched and the page re-renders read-only with the new status, plus a link back to the dashboard. No redirect, no false optimistic state.
+- **After a successful decision the admin stays on the page**, and the comps add a confirmation step: a success panel replaces the detail card, and a secondary action reveals the refetched decided detail. No redirect, no false optimistic state.
+- **The comps' dashboard sidebar is not adopted.** All three comps render `Aside` around the content, but the page stays standalone; shell alignment is deferred until a dashboard layout exists.
+- **The back action reads `Volver al panel` and links to `/dashboard`**, diverging from the comps' `Volver a solicitudes` label because the admin queue has no URL to link to.
+- **`BalanceDecisionForm` is reused unchanged**, accepting that the comp's button order and colors differ from the shipped drawer's.
 - Full research template.
 
 ### Acceptance Criteria
@@ -35,23 +38,25 @@ Full research, prioritizing the new route boundary, the single-request backend c
 2. An authenticated admin sees the request detail (zero-safe MXN amount, Spanish status, timezone-correct timestamps, user name/email, payment reference and admin in charge when present) and, only while the request is `pending`, the approve/reject decision controls; `approved`, `rejected`, and `cancelled` requests render read-only, and a missing request renders a not-found state with no actionable controls.
 3. Unauthenticated access redirects to the login route preserving `/dashboard/requests/{requestId}` as the post-login destination; after a successful login the admin lands back on that URL. Only same-origin dashboard paths are accepted as return destinations.
 4. A loaded non-admin user sees the Spanish unauthorized screen with a `Volver al panel` action; the frontend gate is presentation only and the backend remains the authorization source of truth for both retrieval and decisions.
-5. After a successful approve or reject from this page, the admin stays on the page, the request is refetched from the backend and shown in its new read-only decided state, and the request lists and current balance are invalidated so authoritative state is refetched elsewhere.
+5. After a successful approve or reject from this page, the admin stays on the same URL and sees a `Decisión registrada` confirmation panel with a back-to-dashboard action and a `Ver solicitud actualizada` action that reveals the refetched read-only decided detail; the request lists and current balance are invalidated so authoritative state is refetched elsewhere, and a conflict never reaches the confirmation panel.
 
 ### Task Breakdown
 
 1. Add the single-request admin DTO/response type to `src/shared/types/balance.types.ts` (`GetAdminBalanceRequestResponse` = `{ version, data: { request: AdminBalanceRequestDto }, message, error }`), reusing the existing `AdminBalanceRequestDto`.
 2. Add `src/app/api/balance/requests/admin/[requestId]/route.ts`: `GET` → `${BACKEND_URI}/balance/requests/admin/{encodeURIComponent(requestId)}`, bearer forwarded, the same defensive `getUserInfo()` admin guard as the sibling admin routes, upstream status/body preserved (notably `401`/`403`/`404`), local `400` for a missing token, local `500` when no upstream response exists.
 3. Add `getAdminBalanceRequestCb(requestId)` to `src/shared/utils/balance.utils.ts`, unwrapping `data.request`.
-4. Add the route/copy constants: `BALANCE_REQUEST_DETAIL_ROUTE` helper (or a `DASHBOARD_REQUESTS_ROUTE` base) in `global.constants.ts`, and the page copy in `balance.constants.ts` — back action, unauthorized title/body/action, not-found copy, decided/read-only copy (today an inline string in `BalanceAdminRequestDrawer`), and the post-decision confirmation.
+4. Add the route/copy constants: `BALANCE_REQUEST_DETAIL_ROUTE` helper (or a `DASHBOARD_REQUESTS_ROUTE` base) in `global.constants.ts`, and the page copy in `balance.constants.ts` — eyebrow/heading/subtitle, `Monto solicitado`, the `Selecciona una acción para continuar.` decision subtitle, back action, unauthorized heading/body/action, not-found copy, decided/read-only copy (today an inline string in `BalanceAdminRequestDrawer`), and the success-panel heading/body/actions.
 5. Add `src/app/dashboard/requests/[requestId]/page.tsx` as an async server component: read `getAccessToken()` and `getUserInfo()`; no token → redirect to the login route with the encoded return URL; loaded non-admin → unauthorized screen; otherwise render the client detail component with `requestId`.
-6. Build the client detail component in `src/features/Balance/` (e.g. `BalanceAdminRequestDetail`): `useQuery` keyed `['balance', 'requests', 'admin', requestId]`, loading/error/not-found/populated states, the detail fields, `Volver al panel`, and `BalanceDecisionForm` mounted unchanged when `status === 'pending'`.
+6. Build the client detail component in `src/features/Balance/` (e.g. `BalanceAdminRequestDetail`): `useQuery` keyed `['balance', 'requests', 'admin', requestId]`, loading/error/not-found/populated states, the comp's card structure, `Volver al panel`, `BalanceDecisionForm` mounted unchanged when `status === 'pending'`, and the post-decision success panel driven by local view state off the component's `onDecided` callback, with `Ver solicitud actualizada` returning to the refetched read-only detail.
 7. Add the return-URL plumbing: `src/app/page.tsx` reads the redirect search param, sanitizes it, redirects already-authenticated visitors to it instead of `/dashboard`, and passes it through `Login` to `LoginCard`, which pushes it on login success with a `/dashboard` fallback. Add the sanitizer as a small shared util so both the page and the card use one rule.
 8. Add focused route, page-boundary, and feature coverage (see Testing Rules).
 
 ### Out Of Scope
 
 - The backend email template, CTA label, and the `FRONTEND_URI` + encoded route composition. That is backend work; this story only fixes and delivers the URL shape.
-- Rendering the dashboard sidebar/mobile drawer around this page, or extracting the dashboard shell into a layout. The page is standalone by decision.
+- Rendering the dashboard sidebar/mobile drawer around this page, or extracting the dashboard shell into a layout. The page is standalone by decision, against the comps' chrome; shell alignment is follow-up work.
+- Making the admin queue URL-addressable (a `screen` param on `/dashboard`, or reading the existing unread `dashboard-screen` cookie on mount) so the back action could land on `Solicitudes de saldo`. Follow-up work; the back action links to `/dashboard` and is labelled accordingly.
+- Changing `BalanceDecisionForm`'s button order or colors to match the comp, or adding a variant prop to it.
 - A regular-user route for their own request detail. The route is admin-only (epic Authorization Open Question III).
 - Changing `BalanceDecisionForm` behavior, the admin queue screen, or the existing admin list/decision BFF routes.
 - Making the dashboard's `Solicitudes de saldo` screen URL-addressable. `Volver al panel` links to `/dashboard`, which restores the default screen; the admin queue remains local state.
@@ -152,7 +157,19 @@ Single admin request lookup (supplied by the backend, `add-balance.epic.md:314-3
 - `GET /balance/requests/admin/{requestId}` for an authorized admin.
 - Success: `200` with `{ version, data: { request }, message: null, error: null }`, where `request` matches the existing `AdminBalanceRequestDto`: `id`, `amount`, `status`, `createdAt`, `updatedAt`, `userEmail`, `userName`, `adminInCharge`. A `pending` example returns `adminInCharge: null` and omits `paymentReference`/`decisionAt`/`decisionReason`, consistent with the conditional-field pattern already modeled in the DTO.
 - The `/admin/` path segment makes the endpoint admin-only, matching the admin-only route decision.
-- Not confirmed: exact status/body for missing (`404`), forbidden (`401`/`403`), and the precise field set for already-decided or cancelled requests. See Open Questions.
+- **Missing request → `404`** with a **flat** KraftError body: `{ code: "BAL_NF_001", message: "No se encontro la solicitud de saldo.", technicalDetails: null, statusCode: 404 }`. The same `404` is returned for a syntactically invalid ObjectId, so a mangled email link lands in the not-found state rather than an unhandled error.
+- **Authenticated non-admin → `403`** with an **enveloped** body: `{ version, data: null, message: null, error: { message: "Forbidden", statusCode: 403 } }`. This comes from Nest's `RolesGuard`/`ForbiddenException` wrapped by the app exception filter — a generic English "Forbidden", not a Spanish KraftError. The frontend supplies its own Spanish copy and never surfaces this message.
+- **Decided or cancelled requests** return the same admin item shape as the list. Approved/rejected populate `decisionReason`, `decisionAt`, and `adminInCharge` (the deciding admin's email); cancelled leaves `decisionReason`/`decisionAt` undefined and `adminInCharge` `null`, because the owner cancelled it and no admin was ever assigned. `AdminBalanceRequestDto` already models all of these as conditional/nullable, so no DTO change is needed.
+
+Error-shape inconsistency to respect (three distinct shapes now live in this one domain):
+
+| Case | Status | Body shape | Read the code at |
+| --- | --- | --- | --- |
+| Request not found | `404` | flat KraftError | `data.code` → `BAL_NF_001` |
+| Non-admin (backend) | `403` | standard envelope | `data.error.statusCode` (no `code` field) |
+| Decision on non-`pending` | `409` | flat KraftError | `data.code` → `BAL-BUS-002` |
+
+Note the code separator differs between the two KraftErrors: `BAL_NF_001` uses underscores, `BAL-BUS-002` uses hyphens. Branch on HTTP status first; treat any code string as an exact literal, never a parsed pattern.
 
 Decision (unchanged from Story 4):
 
@@ -186,11 +203,18 @@ Return-URL safety:
 
 - **Loading**: skeleton/spinner for the single request with an accessible status region; the back link is available immediately.
 - **Populated, `pending`**: amount + `Pendiente` badge, request ID, created, user name/email, last updated, admin in charge (`Sin asignar` when null), then `Registrar decisión` with the existing approve/reject flow.
-- **Populated, decided or cancelled**: same detail fields plus payment reference and decision reason when present; no decision controls; a read-only sentence (promote the drawer's inline string to a constant).
-- **Post-decision**: stay on the page; the refetched request renders in its decided read-only state, with a link back to the dashboard. Whether an explicit success banner precedes it is a design detail; the required behavior is no redirect and no optimistic state.
-- **Not found (`404`)**: a distinct Spanish state saying the request does not exist or is unavailable, with `Volver al panel` — not the generic error state.
+- **Populated, decided or cancelled**: same detail fields plus payment reference and decision reason when present; no decision controls; a read-only sentence (promote the drawer's inline string to a constant). A cancelled request legitimately shows `Sin asignar` for admin in charge and no decision-reason row — nobody decided it.
+- **Post-decision** (fixed by `story-5-email-deep-link-comp-decision-taken.png`): the detail card is replaced by a success panel — success icon, heading `Decisión registrada`, body confirming the request was updated and is available in the admin queue, and two actions: primary `Volver al panel` (→ `/dashboard`; the comp labels it `Volver a solicitudes`, relabelled for the same reason as the back link) and secondary `Ver solicitud actualizada`, which reveals the refetched decided read-only detail on the same URL. The success panel is local view state after a successful mutation; it never stands in for authoritative data.
+- **Not found (`404`)**: a distinct Spanish state saying the request does not exist or is unavailable, with `Volver al panel` — not the generic error state. This also covers a malformed request ID from a truncated email link, which the backend answers with the same `404`. Use the frontend's own copy; do not render the backend's `No se encontro la solicitud de saldo.` string, which is missing its accent.
 - **Error (other failures)**: stable Spanish error with a retry, without fabricating request fields.
-- **Unauthorized (loaded non-admin)**: the epic-approved copy — *No tienes acceso a esta solicitud* / *Esta página está disponible únicamente para administradores. Inicia sesión con una cuenta de administrador o vuelve al panel principal.* — with `Volver al panel`.
+- **Unauthorized (loaded non-admin)**: per `story-5-email-deep-link-comp-unauthorized.png`, a centered panel with a lock icon, heading `Acceso no autorizado`, and the epic-approved copy folded into one body paragraph — *No tienes acceso a esta solicitud. Esta página está disponible únicamente para administradores. Inicia sesión con una cuenta de administrador o vuelve al panel principal.* — with a single `Volver al panel` action. Note the comp promotes `Acceso no autorizado` to the heading and demotes the epic's bold title into the body; both strings are kept.
+
+Comp-derived structure for the populated detail (`story-5-email-deep-link-comp.png`):
+
+- Eyebrow `REVISIÓN ADMINISTRATIVA`, `h1` `Detalle de solicitud`, subtitle `Revisa la información antes de registrar una decisión.`
+- One card: `Monto solicitado` label above the amount with a small `MXN` suffix, status badge top-right; then `Información de la solicitud` as a two-column grid (`ID de solicitud` / `Creada`, `Usuario` with name over email, `Última actualización` / `Admin a cargo` showing `Sin asignar` when null); then `Registrar decisión` with the subtitle `Selecciona una acción para continuar.` and the two decision buttons.
+- `Creada` and `Última actualización` use the drawer's `22 jul 2026 · 10:42` date+time composition, confirming the existing `formatBusinessDateShort` + `formatDateToSpanish().time` pairing.
+- No payment-reference row appears while pending, consistent with the conditional-field contract.
 
 ### Edge Cases And Constraints
 
@@ -226,7 +250,7 @@ Smallest useful route coverage:
 
 - Forwards the URL-encoded `requestId` to `${BACKEND_URI}/balance/requests/admin/{id}` with the bearer header, and returns the upstream body/status.
 - Missing token → local `400`; non-admin caller → `403` without calling upstream.
-- Upstream `404`/`401`/`403` are preserved, not flattened to `400`; a transport failure returns the local `500`.
+- Upstream `404`/`401`/`403` are preserved, not flattened to `400`; the flat `404 BAL_NF_001` body and the enveloped `403 Forbidden` body both survive verbatim; a transport failure returns the local `500`.
 - Existing balance route tests remain unchanged and passing.
 
 Smallest useful feature and boundary coverage:
@@ -234,8 +258,9 @@ Smallest useful feature and boundary coverage:
 - Admin `userInfo` renders the detail; non-admin `userInfo` renders the unauthorized screen with `Volver al panel` and never fetches; missing `user-info` behaves as non-admin.
 - Unauthenticated access redirects to the login route with the encoded return URL.
 - A `pending` request shows the decision controls; `approved`/`rejected`/`cancelled` render read-only with no approve/reject affordance.
-- A `404` renders the not-found state, distinct from the generic error state.
-- A successful decision keeps the admin on the page and renders the refetched decided state; a `409 BAL-BUS-002` conflict shows the conflict message without a false decided state.
+- A `404` renders the not-found state, distinct from the generic error state, for both a well-formed unknown ID and a malformed one.
+- A `cancelled` request renders the `Sin asignar` admin placeholder with no decision-reason row; an `approved` one renders its payment reference and deciding admin.
+- A successful decision keeps the admin on the page and renders the success panel; `Ver solicitud actualizada` then reveals the refetched decided read-only detail. A `409 BAL-BUS-002` conflict shows the conflict message and never reaches the success panel.
 - Login pushes a sanitized return URL after success and falls back to `/dashboard` when absent; hostile values (`//evil.com`, `https://evil.com`, `/\evil.com`) are rejected in favor of `/dashboard`.
 - Timestamps render in `America/Mexico_City` from a fixed system instant whose browser-local date could differ.
 
@@ -251,27 +276,33 @@ Answer: `{ version, data: { request }, message: null, error: null }`, where `req
 
 II: Question: What status and body does the endpoint return for a request ID that does not exist?
 
-Status: pending
+Status: answered
 
-Context: AC2 requires a missing request to show its state without actionable controls, and the page distinguishes not-found from a generic error. The BFF preserves upstream status, so a `404` reaches the client as a `404`.
+Answer: `404 Not Found` with a **flat** KraftError body: `{ code: "BAL_NF_001", message: "No se encontro la solicitud de saldo.", technicalDetails: null, statusCode: 404 }` — top-level, not nested under `error`. `getRequestByIdAdmin` in `balance.service.ts` throws the identical error for two cases: a `requestId` that is not a valid MongoDB ObjectId, and a valid ObjectId with no matching document.
 
-Explanation: If the backend instead returns `200` with `data.request: null`, or a `400`, the client's not-found branch must key off that shape instead. Assumption until confirmed: `404` with a KraftError body.
+Context: Because a malformed ID produces the same `404` rather than a `400` or an unstructured `500`, a truncated or mangled email link degrades into the not-found state automatically. The BFF preserves the status, so the client branches on `404`.
+
+Explanation: `BAL_NF_001` uses underscores while the decision conflict's `BAL-BUS-002` uses hyphens. Branch on HTTP status; if a code is checked, compare the exact literal.
 
 III: Question: What status and body does the endpoint return when the caller is authenticated but not an admin?
 
-Status: pending
+Status: answered
 
-Context: The BFF's defensive guard already returns `403` before calling upstream for a non-admin `user-info` cookie, so this matters for the forged/stale-cookie path where the guard passes but the database check fails.
+Answer: `403 Forbidden` with the **standard envelope**: `{ version, data: null, message: null, error: { message: "Forbidden", statusCode: 403 } }`. `JwtGuard` authenticates, then `RolesGuard` (via `@Roles('admin')`) rejects, and `GeneralAppExceptionFilter` wraps Nest's `ForbiddenException` in the general response format.
 
-Explanation: `401` versus `403` changes only whether the client treats it as a session problem or an authorization problem. Assumption until confirmed: `403`, rendered as the unauthorized screen.
+Context: This is the forged/stale-cookie path — the BFF's defensive `getUserInfo()` guard already returns its own `403` before calling upstream when the cookie says non-admin. Both paths converge on `403` for the client.
+
+Explanation: The message is Nest's generic English `"Forbidden"`, not a Spanish KraftError, and it carries no `code` field. The frontend must render its own Spanish unauthorized copy and never surface this body to the user.
 
 IV: Question: Which fields are returned for an already-decided (`approved`/`rejected`) or `cancelled` request?
 
-Status: pending
+Status: answered
 
-Context: The supplied example is a `pending` request. Story 4's list contract populates `paymentReference`, `decisionReason`, `decisionAt`, and `adminInCharge` after a decision, and `AdminBalanceRequestDto` already models all of them as conditional/nullable.
+Answer: The same admin item shape as the list (`formatAdminRequest()` in `balance.service.ts`), differing only by status. Approved/rejected populate `decisionReason` and `decisionAt` with the decision details and `adminInCharge` with the deciding admin's email. Cancelled leaves `decisionReason`/`decisionAt` undefined and `adminInCharge` `null`, since the owner cancelled it and no admin was ever assigned.
 
-Explanation: The assumption is that the single-request lookup returns the same populated fields as the list item for decided requests. If it omits `decisionReason`, the read-only detail simply hides that row — the DTO tolerates it either way.
+Context: `AdminBalanceRequestDto` already types all four as conditional/nullable, so no DTO change is required. The read-only detail hides absent rows rather than rendering blanks.
+
+Explanation: A `cancelled` request therefore renders with the `Sin asignar` admin placeholder and no decision-reason row — visually distinct from a rejected one, which is correct: nobody rejected it.
 
 ### UI And Product Decisions
 
@@ -295,9 +326,35 @@ Answer: `/dashboard`. The `Solicitudes de saldo` queue is local `Dashboard` stat
 
 IV: Question: Does the decided read-only state need an explicit success banner?
 
-Status: pending
+Status: answered
 
-Explanation: Behaviorally optional — the status badge and populated payment reference / decision reason already communicate the outcome. Left to the design phase; either choice satisfies AC5.
+Answer: Yes, and it is stronger than a banner. `story-5-email-deep-link-comp-decision-taken.png` replaces the whole detail card with a success panel: success icon, heading `Decisión registrada`, a body line confirming the request was updated and is available in the admin queue, and two actions — primary back-to-dashboard and secondary `Ver solicitud actualizada`, which reveals the refetched decided read-only detail. The admin stays on the same URL throughout, so the earlier "stay on the page" decision is unchanged; the comp only inserts a confirmation step before the read-only state.
+
+Context: This makes the read-only decided detail reachable in two ways — via `Ver solicitud actualizada` right after deciding, and directly on any later visit to the URL. Both render the same component.
+
+V: Question: The comps render the dashboard sidebar around all three states. Does the page adopt the dashboard shell?
+
+Status: answered
+
+Answer: No. The page stays standalone; the comps' sidebar is treated as illustrative context, not a shell requirement. Extracting `Aside` out of the client-only `Dashboard` component into a shared shell or a dashboard layout is deliberately deferred as follow-up work. (User-confirmed, reaffirming the original decision against the comps.)
+
+Context: The unauthorized comp additionally renders the **admin** sidebar (`Solicitudes de saldo`, `Margen de ganancia`, `Sesión administrativa`) on a screen that only non-admins ever see. That panel is internally inconsistent, which is further reason not to treat the comp chrome as binding.
+
+VI: Question: The comps label the back action `Volver a solicitudes` and point it at the admin queue. What does the link actually do?
+
+Status: answered
+
+Answer: The label becomes `Volver al panel` and the link goes to `/dashboard`. The admin queue is local `Dashboard` state with no URL, so the comp's destination cannot be delivered without adding URL-state plumbing to `Dashboard` — out of scope here. Relabelling keeps the link honest rather than promising a destination it does not reach. The same relabel applies to the success panel's primary action. (User-confirmed.)
+
+Context: A `dashboard-screen` cookie already exists via `saveDashboardScreen`, but `Dashboard` never reads it on mount, so it cannot be leaned on to restore the queue either. Making the queue addressable (a `screen` param read on mount, or reading that cookie) is the natural follow-up if the comp's destination is wanted later.
+
+VII: Question: The comp's decision buttons differ from the shipped `BalanceDecisionForm`. Which wins?
+
+Status: answered
+
+Answer: The component, reused unchanged. The comp shows `Aprobar solicitud` as a primary navy button on the left and `Rechazar solicitud` as a neutral outline on the right; `BalanceDecisionForm` renders `Rechazar solicitud` (red outline) on the left and `Aprobar solicitud` (green) on the right. The page accepts that mismatch rather than modifying shipped Story 4 UI or adding a variant prop. Page and drawer stay behaviorally and visually identical. (User-confirmed.)
+
+Context: This preserves the whole point of Story 4's reusable extraction — mounting the component costs nothing and risks nothing in the already-delivered drawer. The comp also adds a `Selecciona una acción para continuar.` subtitle under `Registrar decisión`, which the page can render around the component without touching it.
 
 ### Authorization And Routing
 
@@ -334,8 +391,8 @@ Answer: No. It is dismissible and carries no return URL, which the epic flagged 
 ## Assumptions
 
 - `GET /balance/requests/admin/{requestId}` is served from `BACKEND_URI`, accepts the existing bearer token, and enforces the admin role against the database.
-- A missing request returns `404` and a forbidden request returns `403`, both preserved verbatim by the BFF (pending Open Questions II and III).
-- A decided or cancelled request returns the same field set as its admin-list counterpart, with `paymentReference`/`decisionReason`/`decisionAt`/`adminInCharge` populated where applicable.
+- A missing or malformed-ID request returns a flat `404 BAL_NF_001`, and a non-admin caller returns an enveloped `403 Forbidden`; both are preserved verbatim by the BFF (confirmed, Open Questions II and III).
+- A decided request returns the same field set as its admin-list counterpart with `decisionReason`/`decisionAt`/`adminInCharge` populated; a cancelled request leaves those undefined/`null` (confirmed, Open Question IV).
 - Timestamps remain UTC ISO 8601 strings rendered through the shared business-timezone helpers.
 - `AdminBalanceRequestDto` needs no change; only a single-request response envelope is added.
 - `BalanceDecisionForm` is mounted unchanged, and its existing `['balance', 'requests']` invalidation is what refetches this page after a decision.
@@ -345,6 +402,10 @@ Answer: No. It is dismissible and carries no return URL, which the epic flagged 
 
 ## Non-Obvious Findings
 
+- The comps render the dashboard sidebar around all three states, but the story deliberately does not adopt it — the chrome lives inside the client-only `Dashboard` component and extracting it is a separate refactor. The unauthorized comp is itself evidence the chrome is not binding: it shows the **admin** sidebar and `Sesión administrativa` on a screen only non-admins ever reach.
+- The comps' `Volver a solicitudes` back destination cannot be delivered: the admin queue is local `Dashboard` state with no URL, and the existing `dashboard-screen` cookie is written by `saveDashboardScreen` but never read on mount. The link is relabelled `Volver al panel` → `/dashboard` rather than lying about where it goes; making the queue addressable is logged as follow-up.
+- The comp's decision buttons invert the shipped component — `Aprobar` primary-navy on the left and `Rechazar` outline on the right, versus `BalanceDecisionForm`'s red-outline `Rechazar` left and green `Aprobar` right. Reusing the component unchanged accepts that mismatch, which is the cheaper trade than editing shipped Story 4 UI and its tests.
+- The comp repeats Story 4's `SOL-2098` placeholder in the `ID de solicitud` row. It remains stylistic; the backend returns only the opaque ObjectId, which is also what the email link carries.
 - Story 4 already paid this story's largest cost: `BalanceDecisionForm` takes only `requestId`/`onDecided` and owns its own mutation and invalidation, so the full page reuses the entire approve/reject flow — including the flat `409 BAL-BUS-002` conflict handling — with zero changes to it.
 - The detail query key `['balance', 'requests', 'admin', requestId]` nests under the prefix `BalanceDecisionForm` already invalidates, so the post-decision read-only state comes for free from the existing invalidation. No new cache wiring is needed to satisfy AC5.
 - There is no `src/app/dashboard/layout.tsx`, so this nested page inherits nothing from `/dashboard` — not the cookie read, not the Flowbite `createTheme` override, not `LoginRequiredModal`. That is an advantage here: the dashboard's theme override forces drawer header text to white and would have been a hazard for any light-surface drawer, but the standalone page uses none.
@@ -354,3 +415,6 @@ Answer: No. It is dismissible and carries no return URL, which the epic flagged 
 - The static `admin` segment in `/api/balance/requests/admin/[requestId]` shadows a literal request ID of `admin` in the sibling `[requestId]` routes. Unreachable with Mongo ObjectIds, but it is the reason the new handler nests under `admin/` rather than reusing the existing `[requestId]` folder.
 - The drawer's read-only sentence (`Esta solicitud ya fue decidida y no admite más acciones.`) is the only Balance string still inlined in a component rather than living in `balance.constants.ts`; the page needs it too, which is the natural moment to promote it.
 - The frontend cannot verify admin access before authentication, so the unauthenticated case must redirect to login rather than showing the unauthorized screen — the two states answer different questions and must not be collapsed.
+- Balance now has **three** distinct backend error shapes across three statuses: a flat `404` KraftError (`data.code === 'BAL_NF_001'`), an enveloped `403` (`data.error.statusCode`, no `code` field at all), and a flat `409` KraftError (`data.code === 'BAL-BUS-002'`). The two KraftError codes do not even share a separator — `BAL_NF_001` uses underscores, `BAL-BUS-002` uses hyphens. Any error handling here must branch on HTTP status first and treat codes as exact literals; a shared "read `data.code`" helper would silently return `undefined` for the `403`.
+- A malformed `requestId` and an unknown-but-valid one both return `404 BAL_NF_001`, so the frontend needs no separate ID-format validation — a truncated email link degrades into the not-found state on its own.
+- A `cancelled` request carries `adminInCharge: null` and no `decisionReason`/`decisionAt`, because the owner cancelled it and no admin was ever assigned. It is the one non-`pending` status that renders with the `Sin asignar` placeholder, which is correct rather than a missing-data bug.
