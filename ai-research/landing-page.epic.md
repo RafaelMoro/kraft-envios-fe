@@ -31,7 +31,8 @@ Full research. Story 1 is contract/regression focused; Story 2 is UI/copy focuse
 Captured from the scoping questions at the start of this research:
 
 1. **Structure:** epic with two stories. Story 1 (route move) ships first and unblocks Story 2.
-2. **Visual system:** re-map the comp to `DESIGN.md`. Keep the comp's layout, section order, hierarchy, and copy, but render it with **Geist Sans** and the existing Flowbite `primary-*` scale. Do **not** introduce Archivo, IBM Plex Mono, or the comp's navy/cream/tan palette.
+2. **Visual system:** re-map the comp to `DESIGN.md`. Keep the comp's layout, section order, hierarchy, and copy, but render it with **Geist Sans** and the existing Flowbite `primary-*` scale. Do **not** introduce Archivo, IBM Plex Mono, or the comp's navy/cream palette.
+   **Amended** by Story 2 Open Question IV: the comp's **tan/gold accent is kept** after all, added to `DESIGN.md` as semantic `accent` tokens rather than dropped. Everything else in this decision stands.
 3. **Comp links:** every "Crear cuenta" CTA maps `/signup` → the existing `REGISTER_ROUTE` (`/register`). The footer legal links (`Aviso de privacidad`, `Términos y condiciones`) stay in the markup as placeholders, flagged TBD; the pages themselves are out of scope.
 4. **Landing behavior:** light-mode only (the comp is light-only), the FAQ accordion is interactive (client component), and the landing is public to everyone — an authenticated visitor still sees the landing at `/` rather than being auto-redirected to `/dashboard`.
 

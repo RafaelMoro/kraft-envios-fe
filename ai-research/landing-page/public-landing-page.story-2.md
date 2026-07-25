@@ -27,7 +27,8 @@ Per the confirmed epic decisions, the comp is re-mapped onto `DESIGN.md`: same s
 2. All account CTAs resolve through the shared route constants: "Crear cuenta" → `REGISTER_ROUTE` (`/register`), "Iniciar sesión" → `LOGIN_ROUTE` (`/login`), footer "Mi saldo" → `DASHBOARD_ROUTE`. No hardcoded path strings. The header shows the same CTAs to every visitor — no authenticated personalization.
 2b. The footer renders **no** `Aviso de privacidad` or `Términos y condiciones` link in any form.
 2c. Every route listed in epic Open Question VI exports the title, description, and `robots` value specified there, and `/dashboard/**` is `noindex`.
-3. The page uses Geist Sans and the Flowbite `primary-*` scale; it introduces no new font family and no new color tokens outside the Tailwind/Flowbite scales already in use.
+3. The page uses Geist Sans and the Flowbite `primary-*` scale for typography and primary actions, and introduces no new font family. The one new token set is the decorative `accent` ramp (Q IV), declared in `DESIGN.md` and `globals.css` — no hardcoded hex or arbitrary Tailwind values in components.
+3b. The scroll-reveal wrapper and the FAQ are the only `'use client'` components, and all page content is present in the server-rendered HTML with JavaScript disabled.
 4. The FAQ is an interactive accordion — one item open at a time, first item open by default — operable by keyboard and correctly announced by a screen reader.
 5. The page is responsive: the comp's fixed multi-column grids (`1.05fr 0.95fr` hero, `repeat(3,…)`, `repeat(4,…)`, `repeat(2,…)`, `1.4fr 1fr 1fr 1fr` footer) collapse sensibly on mobile and tablet.
 6. The page renders correctly with `data-theme="dark"` on `<html>` — light-only by design, so it must set its own surface colors rather than inherit the body's dark background.
@@ -40,9 +41,9 @@ Per the confirmed epic decisions, the comp is re-mapped onto `DESIGN.md`: same s
 3. Centralize the copy in `src/shared/constants/landing.constants.ts` (matching the repo's existing `*.constants.ts` convention) so the sections stay presentational.
 4. Replace Story 1's temporary `/` redirect stub with `src/app/page.tsx` rendering the landing, plus a route-level `export const metadata`.
 4b. Roll out per-route metadata across the app per epic Open Question VI: title template in `src/app/layout.tsx`, leaf metadata on every existing page, and a new `src/app/dashboard/layout.tsx` carrying the dashboard `noindex`.
-5. Build the FAQ accordion as the one `'use client'` island.
+5. Build the hand-rolled FAQ accordion and the `RevealOnScroll` wrapper as the two `'use client'` islands.
 6. Add tests under `__tests__/feature/Landing/`.
-7. Record the light-only landing exception in `DESIGN.md` and run `pnpm design:lint`; update `REPO_CONTEXT.md`.
+7. Add the `accent` tokens to `DESIGN.md` + the `@theme` block in `globals.css`, record the light-only landing exception and the Flowbite-`Accordion` exception in `DESIGN.md`, run `pnpm design:lint`; update `REPO_CONTEXT.md`.
 
 ## Technical Research
 
@@ -70,13 +71,14 @@ Per the confirmed epic decisions, the comp is re-mapped onto `DESIGN.md`: same s
 | `PlatformFeatures.tsx` | 4 feature cards + perk pills | server |
 | `AudienceGrid.tsx` | 4 dark cards | server |
 | `CourierPanel.tsx` | Courier chips + disclaimer | server |
-| `LandingFaq.tsx` | Accordion | **`'use client'`** |
+| `LandingFaq.tsx` | Accordion (hand-rolled, see Q III) | **`'use client'`** |
+| `RevealOnScroll.tsx` | Scroll-reveal wrapper (see Q II) | **`'use client'`** — takes server-rendered `children`, so wrapped sections stay server components |
 | `LandingCta.tsx` | Dark closing panel | server |
 | `LandingFooter.tsx` | 4-column footer + legal notice | server |
 
-Only the FAQ needs client interactivity. Keeping every other section a server component matters: it is what lets `/` render statically and what keeps the landing's JS payload near zero. Do not blanket-`'use client'` the tree.
+Only the FAQ and the scroll-reveal wrapper need client interactivity. Keeping every other section a server component matters: it is what lets `/` render statically and what keeps the landing's JS payload near zero. Do not blanket-`'use client'` the tree — and note that `RevealOnScroll` wrapping a section does **not** make that section a client component, because the section arrives as `children`.
 
-The comp also animates on scroll via an `IntersectionObserver` driving `[data-reveal]` attributes, and uses `style-hover` for hover states. Neither has a repo equivalent. Recommendation: express hover with Tailwind `hover:` utilities (free, server-safe), and either drop the scroll-reveal for v1 or implement it as a small shared client wrapper — it is decoration, not content, and the page must be fully readable without it.
+The comp uses `style-hover` for hover states, which has no repo equivalent: express hover with Tailwind `hover:` utilities (free, server-safe).
 
 **Shared constants**
 
@@ -120,14 +122,14 @@ The confirmed decision is "re-map comp to DESIGN.md". Concretely:
 | `#1d2a75` hover navy | `primary-800` (`#1E429F`) |
 | `#131b3f` ink / dark card bg | `gray-900` (`#111827`) |
 | `#f6f4ef` / `#efece4` cream page bg | `gray-50` (`#F9FAFB`) / `white` |
-| `#d9b98a`, `#c8a06a`, `#ecdcc3` tan accents | No equivalent in `DESIGN.md`. Drop the tan accent entirely or express those chips on the `primary-50`/`primary-100` scale. Do **not** add tan tokens. |
+| `#d9b98a`, `#c8a06a`, `#ecdcc3` tan accents | **Preserved** (Q IV). Added to `DESIGN.md` as semantic `accent` / `accent-muted` / `accent-subtle` tokens and registered in the `@theme` block in `globals.css`, then used as `bg-accent`-style utilities. Decorative only — never for primary actions, links, or state. |
 | `#4a5175`, `#3d4569`, `#6b7191` body/muted text | `gray-600` / `gray-500` |
 | `#2e9e5b` success dot | Tailwind `green-500`-family, matching existing app usage |
 | Custom radii `10–20px` | `rounded-lg` / `rounded-xl` / `rounded-2xl` |
 | Inline `style="…"` throughout | Tailwind utilities. The comp is 100% inline-styled; none of it transfers. |
 | CTA buttons | `primaryButtonCSS` / `secondaryButtonCSS` from `global.constants.ts`, per `DESIGN.md`'s "reuse existing shared button class strings before adding new abstractions" |
 
-The net effect: the landing keeps the comp's *composition* (section rhythm, card grids, numbered steps, dark closing panel) and loses its *brand skin*. Flag this to the design owner — the comp reads as a rebrand, and shipping it in Flowbite blue will look meaningfully different from the mockup. That is the confirmed decision, but it should not be a surprise at review.
+The net effect after Q IV: the landing keeps the comp's *composition* (section rhythm, card grids, numbered steps, dark closing panel) **and its tan accent**, but re-maps typography to Geist Sans and primary actions to Flowbite blue. It will still read differently from the mockup — navy `#2b3990` becomes `primary-700` blue and Archivo becomes Geist — so flag the comparison to the design owner at review rather than letting it surprise anyone.
 
 ### Copy contract
 
@@ -197,19 +199,45 @@ Answer: Ship the PNG. Already extracted to `public/landing-hero-quotes.png` (117
 Context: Two follow-ups came out of the extraction and are tracked as epic Open Questions IX (the screenshot contains real AMPM/DHL **logos**, not text names) and X (it is clipped on the right edge). Neither blocks building the hero markup; both may change which file lands at that path.
 
 **II:** Question: Keep the scroll-reveal animation (`IntersectionObserver` + `[data-reveal]`)?
-Status: pending
-Context: Implementing it means a client-component wrapper around otherwise-server sections, which erodes the "only the FAQ is client" property.
-Explanation: This story assumes it is dropped for v1. The page must be fully readable without it either way, so it is purely additive polish.
+Status: answered
+Answer: **Keep it.** This reverses the story's earlier assumption, so the component table above needs adjusting.
+Context: The comp reveals sections on scroll via an `IntersectionObserver` that toggles `[data-reveal]`, plus keyframed `fadeUp` / `rowIn` entrance animations in the hero.
+Explanation: Implementation shape — do **not** convert the sections to client components. Build one small `'use client'` wrapper (`src/features/Landing/RevealOnScroll.tsx`) that renders a `<div>`, attaches the observer in a `useEffect`, and takes `children`. Server-rendered section content passes through it as `children` and stays server-rendered — a client component can render server children when they arrive as props. That keeps the "only the FAQ and the reveal wrapper are client" property intact.
+
+Three requirements on it:
+- **Content must be visible without JS.** Start the sections visible and let the observer *add* the animation, or gate the initial hidden state behind a class the effect sets on mount. Never ship markup where the default state is `opacity: 0` with JS as the only path to visible — that is a blank page for any crawler or failed hydration, on the page whose entire job is SEO.
+- **Respect `prefers-reduced-motion`.** Skip the animation entirely under that query, same requirement as the courier marquee.
+- **Disconnect the observer** on unmount and after the element has revealed once.
 
 **III:** Question: Flowbite `Accordion` or a hand-rolled FAQ?
-Status: pending
-Context: Flowbite is already a dependency and `DESIGN.md` says to reuse Flowbite components before adding abstractions. But the comp's FAQ has specific behavior (exactly one open, first open by default, `+`→`×` rotation) that may or may not map cleanly onto Flowbite's API.
-Explanation: Try Flowbite first; hand-roll with `<button aria-expanded aria-controls>` only if it fights back.
+Status: answered
+Answer: **Hand-rolled.** Do not use Flowbite's `Accordion`.
+Context: The comp's FAQ needs exactly-one-open, first-open-by-default, and a `+`→`×` icon rotation. The landing also sits outside the dashboard's `ThemeProvider`, so Flowbite would apply its untuned defaults here.
+Explanation: Build it as a `'use client'` component holding `useState<number>` for the open index. Accessibility contract, since this is the one interactive element on the page:
+- Each question is a `<button type="button">` with `aria-expanded` and `aria-controls` pointing at its panel; the panel carries `id` and `aria-labelledby` back to the button.
+- Wrap each question in the appropriate heading level (`<h3>`) so the FAQ appears in the document outline and screen-reader heading navigation.
+- The `+`/`×` glyph must be `aria-hidden` — `aria-expanded` already conveys state.
+- Collapse by not rendering (or `hidden`), not by `height: 0` with focusable content still in the tab order.
+- Tests use `userEvent`, assert `aria-expanded` transitions and one-open-at-a-time, and per `.github/copilot-instructions.md` assert **no** styling or class names.
+
+Note this makes `DESIGN.md`'s "reuse Flowbite components before adding abstractions" guidance a deliberate exception here; worth one line in the `DESIGN.md` landing note recording why.
 
 **IV:** Question: Does the landing keep the comp's tan/gold accent in any form?
-Status: pending
-Context: `#d9b98a` / `#c8a06a` / `#ecdcc3` carry real visual weight in the comp (the floating folio badge, the numbered eyebrows, the feature tag chips, the CTA panel's radial gradient). The re-map decision removes them with no replacement, which flattens the design noticeably.
-Explanation: This story assumes they map to the `primary-50`/`primary-100` scale. If the design owner wants the accent preserved, that is a `DESIGN.md` token addition and should be decided before implementation, not during review.
+Status: answered
+Answer: **Keep the accent.** `#d9b98a` / `#c8a06a` / `#ecdcc3` are preserved rather than flattened onto the `primary-*` scale.
+Context: The accent carries the floating folio badge, the numbered eyebrows, the feature tag chips, and the CTA panel's radial gradient.
+
+⚠️ **This partially reverses epic User-Confirmed Decision #2**, which said "do not introduce the comp's navy/cream/tan palette." The revised position: typography and primary actions still re-map to `DESIGN.md` (Geist Sans, `primary-*` buttons), but the tan accent is added to the system as a real token set rather than dropped. The epic decision should be read with this amendment.
+
+Explanation: Because these are new tokens, this is now a **design-system change, not just a landing change**, and it must be done in `DESIGN.md` rather than as hardcoded hex in the landing components:
+
+1. Add an `accent` ramp to the `colors:` block in the `DESIGN.md` frontmatter — e.g. `accent: "#c8a06a"`, `accent-muted: "#d9b98a"`, `accent-subtle: "#ecdcc3"`. Name them semantically, not `tan-*`, so they survive a future palette change.
+2. Register them in Tailwind. `src/app/globals.css` uses Tailwind v4's `@theme` block, which currently defines only `--color-background` / `--color-foreground`; the accent needs `--color-accent` etc. added there so `bg-accent` / `text-accent` become real utilities. **Do not** use arbitrary values (`bg-[#c8a06a]`) scattered through the landing.
+3. Add a Do/Don't line: the accent is decorative only — badges, chips, eyebrows, gradients — and is **never** used for primary actions, links, or state. Primary actions stay `primary-700`.
+4. **Check contrast before committing the values.** `#d9b98a` and `#ecdcc3` are light tans; the comp puts `#3d2f14` text on `#d9b98a` for the folio badge, which is fine, but any use of tan as a text color on white will fail WCAG AA. Verify each intended pairing rather than assuming.
+5. Run `pnpm design:lint` after editing `DESIGN.md`.
+
+Since the tokens land in `DESIGN.md` and `globals.css`, they are app-wide once added even though only the landing uses them today. That is the right outcome, but it means this change deserves a look from the design owner before implementation.
 
 ### Copy contract
 
