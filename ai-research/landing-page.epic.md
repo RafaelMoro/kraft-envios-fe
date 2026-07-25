@@ -150,9 +150,10 @@ Explanation: Nothing about this blocks Story 2 — it is a subtraction from the 
 ### Copy contract
 
 **V:** Question: Are the 🔴 blockers in `docs/landing-copy-es.md` §14 resolved well enough to publish?
-Status: pending
-Context: Four blockers are listed. Three are already handled by the comp's copy — it does not claim label PDFs, tracking states, retry, "sin mensualidad", or quoting without registration. The remaining live one is the transfer-reference ownership conflict (#1), which only affects the Saldo feature card's bullet list.
-Explanation: The comp's Saldo bullets ("Solicita una recarga indicando el monto", "Confirmación por correo cuando se aprueba", "Cancela una solicitud mientras siga pendiente") avoid the disputed field entirely, so Story 2 can proceed. Flagging so the copy owner confirms rather than discovers it post-launch.
+Status: answered
+Answer: Yes — proceed. The landing ships as a **first draft**; the remaining copy details are polished before the public launch. The outstanding items are tracked in `docs/improvement.md`, not in this research doc.
+Context: Three of the four 🔴 blockers are already avoided by the comp's copy (no label PDF, no tracking states, no retry, no "sin mensualidad", no quoting without registration). The fourth — transfer-reference ownership — is sidestepped by the Saldo bullets, which never mention the disputed field.
+Explanation: "First draft, polish later" is the operating mode for all copy. `docs/improvement.md` is the running list of what still needs a business decision before public launch.
 
 **VI:** Question: Should the page `<title>` and `<meta description>` change for the whole app, or only for `/`?
 Status: answered
@@ -199,24 +200,44 @@ Answer: Yes. `src/app/api/auth/sign-out/route.ts` calls `revalidatePath(LOGIN_RO
 ### Raised by answering I, II, and VI
 
 **IX:** Question: The extracted hero screenshot contains real courier **logos** — is that covered by the text-name approval in II?
-Status: pending
-Context: `public/landing-hero-quotes.png` is a screenshot of the live quotes panel, so it renders the **AMPM wordmark and the DHL logo as raster images**, not text. Question II approved plain text names; logo usage was the item flagged in `docs/landing-copy-es.md` §14 and it is not resolved by that answer. The image is above the fold and is the most prominent brand usage on the page.
-Explanation: If logo usage is not cleared, the options are (a) re-take the screenshot with logos suppressed or blurred, (b) rebuild the mockup in markup with text-only courier names, which is Question I's deferred option. Cheapest safe path: re-take the screenshot rather than rebuild.
+Status: answered
+Answer: Ship it in the first draft. The logo question is raised with the client and decided later; the callout is recorded in `docs/improvement.md` §4.1 alongside the existing logo item (§4).
+Context: `public/landing-hero-quotes.webp` is a screenshot of the live quotes panel, so it renders the **AMPM wordmark and the DHL logo as raster images**, not text. This is a different use than §4's logo list — it is a product screenshot, which reads as descriptive use rather than promotional brand use, but it is above the fold and is the most prominent brand usage on the page.
+Explanation: If the client does not clear it, the fallbacks in ascending cost are (a) re-capture with logos hidden via temporary CSS, (b) replace the logos with plain text inside the capture, (c) rebuild the mockup in markup — which is Question I's deferred option and also fixes the baked-in prices. `docs/improvement.md` §4.1 records all three, plus the aging data (three literal prices, the `🟡SMART` glyph, the `KFT-202607-…` folio badge, tracked as §5).
 
-**X:** Question: The extracted screenshot is cropped — re-take it or crop it deliberately?
-Status: pending
-Context: The PNG is 1170×1110 and every quote card is **clipped on the right edge**, with a second column of cards partially visible at the far right. It reads as an accidental viewport crop, not a designed detail. It also bakes in three specific prices ($103.91, $136.72, $139.37) and a `SMART` service name with a stray emoji glyph.
-Explanation: Since the user is re-exporting to `.webp` anyway, that is the moment to re-take it at a clean width. Recommendation: capture the quotes panel at a full card width, 3 rows, and let the landing's mockup frame do the cropping via `overflow-hidden` instead of baking it into the raster.
+**X:** Question: The extracted screenshot is cropped — re-take it, and at what dimensions?
+Status: answered
+Answer: Re-crop it. **One file, not three.** Export a single `public/landing-hero-quotes.webp` at **1200 × 1140 px** (≈1.05:1, the current composition) and let `next/image` generate the responsive `srcset` — that is exactly what it is for, and shipping three hand-cut files would be worse.
+
+Sizing derivation, from the comp's actual CSS:
+
+- The hero container is `max-width: 1200px` with `padding: 0 28px` → 1144 px of content.
+- The grid is `1.05fr 0.95fr` with a `56px` gap → the mockup column is `(1144 − 56) × 0.95/2` ≈ **517 CSS px** at the desktop maximum.
+- The `<img>` is `width: 100%` inside the panel with no horizontal padding, so 517 px is its true desktop render width. At 2× DPR that needs a **1034 px** source; 1200 px gives comfortable headroom.
+
+The one trap: when the hero **stacks to a single column** on tablet, the mockup becomes full-width. If the two-column breakpoint is `lg` (1024 px), the stacked image would render up to ~968 CSS px, which at 2× would demand a ~1936 px source — nearly 4× the file weight for the least important breakpoint.
+
+**Fix that in CSS, not in the asset:** cap the stacked mockup panel with `max-w-[560px] mx-auto` (dropped at `lg` where the grid takes over). Then 517 px is the global maximum render width at every breakpoint and one 1200 px source covers everything.
+
+Implementation notes for Story 2:
+- Pass `sizes="(min-width: 1024px) 517px, min(560px, 100vw - 56px)"` so `next/image` picks the right variant instead of serving the largest.
+- Declare `width={1200} height={1140}` to reserve layout space and avoid CLS.
+- Keep the panel `overflow-hidden` so the frame does the cropping — do not depend on the source's exact aspect ratio, which lets the image be re-captured later without touching the layout.
+- If a shorter hero is wanted, 1200 × 900 (4:3) showing three full rows also works; anything taller than ~1.2:1 starts pushing the CTAs off a laptop viewport.
+
+Context: The current `public/landing-hero-quotes.png` is 1170 × 1110 with every quote card **clipped on the right edge** and a second column bleeding in — an accidental viewport crop, not a designed detail. Capture at a width where one card column is fully visible.
 
 **XI:** Question: What is the production base URL, and should a `metadataBase` be configured?
-Status: pending
-Context: Open Graph `images` and canonical URLs must be absolute. Next.js resolves them against `metadata.metadataBase`, which is not set anywhere today, and `.env.example` has no public site-URL variable (only `NEXT_PUBLIC_LOCAL_STORAGE`, `NEXT_PUBLIC_GET_SAT_PRODUCT_URI`, `NEXT_PUBLIC_DEFAULT_EMAIL`, `NEXT_PUBLIC_BUSINESS_TIMEZONE`). Without it Next.js logs a build warning and emits relative OG URLs, which most scrapers reject.
-Explanation: Needs the real domain from the user. Adding it means a new `NEXT_PUBLIC_SITE_URL` entry in `.env.example` and `AGENTS.md`. Also note the copy doc specifies OG *title* and *description* but no OG **image** — one has to be designed or the landing ships without a share preview image.
+Status: answered
+Answer: Deferred to the polish phase. Recorded in `docs/improvement.md` §7. The first draft ships without `metadataBase`; Next.js will log a build warning about it, which is expected and not a regression.
+Context: Two things are needed before public launch — a `NEXT_PUBLIC_SITE_URL` entry in `.env.example` + `AGENTS.md` for absolute OG/canonical URLs, and an actual **OG image** (1200×630), which `docs/landing-copy-es.md` §1 never specifies. Without the image, link shares to WhatsApp/Facebook/LinkedIn render with no preview.
+Explanation: Story 2 still emits `openGraph.title` and `openGraph.description`; only the absolute-URL resolution and the image are deferred.
 
 **XII:** Question: Should `<html lang>` change from `en` to `es-MX`?
-Status: pending
-Context: `src/app/layout.tsx:31` renders `<html lang="en">` while every string in the app, and all of the landing copy, is Spanish. This is an accessibility defect (screen readers pick the wrong voice) and an SEO signal problem for a page whose entire value is Spanish-language search.
-Explanation: One-character-class change, app-wide effect, and directly in the path of the metadata work in VI. Recommendation: change it to `es-MX` as part of the same commit. Flagging rather than assuming because it affects every existing route, not just the landing.
+Status: answered
+Answer: Yes. Change `src/app/layout.tsx:31` from `<html lang="en">` to `<html lang="es-MX">` in the same change as the metadata work (VI).
+Context: Every string in the app is Spanish. Today's `lang="en"` makes screen readers pick an English voice for Spanish text (an accessibility defect) and sends the wrong language signal for a page whose entire value is Spanish-language search.
+Explanation: App-wide effect, so Story 2 should sanity-check that no existing test asserts on `lang`.
 
 ## Presentation Notes
 

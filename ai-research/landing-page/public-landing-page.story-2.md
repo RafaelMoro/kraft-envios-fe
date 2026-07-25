@@ -93,7 +93,7 @@ The comp also animates on scroll via an `IntersectionObserver` driving `[data-re
 
 | File | Source |
 | --- | --- |
-| `public/landing-hero-quotes.webp` | **Already extracted** to `public/landing-hero-quotes.png` (manifest key `fcc5b1fc-57ff-4e9b-bd0e-64b02e699602`, 1170×1110, 130 KB). The user re-exports it as `.webp`; implementation references the `.webp` path and the `.png` is deleted once it lands. Render with `next/image` (`.github/copilot-instructions.md` forbids mocking `next/image` in tests, so it must be a real import), explicit `width`/`height`, `priority`. Alt text is specified in `docs/landing-copy-es.md` §1. |
+| `public/landing-hero-quotes.webp` | **Already extracted** to `public/landing-hero-quotes.png` (manifest key `fcc5b1fc-57ff-4e9b-bd0e-64b02e699602`, 1170×1110, 130 KB). The user re-crops and re-exports it as `.webp` at **1200×1140**; implementation references the `.webp` path and the `.png` is deleted once it lands. **One file only** — `next/image` generates the responsive `srcset`. Render with `next/image` (`.github/copilot-instructions.md` forbids mocking `next/image` in tests, so it must be a real import), `width={1200} height={1140}`, `priority`, and `sizes="(min-width: 1024px) 517px, min(560px, 100vw - 56px)"`. Cap the stacked mockup panel at `max-w-[560px] mx-auto` below `lg` so the image never renders wider than ~560 CSS px at any breakpoint — see epic Open Question X for the derivation. Alt text is in `docs/landing-copy-es.md` §1. |
 
 `public/` already holds `kraft-logo.svg` and `kraft-logo-white.webp`; the comp draws the logo as styled text ("kraft" + "SOLUCIONES EN ENVÍOS"), which can be reproduced in markup or swapped for the existing SVG.
 
@@ -218,8 +218,8 @@ Status: answered
 Answer: Variant A — "Cotiza con varias paqueterías. / Genera tu guía en minutos." It is the recommended variant in `docs/landing-copy-es.md` §2 and the comp's default. The comp's `h1Variant` A/B/C prop is a design-tool affordance and is not carried into the implementation.
 
 **VI:** Question: Is the 🔴 transfer-reference conflict resolved?
-Status: pending
-Context: See epic Open Question V. The comp's Saldo bullets sidestep the disputed field, so it does not block this story.
+Status: answered
+Answer: Not formally, but it does not block. The landing ships as a first draft and the comp's Saldo bullets never mention the disputed field. See epic Open Question V; remaining copy decisions live in `docs/improvement.md`.
 
 ### Authorization
 
