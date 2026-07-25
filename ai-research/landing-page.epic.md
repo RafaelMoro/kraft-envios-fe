@@ -127,7 +127,7 @@ Consumers of `LOGIN_ROUTE` (9 source sites, 4 test sites) are enumerated in Stor
 
 **I:** Question: Should the hero mockup be the comp's baked-in PNG screenshot of the quotes panel, or a rebuilt HTML/CSS mock?
 Status: answered
-Answer: Ship the PNG. It has been extracted from the comp manifest to **`public/landing-hero-quotes.png`** (1170×1110, 130 KB, RGBA). The user will convert it to `.webp` and replace the file; Story 2 should reference `public/landing-hero-quotes.webp` and the PNG is a temporary placeholder in the repo. A markup rebuild is deferred as follow-up.
+Answer: Ship the screenshot. **Done** — `public/landing-hero-quotes.webp`, 1200×1138, 34 KB. Extracted from the comp manifest (key `fcc5b1fc-…`, originally 1170×1110 PNG at 130 KB), re-cropped and re-exported by the user; the placeholder `.png` has been deleted. A markup rebuild is deferred as follow-up.
 Context: Alt text is already written in `docs/landing-copy-es.md` §1. Render with `next/image`, explicit `width`/`height` (avoid CLS), and `priority` (LCP-adjacent).
 Explanation: Two things surfaced during extraction that were not visible from the comp source and are **new work items**, see Open Questions IX and X below: the screenshot contains real courier **logos**, and it is **cropped on the right edge**.
 
@@ -208,6 +208,8 @@ Explanation: If the client does not clear it, the fallbacks in ascending cost ar
 **X:** Question: The extracted screenshot is cropped — re-take it, and at what dimensions?
 Status: answered
 Answer: Re-crop it. **One file, not three.** Export a single `public/landing-hero-quotes.webp` at **1200 × 1140 px** (≈1.05:1, the current composition) and let `next/image` generate the responsive `srcset` — that is exactly what it is for, and shipping three hand-cut files would be worse.
+
+**Delivered:** `public/landing-hero-quotes.webp` at **1200 × 1138, 34 KB** — on spec, and a 74% weight reduction from the extracted PNG. One residual, low-stakes: the right-edge bleed is still baked in (the cards are clipped at roughly x≈1133 and a sliver of a second card column shows from x≈1165 to the edge). Because it is in the raster, a panel `overflow-hidden` cannot remove it. If it should go, crop the source to **~1145 px wide** — that keeps the card plus its gutter, drops the sliver, and stays well above the 1034 px the 2× desktop render needs. Optional; the sliver arguably reads as "the panel continues", which is a normal product-screenshot convention.
 
 Sizing derivation, from the comp's actual CSS:
 

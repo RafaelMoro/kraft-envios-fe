@@ -129,12 +129,23 @@ Answer: Always serve the landing. Confirmed in epic scoping — the landing is p
 Context: This is why the `/` stub in Task 5 is explicitly temporary rather than the final state.
 
 **II:** Question: Should there be a permanent redirect from any other legacy path to `/login`?
-Status: pending
-Explanation: No legacy sign-in aliases exist in this repo, so the answer is almost certainly no. Raising it only in case an external system links to a path this research cannot see.
+Status: answered
+Answer: No. No legacy sign-in aliases exist and none need to be created. `/` becomes the landing and does not redirect anywhere.
 
 ### Authorization
 
 **III:** Question: Does the backend send any email containing a link to `/`?
-Status: pending
-Context: Balance notification emails link to `/dashboard/requests/{requestId}`, which is unaffected. Whether registration-confirmation, forgot-password, or any other backend template links to the frontend root is not knowable from this repo — `src/app/api/**` only proxies, and the templates live in the backend.
-Explanation: If one does, it will land on the landing page rather than a login form after this story. Worth a message to the backend owner; not a blocker.
+Status: answered
+Answer: No email links to `/`. The only frontend deep link the backend sends besides the balance one is the **forgot-password email → `/reset-password/{token}`**.
+Context: Verified against this repo. `src/app/reset-password/[slug]/page.tsx` reads `params.slug` and renders `features/Login/ResetPassword/ResetPassword`; this story does not touch that route, its path, or its param shape, so **every already-sent password-reset email keeps working**. The path is not derived from `LOGIN_ROUTE`.
+Explanation: The change does reach the reset flow, but only in the right direction — it improves it. Three CTAs inside the reset/forgot screens point at `LOGIN_ROUTE` and will now land on the sign-in form instead of the marketing landing:
+
+| File | Line | Element |
+| --- | --- | --- |
+| `ResetPasswordStatusCard.tsx` | 28 | "Regresar al inicio" after a successful (or failed) reset |
+| `ResetPasswordCard.tsx` | 82 | "Volver al inicio" secondary button |
+| `ForgotPasswordCard.tsx` | 36, 76 | `router.push(LOGIN_ROUTE)` after submit, plus its "volver" button |
+
+All four resolve through the constant, so they move for free. **But the copy no longer matches the destination**: "Regresar al inicio" / "Volver al inicio" meant "go back to the sign-in screen" when `/` *was* sign-in. After this story "el inicio" is the marketing landing, and these buttons go to `/login`. Recommendation: retitle them to "Iniciar sesión" — a one-word copy change in three files, cheapest to do inside this story rather than as landing polish. A grep for `inicio` across `src/features` and `src/shared` (excluding "iniciar sesión") finds exactly **five** navigational occurrences, all in the Login domain — the four above plus two in `src/features/Login/Register/ResultCard.tsx:25,46` ("Regresar al inicio" after register success/failure). Everything else that matches is date-picker copy ("Fecha de inicio") and is unrelated.
+
+So the full copy fix is four files: `ResetPasswordStatusCard.tsx`, `ResetPasswordCard.tsx`, `ForgotPasswordCard.tsx`, `Register/ResultCard.tsx`. Note `ResultCard.test.tsx` already asserts on link text and hrefs, so retitling means updating that test in the same change.
