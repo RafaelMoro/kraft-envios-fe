@@ -1,3 +1,9 @@
+## v0.57.0 (2026-07-25)
+
+### Pull Requests
+[#117](https://github.com/RafaelMoro/kraft-envios-fe/pull/117) | Balance feature epic | Story 5 | Email Deep Link To Admin Review 
+
+
 ## v0.56.0 (2026-07-24)
 
 ### Pull Requests
