@@ -5,9 +5,11 @@ import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { Badge, Button } from 'flowbite-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 import { BalanceDecisionForm } from '@/features/Balance/BalanceDecisionForm'
+import { BalanceRequestUnauthorized } from '@/features/Balance/BalanceRequestUnauthorized'
 import {
   BALANCE_ADMIN_ADMIN_UNASSIGNED,
   BALANCE_ADMIN_DRAWER_INFO_TITLE,
@@ -37,7 +39,12 @@ import {
   BALANCE_STATUS_BADGE_COLOR,
   BALANCE_STATUS_LABELS
 } from '@/shared/constants/balance.constants'
-import { DASHBOARD_ROUTE } from '@/shared/constants/global.constants'
+import {
+  DASHBOARD_ROUTE,
+  LOGIN_REDIRECT_PARAM,
+  LOGIN_ROUTE,
+  buildBalanceRequestDetailRoute
+} from '@/shared/constants/global.constants'
 import { AdminBalanceRequestDto, BalanceRequestNotFoundError } from '@/shared/types/balance.types'
 import { LinkButton } from '@/shared/ui/atoms/LinkButton'
 import { formatBalanceDetailTimestamp, formatBalanceMxn, getAdminBalanceRequestCb } from '@/shared/utils/balance.utils'
@@ -60,6 +67,7 @@ const BackToDashboardLink = (): JSX.Element => (
 )
 
 export const BalanceAdminRequestDetail = ({ requestId }: BalanceAdminRequestDetailProps): JSX.Element => {
+  const router = useRouter()
   const [showSuccessPanel, setShowSuccessPanel] = useState(false)
 
   const { data, isPending, isError, error, refetch } = useQuery<
@@ -70,7 +78,24 @@ export const BalanceAdminRequestDetail = ({ requestId }: BalanceAdminRequestDeta
     queryFn: () => getAdminBalanceRequestCb(requestId)
   })
 
-  const isNotFound = error?.response?.status === 404
+  // The backend cookie is only known to be current at request time, so the
+  // login redirect and the admin guard are both driven by this response's
+  // status rather than a server-rendered pre-check.
+  const status = error?.response?.status
+  const isUnauthenticated = status === 400
+  const isForbidden = status === 403
+  const isNotFound = status === 404
+
+  useEffect(() => {
+    if (!isUnauthenticated) return
+
+    const returnUrl = buildBalanceRequestDetailRoute(requestId)
+    router.push(`${LOGIN_ROUTE}?${LOGIN_REDIRECT_PARAM}=${encodeURIComponent(returnUrl)}`)
+  }, [isUnauthenticated, requestId, router])
+
+  if (isForbidden) {
+    return <BalanceRequestUnauthorized />
+  }
 
   return (
     <main className="w-full p-4 flex flex-col gap-6">
@@ -102,7 +127,7 @@ export const BalanceAdminRequestDetail = ({ requestId }: BalanceAdminRequestDeta
         </div>
       )}
 
-      {!showSuccessPanel && isPending && (
+      {!showSuccessPanel && (isPending || isUnauthenticated) && (
         <div role="status" aria-live="polite" className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <span className="sr-only">{BALANCE_DETAIL_LOADING_MESSAGE}</span>
           <div className="flex flex-col gap-4">
@@ -121,7 +146,7 @@ export const BalanceAdminRequestDetail = ({ requestId }: BalanceAdminRequestDeta
         </div>
       )}
 
-      {!showSuccessPanel && !isPending && isError && !isNotFound && (
+      {!showSuccessPanel && !isPending && isError && !isNotFound && !isUnauthenticated && (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-gray-200 p-8 text-center dark:border-gray-700">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
             <RiRefreshLine size={24} />

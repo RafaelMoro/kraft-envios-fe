@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axios, { AxiosResponse } from 'axios'
 
+import { AppRouterContextProviderMock } from '@/features/AppRouterContextProviderMock'
 import { BalanceAdminRequestDetail } from '@/features/Balance/BalanceAdminRequestDetail'
 import { BALANCE_REQUESTS_ADMIN_API_ENDPOINT } from '@/shared/constants/global.constants'
 import { AdminBalanceRequestDto, GetAdminBalanceRequestResponse } from '@/shared/types/balance.types'
@@ -57,12 +58,14 @@ const createQueryClient = () =>
     }
   })
 
-const renderDetail = (requestId: string = REQUEST_ID) => {
+const renderDetail = (requestId: string = REQUEST_ID, push: () => void = jest.fn()) => {
   const queryClient = createQueryClient()
 
   render(
     <QueryClientProvider client={queryClient}>
-      <BalanceAdminRequestDetail requestId={requestId} />
+      <AppRouterContextProviderMock router={{ push }}>
+        <BalanceAdminRequestDetail requestId={requestId} />
+      </AppRouterContextProviderMock>
     </QueryClientProvider>
   )
 
@@ -258,7 +261,9 @@ describe('BalanceAdminRequestDetail', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <BalanceAdminRequestDetail requestId={REQUEST_ID} />
+        <AppRouterContextProviderMock router={{ push: jest.fn() }}>
+          <BalanceAdminRequestDetail requestId={REQUEST_ID} />
+        </AppRouterContextProviderMock>
       </QueryClientProvider>
     )
 
@@ -269,6 +274,38 @@ describe('BalanceAdminRequestDetail', () => {
 
     await waitFor(() => expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['balance', 'requests'] }))
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['balance'] })
+  })
+
+  it('redirects to the login route with the return URL on a 400 missing-token response, showing the loading state meanwhile', async () => {
+    mockedAxios.isAxiosError.mockReturnValue(true)
+    mockedAxios.get.mockRejectedValue({
+      response: { status: 400, data: { message: 'missing access token' } }
+    })
+    const push = jest.fn()
+
+    renderDetail(REQUEST_ID, push)
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        `/?redirect=${encodeURIComponent(`/dashboard/requests/${REQUEST_ID}`)}`
+      )
+    )
+    expect(screen.getByRole('status')).toBeInTheDocument()
+    expect(screen.queryByText(/no pudimos cargar la solicitud/i)).not.toBeInTheDocument()
+  })
+
+  it('renders the unauthorized panel on a 403 without calling the query again, and never redirects', async () => {
+    mockedAxios.isAxiosError.mockReturnValue(true)
+    mockedAxios.get.mockRejectedValue({
+      response: { status: 403, data: { message: 'admin only' } }
+    })
+    const push = jest.fn()
+
+    renderDetail(REQUEST_ID, push)
+
+    expect(await screen.findByText(/acceso no autorizado/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /volver al panel/i })).toHaveAttribute('href', '/dashboard')
+    expect(push).not.toHaveBeenCalled()
   })
 
   it('shows Volver al panel pointing at /dashboard in every state', async () => {
