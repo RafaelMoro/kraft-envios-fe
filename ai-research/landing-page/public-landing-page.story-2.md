@@ -24,7 +24,9 @@ Per the confirmed epic decisions, the comp is re-mapped onto `DESIGN.md`: same s
 ### Acceptance Criteria
 
 1. `/` renders a public landing page with all twelve comp sections in order, using the copy from `docs/landing-copy-es.md`, and performs no auth cookie read and no redirect for any visitor.
-2. All account CTAs resolve through the shared route constants: "Crear cuenta" → `REGISTER_ROUTE` (`/register`), "Iniciar sesión" → `LOGIN_ROUTE` (`/login`), footer "Mi saldo" → `DASHBOARD_ROUTE`. No hardcoded path strings.
+2. All account CTAs resolve through the shared route constants: "Crear cuenta" → `REGISTER_ROUTE` (`/register`), "Iniciar sesión" → `LOGIN_ROUTE` (`/login`), footer "Mi saldo" → `DASHBOARD_ROUTE`. No hardcoded path strings. The header shows the same CTAs to every visitor — no authenticated personalization.
+2b. The footer renders **no** `Aviso de privacidad` or `Términos y condiciones` link in any form.
+2c. Every route listed in epic Open Question VI exports the title, description, and `robots` value specified there, and `/dashboard/**` is `noindex`.
 3. The page uses Geist Sans and the Flowbite `primary-*` scale; it introduces no new font family and no new color tokens outside the Tailwind/Flowbite scales already in use.
 4. The FAQ is an interactive accordion — one item open at a time, first item open by default — operable by keyboard and correctly announced by a screen reader.
 5. The page is responsive: the comp's fixed multi-column grids (`1.05fr 0.95fr` hero, `repeat(3,…)`, `repeat(4,…)`, `repeat(2,…)`, `1.4fr 1fr 1fr 1fr` footer) collapse sensibly on mobile and tablet.
@@ -33,10 +35,11 @@ Per the confirmed epic decisions, the comp is re-mapped onto `DESIGN.md`: same s
 
 ### Task Breakdown
 
-1. Extract the hero screenshot asset from the comp manifest into `public/`.
+1. ~~Extract the hero screenshot asset from the comp manifest into `public/`.~~ Done — `public/landing-hero-quotes.png`, pending the user's `.webp` re-export.
 2. Create `src/features/Landing/` with one component per comp section.
 3. Centralize the copy in `src/shared/constants/landing.constants.ts` (matching the repo's existing `*.constants.ts` convention) so the sections stay presentational.
 4. Replace Story 1's temporary `/` redirect stub with `src/app/page.tsx` rendering the landing, plus a route-level `export const metadata`.
+4b. Roll out per-route metadata across the app per epic Open Question VI: title template in `src/app/layout.tsx`, leaf metadata on every existing page, and a new `src/app/dashboard/layout.tsx` carrying the dashboard `noindex`.
 5. Build the FAQ accordion as the one `'use client'` island.
 6. Add tests under `__tests__/feature/Landing/`.
 7. Record the light-only landing exception in `DESIGN.md` and run `pnpm design:lint`; update `REPO_CONTEXT.md`.
@@ -90,7 +93,7 @@ The comp also animates on scroll via an `IntersectionObserver` driving `[data-re
 
 | File | Source |
 | --- | --- |
-| `public/landing-hero-quotes.webp` (or `.png`) | Extracted from the comp manifest, key `fcc5b1fc-57ff-4e9b-bd0e-64b02e699602`, `image/png`, ~132 KB. Render with `next/image` (`.github/copilot-instructions.md` forbids mocking `next/image` in tests, so it must be a real import). Alt text is specified in `docs/landing-copy-es.md` §1. |
+| `public/landing-hero-quotes.webp` | **Already extracted** to `public/landing-hero-quotes.png` (manifest key `fcc5b1fc-57ff-4e9b-bd0e-64b02e699602`, 1170×1110, 130 KB). The user re-exports it as `.webp`; implementation references the `.webp` path and the `.png` is deleted once it lands. Render with `next/image` (`.github/copilot-instructions.md` forbids mocking `next/image` in tests, so it must be a real import), explicit `width`/`height`, `priority`. Alt text is specified in `docs/landing-copy-es.md` §1. |
 
 `public/` already holds `kraft-logo.svg` and `kraft-logo-white.webp`; the comp draws the logo as styled text ("kraft" + "SOLUCIONES EN ENVÍOS"), which can be reproduced in markup or swapped for the existing SVG.
 
@@ -178,7 +181,8 @@ Per `.github/copilot-instructions.md`:
 - **`text-wrap: pretty`** appears throughout the comp. `globals.css` already defines a `text-balance` utility; decide whether to add `text-pretty` or drop it. Cosmetic.
 - **Hero mockup image weight.** 132 KB PNG above the fold. Convert to `.webp` (the repo already uses `.webp` for `kraft-logo-white.webp` and `empty-kraft-truck.webp`), set explicit `width`/`height` to avoid CLS, and mark it `priority` since it is LCP-adjacent.
 - **The floating "folio KFT-202607-000123" badge** bakes a date into the design. Harmless, but it will read as stale in 2027.
-- **Footer legal links 404.** `/privacidad` and `/terminos` do not exist. Confirmed decision is to keep them as placeholders; they will 404 until those pages ship. Track as follow-up.
+- ~~**Footer legal links 404.**~~ Resolved — the legal links are omitted entirely (Open Question IX). No 404 risk.
+- **Hero image is a real screenshot.** It contains AMPM/DHL logos and three literal prices, and it is clipped on the right edge. See epic Open Questions IX and X; the file at `public/landing-hero-quotes.webp` may be re-captured before launch, so build the hero frame with `overflow-hidden` and do not depend on the image's exact aspect ratio.
 - **Footer "Mi saldo" → `/dashboard`.** For an anonymous visitor this bounces to the dashboard, which reads cookies and has no session. Verify the resulting experience is a clean redirect to `/login`, not an error — `src/app/dashboard/page.tsx` reads session cookies server-side and its behavior for a missing session must be checked, not assumed.
 - **Static rendering.** After this story, `/` should appear as static (`○`) in `pnpm build` output. If it shows as dynamic (`ƒ`), something introduced a cookie or header read — find it.
 - **Anchor links + sticky header.** `#como-funciona`, `#paqueterias`, `#faq`, `#top` scroll under the sticky header unless `scroll-margin-top` is set. The comp sets `html{scroll-behavior:smooth}` but no scroll margin — reproduce the smooth scroll, add the margin.
@@ -188,9 +192,9 @@ Per `.github/copilot-instructions.md`:
 ### UI/product decisions
 
 **I:** Question: Ship the comp's baked-in hero PNG, or rebuild the quotes mockup in markup?
-Status: pending
-Context: See epic Open Question I. The PNG shows real AMPM/DHL rows with specific prices and will age as the dashboard changes.
-Explanation: This story assumes the PNG for v1, converted to `.webp`, with the rebuild tracked as follow-up.
+Status: answered
+Answer: Ship the PNG. Already extracted to `public/landing-hero-quotes.png` (1170×1110, 130 KB); the user is re-exporting it as `.webp`, so the implementation targets **`public/landing-hero-quotes.webp`** and the `.png` is a temporary placeholder. Markup rebuild deferred.
+Context: Two follow-ups came out of the extraction and are tracked as epic Open Questions IX (the screenshot contains real AMPM/DHL **logos**, not text names) and X (it is clipped on the right edge). Neither blocks building the hero markup; both may change which file lands at that path.
 
 **II:** Question: Keep the scroll-reveal animation (`IntersectionObserver` + `[data-reveal]`)?
 Status: pending
@@ -220,6 +224,18 @@ Context: See epic Open Question V. The comp's Saldo bullets sidestep the dispute
 ### Authorization
 
 **VII:** Question: Should the landing personalize its header CTA for authenticated visitors?
-Status: pending
-Context: See epic Open Question III. Doing so requires a server-side `getAccessToken()` on `/`, which would make the route dynamic and forfeits the static-rendering property this story is built around.
-Explanation: This story assumes no personalization.
+Status: answered
+Answer: No. One static header for every visitor. No `getAccessToken()` read on `/`; the route must stay statically rendered (`○` in `pnpm build`).
+
+### Copy / SEO — added after the epic answered VI
+
+**VIII:** Question: Which title and meta description does each route get?
+Status: answered
+Answer: Per-route metadata, driven by a `title.template` in the root layout. The full route-by-route table (titles, descriptions with character counts, and `robots` directives) is in **epic Open Question VI** — treat that table as this story's spec.
+Context: This widens the story's file surface beyond `src/app/page.tsx`: it now also touches `src/app/layout.tsx` (title template, accent fix on "Kraft Envios" → "Kraft Envíos"), `src/app/login/page.tsx`, `src/app/register/page.tsx`, `src/app/forgot-password/page.tsx`, `src/app/reset-password/[slug]/page.tsx`, `src/app/dashboard/requests/[requestId]/page.tsx`, and a **new `src/app/dashboard/layout.tsx`** that exists only to carry the dashboard's metadata and `noindex`.
+Explanation: Two prerequisites are still open — `metadataBase` / production URL (epic XI) and `<html lang="en">` → `es-MX` (epic XII). Neither blocks the section markup; both should land in the same change as the metadata.
+
+**IX:** Question: What happens to the footer's Legal column now that the legal links are omitted?
+Status: answered
+Answer: The links are **removed entirely** — no `/privacidad`, no `/terminos`, no `#` placeholder. Recommended treatment: drop the now-empty fourth column and let the footer grid become `1.4fr 1fr 1fr` on desktop, keeping the intermediary legal notice as a full-width row above the copyright, where the comp already places it.
+Context: Supersedes the "footer legal links 404" edge case listed above under *Edge cases and constraints* — that risk no longer exists.

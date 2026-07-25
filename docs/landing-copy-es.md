@@ -74,13 +74,16 @@ Ni el backend ni el frontend modelan planes o suscripciones. Ambos documentos lo
 **🔴 4 — "El precio que veo es el final."**
 El FE aplica ajustes de margen por proveedor (`qAdjFactor`, `qAdjBasis`, `qAdjMode`) y tiene una vista de "precio interno" solo para admins. Funcionalmente la afirmación se sostiene —lo que ve el usuario es lo que se cobra— pero conviene que negocio la valide antes de ponerla como garantía en la FAQ.
 
-### ⚠️ negocio — sigue sin respuesta de ninguno de los dos lados
+### ⚠️ negocio — respuestas parciales, pendientes de confirmación
 
-1. Modelo comercial: ¿mensualidad, comisión por guía, mínimo de recarga?
-2. Tiempo real de aprobación de una recarga (para dar un número en la FAQ).
-3. Métodos de pago aceptados para cargar saldo.
-4. Métricas publicables (guías generadas, negocios activos, antigüedad).
-5. ¿El alta de cuenta es inmediata o requiere verificación por correo?
+**Resuelto ✅**
+1. Modelo comercial: Se paga lo que cuesta la guía en base al saldo disponible (sin suscripciones ni planes).
+2. Métodos de pago: Transferencia bancaria.
+3. Métricas publicables: No hay métricas publicables de momento.
+4. ¿El alta de cuenta es inmediata? Sí, es inmediata.
+
+**Pendiente de confirmación ⏳** — ver `/docs/improvement.md`
+5. Tiempo real de aprobación de una recarga (para dar un número en la FAQ).
 6. Datos de contacto y soporte: correo, WhatsApp, horario.
 7. Aviso de privacidad y términos y condiciones.
 8. Derecho de uso de los logos de las paqueterías.

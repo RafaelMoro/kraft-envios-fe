@@ -126,24 +126,26 @@ Consumers of `LOGIN_ROUTE` (9 source sites, 4 test sites) are enumerated in Stor
 ### UI/product decisions
 
 **I:** Question: Should the hero mockup be the comp's baked-in PNG screenshot of the quotes panel, or a rebuilt HTML/CSS mock?
-Status: pending
-Context: The comp embeds a 132 KB PNG (manifest key `fcc5b1fc-…`) showing real AMPM and DHL quote rows with prices and a "crear guía" button. Shipping it means committing a raster asset to `public/` that will visibly age as the dashboard changes, and it bakes in specific prices. Rebuilding it in markup keeps it live and themeable but is meaningful extra work.
-Explanation: Story 2's effort estimate depends on this. Recommendation: ship the PNG for v1 (with the alt text already written in `docs/landing-copy-es.md` §1), and note the rebuild as follow-up.
+Status: answered
+Answer: Ship the PNG. It has been extracted from the comp manifest to **`public/landing-hero-quotes.png`** (1170×1110, 130 KB, RGBA). The user will convert it to `.webp` and replace the file; Story 2 should reference `public/landing-hero-quotes.webp` and the PNG is a temporary placeholder in the repo. A markup rebuild is deferred as follow-up.
+Context: Alt text is already written in `docs/landing-copy-es.md` §1. Render with `next/image`, explicit `width`/`height` (avoid CLS), and `priority` (LCP-adjacent).
+Explanation: Two things surfaced during extraction that were not visible from the comp source and are **new work items**, see Open Questions IX and X below: the screenshot contains real courier **logos**, and it is **cropped on the right edge**.
 
 **II:** Question: Do we have the right to display courier brand names (Estafeta, DHL, UPS, FedEx, Paquetexpress, AMPM, Tres Guerras) on a public marketing page?
-Status: pending
-Context: `docs/landing-copy-es.md` §14 lists "Confirmar derecho de uso de los logos de paqueterías" as an unresolved pre-publication checklist item. The comp uses plain text names, not logos, which is the lower-risk form — but the marquee and the Paqueterías section both make the names prominent.
-Explanation: Text-only is what the comp specifies and what Story 2 assumes. If logos are ever wanted, that is a separate decision.
+Status: answered
+Answer: Yes. Text-only courier names may be used in the marquee and the Paqueterías section. `docs/landing-copy-es.md` §14's checklist item is considered resolved for **names**.
+Context: This answer covers plain text names, which is what the comp specifies. It does not settle logo usage — see Open Question IX, which is about logos baked into the hero screenshot.
 
 **III:** Question: Should the landing show a different header CTA to an already-authenticated visitor (e.g. "Entrar a mi cuenta" → `/dashboard` instead of "Iniciar sesión" + "Crear cuenta")?
-Status: pending
-Context: `docs/landing-copy-es.md` §2 defines an alternate CTA for registered users: "Entrar a mi cuenta". The confirmed decision is that the landing is public to everyone and does not redirect, which leaves the door open to a personalized CTA. Doing it requires a server-side `getAccessToken()` read on `/`, which reintroduces the cookie-read cost and the SSR timing risk documented in `REPO_CONTEXT.md`.
-Explanation: Story 2 assumes **no** personalization — one static header for everyone. Cheapest and lowest-risk for v1.
+Status: answered
+Answer: No. One static header for every visitor: "Iniciar sesión" → `LOGIN_ROUTE` and "Crear cuenta" → `REGISTER_ROUTE`. No `getAccessToken()` read on `/`.
+Context: This preserves the static-rendering property Story 2 is built around — `/` must show as `○` in `pnpm build` output. The `docs/landing-copy-es.md` §2 "Entrar a mi cuenta" variant is not used.
 
 **IV:** Question: Do the footer legal links point at `/privacidad` and `/terminos` (404 today) or at `#`?
-Status: pending
-Context: The confirmed decision is "keep legal as placeholders". A link to a 404 is worse for trust than a disabled-looking link, but a `#` link is worse for a11y and for the eventual real page.
-Explanation: Story 2 assumes the links render with their comp `href` values (`/privacidad`, `/terminos`) and that creating those pages is tracked as separate follow-up work, so the hrefs are correct the moment the pages exist.
+Status: answered
+Answer: Neither — **omit both links from the footer entirely for now.** No `Aviso de privacidad` link, no `Términos y condiciones` link, and no `#` placeholder. They are added when the pages actually ship.
+Context: This removes the comp's fourth footer column ("Legal") of its only two entries. Story 2 must decide what that column becomes: either drop it and reflow the footer to 3 columns, or keep the column for the intermediary legal notice text that already lives in the footer. Recommendation: drop the empty column and let the footer grid become `1.4fr 1fr 1fr` on desktop; keep the intermediary notice as a full-width row above the copyright, where the comp already puts it.
+Explanation: Nothing about this blocks Story 2 — it is a subtraction from the comp, not an addition.
 
 ### Copy contract
 
@@ -153,9 +155,35 @@ Context: Four blockers are listed. Three are already handled by the comp's copy 
 Explanation: The comp's Saldo bullets ("Solicita una recarga indicando el monto", "Confirmación por correo cuando se aprueba", "Cancela una solicitud mientras siga pendiente") avoid the disputed field entirely, so Story 2 can proceed. Flagging so the copy owner confirms rather than discovers it post-launch.
 
 **VI:** Question: Should the page `<title>` and `<meta description>` change for the whole app, or only for `/`?
-Status: pending
-Context: `src/app/layout.tsx` currently exports app-wide `metadata` with title "Kraft Envios" and a description that reads like marketing copy. `docs/landing-copy-es.md` §1 defines a specific landing title and meta description, plus OG title/description.
-Explanation: Story 2 assumes a route-level `export const metadata` on `src/app/page.tsx` for the landing values, leaving the layout default in place for every other route. That is the standard App Router pattern and avoids touching authenticated pages.
+Status: answered
+Answer: Per route. Every page gets its own title and description, driven by a title **template** in the root layout so each route only declares its own leaf. This expands Story 2's scope slightly — it now touches `src/app/layout.tsx` and every existing page, not just `/`.
+Context: Today `src/app/layout.tsx` is the only `export const metadata` in the entire `src/app` tree (verified by grep); every route inherits the literal title "Kraft Envios" (note: no accent). There is no `dashboard/layout.tsx`.
+
+Recommended structure:
+
+- **Root layout** — replace the flat title with a template so leaf routes stay one line each:
+  - `title.default`: `Kraft Envíos | Cotiza y genera guías con varias paqueterías` (59 chars)
+  - `title.template`: `%s | Kraft Envíos`
+  - `description`: same as the landing description below (it is the app-wide fallback)
+  - Keep the accent — the current value is unaccented "Kraft Envios" while all product copy uses "Kraft Envíos".
+
+- **Per-route values.** Titles below are the *leaf* string; the template appends ` | Kraft Envíos`. `/` is the exception and must use `title: { absolute: … }` so it is not double-suffixed.
+
+| Route | File | Title | Meta description | Robots |
+| --- | --- | --- | --- | --- |
+| `/` (landing) | `src/app/page.tsx` | `absolute`: `Kraft Envíos \| Cotiza y genera guías con varias paqueterías` | `Compara precios de Estafeta, DHL, FedEx, UPS y más en una sola cotización. Genera tu guía y administra todos tus envíos desde un solo lugar.` (139) | index |
+| `/login` | `src/app/login/page.tsx` (Story 1) | `Iniciar sesión` | `Entra a tu cuenta de Kraft Envíos para cotizar con varias paqueterías, generar guías y administrar tu saldo.` (107) | `index: false` |
+| `/register` | `src/app/register/page.tsx` | `Crear cuenta` | `Crea tu cuenta gratis y empieza a cotizar envíos con Estafeta, DHL, FedEx, UPS y más paqueterías desde un solo lugar.` (116) | index |
+| `/forgot-password` | `src/app/forgot-password/page.tsx` | `Recuperar contraseña` | `Restablece el acceso a tu cuenta de Kraft Envíos. Te enviamos un enlace por correo para crear una contraseña nueva.` (114) | `index: false` |
+| `/reset-password/[slug]` | `src/app/reset-password/[slug]/page.tsx` | `Restablecer contraseña` | `Crea una contraseña nueva para tu cuenta de Kraft Envíos.` (56) | `index: false, follow: false` |
+| `/dashboard` | new `src/app/dashboard/layout.tsx` | `Panel` | `Tu panel de Kraft Envíos: cotiza, genera guías, administra tus direcciones y consulta tu saldo.` (94) | `index: false, follow: false` |
+| `/dashboard/requests/[requestId]` | `src/app/dashboard/requests/[requestId]/page.tsx` | `Solicitud de saldo` | inherits the dashboard description | inherits `noindex` from the dashboard layout |
+
+- **Open Graph.** Only `/` needs it, using `docs/landing-copy-es.md` §1: OG title `Un solo lugar para cotizar, enviar y administrar tus envíos`, OG description `Kraft Envíos reúne varias paqueterías en una plataforma: cotizas, eliges el precio que te conviene y generas tu guía en minutos.`
+
+Rationale for the `robots` column: `/login`, `/forgot-password`, `/reset-password` are public but have no search value and would compete with the landing for brand queries; `/register` is an acquisition page and should stay indexable; `/dashboard/**` is authenticated and its request-detail route is an **email deep link** (`buildBalanceRequestDetailRoute`) that must never be indexed.
+
+Explanation: Two blockers this raises, tracked as new questions below — no `metadataBase` / public site URL exists for absolute OG URLs (XI), and `<html lang="en">` is wrong for Spanish content (XII). Neither blocks Story 2's UI work, but both belong in the same change.
 
 ### Authorization
 
@@ -167,6 +195,28 @@ Context: `REPO_CONTEXT.md` marks `buildBalanceRequestDetailRoute` as a stable em
 **VIII:** Question: Should `/login` still be the target of `revalidatePath` on sign-out?
 Status: answered
 Answer: Yes. `src/app/api/auth/sign-out/route.ts` calls `revalidatePath(LOGIN_ROUTE)`; once `LOGIN_ROUTE` is `/login` it revalidates the sign-in page, which is the intent. Story 1 additionally recommends revalidating `/` is **not** needed, because the landing is fully static and auth-independent.
+
+### Raised by answering I, II, and VI
+
+**IX:** Question: The extracted hero screenshot contains real courier **logos** — is that covered by the text-name approval in II?
+Status: pending
+Context: `public/landing-hero-quotes.png` is a screenshot of the live quotes panel, so it renders the **AMPM wordmark and the DHL logo as raster images**, not text. Question II approved plain text names; logo usage was the item flagged in `docs/landing-copy-es.md` §14 and it is not resolved by that answer. The image is above the fold and is the most prominent brand usage on the page.
+Explanation: If logo usage is not cleared, the options are (a) re-take the screenshot with logos suppressed or blurred, (b) rebuild the mockup in markup with text-only courier names, which is Question I's deferred option. Cheapest safe path: re-take the screenshot rather than rebuild.
+
+**X:** Question: The extracted screenshot is cropped — re-take it or crop it deliberately?
+Status: pending
+Context: The PNG is 1170×1110 and every quote card is **clipped on the right edge**, with a second column of cards partially visible at the far right. It reads as an accidental viewport crop, not a designed detail. It also bakes in three specific prices ($103.91, $136.72, $139.37) and a `SMART` service name with a stray emoji glyph.
+Explanation: Since the user is re-exporting to `.webp` anyway, that is the moment to re-take it at a clean width. Recommendation: capture the quotes panel at a full card width, 3 rows, and let the landing's mockup frame do the cropping via `overflow-hidden` instead of baking it into the raster.
+
+**XI:** Question: What is the production base URL, and should a `metadataBase` be configured?
+Status: pending
+Context: Open Graph `images` and canonical URLs must be absolute. Next.js resolves them against `metadata.metadataBase`, which is not set anywhere today, and `.env.example` has no public site-URL variable (only `NEXT_PUBLIC_LOCAL_STORAGE`, `NEXT_PUBLIC_GET_SAT_PRODUCT_URI`, `NEXT_PUBLIC_DEFAULT_EMAIL`, `NEXT_PUBLIC_BUSINESS_TIMEZONE`). Without it Next.js logs a build warning and emits relative OG URLs, which most scrapers reject.
+Explanation: Needs the real domain from the user. Adding it means a new `NEXT_PUBLIC_SITE_URL` entry in `.env.example` and `AGENTS.md`. Also note the copy doc specifies OG *title* and *description* but no OG **image** — one has to be designed or the landing ships without a share preview image.
+
+**XII:** Question: Should `<html lang>` change from `en` to `es-MX`?
+Status: pending
+Context: `src/app/layout.tsx:31` renders `<html lang="en">` while every string in the app, and all of the landing copy, is Spanish. This is an accessibility defect (screen readers pick the wrong voice) and an SEO signal problem for a page whose entire value is Spanish-language search.
+Explanation: One-character-class change, app-wide effect, and directly in the path of the metadata work in VI. Recommendation: change it to `es-MX` as part of the same commit. Flagging rather than assuming because it affects every existing route, not just the landing.
 
 ## Presentation Notes
 
