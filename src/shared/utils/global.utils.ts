@@ -1,5 +1,6 @@
 import { CookieObject } from "@/shared/types/global.types";
 import { ThemeMode } from "flowbite-react";
+import { DASHBOARD_ROUTE } from "@/shared/constants/global.constants";
 
 /**
  * This function calls the API to save the theme in the cookie for client side components
@@ -59,4 +60,25 @@ export const formatPhoneNumber = (phone: string): string => {
   const part2 = digits.substring(3, 6)
   const part3 = digits.substring(6, 10)
   return `${part1}-${part2}-${part3}`
+}
+
+/**
+ * Only same-origin dashboard paths survive as post-login destinations. Everything
+ * else (protocol-relative, backslash-smuggled, scheme-bearing, or off-dashboard)
+ * falls back to the dashboard, so `?redirect=` can never become an open redirect.
+ */
+export const sanitizeDashboardReturnUrl = (
+  value: string | string[] | undefined | null
+): string => {
+  if (typeof value !== 'string') return DASHBOARD_ROUTE
+
+  const candidate = value.trim()
+  if (!candidate.startsWith('/')) return DASHBOARD_ROUTE
+  if (candidate.startsWith('//') || candidate.startsWith('/\\')) return DASHBOARD_ROUTE
+  if (/[a-z][a-z0-9+.-]*:/i.test(candidate)) return DASHBOARD_ROUTE
+  if (candidate !== DASHBOARD_ROUTE && !candidate.startsWith(`${DASHBOARD_ROUTE}/`)) {
+    return DASHBOARD_ROUTE
+  }
+
+  return candidate
 }
