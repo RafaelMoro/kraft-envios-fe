@@ -3,18 +3,37 @@ import { redirect } from 'next/navigation'
 import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
 import { AppRouterContextProviderMock } from '@/features/AppRouterContextProviderMock'
 import HomePage from '../src/app/page'
-import { getAccessToken } from '../src/shared/lib/auth.lib'
+import { getAccessToken, getUserInfo } from '../src/shared/lib/auth.lib'
+import { LoginData } from '../src/shared/types/login.types'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
   redirect: jest.fn()
 }))
 jest.mock('../src/shared/lib/auth.lib', () => ({
-  getAccessToken: jest.fn()
+  getAccessToken: jest.fn(),
+  getUserInfo: jest.fn()
 }))
 
 const mockedRedirect = redirect as jest.MockedFunction<typeof redirect>
 const mockedGetAccessToken = getAccessToken as jest.MockedFunction<typeof getAccessToken>
+const mockedGetUserInfo = getUserInfo as jest.MockedFunction<typeof getUserInfo>
+
+const adminUserInfo: LoginData = {
+  data: { user: { email: 'admin@kraft.test', name: 'Admin', lastName: 'User', role: ['admin'] } },
+  error: null,
+  message: null,
+  success: true,
+  version: '1.0'
+}
+
+const nonAdminUserInfo: LoginData = {
+  data: { user: { email: 'user@kraft.test', name: 'Regular', lastName: 'User', role: ['user'] } },
+  error: null,
+  message: null,
+  success: true,
+  version: '1.0'
+}
 
 const Home = async ({
   push,
@@ -50,8 +69,9 @@ describe('Login page', () => {
     expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument()
   })
 
-  it('redirects an authenticated visitor to the sanitized redirect param', async () => {
+  it('redirects an authenticated admin to the sanitized redirect param', async () => {
     mockedGetAccessToken.mockResolvedValue('token-123')
+    mockedGetUserInfo.mockResolvedValue(adminUserInfo)
     const push = jest.fn()
 
     await Home({ push, searchParams: { redirect: '/dashboard/requests/abc' } })
@@ -59,8 +79,29 @@ describe('Login page', () => {
     expect(mockedRedirect).toHaveBeenCalledWith('/dashboard/requests/abc')
   })
 
-  it('redirects an authenticated visitor to /dashboard when the redirect param is hostile', async () => {
+  it('redirects an authenticated non-admin to /dashboard even with a valid redirect param', async () => {
     mockedGetAccessToken.mockResolvedValue('token-123')
+    mockedGetUserInfo.mockResolvedValue(nonAdminUserInfo)
+    const push = jest.fn()
+
+    await Home({ push, searchParams: { redirect: '/dashboard/requests/abc' } })
+
+    expect(mockedRedirect).toHaveBeenCalledWith('/dashboard')
+  })
+
+  it('redirects an authenticated visitor with a missing/unparseable user-info cookie to /dashboard', async () => {
+    mockedGetAccessToken.mockResolvedValue('token-123')
+    mockedGetUserInfo.mockResolvedValue(null)
+    const push = jest.fn()
+
+    await Home({ push, searchParams: { redirect: '/dashboard/requests/abc' } })
+
+    expect(mockedRedirect).toHaveBeenCalledWith('/dashboard')
+  })
+
+  it('redirects an authenticated admin to /dashboard when the redirect param is hostile', async () => {
+    mockedGetAccessToken.mockResolvedValue('token-123')
+    mockedGetUserInfo.mockResolvedValue(adminUserInfo)
     const push = jest.fn()
 
     await Home({ push, searchParams: { redirect: 'https://evil.com' } })
