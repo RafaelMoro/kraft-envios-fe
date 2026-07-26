@@ -51,8 +51,8 @@ describe('ResultCard', () => {
       expect(screen.getByText(SUCCESS_CREATE_USER_MESSAGE)).toBeInTheDocument()
       
       // Should have link button to return to login
-      expect(screen.getByRole('link', { name: /regresar al inicio/i })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /regresar al inicio/i })).toHaveAttribute('href', LOGIN_ROUTE)
+      expect(screen.getByRole('link', { name: /iniciar sesión/i })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /iniciar sesión/i })).toHaveAttribute('href', LOGIN_ROUTE)
     })
 
     it('does not render retry button in success state', () => {
@@ -80,7 +80,7 @@ describe('ResultCard', () => {
 
       const linkButtons = screen.getAllByRole('link')
       expect(linkButtons).toHaveLength(1)
-      expect(linkButtons[0]).toHaveTextContent('Regresar al inicio')
+      expect(linkButtons[0]).toHaveTextContent('Iniciar sesión')
     })
   })
 
@@ -113,8 +113,8 @@ describe('ResultCard', () => {
       )
 
       // Should have link button to return to login
-      expect(screen.getByRole('link', { name: /regresar al inicio/i })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /regresar al inicio/i })).toHaveAttribute('href', LOGIN_ROUTE)
+      expect(screen.getByRole('link', { name: /iniciar sesión/i })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /iniciar sesión/i })).toHaveAttribute('href', LOGIN_ROUTE)
       
       // Should have retry button
       expect(screen.getByRole('button', { name: /volver a intentar/i })).toBeInTheDocument()
@@ -148,7 +148,7 @@ describe('ResultCard', () => {
         />
       )
 
-      const linkButton = screen.getByRole('link', { name: /regresar al inicio/i })
+      const linkButton = screen.getByRole('link', { name: /iniciar sesión/i })
       // Check for secondary button styling classes
       expect(linkButton).toHaveClass('border', 'border-primary-700', 'text-primary-700')
     })
@@ -196,7 +196,7 @@ describe('ResultCard', () => {
       )
 
       // Check that interactive elements are accessible
-      expect(screen.getByRole('link', { name: /regresar al inicio/i })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /iniciar sesión/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /volver a intentar/i })).toBeInTheDocument()
     })
   })

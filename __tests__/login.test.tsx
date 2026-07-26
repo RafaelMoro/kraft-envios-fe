@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { redirect } from 'next/navigation'
 import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
 import { AppRouterContextProviderMock } from '@/features/AppRouterContextProviderMock'
-import HomePage from '../src/app/page'
+import HomePage from '../src/app/login/page'
 import { getAccessToken, getUserInfo } from '../src/shared/lib/auth.lib'
 import { LoginData } from '../src/shared/types/login.types'
 

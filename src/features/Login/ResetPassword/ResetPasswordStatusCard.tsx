@@ -26,7 +26,7 @@ export const ResetPasswordStatusCard = ({ status }: ResetPasswordStatusCardProps
         <div>
           { status === "error" && (<LinkButton className="mb-5" href={FORGOT_PASSWORD_ROUTE} >Ir a olvidé mi contraseña</LinkButton>) }
           <LinkButton href={LOGIN_ROUTE} type={type} >
-            Regresar al inicio
+            Iniciar sesión
           </LinkButton>
         </div>
       </div>

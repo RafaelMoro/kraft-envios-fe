@@ -22,7 +22,7 @@ export const ResultCard = ({
         <p className="text-xl text-black dark:text-white text-pretty">{message}</p>
         <div className="flex justify-between">
           <LinkButton href={LOGIN_ROUTE} type="secondary" >
-            Regresar al inicio
+            Iniciar sesión
           </LinkButton>
           <Button onClick={resetStep} className="hover:cursor-pointer">
             Volver a intentar.
@@ -43,7 +43,7 @@ export const ResultCard = ({
       </p>
         <div className="w-full flex justify-center">
           <LinkButton href={LOGIN_ROUTE} >
-            Regresar al inicio
+            Iniciar sesión
           </LinkButton>
         </div>
     </Card>

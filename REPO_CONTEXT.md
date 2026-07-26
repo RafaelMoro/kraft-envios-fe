@@ -41,7 +41,7 @@ Key invariants:
 
 - `src/app/layout.tsx` is an async server layout; it reads the theme cookie and wraps the app in `QueryProviderWrapper`.
 - `QueryProviderWrapper` intentionally creates the `QueryClient` inside `useRef`; do not move it to module scope or caches can be shared across requests/users.
-- `src/app/page.tsx` is the login entrypoint. It redirects authenticated users to `/dashboard`, otherwise renders `features/Login/Login`.
+- `src/app/login/page.tsx` is the login entrypoint. It redirects authenticated users to `/dashboard`, otherwise renders `features/Login/Login`. Note that `src/app/page.tsx` is currently a temporary redirect stub pending the landing page (Story 2).
 - `src/app/dashboard/page.tsx` reads session/user cookies server-side, wraps Flowbite `ThemeProvider`, and dynamically imports `features/Dashboard/Dashboard` with `ssr: false`.
 - The Dashboard component owns the selected screen in local React state and saves screen preference through a server action in `src/shared/lib/preferences.lib.ts`.
 
@@ -52,7 +52,8 @@ Key invariants:
 | Path | Purpose |
 | --- | --- |
 | `layout.tsx` | Root layout; local Geist fonts, global styles, theme cookie, QueryProvider wrapper. |
-| `page.tsx` | Login route `/`; redirects to `/dashboard` when `getAccessToken()` returns a token. |
+| `page.tsx` | Temporary `/` → `/login` redirect stub (no cookie read, not `async`); removed once the landing page (Story 2) lands. |
+| `login/page.tsx` | Login route `/login`; redirects authenticated users to `/dashboard` (or the sanitized `?redirect=` for admins) when `getAccessToken()` returns a token. |
 | `dashboard/page.tsx` | Authenticated dashboard shell; server cookie read + client-only dashboard import. |
 | `register/page.tsx` | Registration page. |
 | `forgot-password/page.tsx` | Forgot-password page. |
@@ -95,7 +96,7 @@ Most proxy routes read `getAccessToken()` from `src/shared/lib/auth.lib.ts`, ret
 | Route | Methods | Upstream / purpose |
 | --- | --- | --- |
 | `/api` | `POST` | Login; posts to `${BACKEND_URI}/auth/`, signs the returned cookie value with `jose`, and sets `session` + `user-info` cookies. |
-| `/api/auth/sign-out` | `GET` | Deletes session/user cookies and revalidates `/` and `/dashboard`. |
+| `/api/auth/sign-out` | `GET` | Deletes session/user cookies and revalidates `/login` and `/dashboard`. |
 | `/api/auth/create-user` | `POST` | Proxies user creation to `${BACKEND_URI}/users`. |
 | `/api/auth/forgot-password` | `POST` | Proxies to `${BACKEND_URI}/users/forgot-password`. |
 | `/api/auth/reset-password` | `POST` | Proxies to `${BACKEND_URI}/users/reset-password/{slug}`. |
@@ -195,12 +196,14 @@ Confirmed cross-feature timezone contract:
 - `src/app/api/product-sat/route.ts` does not use `BACKEND_URI`; it calls `NEXT_PUBLIC_GET_SAT_PRODUCT_URI` directly.
 - `src/features/Dashboard/Dashboard.tsx` is client-only and has separate mobile/tablet vs desktop rendering via `useMediaQuery()`.
 - Avoid adding new state libraries. This repo uses local React state, cookies/server actions, TanStack Query, and local-storage helpers; there is no Zustand store.
-- Page tests invoke page components as plain async functions with no arguments (`await HomePage()` in `__tests__/home.test.tsx`). Any props added to a page — `params`, `searchParams` — must therefore be optional with a default (`{ searchParams }: Props = {}`), or the existing test throws on destructuring `undefined`.
+- Page tests invoke page components as plain async functions with no arguments (`await HomePage()` in `__tests__/login.test.tsx`). Any props added to a page — `params`, `searchParams` — must therefore be optional with a default (`{ searchParams }: Props = {}`), or the existing test throws on destructuring `undefined`.
 - Balance request creation and cancellation both invalidate only the request-history prefix `['balance', 'requests']`; neither optimistically changes nor invalidates current balance `['balance']`. The requests-history query key includes `month`, `year`, `page`, `limit` for full server-state representation. The admin decision mutation is the exception: it invalidates **both** `['balance', 'requests']` and `['balance']` because an approval moves money. The admin list query key (`['balance', 'requests', 'admin', month, year, page, limit, status]`) nests under the `['balance', 'requests']` prefix, so one prefix invalidation refetches user and admin lists alike.
 - The hard-delete BFF (`/api/guides-db/[kraftId]/hard`) was the first Next-side role-guarded route via `getUserInfo()`; `/api/balance/requests/admin` and `/api/balance/requests/[requestId]/decision` are the second and third. Do not retrofit this pattern onto other BFF routes without reason; backend authorization remains the source of truth (each guard is marked with a `// ponytail:` comment).
 - Balance's decision `409 BAL-BUS-002` conflict body is a **flat** KraftError (`{ code, message, technicalDetails, statusCode }`) read via `data.code`, unlike the cancel route's `409`, which nests the same code under `data.error.code`. Both are preserved verbatim by their respective BFF routes; do not assume all Balance `409`s share one shape.
 - Balance now has three backend error shapes across three statuses: flat `404` (`data.code === 'BAL_NF_001'`, from `/api/balance/requests/admin/[requestId]`), enveloped `403` (`data.error.statusCode`, no `code` field at all), and flat `409` (`data.code === 'BAL-BUS-002'`). The two KraftError codes do not share a separator (underscores vs hyphen). Branch on HTTP status first; a shared "read `data.code`" helper would silently return `undefined` for the `403`.
-- The post-login return-URL pattern (`/dashboard/requests/[requestId]` email deep link): `src/app/page.tsx` reads `?redirect=` server-side and `LoginCard.tsx` re-sanitizes the prop client-side as defense in depth before `router.push`; both call `sanitizeDashboardReturnUrl()` from `src/shared/utils/global.utils.ts`, which allowlists same-origin `/dashboard` paths and falls back to `/dashboard` otherwise. A third site, `BalanceAdminRequestDetail.tsx`, constructs the *outbound* `/?redirect=...` URL (not the inbound sanitize) when its own data query gets a `400` — it builds the URL from the already-known, already-safe `requestId` via `buildBalanceRequestDetailRoute()`, so it doesn't need `sanitizeDashboardReturnUrl()` itself. Do not apply this pattern to other routes without reason.
+- The post-login return-URL pattern (`/dashboard/requests/[requestId]` email deep link): `src/app/login/page.tsx` reads `?redirect=` server-side and `LoginCard.tsx` re-sanitizes the prop client-side as defense in depth before `router.push`; both call `sanitizeDashboardReturnUrl()` from `src/shared/utils/global.utils.ts`, which allowlists same-origin `/dashboard` paths and falls back to `/dashboard` otherwise. A third site, `BalanceAdminRequestDetail.tsx`, constructs the *outbound* `/login?redirect=...` URL (not the inbound sanitize) when its own data query gets a `400` — it builds the URL from the already-known, already-safe `requestId` via `buildBalanceRequestDetailRoute()`, so it doesn't need `sanitizeDashboardReturnUrl()` itself. Do not apply this pattern to other routes without reason.
+- **No route in this app can render statically today.** `src/app/layout.tsx` awaits `getThemePreference()`, which reads the `theme` cookie through `next/headers`'s `cookies()` in the *root layout*, so every route — including ones that read no cookies themselves, like `/` — is marked `ƒ (Dynamic)` in `pnpm build` output. Do not chase a `○` marker on an individual page; the only fix is moving the theme read out of the root layout, which changes dark-mode wiring app-wide.
+- **Geist is loaded but not actually applied.** `src/app/layout.tsx` attaches `geistSans.variable` / `geistMono.variable` as body classes, which only *define* `--font-geist-sans` / `--font-geist-mono`; nothing sets `font-family` from them. Meanwhile `src/app/globals.css` declares `body { font-family: Arial, Helvetica, sans-serif }` inside `@layer utilities`, so Arial wins app-wide. A surface that wants Geist must set the family itself (e.g. `font-[family-name:var(--font-geist-sans)]`). `DESIGN.md` documents Geist Sans as the body typeface, which is the intent, not the current computed style.
 - Guides DB backend date filters use silent precedence: either `month` or `year` selects business-month mode and ignores `startDate`/`endDate`; range mode requires both month and year to be absent. Partial ranges are accepted, reversed ranges return an empty `200`, and some pattern-valid but impossible dates can escape backend parsing as an unstructured `500`.
 
 ## Key Files
@@ -217,7 +220,7 @@ Confirmed cross-feature timezone contract:
 | `.opencode/command/research.md` | Source research workflow prompt; syncs to `.github/prompts/research.prompt.md`. |
 | `scripts/sync-opencode-commands.mjs` | Prompt sync script used by `pnpm sync:prompts`. |
 | `src/app/layout.tsx` | Root layout, theme cookie, QueryProvider. |
-| `src/app/page.tsx` | Login entrypoint and authenticated redirect. |
+| `src/app/login/page.tsx` | Login entrypoint and authenticated redirect. |
 | `src/app/dashboard/page.tsx` | Dashboard server wrapper + Flowbite theme. |
 | `src/features/QueryProviderWrapper.tsx` | TanStack Query client provider with per-request-safe `useRef`. |
 | `src/shared/lib/auth.lib.ts` | Session encode/decode, user-info cookie, sign-out helpers. |

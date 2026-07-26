@@ -26,7 +26,7 @@ export const GET_ADDRESS_INFO_API_ENDPOINT = "/api/address-info";
 // Routes
 export const REGISTER_ROUTE = "/register";
 export const FORGOT_PASSWORD_ROUTE = "/forgot-password";
-export const LOGIN_ROUTE = "/";
+export const LOGIN_ROUTE = "/login";
 export const DASHBOARD_ROUTE = "/dashboard";
 export const DASHBOARD_REQUESTS_ROUTE = "/dashboard/requests";
 
