@@ -47,12 +47,18 @@ Captured from the scoping questions at the start of this research:
 
 ## Story Breakdown
 
-| # | Story | Doc | Depends on |
-| --- | --- | --- | --- |
-| 1 | Move the sign-in screen from `/` to `/login` | `ai-research/landing-page/move-signin-to-login.story-1.md` | — |
-| 2 | Build the public landing page at `/` | `ai-research/landing-page/public-landing-page.story-2.md` | Story 1 |
+| # | Story | Doc | Depends on | Status |
+| --- | --- | --- | --- | --- |
+| 1 | Move the sign-in screen from `/` to `/login` | `ai-research/landing-page/move-signin-to-login.story-1.md` | — | **Done** (2026-07-25) |
+| 2 | Build the public landing page at `/` | `ai-research/landing-page/public-landing-page.story-2.md` | Story 1 | Not started |
 
 Story 1 must land first. Until it does, `/` is occupied by the sign-in screen, so Story 2 has nowhere to mount.
+
+### Story 1 completion summary
+
+Implemented per `ai-planning/landing-page/planning-move-signin-to-login.story-1.md`. `src/app/login/page.tsx` now hosts the sign-in screen (verbatim move); `LOGIN_ROUTE` is `/login`; `src/app/page.tsx` is a temporary redirect stub to `/login` (removal owned by Story 2); the five "Regresar/Volver al inicio" CTAs were retitled to "Iniciar sesión". `pnpm lint`, `pnpm exec tsc --noEmit`, `pnpm test` (96 suites, 1164 passed / 3 pre-existing skipped), and `pnpm build` all pass.
+
+**Note for Story 2 — Open Question III's static-rendering assumption does not hold today.** `pnpm build` marks `/` as `ƒ (Dynamic)`, not `○ (Static)`, even though the Story 1 stub itself reads no cookies. Root cause: `src/app/layout.tsx` calls `getThemePreference()` (`src/shared/lib/preferences.lib.ts`), which reads the `theme` cookie via `next/headers`'s `cookies()` in the **root layout**, forcing every route in the app — including `/` — into dynamic rendering. This predates Story 1 and is not something the stub introduced. Story 2 will need to address this (e.g. move the theme read out of the root layout, or accept `/` as dynamic) if "`/` must show as `○`" is still a hard requirement.
 
 ## Shared Technical Research
 

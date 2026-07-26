@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 
 import { AppRouterContextProviderMock } from '@/features/AppRouterContextProviderMock'
 import { BalanceAdminRequestDetail } from '@/features/Balance/BalanceAdminRequestDetail'
-import { BALANCE_REQUESTS_ADMIN_API_ENDPOINT } from '@/shared/constants/global.constants'
+import { BALANCE_REQUESTS_ADMIN_API_ENDPOINT, LOGIN_ROUTE } from '@/shared/constants/global.constants'
 import { AdminBalanceRequestDto, GetAdminBalanceRequestResponse } from '@/shared/types/balance.types'
 
 jest.mock('axios')
@@ -287,7 +287,7 @@ describe('BalanceAdminRequestDetail', () => {
 
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
-        `/?redirect=${encodeURIComponent(`/dashboard/requests/${REQUEST_ID}`)}`
+        `${LOGIN_ROUTE}?redirect=${encodeURIComponent(`/dashboard/requests/${REQUEST_ID}`)}`
       )
     )
     expect(screen.getByRole('status')).toBeInTheDocument()
