@@ -16,7 +16,7 @@
 
 ## App Structure
 - This is a single Next.js 14 App Router app under `src/app`; imports use the `@/*` alias for `src/*`.
-- `src/app/login/page.tsx` is the login entrypoint and redirects authenticated users to `/dashboard`. `src/app/page.tsx` is a temporary redirect stub to `/login` until the landing page lands.
+- `src/app/login/page.tsx` is the login entrypoint and redirects authenticated users to `/dashboard`. `src/app/page.tsx` is the public marketing landing page (`features/Landing/Landing`) — no cookie read, no redirect, same content for every visitor.
 - `src/app/dashboard/page.tsx` is a server component that reads auth cookies, then dynamically imports `features/Dashboard/Dashboard` with `ssr: false`.
 - Feature UI lives in `src/features/*`; shared constants, hooks, types, utils, libs, and reusable UI live under `src/shared/*`.
 - `src/features/QueryProviderWrapper.tsx` intentionally creates the React Query client inside a `useRef`; do not move it to module scope or it will share cache across requests.

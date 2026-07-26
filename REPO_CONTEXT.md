@@ -52,13 +52,14 @@ Key invariants:
 | Path | Purpose |
 | --- | --- |
 | `layout.tsx` | Root layout; local Geist fonts, global styles, theme cookie, QueryProvider wrapper. |
-| `page.tsx` | Temporary `/` → `/login` redirect stub (no cookie read, not `async`); removed once the landing page (Story 2) lands. |
+| `page.tsx` | Public marketing landing page at `/` (server component, `features/Landing/Landing`). No cookie read, no redirect — every visitor, authenticated or not, sees the same page. `export const metadata` uses `title: { absolute: … }` so the root layout's title template does not double-suffix it. |
 | `login/page.tsx` | Login route `/login`; redirects authenticated users to `/dashboard` (or the sanitized `?redirect=` for admins) when `getAccessToken()` returns a token. |
 | `dashboard/page.tsx` | Authenticated dashboard shell; server cookie read + client-only dashboard import. |
+| `dashboard/layout.tsx` | Metadata carrier only for `/dashboard/**`: leaf `title`, description, and `robots: { index: false, follow: false }`. Renders `children` in a fragment — no chrome, no provider, no cookie read. |
 | `register/page.tsx` | Registration page. |
 | `forgot-password/page.tsx` | Forgot-password page. |
 | `reset-password/[slug]/page.tsx` | Reset-password page. |
-| `dashboard/requests/[requestId]/page.tsx` | Standalone page for the balance-request email deep link. Deliberately does **no** server-side cookie read or auth gate — it renders `BalanceAdminRequestDetail` unconditionally; that client component owns the auth boundary (see Auth And Cookies below). No `src/app/dashboard/layout.tsx`, so it inherits only the root layout — no dashboard chrome (`Aside`/mobile drawer). |
+| `dashboard/requests/[requestId]/page.tsx` | Standalone page for the balance-request email deep link. Deliberately does **no** server-side cookie read or auth gate — it renders `BalanceAdminRequestDetail` unconditionally; that client component owns the auth boundary (see Auth And Cookies below). Inherits chrome-free rendering and the dashboard layout's `noindex` from `dashboard/layout.tsx` — no dashboard chrome (`Aside`/mobile drawer). |
 | `api/**/route.ts` | Next route handlers; mostly backend proxies. |
 | `fonts/` | Local Geist font files used by `next/font/local`. |
 
@@ -74,6 +75,7 @@ Key invariants:
 | `Guides/` | Guide creation/viewing for MN, GE, PKK, and Tone flows. |
 | `Guides-DB/` | DB-backed create flow (pre-select, multi-step modal, result semantics for `created`/`failed`). |
 | `ProfitMargin/` | Courier profit-margin forms/cards. |
+| `Landing/` | Public marketing landing at `/` (comps: `Kraft-Envios-Landing.html`, copy: `docs/landing-copy-es.md`). Twelve sections in comp order (header → footer), light-only by design (explicit surface colors on every section, no `dark:` variants) so it renders correctly even with `data-theme="dark"`. All server components except `LandingFaq.tsx` (hand-rolled accordion, not Flowbite's, per `DESIGN.md`'s "Landing" exception) and `RevealOnScroll.tsx` (scroll-reveal wrapper — takes server-rendered `children` as props, which keeps the wrapped sections server components). Copy lives in `src/shared/constants/landing.constants.ts` / `src/shared/types/landing.types.ts`. No auth read, no API calls, no TanStack Query. |
 | `Balance/` | Current MXN balance display, balance-addition request modal, the "Mis solicitudes" history/cancel screen (`BalanceRequestsScreen`) for regular users, and the admin-only "Solicitudes de saldo" queue (`BalanceAdminScreen` + `BalanceAdminRequestCard`/`BalanceAdminRequestDrawer`/`BalanceDecisionForm`) — both owned by the dashboard shell; uses `/api/balance`, `/api/balance/requests`, `/api/balance/requests/admin`, and `/api/balance/requests/[requestId]/decision` through TanStack Query. The admin and user Balance nav entries are mutually exclusive by role (admins never see "Mis solicitudes"). `BalanceDecisionForm` is intentionally reusable (owns its own mutation + invalidation, takes only `requestId`/`onDecided`) so a future full-page decision route can mount it unchanged. |
 | `QueryProviderWrapper.tsx` | App-wide TanStack Query provider. |
 | `AppRouterContextProviderMock.tsx` | Test helper for router context. |
@@ -175,7 +177,7 @@ Confirmed cross-feature timezone contract:
 - `next/jest` loads `next.config.mjs` while constructing Jest configuration, before `setupFilesAfterEnv`; environment values required by Next config must be set in `jest.config.ts`, not only `jest.setup.ts`.
 - `jest.setup.ts` imports `@testing-library/jest-dom`, installs `TextEncoder`/`TextDecoder`, and adds a JSON-based `structuredClone` fallback.
 - `__tests__/mocks/` and `__tests__/utils-test/` are ignored as test suites. Use them for fixtures/helpers imported by real tests.
-- Real tests currently live under `__tests__/feature/*`, `__tests__/components/*`, and `__tests__/home.test.tsx`.
+- Real tests currently live under `__tests__/feature/*`, `__tests__/components/*`, and `__tests__/home.test.tsx`. `__tests__/home.test.tsx` covers the landing page at `/` (page-level: renders the landing, asserts no redirect); `__tests__/login.test.tsx` covers `/login`, including its authenticated-redirect behavior.
 - Keep new tests near the matching feature/shared UI boundary.
 - `.github/copilot-instructions.md` contains project-specific unit test rules: router/query wrappers, `userEvent` over `fireEvent`, avoid mocking internal components, avoid styling assertions, preserve skipped tests, and match mock data to real return shapes.
 
