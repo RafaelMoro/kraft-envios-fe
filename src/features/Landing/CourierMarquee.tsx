@@ -1,7 +1,7 @@
 import { LANDING_COURIERS } from '@/shared/constants/landing.constants'
 
 export const CourierMarquee = () => (
-  <div className="overflow-hidden border-t border-gray-200 bg-gray-100 py-4">
+  <div data-testid="courier-marquee" className="overflow-hidden border-t border-gray-200 bg-gray-100 py-4">
     <div className="flex w-max gap-14 animate-marquee motion-reduce:animate-none">
       <CourierList />
       <CourierList ariaHidden />
