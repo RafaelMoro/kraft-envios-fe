@@ -33,6 +33,11 @@ colors:
   gray-900: "#111827"
   danger: "#C81E1E"
   danger-hover: "#9B1C1C"
+  accent: "#C8A06A"
+  accent-strong: "#8A6A30"
+  accent-muted: "#D9B98A"
+  accent-subtle: "#ECDCC3"
+  accent-ink: "#3D2F14"
 typography:
   body:
     fontFamily: Geist Sans
@@ -119,6 +124,16 @@ The primary scale is Flowbite React's default `primary` blue scale. The project 
 
 Dark mode is driven by `<html data-theme="dark">` and Tailwind's custom `dark:` variant in `src/app/globals.css`; do not switch this to media or class mode unless the theme preference flow changes too.
 
+### Accent
+
+`accent` / `accent-muted` / `accent-subtle` / `accent-strong` / `accent-ink` are a decorative tan/gold ramp used only on the public landing (`src/features/Landing/`) — badges, chips, eyebrows, and gradients. They are **never** used for primary actions, links, focus states, or any interactive affordance; primary actions stay on `primary-*`.
+
+Contrast, measured on the intended surfaces:
+
+- `accent-strong` (`#8A6A30`) is the **only** accent token allowed as text on a light surface — ≈5.0:1 on white, passes AA.
+- `accent` (`#C8A06A`) on white is 2.4:1 — fails AA for text. Use it only as a surface/border/gradient color, never as text.
+- `accent-ink` (`#3D2F14`) on `accent-muted` (6.9:1) and on `accent-subtle` (9.6:1) are the approved tan-on-tan text pairings.
+
 ## Typography
 
 The app loads Geist Sans and Geist Mono with `next/font/local` in `src/app/layout.tsx` from `src/app/fonts/GeistVF.woff` and `src/app/fonts/GeistMonoVF.woff`.
@@ -152,3 +167,11 @@ Flowbite React remains part of the UI stack. Dashboard drawer header colors are 
 - Do run `pnpm design:lint` after editing this file.
 - Don't generate Tailwind theme CSS from this file yet; it documents the current system for agents and humans.
 - Don't add a second dark-mode mechanism; the app already uses `data-theme` with cookie persistence.
+
+## Landing
+
+The public landing at `/` (`src/features/Landing/`) is a deliberate set of exceptions to the rules above:
+
+1. **Light-only by design.** Every landing section sets an explicit light surface color instead of inheriting the app body's `dark:bg-gray-950` — the landing must look correct even when `data-theme="dark"` is set on `<html>`.
+2. **Hand-rolled FAQ accordion**, not Flowbite's `Accordion`. The landing renders outside the dashboard `ThemeProvider`, so Flowbite would apply untuned defaults, and the comp requires exactly-one-open-at-a-time with the first item open by default — worth a bespoke component rather than fighting the default.
+3. **Sets its own Geist font-family class** (`font-[family-name:var(--font-geist-sans)]`) because `globals.css` still declares `body { font-family: Arial, Helvetica, sans-serif }`, which otherwise wins app-wide.
