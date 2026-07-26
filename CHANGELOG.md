@@ -1,3 +1,9 @@
+## v0.59.0 (2026-07-26)
+
+### Pull Requests
+[#119](https://github.com/RafaelMoro/kraft-envios-fe/pull/119) | Add landing
+
+
 ## v0.58.0 (2026-07-26)
 
 ### Pull Requests
