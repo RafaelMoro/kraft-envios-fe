@@ -1,3 +1,9 @@
+## v0.58.0 (2026-07-26)
+
+### Pull Requests
+[#118](https://github.com/RafaelMoro/kraft-envios-fe/pull/118) | Add landing epic and Move login to route "/login"
+
+
 ## v0.57.0 (2026-07-25)
 
 ### Pull Requests
