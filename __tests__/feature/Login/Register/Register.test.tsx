@@ -58,7 +58,7 @@ describe('Register', () => {
 
     expect(await screen.findByText(SUCCESS_CREATE_USER_TITLE)).toBeInTheDocument()
     expect(screen.getByText(SUCCESS_CREATE_USER_MESSAGE)).toBeInTheDocument()
-    const goBackLogin = screen.getByRole('link', { name: /regresar al inicio/i })
+    const goBackLogin = screen.getByRole('link', { name: /iniciar sesión/i })
     expect(goBackLogin).toBeInTheDocument()
   })
 
@@ -119,7 +119,7 @@ describe('Register', () => {
 
     expect(await screen.findByText(ERROR_CREATE_USER_TITLE)).toBeInTheDocument()
     expect(screen.getByText(ERROR_CREATE_USER_MESSAGE)).toBeInTheDocument()
-    const goBackLogin = screen.getByRole('link', { name: /regresar al inicio/i })
+    const goBackLogin = screen.getByRole('link', { name: /iniciar sesión/i })
     expect(goBackLogin).toBeInTheDocument()
   })
 
@@ -180,7 +180,7 @@ describe('Register', () => {
 
     expect(await screen.findByText(ERROR_TITLE_EMAIL_IN_USE)).toBeInTheDocument()
     expect(screen.getByText(ERROR_MESSAGE_EMAIL_IN_USE)).toBeInTheDocument()
-    const goBackLogin = screen.getByRole('link', { name: /regresar al inicio/i })
+    const goBackLogin = screen.getByRole('link', { name: /iniciar sesión/i })
     expect(goBackLogin).toBeInTheDocument()
   })
 })

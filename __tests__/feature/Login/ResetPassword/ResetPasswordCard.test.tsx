@@ -21,7 +21,7 @@ describe('ResetPasswordCard', () => {
     expect(screen.getByText(/ingresa y confirma tu nueva contraseña para recuperar el acceso\./i)).toBeInTheDocument()
     expect(screen.getByTestId('password')).toBeInTheDocument()
     expect(screen.getByTestId('confirmPassword')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /volver al inicio/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /iniciar sesión/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /reestablecer contraseña/i })).toBeInTheDocument()
   })
 
