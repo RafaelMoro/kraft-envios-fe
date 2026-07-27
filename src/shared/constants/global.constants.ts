@@ -1,3 +1,6 @@
+// Business timezone
+export const BUSINESS_TIMEZONE = process.env.NEXT_PUBLIC_BUSINESS_TIMEZONE as string;
+
 // Cookie keys
 export const COOKIE_SESSION_KEY = "session";
 export const THEME_COOKIE_KEY = "theme";
@@ -12,6 +15,9 @@ export const CREATE_USER_API_ENDPOINT = "/api/auth/create-user";
 export const SIGN_OUT_API_ENDPOINT = "/api/auth/sign-out";
 
 export const GET_QUOTE_API_ENDPOINT = "/api/quotes";
+export const BALANCE_API_ENDPOINT = "/api/balance";
+export const BALANCE_REQUESTS_API_ENDPOINT = "/api/balance/requests";
+export const BALANCE_REQUESTS_ADMIN_API_ENDPOINT = "/api/balance/requests/admin";
 export const MARGIN_PROFIT_API_ENDPOINT = "/api/margin-profit";
 export const ADDRESS_API_ENDPOINT = "/api/address";
 export const ADDRESS_GE_API_ENDPOINT = "/api/ge-address";
@@ -20,8 +26,16 @@ export const GET_ADDRESS_INFO_API_ENDPOINT = "/api/address-info";
 // Routes
 export const REGISTER_ROUTE = "/register";
 export const FORGOT_PASSWORD_ROUTE = "/forgot-password";
-export const LOGIN_ROUTE = "/";
+export const LOGIN_ROUTE = "/login";
 export const DASHBOARD_ROUTE = "/dashboard";
+export const DASHBOARD_REQUESTS_ROUTE = "/dashboard/requests";
+
+/** Stable email-deep-link destination. Changing this breaks already-sent emails. */
+export const buildBalanceRequestDetailRoute = (requestId: string): string =>
+  `${DASHBOARD_REQUESTS_ROUTE}/${encodeURIComponent(requestId)}`;
+
+/** Post-login return destination carried through the login route. */
+export const LOGIN_REDIRECT_PARAM = "redirect";
 
 export const primaryButtonCSS = "relative flex items-center justify-center rounded-lg text-center font-medium focus:outline-none focus:ring-4 h-10 px-5 text-sm bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 hover:cursor-pointer"
 

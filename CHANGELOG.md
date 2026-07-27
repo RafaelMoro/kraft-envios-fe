@@ -1,3 +1,51 @@
+## v0.59.0 (2026-07-26)
+
+### Pull Requests
+[#119](https://github.com/RafaelMoro/kraft-envios-fe/pull/119) | Add landing
+
+
+## v0.58.0 (2026-07-26)
+
+### Pull Requests
+[#118](https://github.com/RafaelMoro/kraft-envios-fe/pull/118) | Add landing epic and Move login to route "/login"
+
+
+## v0.57.0 (2026-07-25)
+
+### Pull Requests
+[#117](https://github.com/RafaelMoro/kraft-envios-fe/pull/117) | Balance feature epic | Story 5 | Email Deep Link To Admin Review 
+
+
+## v0.56.0 (2026-07-24)
+
+### Pull Requests
+[#116](https://github.com/RafaelMoro/kraft-envios-fe/pull/116) | Balance feature epic | Story 4: Admin Request Queue And Decisions
+
+
+## v0.55.0 (2026-07-24)
+
+### Pull Requests
+[#115](https://github.com/RafaelMoro/kraft-envios-fe/pull/115) | Balance Epic feature | Story 3: Cancel and review own requests
+
+
+## v0.54.0 (2026-07-23)
+
+### Pull Requests
+[#114](https://github.com/RafaelMoro/kraft-envios-fe/pull/114) | Add timezone config with IANA timezone and Luxon
+
+
+## v0.53.0 (2026-07-22)
+
+### Pull Requests
+[#113](https://github.com/RafaelMoro/kraft-envios-fe/pull/113) | Add balance request
+
+
+## v0.52.0 (2026-07-22)
+
+### Pull Requests
+[#112](https://github.com/RafaelMoro/kraft-envios-fe/pull/112) | Add Balance epic and story 1
+
+
 ## v0.51.0 (2026-07-17)
 
 ### Pull Requests

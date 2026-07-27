@@ -1,28 +1,40 @@
 import { render, screen } from '@testing-library/react'
-import { QueryProviderWrapper } from '@/features/QueryProviderWrapper'
-import { AppRouterContextProviderMock } from '@/features/AppRouterContextProviderMock'
+import { redirect } from 'next/navigation'
 import HomePage from '../src/app/page'
 
-const Home = async ({ push }: { push: () => void }) => {
-  const Page = await HomePage()
-  return (
-    <QueryProviderWrapper>
-      <AppRouterContextProviderMock router={{ push }}>
-        {Page}
-      </AppRouterContextProviderMock>
-    </QueryProviderWrapper>
-  )
-}
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  redirect: jest.fn(),
+}))
 
-describe('Login page', () => {
-  it('Show the login page', async () => {
-    const push = jest.fn()
-    render(await Home({ push }))
+const mockedRedirect = redirect as jest.MockedFunction<typeof redirect>
 
-    expect(screen.getByRole('heading', { name: /bienvenido de vuelta/i })).toBeInTheDocument()
-    expect(screen.getByText(/ingrese sus credenciales para entrar a su cuenta\./i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/contraseña/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeInTheDocument()
+beforeAll(() => {
+  global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+    root: null,
+    rootMargin: '',
+    thresholds: [],
+  }))
+})
+
+describe('Home page (/)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('renders the public landing page with no redirect', () => {
+    render(HomePage())
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: /cotiza con varias paqueterías/i })
+    ).toBeInTheDocument()
+    expect(mockedRedirect).not.toHaveBeenCalled()
+  })
+
+  it('is callable as a page component with no arguments', () => {
+    expect(() => HomePage()).not.toThrow()
   })
 })

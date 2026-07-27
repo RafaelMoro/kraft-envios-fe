@@ -16,8 +16,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Kraft Envios",
-  description: "Kraft envios es tu mejor solución para envio de paquetes en toda la República mexicana",
+  title: {
+    default: 'Kraft Envíos | Cotiza y genera guías con varias paqueterías',
+    template: '%s | Kraft Envíos',
+  },
+  description: 'Compara precios de Estafeta, DHL, FedEx, UPS y más en una sola cotización. Genera tu guía y administra todos tus envíos desde un solo lugar.',
 };
 
 export default async function RootLayout({
@@ -28,7 +31,7 @@ export default async function RootLayout({
   const theme = await getThemePreference()
 
   return (
-    <html lang="en" data-theme={theme}>
+    <html lang="es-MX" data-theme={theme}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 text-gray-950 dark:text-gray-100 dark:bg-gray-950 transition-colors`}
       >

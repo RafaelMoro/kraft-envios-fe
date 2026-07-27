@@ -107,6 +107,7 @@ If a test fails, fix the implementation or test setup. Do not weaken assertions,
   - `pnpm lint` for lint verification.
   - `pnpm build` for full production verification.
 - If the planning doc has an implementation checklist, check off completed items or call out deferred items in the report.
+- If the planning doc is labeled `Story of epic`, update the referenced epic document as the final step to mark the story work completed and summarize what was done.
 
 ## Step 7 - Capture follow-ups
 

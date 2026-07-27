@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Button, ButtonGroup, Label, Select, ToggleSwitch } from "flowbite-react"
+import { Button, ButtonGroup, Label, Select, TextInput, ToggleSwitch } from "flowbite-react"
 import clsx from "clsx"
 
 import { LoginData } from "@/shared/types/login.types"
@@ -8,6 +8,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { useNotification } from "@/shared/hooks/useNotification"
 import { getGuidesCb, getGuideStatus, generateGuideId, getGuidesDbCb, deleteGuideDbCb, hardDeleteGuideDbCb } from "@/shared/utils/guides.utils"
 import { getQuoteImg } from "@/shared/utils/quotes.utils"
+import { getBusinessCalendarMonthYear, toBusinessDateRange } from "@/shared/utils/date.utils"
 import { GetGuidesData, GuideDbRecord, GuideUI } from "@/shared/types/guides.types"
 
 import { GuideCard } from "@/features/Guides/ViewGuides/GuideCard"
@@ -26,9 +27,18 @@ import {
   GUIDES_DB_DELETE_ERROR_MESSAGE,
   GUIDES_DB_EMPTY_MESSAGE,
   GUIDES_DB_ERROR_MESSAGE,
+  GUIDES_DB_FILTER_MODE_MONTH_LABEL,
+  GUIDES_DB_FILTER_MODE_RANGE_LABEL,
+  GUIDES_DB_RANGE_INCOMPLETE_MESSAGE,
+  GUIDES_DB_RANGE_PROMPT_MESSAGE,
+  GUIDES_DB_RANGE_REVERSED_MESSAGE,
 } from "@/shared/constants/guides.constants"
 
 type GuideListSource = 'external' | 'ownDb' | 'allDb'
+type GuideDateFilterMode = 'month' | 'range'
+type GuidesDbDateFilter =
+  | { month: number; year: number; startDate?: undefined; endDate?: undefined }
+  | { month?: undefined; year?: undefined; startDate: string; endDate: string }
 
 interface OrderProps {
   userInfo: LoginData | null
@@ -49,8 +59,16 @@ const MONTHS = [
   { value: 12, label: 'Diciembre' },
 ]
 
-const currentYear = new Date().getFullYear()
-const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - i)
+const getRangeGuidance = (
+  rangeStart: string,
+  rangeEnd: string,
+  convertedRange: ReturnType<typeof toBusinessDateRange>,
+): string | null => {
+  if (!rangeStart && !rangeEnd) return GUIDES_DB_RANGE_PROMPT_MESSAGE
+  if (!rangeStart || !rangeEnd) return GUIDES_DB_RANGE_INCOMPLETE_MESSAGE
+  if (!convertedRange) return GUIDES_DB_RANGE_REVERSED_MESSAGE
+  return null
+}
 
 export const Order = ({ userInfo }: OrderProps) => {
   const { isMobileTablet, isDesktop } = useMediaQuery()
@@ -64,9 +82,15 @@ export const Order = ({ userInfo }: OrderProps) => {
 
   const isAdmin = Array.isArray(userInfo?.data?.user?.role) && userInfo?.data?.user?.role.includes('admin')
 
+  const { month: currentBusinessMonth, year: currentBusinessYear } = getBusinessCalendarMonthYear()
+  const YEARS = Array.from({ length: 5 }, (_, i) => currentBusinessYear - i)
+
   const [selectedSource, setSelectedSource] = useState<GuideListSource>('external')
-  const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth() + 1)
-  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear())
+  const [filterMode, setFilterMode] = useState<GuideDateFilterMode>('month')
+  const [selectedMonth, setSelectedMonth] = useState(currentBusinessMonth)
+  const [selectedYear, setSelectedYear] = useState(currentBusinessYear)
+  const [rangeStart, setRangeStart] = useState('')
+  const [rangeEnd, setRangeEnd] = useState('')
   const [dbPage, setDbPage] = useState(1)
   const [dbLimit, setDbLimit] = useState<10 | 50 | 100>(10)
   const [selectedDbGuide, setSelectedDbGuide] = useState<GuideDbRecord | null>(null)
@@ -83,24 +107,33 @@ export const Order = ({ userInfo }: OrderProps) => {
     enabled: selectedSource === 'external',
   })
 
+  const convertedRange = filterMode === 'range' ? toBusinessDateRange(rangeStart, rangeEnd) : null
+  const rangeGuidance = filterMode === 'range' ? getRangeGuidance(rangeStart, rangeEnd, convertedRange) : null
+
+  const dateFilter: GuidesDbDateFilter | null =
+    filterMode === 'month'
+      ? { month: selectedMonth, year: selectedYear }
+      : convertedRange
+        ? { startDate: convertedRange.startDate, endDate: convertedRange.endDate }
+        : null
+
   const { data: dbData, isPending: dbIsPending, isError: dbIsError } = useQuery({
-    queryKey: ['guides', 'db', selectedMonth, selectedYear, dbPage, dbLimit],
-    queryFn: () => getGuidesDbCb({ page: dbPage, month: selectedMonth, year: selectedYear, limit: dbLimit }),
-    enabled: selectedSource === 'ownDb',
+    queryKey: ['guides', 'db', filterMode, selectedMonth, selectedYear, rangeStart, rangeEnd, dbPage, dbLimit],
+    queryFn: () => getGuidesDbCb({ page: dbPage, limit: dbLimit, ...(dateFilter as GuidesDbDateFilter) }),
+    enabled: selectedSource === 'ownDb' && dateFilter !== null,
   })
 
   const { data: adminDbData, isPending: adminDbIsPending, isError: adminDbIsError } = useQuery({
-    queryKey: ['guides', 'db', 'admin', adminScope, includeDeleted, includeInternalPricing, selectedMonth, selectedYear, dbPage, dbLimit],
+    queryKey: ['guides', 'db', 'admin', adminScope, includeDeleted, includeInternalPricing, filterMode, selectedMonth, selectedYear, rangeStart, rangeEnd, dbPage, dbLimit],
     queryFn: () => getGuidesDbCb({
       page: dbPage,
-      month: selectedMonth,
-      year: selectedYear,
       limit: dbLimit,
       scope: adminScope,
       includeDeleted,
       includeInternalPricing,
+      ...(dateFilter as GuidesDbDateFilter),
     }),
-    enabled: selectedSource === 'allDb' && isAdmin,
+    enabled: selectedSource === 'allDb' && isAdmin && dateFilter !== null,
   })
 
   const deleteMutation = useMutation({
@@ -184,6 +217,24 @@ export const Order = ({ userInfo }: OrderProps) => {
 
   const handleYearChange = (year: number) => {
     setSelectedYear(year)
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
+  const handleFilterModeChange = (mode: GuideDateFilterMode) => {
+    setFilterMode(mode)
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
+  const handleRangeStartChange = (value: string) => {
+    setRangeStart(value)
+    setDbPage(1)
+    setSelectedDbGuide(null)
+  }
+
+  const handleRangeEndChange = (value: string) => {
+    setRangeEnd(value)
     setDbPage(1)
     setSelectedDbGuide(null)
   }
@@ -333,31 +384,74 @@ export const Order = ({ userInfo }: OrderProps) => {
         <>
           <div className="flex flex-wrap gap-4 justify-center items-center">
             <div className="flex items-center gap-2">
-              <Label htmlFor="order-month">Mes:</Label>
+              <Label htmlFor="order-filter-mode">Filtrar por:</Label>
               <Select
-                id="order-month"
-                className="w-32"
-                value={selectedMonth}
-                onChange={(e) => handleMonthChange(Number(e.target.value))}
+                id="order-filter-mode"
+                className="w-40"
+                value={filterMode}
+                onChange={(e) => handleFilterModeChange(e.target.value as GuideDateFilterMode)}
               >
-                {MONTHS.map((m) => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
+                <option value="month">{GUIDES_DB_FILTER_MODE_MONTH_LABEL}</option>
+                <option value="range">{GUIDES_DB_FILTER_MODE_RANGE_LABEL}</option>
               </Select>
             </div>
-            <div className="flex items-center gap-2 max-w-md">
-              <Label htmlFor="order-year">Año:</Label>
-              <Select
-                id="order-year"
-                className="w-24"
-                value={selectedYear}
-                onChange={(e) => handleYearChange(Number(e.target.value))}
-              >
-                {YEARS.map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </Select>
-            </div>
+            { filterMode === 'month' && (
+              <>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="order-month">Mes:</Label>
+                  <Select
+                    id="order-month"
+                    className="w-32"
+                    value={selectedMonth}
+                    onChange={(e) => handleMonthChange(Number(e.target.value))}
+                  >
+                    {MONTHS.map((m) => (
+                      <option key={m.value} value={m.value}>{m.label}</option>
+                    ))}
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2 max-w-md">
+                  <Label htmlFor="order-year">Año:</Label>
+                  <Select
+                    id="order-year"
+                    className="w-24"
+                    value={selectedYear}
+                    onChange={(e) => handleYearChange(Number(e.target.value))}
+                  >
+                    {YEARS.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </Select>
+                </div>
+              </>
+            ) }
+            { filterMode === 'range' && (
+              <>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="order-range-start">Fecha inicio:</Label>
+                  <TextInput
+                    id="order-range-start"
+                    type="date"
+                    value={rangeStart}
+                    onChange={(e) => handleRangeStartChange(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="order-range-end">Fecha fin:</Label>
+                  <TextInput
+                    id="order-range-end"
+                    type="date"
+                    value={rangeEnd}
+                    onChange={(e) => handleRangeEndChange(e.target.value)}
+                  />
+                </div>
+                { rangeGuidance && (
+                  <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+                    {rangeGuidance}
+                  </p>
+                ) }
+              </>
+            ) }
             <div className="flex items-center gap-2">
               <Label htmlFor="order-limit">Registros:</Label>
               <Select
@@ -401,7 +495,7 @@ export const Order = ({ userInfo }: OrderProps) => {
             ) }
           </div>
 
-          { activeDbIsError && (
+          { dateFilter !== null && activeDbIsError && (
             <div className="flex flex-col gap-5">
               <h2 className="text-2xl font-bold text-center tracking-tight">
                 Oops!
@@ -412,13 +506,13 @@ export const Order = ({ userInfo }: OrderProps) => {
             </div>
           )}
 
-          { !activeDbIsError && activeDbIsPending && (
+          { dateFilter !== null && !activeDbIsError && activeDbIsPending && (
             <div className="flex justify-center py-8">
               <p className="text-gray-500 dark:text-gray-400">Cargando...</p>
             </div>
           )}
 
-          { !activeDbIsError && !activeDbIsPending && activeDbData?.guides.length === 0 && (
+          { dateFilter !== null && !activeDbIsError && !activeDbIsPending && activeDbData?.guides.length === 0 && (
             <div className="flex flex-col gap-5">
               <p className="text-center text-gray-600 dark:text-gray-400">
                 {GUIDES_DB_EMPTY_MESSAGE}
@@ -426,7 +520,7 @@ export const Order = ({ userInfo }: OrderProps) => {
             </div>
           )}
 
-          { !activeDbIsError && !activeDbIsPending && activeDbData && activeDbData.guides.length > 0 && (
+          { dateFilter !== null && !activeDbIsError && !activeDbIsPending && activeDbData && activeDbData.guides.length > 0 && (
             <>
               <div className="grid gap-3">
                 {activeDbData.guides.map((guide) => (

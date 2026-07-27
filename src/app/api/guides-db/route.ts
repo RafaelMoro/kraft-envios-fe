@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = request.nextUrl
     const params: Record<string, string> = {}
-    const entries = ['page', 'month', 'year', 'limit', 'scope', 'includeDeleted', 'includeInternalPricing']
+    const entries = ['page', 'month', 'year', 'startDate', 'endDate', 'limit', 'scope', 'includeDeleted', 'includeInternalPricing']
     for (const key of entries) {
       const value = searchParams.get(key)
       if (value !== null) {

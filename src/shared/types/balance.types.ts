@@ -1,0 +1,190 @@
+import { object, type ObjectSchema, string } from 'yup'
+
+const BALANCE_AMOUNT_PATTERN = /^\d+(\.\d{1,2})?$/
+
+export interface BalanceDto {
+  amount: number
+}
+
+export interface GetBalanceData {
+  balance: BalanceDto
+}
+
+export interface GetBalanceResponse {
+  version: string
+  data: GetBalanceData
+  message: null
+  error: null
+}
+
+export type BalanceRequestStatus = 'pending' | 'approved' | 'rejected' | 'cancelled'
+
+export interface BalanceRequestFormValues {
+  amount: string
+}
+
+export interface CreateBalanceRequestPayload {
+  amount: number
+}
+
+export interface BalanceRequestDto {
+  id: string
+  amount: number
+  paymentReference?: string | null
+  status: BalanceRequestStatus
+  decisionReason: string | null
+  decisionAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateBalanceRequestResponse {
+  version: string
+  data: {
+    request: BalanceRequestDto
+  }
+  message: null
+  error: null
+}
+
+export interface BalanceValidationError {
+  statusCode: 400
+  message: string[]
+  error: 'Bad Request'
+}
+
+export interface BalanceDomainError {
+  code: string
+  message: string
+  technicalDetails?: object
+}
+
+export interface CreateBalanceRequestErrorResponse {
+  version?: string
+  data?: null
+  message: string | null
+  error?: BalanceValidationError | BalanceDomainError | null
+}
+
+export interface BalanceRequestListParams {
+  month?: number
+  year?: number
+  page?: number
+  limit?: number
+}
+
+export interface BalanceRequestListData {
+  requests: BalanceRequestDto[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface GetBalanceRequestsResponse {
+  version: string
+  data: BalanceRequestListData
+  message: null
+  error: null
+}
+
+// Cancel success mirrors the create/single-request shape (data.request).
+export interface CancelBalanceRequestResponse {
+  version: string
+  data: { request: BalanceRequestDto }
+  message: null
+  error: null
+}
+
+export type AdminBalanceRequestStatusFilter = 'pending' | 'all'
+
+export interface AdminBalanceRequestDto {
+  id: string
+  amount: number
+  paymentReference?: string | null
+  status: BalanceRequestStatus
+  decisionReason?: string | null
+  decisionAt?: string | null
+  createdAt: string
+  updatedAt: string
+  userEmail: string
+  userName: string
+  adminInCharge: string | null
+}
+
+export interface AdminBalanceRequestListParams {
+  month?: number
+  year?: number
+  page?: number
+  limit?: number
+  status?: AdminBalanceRequestStatusFilter
+}
+
+export interface AdminBalanceRequestListData {
+  requests: AdminBalanceRequestDto[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface GetAdminBalanceRequestsResponse {
+  version: string
+  data: AdminBalanceRequestListData
+  message: null
+  error: null
+}
+
+export type BalanceDecisionPayload =
+  | { action: 'approve'; paymentReference: string }
+  | { action: 'reject'; reason?: string }
+
+// Decision success mirrors create/cancel (data.request), but with the admin item shape.
+export interface DecideBalanceRequestResponse {
+  version: string
+  data: { request: AdminBalanceRequestDto }
+  message: null
+  error: null
+}
+
+// The decision 409 body is FLAT — not nested under `error` like Story 3's cancel conflict.
+export interface BalanceDecisionConflictError {
+  code: string
+  message: string
+  technicalDetails: object | null
+  statusCode: number
+}
+
+// Single-request admin lookup mirrors create/cancel/decision success (data.request).
+export interface GetAdminBalanceRequestResponse {
+  version: string
+  data: { request: AdminBalanceRequestDto }
+  message: null
+  error: null
+}
+
+// The single-request 404 body is FLAT like the decision 409, but its code uses
+// underscores (BAL_NF_001) where the conflict uses hyphens (BAL-BUS-002).
+export interface BalanceRequestNotFoundError {
+  code: string
+  message: string
+  technicalDetails: object | null
+  statusCode: number
+}
+
+export const balanceRequestSchema: ObjectSchema<BalanceRequestFormValues> = object({
+  amount: string()
+    .required('Ingresa el monto a solicitar')
+    .transform((value: string | undefined) => value?.trim() ?? '')
+    .matches(BALANCE_AMOUNT_PATTERN, 'Ingresa un monto válido con máximo dos decimales')
+    .test('min-amount', 'El monto mínimo es 0.01 MXN', (value) => {
+      if (!value || !BALANCE_AMOUNT_PATTERN.test(value)) return true
+
+      return Number(value) >= 0.01
+    })
+    .test('max-amount', 'El monto máximo es 100000.00 MXN', (value) => {
+      if (!value || !BALANCE_AMOUNT_PATTERN.test(value)) return true
+
+      return Number(value) <= 100000
+    })
+})
